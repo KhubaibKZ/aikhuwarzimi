@@ -77,6 +77,30 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     }
   };
 
+  const normalizeAnswer = (str: string): string[] => {
+    return str
+      .toLowerCase()
+      .replace(/[{}]/g, '')
+      .split(/[,\s]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+      .sort();
+  };
+
+  const checkAnswerMatch = (userAnswer: string, correctAnswer: string): { isCorrect: boolean; missing: string[]; extra: string[] } => {
+    const userParts = normalizeAnswer(userAnswer);
+    const correctParts = normalizeAnswer(correctAnswer);
+    
+    const missing = correctParts.filter(c => !userParts.includes(c));
+    const extra = userParts.filter(u => !correctParts.includes(u));
+    
+    return {
+      isCorrect: missing.length === 0 && extra.length === 0,
+      missing,
+      extra
+    };
+  };
+
   const handleCheckWork = () => {
     const hasAttempt = Object.values(answers).some(v => v.trim().length > 0);
     if (!hasAttempt) {
@@ -86,11 +110,68 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       });
       return;
     }
-    
-    setFeedback({
-      type: 'hint',
-      message: "Your work looks good! Review your answers and submit when ready."
+
+    if (!question.answer || !question.parts) {
+      setFeedback({
+        type: 'hint',
+        message: "Keep working on your solution. When you're confident, click Submit!"
+      });
+      return;
+    }
+
+    const correctAnswers = question.answer as Record<string, string>;
+    const feedbackMessages: string[] = [];
+    let allCorrect = true;
+    let hasPartialCredit = false;
+
+    question.parts.forEach((part) => {
+      const userAnswer = answers[part.key]?.trim() || '';
+      const correctAnswer = correctAnswers[part.key];
+
+      if (!userAnswer) {
+        feedbackMessages.push(`📝 **${part.label}**: You haven't answered this yet. Give it a try!`);
+        allCorrect = false;
+        return;
+      }
+
+      const result = checkAnswerMatch(userAnswer, correctAnswer);
+
+      if (result.isCorrect) {
+        feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
+        hasPartialCredit = true;
+      } else if (result.missing.length > 0 && result.extra.length === 0) {
+        feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). Look at the original list again carefully.`);
+        allCorrect = false;
+        hasPartialCredit = true;
+      } else if (result.extra.length > 0 && result.missing.length === 0) {
+        feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. Review the definitions.`);
+        allCorrect = false;
+        hasPartialCredit = true;
+      } else if (result.missing.length > 0 && result.extra.length > 0) {
+        feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. Remember: ${question.hints[0] || 'Review the definitions carefully.'}`);
+        allCorrect = false;
+      } else {
+        feedbackMessages.push(`❌ **${part.label}**: This needs more work. Try using the hints!`);
+        allCorrect = false;
+      }
     });
+
+    if (allCorrect) {
+      setFeedback({
+        type: 'success',
+        message: "🎉 Perfect! All your answers are correct! You can submit now."
+      });
+    } else if (hasPartialCredit) {
+      setFeedback({
+        type: 'hint',
+        message: feedbackMessages.join('\n\n')
+      });
+    } else {
+      setFeedback({
+        type: 'error',
+        message: feedbackMessages.join('\n\n') + "\n\n💪 Don't give up! Use the hints if you need help."
+      });
+    }
   };
 
   const handleSubmit = () => {
@@ -157,13 +238,21 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
                   "rounded-xl p-4 border animate-scale-in",
                   feedback.type === 'success' && "bg-success/10 border-success/30 text-success",
                   feedback.type === 'error' && "bg-destructive/10 border-destructive/30 text-destructive",
-                  feedback.type === 'hint' && "bg-warning/10 border-warning/30 text-warning"
+                  feedback.type === 'hint' && "bg-warning/10 border-warning/30 text-warning-foreground"
                 )}>
                   <div className="flex items-start gap-3">
-                    {feedback.type === 'success' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5" />}
-                    {feedback.type === 'error' && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />}
-                    {feedback.type === 'hint' && <Lightbulb className="h-5 w-5 shrink-0 mt-0.5" />}
-                    <p className="text-sm">{feedback.message}</p>
+                    {feedback.type === 'success' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-success" />}
+                    {feedback.type === 'error' && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-destructive" />}
+                    {feedback.type === 'hint' && <Lightbulb className="h-5 w-5 shrink-0 mt-0.5 text-warning" />}
+                    <div className="text-sm space-y-2 flex-1">
+                      {feedback.message.split('\n\n').map((paragraph, i) => (
+                        <p key={i} className="leading-relaxed">
+                          {paragraph.split('**').map((part, j) => 
+                            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                          )}
+                        </p>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

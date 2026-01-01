@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { MathKeyboard } from './MathKeyboard';
 import { QuestionData } from '@/lib/questionData';
 import { useProgress } from '@/context/ProgressContext';
-import { Lightbulb, CheckCircle, Send, X, Sparkles, AlertCircle } from 'lucide-react';
+import { Lightbulb, CheckCircle, Send, X, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WorkspaceModalProps {
   isOpen: boolean;
@@ -31,6 +32,8 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
   const [hintIndex, setHintIndex] = useState(0);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [attemptCounts, setAttemptCounts] = useState<Record<string, number>>({});
   const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
   
   const { markExampleComplete, markExerciseComplete, isCompleted } = useProgress();
@@ -41,6 +44,7 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       setHintIndex(0);
       setFeedback(null);
       setIsSubmitted(isCompleted(question.id));
+      setAttemptCounts({});
     }
   }, [isOpen, question.id, isCompleted]);
 
@@ -101,82 +105,61 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     };
   };
 
-  // Smart AI teacher hint generator based on the specific part
-  const getSmartHint = (partKey: string, partLabel: string, missing: string[], extra: string[]): string => {
+  // Get AI-powered adaptive hint
+  const getAIHint = async (partKey: string, partLabel: string, userAnswer: string, missing: string[], extra: string[]): Promise<string> => {
+    const currentAttempt = (attemptCounts[partKey] || 0) + 1;
+    setAttemptCounts(prev => ({ ...prev, [partKey]: currentAttempt }));
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-tutor', {
+        body: {
+          question: question.question,
+          partLabel,
+          userAnswer,
+          correctAnswer: null, // Don't send correct answer to keep it hidden
+          missing,
+          extra,
+          attemptCount: currentAttempt
+        }
+      });
+
+      if (error) {
+        console.error('AI tutor error:', error);
+        return getFallbackHint(partKey, partLabel, missing, extra);
+      }
+
+      return data.hint || getFallbackHint(partKey, partLabel, missing, extra);
+    } catch (err) {
+      console.error('Failed to get AI hint:', err);
+      return getFallbackHint(partKey, partLabel, missing, extra);
+    }
+  };
+
+  // Fallback hints when AI is unavailable
+  const getFallbackHint = (partKey: string, partLabel: string, missing: string[], extra: string[]): string => {
     const lowerKey = partKey.toLowerCase();
     const lowerLabel = partLabel.toLowerCase();
     
-    // Number classification hints
     if (lowerKey === 'natural' || lowerLabel.includes('natural')) {
-      if (extra.length > 0) {
-        return "Natural numbers are only positive counting numbers starting from 1. Zero and negative numbers are not natural numbers.";
-      }
-      return "Think about which numbers are positive whole numbers used for counting (1, 2, 3, ...).";
+      return "💡 Think: Which numbers would you use to count objects? Natural numbers start from 1.";
     }
-    
     if (lowerKey === 'integers' || lowerLabel.includes('integer')) {
-      if (extra.some(e => e.includes('/') || e.includes('.'))) {
-        return "Integers don't include fractions or decimals. They are whole numbers: ..., -2, -1, 0, 1, 2, ...";
-      }
-      if (extra.some(e => e.includes('√') || e.includes('π'))) {
-        return "Integers are whole numbers only. √3 and π are not whole numbers.";
-      }
-      return "Integers include all whole numbers - positive, negative, and zero. No fractions or decimals!";
+      return "🤔 Integers are whole numbers. Can you identify which numbers have no fractional parts?";
     }
-    
     if (lowerKey === 'rational' || lowerLabel.includes('rational')) {
-      if (missing.length > 0) {
-        return "Can this number be written as a fraction? If yes, it's rational. Mixed numbers and decimals that terminate or repeat are rational.";
-      }
-      if (extra.some(e => e.includes('√') || e.includes('π'))) {
-        return "√3 and π cannot be written as exact fractions - they're irrational, not rational.";
-      }
-      return "Rational numbers can be expressed as p/q where q ≠ 0. This includes integers, fractions, and terminating decimals.";
+      return "💡 Ask yourself: Can this number be written as a fraction p/q?";
     }
-    
     if (lowerKey === 'irrational' || lowerLabel.includes('irrational')) {
-      if (extra.length > 0) {
-        return "Only numbers that cannot be expressed as fractions are irrational. Common examples: √2, √3, π, e.";
-      }
-      return "Look for numbers that have non-repeating, non-terminating decimals - like √3 and π.";
+      return "🤔 Irrational numbers can't be expressed as fractions. Which numbers have infinite non-repeating decimals?";
     }
-    
     if (lowerKey === 'real' || lowerLabel.includes('real')) {
-      return "Real numbers include ALL numbers on the number line - both rational and irrational. Every number in the list should be here!";
+      return "💡 Real numbers include everything on the number line. Are any numbers excluded?";
     }
     
-    // Set theory hints
-    if (lowerLabel.includes('intersection') || lowerKey.includes('intersection')) {
-      return "For intersection (∩), find elements that appear in BOTH sets. Ask: 'Is this in A AND also in B?'";
-    }
-    
-    if (lowerLabel.includes('union') || lowerKey.includes('union')) {
-      return "For union (∪), include elements from A OR B or both. If it's in either set, it goes in the union!";
-    }
-    
-    if (lowerLabel.includes('complement') || lowerKey.includes('complement')) {
-      return "The complement (A') contains everything in the universal set U that is NOT in A.";
-    }
-    
-    // HCF/LCM hints
-    if (lowerKey === 'hcf' || lowerLabel.includes('hcf') || lowerLabel.includes('highest common')) {
-      return "For HCF, find the common prime factors and use the LOWEST power of each. Multiply those together.";
-    }
-    
-    if (lowerKey === 'lcm' || lowerLabel.includes('lcm') || lowerLabel.includes('lowest common')) {
-      return "For LCM, take ALL prime factors and use the HIGHEST power of each. Multiply those together.";
-    }
-    
-    // Prime factorization hints
-    if (lowerLabel.includes('prime factor') || lowerLabel.includes('index notation')) {
-      return "Keep dividing by the smallest prime (2, 3, 5, ...) until you reach 1. Then write using powers.";
-    }
-    
-    // Generic fallback with context
-    return `Review your answer for ${partLabel}. Check each item carefully against the definitions.`;
+    return `🤔 Review the definition of ${partLabel}. Does each item in your answer fit the criteria?`;
   };
 
-  const handleCheckWork = () => {
+  const handleCheckWork = async () => {
     // Only check parts that have been filled in
     const filledAnswers = Object.entries(answers).filter(([_, v]) => v.trim().length > 0);
     
@@ -196,14 +179,20 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       return;
     }
 
+    setIsLoadingAI(true);
+    setFeedback({
+      type: 'hint',
+      message: "🤖 Analyzing your work..."
+    });
+
     const correctAnswers = question.answer as Record<string, string>;
     const feedbackMessages: string[] = [];
     let correctCount = 0;
 
-    // Only give feedback for filled parts
-    filledAnswers.forEach(([key, userAnswer]) => {
+    // Process answers with AI hints
+    for (const [key, userAnswer] of filledAnswers) {
       const part = question.parts?.find(p => p.key === key);
-      if (!part) return;
+      if (!part) continue;
       
       const correctAnswer = correctAnswers[key];
       const result = checkAnswerMatch(userAnswer, correctAnswer);
@@ -212,18 +201,13 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
         feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
         correctCount++;
       } else {
-        const smartHint = getSmartHint(key, part.label, result.missing, result.extra);
-        if (result.missing.length > 0 && result.extra.length === 0) {
-          feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). ${smartHint}`);
-        } else if (result.extra.length > 0 && result.missing.length === 0) {
-          feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. ${smartHint}`);
-        } else if (result.missing.length > 0 && result.extra.length > 0) {
-          feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. ${smartHint}`);
-        } else {
-          feedbackMessages.push(`❌ **${part.label}**: This needs more work. ${smartHint}`);
-        }
+        // Get AI-powered adaptive hint
+        const aiHint = await getAIHint(key, part.label, userAnswer, result.missing, result.extra);
+        feedbackMessages.push(`**${part.label}**: ${aiHint}`);
       }
-    });
+    }
+
+    setIsLoadingAI(false);
 
     if (correctCount === filledAnswers.length) {
       setFeedback({
@@ -238,12 +222,12 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     } else {
       setFeedback({
         type: 'error',
-        message: feedbackMessages.join('\n\n') + "\n\n💪 Don't give up! Use the hints if you need help."
+        message: feedbackMessages.join('\n\n')
       });
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Check ALL parts on submit
     if (!question.answer || !question.parts) {
       const hasAttempt = Object.values(answers).some(v => v.trim().length > 0);
@@ -269,6 +253,12 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       return;
     }
 
+    setIsLoadingAI(true);
+    setFeedback({
+      type: 'hint',
+      message: "🤖 Reviewing your submission..."
+    });
+
     const correctAnswers = question.answer as Record<string, string>;
     const feedbackMessages: string[] = [];
     let allCorrect = true;
@@ -276,14 +266,14 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     const totalParts = question.parts.length;
 
     // Give feedback for ALL parts
-    question.parts.forEach((part) => {
+    for (const part of question.parts) {
       const userAnswer = answers[part.key]?.trim() || '';
       const correctAnswer = correctAnswers[part.key];
 
       if (!userAnswer) {
         feedbackMessages.push(`📝 **${part.label}**: You haven't answered this yet. Give it a try!`);
         allCorrect = false;
-        return;
+        continue;
       }
 
       const result = checkAnswerMatch(userAnswer, correctAnswer);
@@ -292,22 +282,14 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
         feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
         correctCount++;
       } else {
-        const smartHint = getSmartHint(part.key, part.label, result.missing, result.extra);
-        if (result.missing.length > 0 && result.extra.length === 0) {
-          feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). ${smartHint}`);
-          allCorrect = false;
-        } else if (result.extra.length > 0 && result.missing.length === 0) {
-          feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. ${smartHint}`);
-          allCorrect = false;
-        } else if (result.missing.length > 0 && result.extra.length > 0) {
-          feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. ${smartHint}`);
-          allCorrect = false;
-        } else {
-          feedbackMessages.push(`❌ **${part.label}**: This needs more work. ${smartHint}`);
-          allCorrect = false;
-        }
+        // Get AI-powered adaptive hint
+        const aiHint = await getAIHint(part.key, part.label, userAnswer, result.missing, result.extra);
+        feedbackMessages.push(`**${part.label}**: ${aiHint}`);
+        allCorrect = false;
       }
-    });
+    }
+
+    setIsLoadingAI(false);
 
     if (allCorrect) {
       setIsSubmitted(true);
@@ -324,7 +306,7 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     } else {
       setFeedback({
         type: 'error',
-        message: `**${correctCount} of ${totalParts} parts correct.** Please fix the errors before submitting.\n\n` + feedbackMessages.join('\n\n')
+        message: `**${correctCount} of ${totalParts} parts correct.** Keep trying!\n\n` + feedbackMessages.join('\n\n')
       });
     }
   };
@@ -461,7 +443,7 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
                 <Button
                   variant="outline"
                   onClick={handleGetHint}
-                  disabled={isSubmitted}
+                  disabled={isSubmitted || isLoadingAI}
                   className="gap-2 bg-warning/10 border-warning/30 text-warning hover:bg-warning/20"
                 >
                   <Lightbulb className="h-4 w-4" />
@@ -470,19 +452,27 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
                 <Button
                   variant="outline"
                   onClick={handleCheckWork}
-                  disabled={isSubmitted}
+                  disabled={isSubmitted || isLoadingAI}
                   className="gap-2 bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
                 >
-                  <CheckCircle className="h-4 w-4" />
-                  Check Work
+                  {isLoadingAI ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4" />
+                  )}
+                  {isLoadingAI ? 'Thinking...' : 'Check Work'}
                 </Button>
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitted}
+                  disabled={isSubmitted || isLoadingAI}
                   className="gap-2 bg-success text-success-foreground hover:bg-success/90"
                 >
-                  <Send className="h-4 w-4" />
-                  {isSubmitted ? 'Submitted!' : 'Submit'}
+                  {isLoadingAI ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                  {isSubmitted ? 'Submitted!' : isLoadingAI ? 'Analyzing...' : 'Submit'}
                 </Button>
               </div>
             </div>

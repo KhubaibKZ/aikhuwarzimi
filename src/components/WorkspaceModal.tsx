@@ -101,6 +101,81 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     };
   };
 
+  // Smart AI teacher hint generator based on the specific part
+  const getSmartHint = (partKey: string, partLabel: string, missing: string[], extra: string[]): string => {
+    const lowerKey = partKey.toLowerCase();
+    const lowerLabel = partLabel.toLowerCase();
+    
+    // Number classification hints
+    if (lowerKey === 'natural' || lowerLabel.includes('natural')) {
+      if (extra.length > 0) {
+        return "Natural numbers are only positive counting numbers starting from 1. Zero and negative numbers are not natural numbers.";
+      }
+      return "Think about which numbers are positive whole numbers used for counting (1, 2, 3, ...).";
+    }
+    
+    if (lowerKey === 'integers' || lowerLabel.includes('integer')) {
+      if (extra.some(e => e.includes('/') || e.includes('.'))) {
+        return "Integers don't include fractions or decimals. They are whole numbers: ..., -2, -1, 0, 1, 2, ...";
+      }
+      if (extra.some(e => e.includes('√') || e.includes('π'))) {
+        return "Integers are whole numbers only. √3 and π are not whole numbers.";
+      }
+      return "Integers include all whole numbers - positive, negative, and zero. No fractions or decimals!";
+    }
+    
+    if (lowerKey === 'rational' || lowerLabel.includes('rational')) {
+      if (missing.length > 0) {
+        return "Can this number be written as a fraction? If yes, it's rational. Mixed numbers and decimals that terminate or repeat are rational.";
+      }
+      if (extra.some(e => e.includes('√') || e.includes('π'))) {
+        return "√3 and π cannot be written as exact fractions - they're irrational, not rational.";
+      }
+      return "Rational numbers can be expressed as p/q where q ≠ 0. This includes integers, fractions, and terminating decimals.";
+    }
+    
+    if (lowerKey === 'irrational' || lowerLabel.includes('irrational')) {
+      if (extra.length > 0) {
+        return "Only numbers that cannot be expressed as fractions are irrational. Common examples: √2, √3, π, e.";
+      }
+      return "Look for numbers that have non-repeating, non-terminating decimals - like √3 and π.";
+    }
+    
+    if (lowerKey === 'real' || lowerLabel.includes('real')) {
+      return "Real numbers include ALL numbers on the number line - both rational and irrational. Every number in the list should be here!";
+    }
+    
+    // Set theory hints
+    if (lowerLabel.includes('intersection') || lowerKey.includes('intersection')) {
+      return "For intersection (∩), find elements that appear in BOTH sets. Ask: 'Is this in A AND also in B?'";
+    }
+    
+    if (lowerLabel.includes('union') || lowerKey.includes('union')) {
+      return "For union (∪), include elements from A OR B or both. If it's in either set, it goes in the union!";
+    }
+    
+    if (lowerLabel.includes('complement') || lowerKey.includes('complement')) {
+      return "The complement (A') contains everything in the universal set U that is NOT in A.";
+    }
+    
+    // HCF/LCM hints
+    if (lowerKey === 'hcf' || lowerLabel.includes('hcf') || lowerLabel.includes('highest common')) {
+      return "For HCF, find the common prime factors and use the LOWEST power of each. Multiply those together.";
+    }
+    
+    if (lowerKey === 'lcm' || lowerLabel.includes('lcm') || lowerLabel.includes('lowest common')) {
+      return "For LCM, take ALL prime factors and use the HIGHEST power of each. Multiply those together.";
+    }
+    
+    // Prime factorization hints
+    if (lowerLabel.includes('prime factor') || lowerLabel.includes('index notation')) {
+      return "Keep dividing by the smallest prime (2, 3, 5, ...) until you reach 1. Then write using powers.";
+    }
+    
+    // Generic fallback with context
+    return `Review your answer for ${partLabel}. Check each item carefully against the definitions.`;
+  };
+
   const handleCheckWork = () => {
     // Only check parts that have been filled in
     const filledAnswers = Object.entries(answers).filter(([_, v]) => v.trim().length > 0);
@@ -136,14 +211,17 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       if (result.isCorrect) {
         feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
         correctCount++;
-      } else if (result.missing.length > 0 && result.extra.length === 0) {
-        feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). Look at the original list again carefully.`);
-      } else if (result.extra.length > 0 && result.missing.length === 0) {
-        feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. Review the definitions.`);
-      } else if (result.missing.length > 0 && result.extra.length > 0) {
-        feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. Remember: ${question.hints[0] || 'Review the definitions carefully.'}`);
       } else {
-        feedbackMessages.push(`❌ **${part.label}**: This needs more work. Try using the hints!`);
+        const smartHint = getSmartHint(key, part.label, result.missing, result.extra);
+        if (result.missing.length > 0 && result.extra.length === 0) {
+          feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). ${smartHint}`);
+        } else if (result.extra.length > 0 && result.missing.length === 0) {
+          feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. ${smartHint}`);
+        } else if (result.missing.length > 0 && result.extra.length > 0) {
+          feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. ${smartHint}`);
+        } else {
+          feedbackMessages.push(`❌ **${part.label}**: This needs more work. ${smartHint}`);
+        }
       }
     });
 
@@ -213,18 +291,21 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
       if (result.isCorrect) {
         feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
         correctCount++;
-      } else if (result.missing.length > 0 && result.extra.length === 0) {
-        feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). Look at the original list again carefully.`);
-        allCorrect = false;
-      } else if (result.extra.length > 0 && result.missing.length === 0) {
-        feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. Review the definitions.`);
-        allCorrect = false;
-      } else if (result.missing.length > 0 && result.extra.length > 0) {
-        feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. Remember: ${question.hints[0] || 'Review the definitions carefully.'}`);
-        allCorrect = false;
       } else {
-        feedbackMessages.push(`❌ **${part.label}**: This needs more work. Try using the hints!`);
-        allCorrect = false;
+        const smartHint = getSmartHint(part.key, part.label, result.missing, result.extra);
+        if (result.missing.length > 0 && result.extra.length === 0) {
+          feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). ${smartHint}`);
+          allCorrect = false;
+        } else if (result.extra.length > 0 && result.missing.length === 0) {
+          feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. ${smartHint}`);
+          allCorrect = false;
+        } else if (result.missing.length > 0 && result.extra.length > 0) {
+          feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. ${smartHint}`);
+          allCorrect = false;
+        } else {
+          feedbackMessages.push(`❌ **${part.label}**: This needs more work. ${smartHint}`);
+          allCorrect = false;
+        }
       }
     });
 

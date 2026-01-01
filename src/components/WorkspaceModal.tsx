@@ -102,11 +102,13 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
   };
 
   const handleCheckWork = () => {
-    const hasAttempt = Object.values(answers).some(v => v.trim().length > 0);
-    if (!hasAttempt) {
+    // Only check parts that have been filled in
+    const filledAnswers = Object.entries(answers).filter(([_, v]) => v.trim().length > 0);
+    
+    if (filledAnswers.length === 0) {
       setFeedback({
         type: 'error',
-        message: "Please enter your answers before checking."
+        message: "Please enter at least one answer before checking."
       });
       return;
     }
@@ -121,9 +123,81 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
 
     const correctAnswers = question.answer as Record<string, string>;
     const feedbackMessages: string[] = [];
-    let allCorrect = true;
-    let hasPartialCredit = false;
+    let correctCount = 0;
 
+    // Only give feedback for filled parts
+    filledAnswers.forEach(([key, userAnswer]) => {
+      const part = question.parts?.find(p => p.key === key);
+      if (!part) return;
+      
+      const correctAnswer = correctAnswers[key];
+      const result = checkAnswerMatch(userAnswer, correctAnswer);
+
+      if (result.isCorrect) {
+        feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
+        correctCount++;
+      } else if (result.missing.length > 0 && result.extra.length === 0) {
+        feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). Look at the original list again carefully.`);
+      } else if (result.extra.length > 0 && result.missing.length === 0) {
+        feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. Review the definitions.`);
+      } else if (result.missing.length > 0 && result.extra.length > 0) {
+        feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. Remember: ${question.hints[0] || 'Review the definitions carefully.'}`);
+      } else {
+        feedbackMessages.push(`❌ **${part.label}**: This needs more work. Try using the hints!`);
+      }
+    });
+
+    if (correctCount === filledAnswers.length) {
+      setFeedback({
+        type: 'success',
+        message: feedbackMessages.join('\n\n')
+      });
+    } else if (correctCount > 0) {
+      setFeedback({
+        type: 'hint',
+        message: feedbackMessages.join('\n\n')
+      });
+    } else {
+      setFeedback({
+        type: 'error',
+        message: feedbackMessages.join('\n\n') + "\n\n💪 Don't give up! Use the hints if you need help."
+      });
+    }
+  };
+
+  const handleSubmit = () => {
+    // Check ALL parts on submit
+    if (!question.answer || !question.parts) {
+      const hasAttempt = Object.values(answers).some(v => v.trim().length > 0);
+      if (!hasAttempt) {
+        setFeedback({
+          type: 'error',
+          message: "Please complete your work before submitting."
+        });
+        return;
+      }
+      
+      setIsSubmitted(true);
+      setFeedback({
+        type: 'success',
+        message: "Excellent work! Your answer has been submitted successfully. 🎉"
+      });
+
+      if (sectionType === 'example') {
+        markExampleComplete(question.id);
+      } else {
+        markExerciseComplete(question.id);
+      }
+      return;
+    }
+
+    const correctAnswers = question.answer as Record<string, string>;
+    const feedbackMessages: string[] = [];
+    let allCorrect = true;
+    let correctCount = 0;
+    const totalParts = question.parts.length;
+
+    // Give feedback for ALL parts
     question.parts.forEach((part) => {
       const userAnswer = answers[part.key]?.trim() || '';
       const correctAnswer = correctAnswers[part.key];
@@ -138,15 +212,13 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
 
       if (result.isCorrect) {
         feedbackMessages.push(`✅ **${part.label}**: Excellent! That's correct!`);
-        hasPartialCredit = true;
+        correctCount++;
       } else if (result.missing.length > 0 && result.extra.length === 0) {
         feedbackMessages.push(`🔍 **${part.label}**: Good start, but you're missing ${result.missing.length} item(s). Look at the original list again carefully.`);
         allCorrect = false;
-        hasPartialCredit = true;
       } else if (result.extra.length > 0 && result.missing.length === 0) {
         feedbackMessages.push(`🤔 **${part.label}**: Almost there! You included ${result.extra.length} item(s) that don't belong. Review the definitions.`);
         allCorrect = false;
-        hasPartialCredit = true;
       } else if (result.missing.length > 0 && result.extra.length > 0) {
         feedbackMessages.push(`💡 **${part.label}**: Some items are correct, but there are mistakes. Remember: ${question.hints[0] || 'Review the definitions carefully.'}`);
         allCorrect = false;
@@ -157,43 +229,22 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     });
 
     if (allCorrect) {
+      setIsSubmitted(true);
       setFeedback({
         type: 'success',
-        message: "🎉 Perfect! All your answers are correct! You can submit now."
+        message: `🎉 **Perfect! All ${totalParts} parts are correct!**\n\n` + feedbackMessages.join('\n\n')
       });
-    } else if (hasPartialCredit) {
-      setFeedback({
-        type: 'hint',
-        message: feedbackMessages.join('\n\n')
-      });
+
+      if (sectionType === 'example') {
+        markExampleComplete(question.id);
+      } else {
+        markExerciseComplete(question.id);
+      }
     } else {
       setFeedback({
         type: 'error',
-        message: feedbackMessages.join('\n\n') + "\n\n💪 Don't give up! Use the hints if you need help."
+        message: `**${correctCount} of ${totalParts} parts correct.** Please fix the errors before submitting.\n\n` + feedbackMessages.join('\n\n')
       });
-    }
-  };
-
-  const handleSubmit = () => {
-    const hasAttempt = Object.values(answers).some(v => v.trim().length > 0);
-    if (!hasAttempt) {
-      setFeedback({
-        type: 'error',
-        message: "Please complete your work before submitting."
-      });
-      return;
-    }
-
-    setIsSubmitted(true);
-    setFeedback({
-      type: 'success',
-      message: "Excellent work! Your answer has been submitted successfully. 🎉"
-    });
-
-    if (sectionType === 'example') {
-      markExampleComplete(question.id);
-    } else {
-      markExerciseComplete(question.id);
     }
   };
 

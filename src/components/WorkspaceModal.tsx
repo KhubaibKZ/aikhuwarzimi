@@ -287,19 +287,24 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
               {feedback && (
                 <div className={cn(
                   "rounded-xl p-4 border animate-scale-in",
-                  feedback.type === 'success' && "bg-success/10 border-success/30 text-success",
-                  feedback.type === 'error' && "bg-destructive/10 border-destructive/30 text-destructive",
-                  feedback.type === 'hint' && "bg-warning/10 border-warning/30 text-warning-foreground"
+                  feedback.type === 'success' && "bg-emerald-50 border-emerald-200 dark:bg-emerald-950/50 dark:border-emerald-800",
+                  feedback.type === 'error' && "bg-red-50 border-red-200 dark:bg-red-950/50 dark:border-red-800",
+                  feedback.type === 'hint' && "bg-amber-50 border-amber-200 dark:bg-amber-950/50 dark:border-amber-800"
                 )}>
                   <div className="flex items-start gap-3">
-                    {feedback.type === 'success' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-success" />}
-                    {feedback.type === 'error' && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-destructive" />}
-                    {feedback.type === 'hint' && <Lightbulb className="h-5 w-5 shrink-0 mt-0.5 text-warning" />}
-                    <div className="text-sm space-y-2 flex-1">
+                    {feedback.type === 'success' && <CheckCircle className="h-5 w-5 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />}
+                    {feedback.type === 'error' && <AlertCircle className="h-5 w-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400" />}
+                    {feedback.type === 'hint' && <Lightbulb className="h-5 w-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />}
+                    <div className={cn(
+                      "text-sm space-y-2 flex-1",
+                      feedback.type === 'success' && "text-emerald-800 dark:text-emerald-200",
+                      feedback.type === 'error' && "text-red-800 dark:text-red-200",
+                      feedback.type === 'hint' && "text-amber-800 dark:text-amber-200"
+                    )}>
                       {feedback.message.split('\n\n').map((paragraph, i) => (
                         <p key={i} className="leading-relaxed">
                           {paragraph.split('**').map((part, j) => 
-                            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                            j % 2 === 1 ? <strong key={j} className="font-semibold">{part}</strong> : part
                           )}
                         </p>
                       ))}

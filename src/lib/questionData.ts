@@ -155,7 +155,7 @@ export const questionDatabase: Record<string, QuestionData> = {
 export const chapters: Chapter[] = [
   {
     id: 1,
-    title: "Understanding Numbers",
+    title: "Understanding Number",
     locked: false,
     sections: [
       {
@@ -164,13 +164,14 @@ export const chapters: Chapter[] = [
         type: 'overview',
         content: `This chapter introduces the fundamental concepts of number systems and classification. You will learn to:
 
-• Identify and classify different types of numbers (Natural, Integers, Rational, Irrational, Real)
-• Understand set notation and number line representation
-• Find Highest Common Factor (HCF) and Lowest Common Multiple (LCM)
-• Express numbers as products of prime factors
-• Work with Venn diagrams and set operations
-
-By the end of this chapter, you'll have a solid foundation in number theory that will support your mathematical journey.`
+• Understand operations and inverses
+• Identify and use different types of number
+• Recognise common mathematical symbols
+• Express numbers as products of prime numbers
+• Understand and order integers
+• Convert numbers to and from standard form
+• Find the lowest common multiple and highest common factor
+• Use the recognised order of working in calculations`
       },
       { id: 'example1', title: "Example 1: Number Classification", type: 'example', questionId: 'example1' },
       { id: 'example2', title: "Example 2: HCF and LCM", type: 'example', questionId: 'example2' },
@@ -179,13 +180,29 @@ By the end of this chapter, you'll have a solid foundation in number theory that
       { id: 'exercise1_1', title: "Exercise 1.1", type: 'exercise', questionId: 'exercise1_1' }
     ]
   },
-  { id: 2, title: "Algebraic Expressions", locked: true, sections: [] },
-  { id: 3, title: "Linear Equations", locked: true, sections: [] },
-  { id: 4, title: "Geometry Basics", locked: true, sections: [] },
-  { id: 5, title: "Trigonometry", locked: true, sections: [] },
-  { id: 6, title: "Statistics", locked: true, sections: [] },
-  { id: 7, title: "Probability", locked: true, sections: [] },
-  { id: 8, title: "Calculus Introduction", locked: true, sections: [] }
+  { id: 2, title: "Fractions, Decimals and Percentages", locked: true, sections: [] },
+  { id: 3, title: "Beginning Algebra", locked: true, sections: [] },
+  { id: 4, title: "Working with Numbers I", locked: true, sections: [] },
+  { id: 5, title: "Working with Algebra", locked: true, sections: [] },
+  { id: 6, title: "Geometry and Shape I", locked: true, sections: [] },
+  { id: 7, title: "Algebra and Graphs I", locked: true, sections: [] },
+  { id: 8, title: "Length, Area and Volume I", locked: true, sections: [] },
+  { id: 9, title: "Trigonometry I", locked: true, sections: [] },
+  { id: 10, title: "Transformations and Vectors", locked: true, sections: [] },
+  { id: 11, title: "Statistics I", locked: true, sections: [] },
+  { id: 12, title: "An Introduction to Probability", locked: true, sections: [] },
+  { id: 13, title: "Real Numbers", locked: true, sections: [] },
+  { id: 14, title: "Algebra I", locked: true, sections: [] },
+  { id: 15, title: "Working with Numbers II", locked: true, sections: [] },
+  { id: 16, title: "Algebra II", locked: true, sections: [] },
+  { id: 17, title: "Geometry and Shape II", locked: true, sections: [] },
+  { id: 18, title: "Algebra and Graphs II", locked: true, sections: [] },
+  { id: 19, title: "Length, Area and Volume II", locked: true, sections: [] },
+  { id: 20, title: "Further Algebra", locked: true, sections: [] },
+  { id: 21, title: "Trigonometry II", locked: true, sections: [] },
+  { id: 22, title: "Transformations, Vectors and Matrices", locked: true, sections: [] },
+  { id: 23, title: "Statistics II", locked: true, sections: [] },
+  { id: 24, title: "Further Probability", locked: true, sections: [] }
 ];
 
 export const getQuestion = (id: string): QuestionData | undefined => {

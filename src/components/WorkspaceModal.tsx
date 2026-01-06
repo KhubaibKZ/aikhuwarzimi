@@ -105,7 +105,7 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     };
   };
 
-  // Get AI-powered adaptive hint
+  // Get AI-powered adaptive hint - never sends actual answers, only error patterns
   const getAIHint = async (partKey: string, partLabel: string, userAnswer: string, missing: string[], extra: string[]): Promise<string> => {
     const currentAttempt = (attemptCounts[partKey] || 0) + 1;
     setAttemptCounts(prev => ({ ...prev, [partKey]: currentAttempt }));
@@ -116,47 +116,55 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
           question: question.question,
           partLabel,
           userAnswer,
-          correctAnswer: null, // Don't send correct answer to keep it hidden
-          missing,
-          extra,
-          attemptCount: currentAttempt
+          attemptCount: currentAttempt,
+          // Only send boolean flags about error types, NEVER the actual values
+          hasErrors: missing.length > 0 || extra.length > 0,
+          hasMissing: missing.length > 0,
+          hasExtra: extra.length > 0
         }
       });
 
       if (error) {
         console.error('AI tutor error:', error);
-        return getFallbackHint(partKey, partLabel, missing, extra);
+        return getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
       }
 
-      return data.hint || getFallbackHint(partKey, partLabel, missing, extra);
+      return data.hint || getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
     } catch (err) {
       console.error('Failed to get AI hint:', err);
-      return getFallbackHint(partKey, partLabel, missing, extra);
+      return getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
     }
   };
 
-  // Fallback hints when AI is unavailable
-  const getFallbackHint = (partKey: string, partLabel: string, missing: string[], extra: string[]): string => {
+  // Fallback hints when AI is unavailable - never reveals answers
+  const getFallbackHint = (partKey: string, partLabel: string, hasMissing: boolean, hasExtra: boolean): string => {
     const lowerKey = partKey.toLowerCase();
     const lowerLabel = partLabel.toLowerCase();
     
+    // Context-aware hints based on error type
+    const errorContext = hasMissing && hasExtra 
+      ? "Check each number carefully against the definition." 
+      : hasMissing 
+        ? "Are you sure you've found all the numbers that fit?" 
+        : "Does every number in your answer truly belong?";
+    
     if (lowerKey === 'natural' || lowerLabel.includes('natural')) {
-      return "💡 Think: Which numbers would you use to count objects? Natural numbers start from 1.";
+      return `💡 Natural numbers are the counting numbers starting from 1. ${errorContext}`;
     }
     if (lowerKey === 'integers' || lowerLabel.includes('integer')) {
-      return "🤔 Integers are whole numbers. Can you identify which numbers have no fractional parts?";
+      return `🤔 Integers are whole numbers (no fractions or decimals) - positive, negative, or zero. ${errorContext}`;
     }
     if (lowerKey === 'rational' || lowerLabel.includes('rational')) {
-      return "💡 Ask yourself: Can this number be written as a fraction p/q?";
+      return `💡 Can each number be written as a fraction p/q? That's what makes it rational. ${errorContext}`;
     }
     if (lowerKey === 'irrational' || lowerLabel.includes('irrational')) {
-      return "🤔 Irrational numbers can't be expressed as fractions. Which numbers have infinite non-repeating decimals?";
+      return `🤔 Irrational numbers have infinite, non-repeating decimals and can't be fractions. ${errorContext}`;
     }
     if (lowerKey === 'real' || lowerLabel.includes('real')) {
-      return "💡 Real numbers include everything on the number line. Are any numbers excluded?";
+      return `💡 Real numbers include every point on the number line. ${errorContext}`;
     }
     
-    return `🤔 Review the definition of ${partLabel}. Does each item in your answer fit the criteria?`;
+    return `🤔 Review the definition of ${partLabel}. ${errorContext}`;
   };
 
   const handleCheckWork = async () => {

@@ -11,47 +11,70 @@ serve(async (req) => {
   }
 
   try {
-    const { question, partLabel, userAnswer, correctAnswer, missing, extra, attemptCount } = await req.json();
+    const { question, partLabel, userAnswer, attemptCount, hasErrors, hasMissing, hasExtra } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Generating adaptive feedback for:", { partLabel, userAnswer, attemptCount });
+    console.log("Generating adaptive feedback for:", { partLabel, userAnswer, attemptCount, hasErrors, hasMissing, hasExtra });
 
     const systemPrompt = `You are a patient, encouraging math tutor helping a student understand number classification and set theory. Your role is to guide students toward the correct answer WITHOUT ever revealing it directly.
 
-CORE PRINCIPLES:
-1. NEVER give the answer directly - guide them to discover it
-2. Use Socratic questioning - ask leading questions
-3. Build on what they already know correctly
-4. Address misconceptions gently
-5. Give ONE small hint at a time
-6. Increase hint specificity based on attempt count
-7. Use simple, clear language appropriate for a student
-8. Be encouraging and positive
+ABSOLUTE RULES - NEVER BREAK THESE:
+1. NEVER reveal any specific numbers or answers
+2. NEVER say things like "you're missing X" or "remove Y" 
+3. NEVER list what should or shouldn't be in the answer
+4. ONLY guide through conceptual understanding and definitions
+
+TEACHING APPROACH:
+1. Use Socratic questioning - ask leading questions about definitions
+2. Help them recall the properties/criteria for each number type
+3. Encourage them to test each number against the definition
+4. Give ONE conceptual hint at a time
+5. Be encouraging and build confidence
 
 ATTEMPT-BASED PROGRESSION:
-- Attempt 1-2: Very subtle hints, ask them to recall definitions
-- Attempt 3-4: More specific hints about their errors
-- Attempt 5+: Very specific guidance (but still no direct answers)
+- Attempt 1-2: Ask them to recall the definition. "What makes a number an integer?"
+- Attempt 3-4: Guide them to check their work. "Look at each number - does it match the definition?"
+- Attempt 5-6: Give conceptual clues. "Think about decimals vs whole numbers..."
+- Attempt 7+: Stronger conceptual guidance, but STILL no direct answers
+
+NUMBER TYPE DEFINITIONS (use these to guide, never reveal):
+- Natural numbers: Counting numbers starting from 1 (1, 2, 3, ...)
+- Whole numbers: Natural numbers plus zero (0, 1, 2, 3, ...)
+- Integers: Whole numbers and their negatives (..., -2, -1, 0, 1, 2, ...)
+- Rational: Can be expressed as a fraction p/q where q ≠ 0
+- Irrational: Cannot be expressed as a fraction, infinite non-repeating decimals
+- Real: All rational and irrational numbers
 
 RESPONSE FORMAT:
-- Keep responses to 1-3 short sentences
-- Use encouraging language
-- End with a question or prompt that guides their thinking
-- Use relevant emojis sparingly (💡🤔✨)`;
+- Keep responses to 2-3 short sentences maximum
+- Use encouraging, supportive language
+- End with a thought-provoking question
+- Use emojis sparingly (💡🤔✨)`;
 
-    const userPrompt = `Question context: "${question}"
+    // Build context about the error type without revealing specifics
+    let errorContext = "";
+    if (hasErrors) {
+      if (hasMissing && hasExtra) {
+        errorContext = "The student has both missing items and items that don't belong.";
+      } else if (hasMissing) {
+        errorContext = "The student is missing some items from their answer.";
+      } else if (hasExtra) {
+        errorContext = "The student has included some items that don't belong.";
+      }
+    }
+
+    const userPrompt = `Question: "${question}"
 
 Part being answered: "${partLabel}"
-Student's answer: "${userAnswer || "(no answer yet)"}"
-What they're missing: ${missing?.length > 0 ? missing.join(", ") : "nothing"}
-Extra items they included incorrectly: ${extra?.length > 0 ? extra.join(", ") : "none"}
+Student's current answer: "${userAnswer || "(no answer yet)"}"
+Error type: ${errorContext || "Unknown error pattern"}
 Attempt number: ${attemptCount || 1}
 
-Generate a helpful, adaptive hint that guides the student without giving away the answer. Consider what specific misconception they might have based on their errors.`;
+Generate a helpful hint that guides the student to discover the correct answer through understanding. DO NOT reveal any specific numbers. Focus on helping them understand the definition and apply it.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

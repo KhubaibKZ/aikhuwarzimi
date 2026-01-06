@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -15,11 +17,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 10%;
 
-    --primary: 241 68% 62%;
+    --primary: 243 75.3555% 58.6275%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 244 100% 96%;
-    --secondary-foreground: 241 68% 50%;
+    --secondary-foreground: 258 89.5349% 66.2745%;
 
     --muted: 240 10% 96%;
     --muted-foreground: 240 5% 46%;
@@ -117,7 +119,7 @@
   .gradient-primary {
     @apply bg-gradient-to-br from-primary to-primary/80;
   }
-  
+
   .gradient-secondary {
     @apply bg-gradient-to-br from-secondary to-secondary/80;
   }

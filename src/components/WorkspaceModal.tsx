@@ -105,10 +105,13 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
     };
   };
 
-  // Get AI-powered adaptive hint - never sends actual answers, only error patterns
+  // Get AI-powered adaptive feedback - context-aware based on error type
   const getAIHint = async (partKey: string, partLabel: string, userAnswer: string, missing: string[], extra: string[]): Promise<string> => {
     const currentAttempt = (attemptCounts[partKey] || 0) + 1;
     setAttemptCounts(prev => ({ ...prev, [partKey]: currentAttempt }));
+    
+    const hasMissing = missing.length > 0;
+    const hasExtra = extra.length > 0;
     
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
@@ -118,53 +121,56 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
           userAnswer,
           attemptCount: currentAttempt,
           // Only send boolean flags about error types, NEVER the actual values
-          hasErrors: missing.length > 0 || extra.length > 0,
-          hasMissing: missing.length > 0,
-          hasExtra: extra.length > 0
+          hasErrors: hasMissing || hasExtra,
+          hasMissing,
+          hasExtra
         }
       });
 
       if (error) {
         console.error('AI tutor error:', error);
-        return getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
+        return getFallbackHint(partKey, partLabel, hasMissing, hasExtra);
       }
 
-      return data.hint || getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
+      return data.hint || getFallbackHint(partKey, partLabel, hasMissing, hasExtra);
     } catch (err) {
       console.error('Failed to get AI hint:', err);
-      return getFallbackHint(partKey, partLabel, missing.length > 0, extra.length > 0);
+      return getFallbackHint(partKey, partLabel, hasMissing, hasExtra);
     }
   };
 
-  // Fallback hints when AI is unavailable - never reveals answers
+  // Fallback hints when AI is unavailable - context-aware without revealing answers
   const getFallbackHint = (partKey: string, partLabel: string, hasMissing: boolean, hasExtra: boolean): string => {
     const lowerKey = partKey.toLowerCase();
     const lowerLabel = partLabel.toLowerCase();
     
-    // Context-aware hints based on error type
-    const errorContext = hasMissing && hasExtra 
-      ? "Check each number carefully against the definition." 
-      : hasMissing 
-        ? "Are you sure you've found all the numbers that fit?" 
-        : "Does every number in your answer truly belong?";
+    // Different feedback based on error type - like a real teacher would
+    let errorContext: string;
+    if (hasMissing && hasExtra) {
+      errorContext = "Take another look at your answer - some numbers might not belong, and you may have overlooked others. Try checking each one against the definition.";
+    } else if (hasExtra) {
+      errorContext = "I notice some numbers in your answer might not fit the definition. Go through each one and ask yourself: does this truly belong?";
+    } else if (hasMissing) {
+      errorContext = "You're on the right track, but have you checked all the numbers from the original set? Some might still fit the definition.";
+    } else {
+      errorContext = "Double-check your answer against the definition.";
+    }
     
+    // Add definition hint based on category
+    let definitionHint = "";
     if (lowerKey === 'natural' || lowerLabel.includes('natural')) {
-      return `💡 Natural numbers are the counting numbers starting from 1. ${errorContext}`;
-    }
-    if (lowerKey === 'integers' || lowerLabel.includes('integer')) {
-      return `🤔 Integers are whole numbers (no fractions or decimals) - positive, negative, or zero. ${errorContext}`;
-    }
-    if (lowerKey === 'rational' || lowerLabel.includes('rational')) {
-      return `💡 Can each number be written as a fraction p/q? That's what makes it rational. ${errorContext}`;
-    }
-    if (lowerKey === 'irrational' || lowerLabel.includes('irrational')) {
-      return `🤔 Irrational numbers have infinite, non-repeating decimals and can't be fractions. ${errorContext}`;
-    }
-    if (lowerKey === 'real' || lowerLabel.includes('real')) {
-      return `💡 Real numbers include every point on the number line. ${errorContext}`;
+      definitionHint = "Remember, natural numbers are the counting numbers we use to count objects: 1, 2, 3, and so on.";
+    } else if (lowerKey === 'integers' || lowerLabel.includes('integer')) {
+      definitionHint = "Think about what makes a number an integer - no fractions, no decimals, just whole numbers including negatives and zero.";
+    } else if (lowerKey === 'rational' || lowerLabel.includes('rational')) {
+      definitionHint = "Ask yourself: can this number be written as a fraction? That's the key test for rational numbers.";
+    } else if (lowerKey === 'irrational' || lowerLabel.includes('irrational')) {
+      definitionHint = "Irrational numbers are special - they can't be written as fractions and their decimals go on forever without repeating.";
+    } else if (lowerKey === 'real' || lowerLabel.includes('real')) {
+      definitionHint = "Real numbers include everything on the number line - both rational and irrational.";
     }
     
-    return `🤔 Review the definition of ${partLabel}. ${errorContext}`;
+    return definitionHint ? `${errorContext} ${definitionHint}` : errorContext;
   };
 
   const handleCheckWork = async () => {

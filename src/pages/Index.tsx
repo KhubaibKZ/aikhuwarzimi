@@ -3,8 +3,10 @@ import { Header } from '@/components/Header';
 import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
 import { ChapterContent } from '@/components/ChapterContent';
+import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { chapters, ChapterSection } from '@/lib/questionData';
+import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
 
 type ViewState = 
   | { type: 'toc' }
@@ -12,6 +14,10 @@ type ViewState =
 
 function Dashboard() {
   const [view, setView] = useState<ViewState>({ type: 'toc' });
+  const [pastPaperModal, setPastPaperModal] = useState<{
+    isOpen: boolean;
+    questionId: string | null;
+  }>({ isOpen: false, questionId: null });
 
   const handleSectionSelect = (chapterId: number, section: ChapterSection) => {
     const chapter = chapters.find(c => c.id === chapterId);
@@ -19,6 +25,10 @@ function Dashboard() {
       const sectionIndex = chapter.sections.findIndex(s => s.id === section.id);
       setView({ type: 'content', chapterId, sectionIndex });
     }
+  };
+
+  const handlePastPaperSelect = (paperId: string, section: PastPaperSection) => {
+    setPastPaperModal({ isOpen: true, questionId: section.questionId });
   };
 
   const handleBackToToc = () => {
@@ -59,6 +69,9 @@ function Dashboard() {
 
   const currentSection = getCurrentSection();
   const navState = getNavState();
+  const currentPastPaperQuestion = pastPaperModal.questionId 
+    ? getPastPaperQuestion(pastPaperModal.questionId) 
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,7 +82,10 @@ function Dashboard() {
           {/* Main Content Area */}
           <div>
             {view.type === 'toc' ? (
-              <TableOfContents onSectionSelect={handleSectionSelect} />
+              <TableOfContents 
+                onSectionSelect={handleSectionSelect}
+                onPastPaperSelect={handlePastPaperSelect}
+              />
             ) : currentSection ? (
               <ChapterContent
                 chapterId={view.chapterId}
@@ -91,6 +107,15 @@ function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Past Paper Modal */}
+      {currentPastPaperQuestion && (
+        <PastPaperWorkspace
+          question={currentPastPaperQuestion}
+          isOpen={pastPaperModal.isOpen}
+          onClose={() => setPastPaperModal({ isOpen: false, questionId: null })}
+        />
+      )}
     </div>
   );
 }

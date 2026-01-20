@@ -28,11 +28,11 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
   };
 
   return (
-    <Tabs defaultValue="chapters" className="w-full">
+    <Tabs defaultValue="syllabus" className="w-full">
       <TabsList className="grid w-full grid-cols-2 mb-4">
-        <TabsTrigger value="chapters" className="flex items-center gap-2">
+        <TabsTrigger value="syllabus" className="flex items-center gap-2">
           <BookOpen className="h-4 w-4" />
-          Chapters
+          Syllabus
         </TabsTrigger>
         <TabsTrigger value="pastpapers" className="flex items-center gap-2">
           <ClipboardList className="h-4 w-4" />
@@ -40,8 +40,8 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="chapters" className="space-y-3">
-        <h2 className="mb-4 text-xl font-bold text-foreground">Chapters</h2>
+      <TabsContent value="syllabus" className="space-y-3">
+        <h2 className="mb-4 text-xl font-bold text-foreground">Syllabus</h2>
         
         {chapters.map((chapter, index) => (
           <div
@@ -229,3 +229,4 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
     </Tabs>
   );
 }
+

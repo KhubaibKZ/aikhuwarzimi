@@ -25,6 +25,7 @@ export interface PastPaper {
   totalMarks: number;
   duration: string;
   sections: PastPaperSection[];
+  locked?: boolean;
 }
 
 export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
@@ -666,6 +667,17 @@ export const pastPapers: PastPaper[] = [
       { id: 'q8c', title: 'Q8(c): Intersection point', questionId: 'pp_0580_s22_q8c' },
       { id: 'q8d', title: 'Q8(d): Parallel lines', questionId: 'pp_0580_s22_q8d' }
     ]
+  },
+  {
+    id: 'pp_0580_s21_43',
+    code: '0580/43',
+    session: 'May/June',
+    year: 2021,
+    title: '0580/43 May/June 2021',
+    totalMarks: 130,
+    duration: '2 hours 30 minutes',
+    sections: [],
+    locked: true
   }
 ];
 

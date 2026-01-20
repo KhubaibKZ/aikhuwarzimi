@@ -142,20 +142,31 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
           <div
             key={paper.id}
             className={cn(
-              "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up"
+              "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up",
+              paper.locked && "opacity-60"
             )}
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <button
-              onClick={() => setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
-              className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+              onClick={() => !paper.locked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
+              className={cn(
+                "flex w-full items-center justify-between p-4 text-left transition-colors",
+                paper.locked ? "cursor-not-allowed" : "hover:bg-muted/50"
+              )}
+              disabled={paper.locked}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <GraduationCap className="h-5 w-5" />
+                <div className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-lg",
+                  paper.locked ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground"
+                )}>
+                  {paper.locked ? <Lock className="h-5 w-5" /> : <GraduationCap className="h-5 w-5" />}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">{paper.code}</h3>
+                  <h3 className={cn(
+                    "font-semibold",
+                    paper.locked ? "text-muted-foreground" : "text-foreground"
+                  )}>{paper.code}</h3>
                   <p className="text-xs text-muted-foreground">
                     {paper.session} {paper.year} • {paper.totalMarks} marks • {paper.duration}
                   </p>
@@ -163,17 +174,25 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
-                  {paper.sections.length} questions
-                </span>
-                {expandedPaper === paper.id 
-                  ? <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                  : <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                }
+                {paper.locked ? (
+                  <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">
+                    Coming Soon
+                  </span>
+                ) : (
+                  <>
+                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
+                      {paper.sections.length} questions
+                    </span>
+                    {expandedPaper === paper.id 
+                      ? <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                      : <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    }
+                  </>
+                )}
               </div>
             </button>
 
-            {expandedPaper === paper.id && (
+            {!paper.locked && expandedPaper === paper.id && (
               <div className="border-t border-border bg-muted/30 p-2 max-h-96 overflow-y-auto">
                 {paper.sections.map((section) => {
                   const completed = isCompleted(section.questionId);

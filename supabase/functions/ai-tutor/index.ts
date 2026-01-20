@@ -11,95 +11,89 @@ serve(async (req) => {
   }
 
   try {
-    const { question, partLabel, userAnswer, attemptCount, hasErrors, hasMissing, hasExtra, correctCount, totalAnswered, feedbackMode } = await req.json();
+    const { 
+      question, 
+      actionType, 
+      topic,
+      userAnswers, 
+      correctAnswers, 
+      hints, 
+      attemptCount, 
+      hasMissing, 
+      hasWrong 
+    } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    console.log("Generating adaptive feedback for:", { partLabel, userAnswer, attemptCount, hasErrors, hasMissing, hasExtra, feedbackMode });
+    console.log("AI Tutor request:", { actionType, topic, attemptCount });
 
-    const systemPrompt = `You are a warm, experienced math teacher with a conversational, human style. You genuinely care about helping students understand - not just get the right answer.
+    let systemPrompt = "";
+    let userPrompt = "";
 
-ABSOLUTE RULES - NEVER BREAK THESE:
-1. NEVER reveal specific numbers or answers
-2. NEVER say "you're missing X" or "remove Y" or mention counts
-3. NEVER list what should/shouldn't be in the answer
-4. Guide ONLY through conceptual understanding
+    if (actionType === "hint") {
+      // Hint: Provide concept explanation related to the question
+      systemPrompt = `You are a helpful math tutor. Your role is to provide conceptual hints that help students understand the mathematical concepts needed to solve a problem.
 
-YOUR PERSONALITY:
-- Speak naturally like a real teacher would in person
-- Vary your language - never use the same phrases twice
-- Show genuine curiosity about their thinking process
-- Use casual, friendly language ("Let's think about this...", "Hmm, interesting approach!")
-- React to their SPECIFIC situation based on the feedback mode
+RULES:
+1. NEVER give the answer directly
+2. Explain the concept or formula needed
+3. Give a general approach or method
+4. Use simple, clear language
+5. Keep hints concise (2-4 sentences)
 
-FEEDBACK MODES - Respond differently based on the situation:
+Examples of good hints:
+- "This problem involves the concept of percentage. Remember, to find X% of a number, you multiply the number by X/100."
+- "Think about the properties of a right triangle. The Pythagorean theorem might be useful here."
+- "When solving equations, remember to perform the same operation on both sides to maintain equality."`;
 
-MODE: "has_wrong" (student included numbers that don't belong)
-- Acknowledge they're working hard, but gently redirect
-- Ask them to reconsider one of their numbers against the definition
-- Example approaches: "I see you're thinking broadly - but let's double-check each number", "Some of what you wrote doesn't quite fit the definition..."
+      userPrompt = `Question: "${question}"
+Topic: ${topic || "Mathematics"}
 
-MODE: "has_missing" (student is missing some correct numbers)  
-- Encourage them - they're on the right track
-- Prompt them to think if they've checked ALL the given numbers
-- Example approaches: "Good start! Have you considered every number in the original set?", "You're getting there - make sure you haven't overlooked any..."
+${hints && hints.length > 0 ? `Related concepts from the curriculum:\n${hints.join('\n')}` : ''}
 
-MODE: "has_both" (student has wrong AND missing items)
-- Guide them to slow down and systematically check each number
-- Suggest testing each number one at a time
-- Example approaches: "Let's take a step back and test each number carefully", "This needs a bit more attention to the details..."
+Provide a helpful conceptual hint that guides the student toward understanding how to approach this problem. Focus on the mathematical concept, not the specific answer.`;
 
-ATTEMPT-BASED PROGRESSION (layer this on top of the mode):
-- Attempts 1-2: Focus on recalling the definition
-- Attempts 3-4: Suggest a systematic checking approach  
-- Attempts 5-6: Point toward the key distinguishing feature
-- Attempts 7+: Give stronger conceptual nudges, ask about edge cases
+    } else if (actionType === "checkWork") {
+      // Check Work: Provide teacher-like guidance based on their work
+      systemPrompt = `You are an experienced, warm math teacher reviewing a student's work. Your goal is to guide them without giving away the answer.
 
-NUMBER TYPE KNOWLEDGE (for your reference only - NEVER reveal):
-- Natural: 1, 2, 3... (counting numbers, no zero)
-- Whole: 0, 1, 2, 3... (naturals + zero)
-- Integers: ...-2, -1, 0, 1, 2... (whole + negatives)
-- Rational: expressible as p/q (includes decimals that terminate or repeat)
-- Irrational: non-repeating, non-terminating decimals (π, √2, etc.)
-- Real: all rationals + irrationals
+YOUR APPROACH:
+- Be encouraging and supportive
+- Point out what they did well (if anything is correct)
+- For mistakes, guide them to reconsider their approach
+- Ask probing questions that lead to understanding
+- Never reveal the correct answer directly
+- Be conversational and natural
 
-RESPONSE STYLE:
-- 2-3 sentences max, conversational tone
-- End with a question that makes them think
-- NO emojis - keep it professional but warm
-- Each response should feel UNIQUE and specific to this exact moment
-- NEVER repeat phrases like "Let's think about this" if you've used them before`;
+BASED ON THEIR PROGRESS:
+${hasWrong ? "- They have some incorrect answers. Gently guide them to reconsider." : ""}
+${hasMissing ? "- They haven't completed all parts. Encourage them to attempt everything." : ""}
+${!hasWrong && !hasMissing ? "- Their answers look good! Confirm their understanding." : ""}
 
-    // Determine feedback mode
-    let feedbackModeContext = "unknown";
-    if (hasExtra && hasMissing) {
-      feedbackModeContext = "has_both";
-    } else if (hasExtra) {
-      feedbackModeContext = "has_wrong";
-    } else if (hasMissing) {
-      feedbackModeContext = "has_missing";
-    }
+ATTEMPT-BASED GUIDANCE:
+- Attempt 1-2: Give gentle nudges and remind them of the concept
+- Attempt 3-4: Be more specific about where to look
+- Attempt 5+: Give stronger hints about the method, but still don't reveal the answer
 
-    const userPrompt = `Question: "${question}"
+Keep response to 2-4 sentences. Be natural and caring.`;
 
-Part being answered: "${partLabel}"
-Student's current answer: "${userAnswer || "(no answer yet)"}"
-Feedback mode: ${feedbackModeContext}
+      userPrompt = `Question: "${question}"
+Topic: ${topic || "Mathematics"}
+Student's answers: ${JSON.stringify(userAnswers)}
 Attempt number: ${attemptCount || 1}
 
-The student is working on identifying ${partLabel}. Based on the feedback mode:
-${feedbackModeContext === "has_wrong" ? "- They have included some numbers that DON'T belong in this category. Help them reconsider without saying which ones." : ""}
-${feedbackModeContext === "has_missing" ? "- They are missing some numbers that SHOULD be included. Encourage them to check all given numbers." : ""}
-${feedbackModeContext === "has_both" ? "- They have BOTH wrong numbers AND are missing some correct ones. Guide them to be more systematic." : ""}
+${hints && hints.length > 0 ? `Key concepts:\n${hints.join('\n')}` : ''}
 
-Generate a response that:
-1. Matches the feedback mode (acknowledge what's happening)
-2. Guides toward the definition of ${partLabel}
-3. NEVER reveals specific numbers
-4. Feels like a unique, human response`;
+Provide teacher-like guidance to help the student. Remember: be encouraging, guide without giving answers, and ask questions that make them think.`;
+
+    } else {
+      // Fallback for legacy calls
+      systemPrompt = `You are a helpful math tutor. Provide brief, helpful guidance without revealing answers.`;
+      userPrompt = `Question: "${question}"\nStudent needs help. Provide a brief hint or guidance.`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -108,12 +102,12 @@ Generate a response that:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        max_tokens: 200,
+        max_tokens: 300,
         temperature: 0.7,
       }),
     });
@@ -122,7 +116,18 @@ Generate a response that:
       if (response.status === 429) {
         console.error("Rate limit exceeded");
         return new Response(JSON.stringify({ 
-          hint: "Let me give you a moment to think. Review the definitions again - what makes a number belong to this category?" 
+          hint: actionType === "hint" 
+            ? "Think about the mathematical concepts involved. What formulas or methods apply to this type of problem?"
+            : "Take a moment to review your work. Check each step carefully and make sure your calculations are correct." 
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        console.error("Payment required");
+        return new Response(JSON.stringify({ 
+          hint: "AI assistance is temporarily unavailable. Please try again later."
         }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -134,9 +139,9 @@ Generate a response that:
     }
 
     const data = await response.json();
-    const hint = data.choices?.[0]?.message?.content || "Think about the definition carefully. What properties does each number in your answer have?";
+    const hint = data.choices?.[0]?.message?.content || "Think about the concepts involved and try again.";
 
-    console.log("Generated hint:", hint);
+    console.log("Generated response:", hint);
 
     return new Response(JSON.stringify({ hint }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -144,7 +149,7 @@ Generate a response that:
   } catch (error) {
     console.error("Error in ai-tutor function:", error);
     return new Response(JSON.stringify({ 
-      hint: "Think carefully about the definition. What makes a number belong to this category?",
+      hint: "Think carefully about the problem. What mathematical concepts might apply here?",
       error: error instanceof Error ? error.message : "Unknown error" 
     }), {
       status: 200,

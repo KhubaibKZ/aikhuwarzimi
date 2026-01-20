@@ -4,26 +4,38 @@ import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
 import { ChapterContent } from '@/components/ChapterContent';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { CourseSelection } from '@/components/CourseSelection';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { chapters, ChapterSection } from '@/lib/questionData';
 import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
 
 type ViewState = 
-  | { type: 'toc' }
-  | { type: 'content'; chapterId: number; sectionIndex: number };
+  | { type: 'courses' }
+  | { type: 'toc'; courseId: string }
+  | { type: 'content'; courseId: string; chapterId: number; sectionIndex: number };
 
 function Dashboard() {
-  const [view, setView] = useState<ViewState>({ type: 'toc' });
+  const [view, setView] = useState<ViewState>({ type: 'courses' });
   const [pastPaperModal, setPastPaperModal] = useState<{
     isOpen: boolean;
     questionId: string | null;
   }>({ isOpen: false, questionId: null });
 
+  const handleCourseSelect = (courseId: string) => {
+    setView({ type: 'toc', courseId });
+  };
+
+  const handleBackToCourses = () => {
+    setView({ type: 'courses' });
+  };
+
   const handleSectionSelect = (chapterId: number, section: ChapterSection) => {
+    if (view.type !== 'toc' && view.type !== 'content') return;
+    const courseId = view.type === 'toc' ? view.courseId : view.courseId;
     const chapter = chapters.find(c => c.id === chapterId);
     if (chapter) {
       const sectionIndex = chapter.sections.findIndex(s => s.id === section.id);
-      setView({ type: 'content', chapterId, sectionIndex });
+      setView({ type: 'content', courseId, chapterId, sectionIndex });
     }
   };
 
@@ -32,7 +44,9 @@ function Dashboard() {
   };
 
   const handleBackToToc = () => {
-    setView({ type: 'toc' });
+    if (view.type === 'content') {
+      setView({ type: 'toc', courseId: view.courseId });
+    }
   };
 
   const handleNavigate = (direction: 'prev' | 'next') => {
@@ -46,7 +60,7 @@ function Dashboard() {
       : view.sectionIndex + 1;
 
     if (newIndex >= 0 && newIndex < chapter.sections.length) {
-      setView({ type: 'content', chapterId: view.chapterId, sectionIndex: newIndex });
+      setView({ type: 'content', courseId: view.courseId, chapterId: view.chapterId, sectionIndex: newIndex });
     }
   };
 
@@ -73,39 +87,48 @@ function Dashboard() {
     ? getPastPaperQuestion(pastPaperModal.questionId) 
     : null;
 
+  const currentCourseId = view.type !== 'courses' ? view.courseId : undefined;
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header 
+        currentCourseId={currentCourseId} 
+        onBackToCourses={view.type !== 'courses' ? handleBackToCourses : undefined} 
+      />
       
       <main className="container px-4 py-8 md:px-6">
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-          {/* Main Content Area */}
-          <div>
-            {view.type === 'toc' ? (
-              <TableOfContents 
-                onSectionSelect={handleSectionSelect}
-                onPastPaperSelect={handlePastPaperSelect}
-              />
-            ) : currentSection ? (
-              <ChapterContent
-                chapterId={view.chapterId}
-                section={currentSection}
-                onBack={() => handleNavigate('prev')}
-                onTableOfContents={handleBackToToc}
-                onNavigate={handleNavigate}
-                hasPrev={navState.hasPrev}
-                hasNext={navState.hasNext}
-              />
-            ) : null}
-          </div>
+        {view.type === 'courses' ? (
+          <CourseSelection onSelectCourse={handleCourseSelect} />
+        ) : (
+          <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+            {/* Main Content Area */}
+            <div>
+              {view.type === 'toc' ? (
+                <TableOfContents 
+                  onSectionSelect={handleSectionSelect}
+                  onPastPaperSelect={handlePastPaperSelect}
+                />
+              ) : currentSection ? (
+                <ChapterContent
+                  chapterId={view.chapterId}
+                  section={currentSection}
+                  onBack={() => handleNavigate('prev')}
+                  onTableOfContents={handleBackToToc}
+                  onNavigate={handleNavigate}
+                  hasPrev={navState.hasPrev}
+                  hasNext={navState.hasNext}
+                />
+              ) : null}
+            </div>
 
-          {/* Sidebar */}
-          <div className="hidden lg:block">
-            <div className="sticky top-24">
-              <ProgressSidebar />
+            {/* Sidebar */}
+            <div className="hidden lg:block">
+              <div className="sticky top-24">
+                <ProgressSidebar />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Past Paper Modal */}

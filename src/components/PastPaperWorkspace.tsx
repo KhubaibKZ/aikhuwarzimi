@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -19,21 +19,22 @@ interface PastPaperWorkspaceProps {
 
 export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [showHint, setShowHint] = useState(false);
-  const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [aiHint, setAiHint] = useState<string | null>(null);
+  const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
+  const [aiResponse, setAiResponse] = useState<{ type: 'hint' | 'guidance'; content: string } | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
-  const { markExampleComplete, isCompleted: checkCompleted } = useProgress();
+  const { markExampleComplete } = useProgress();
   const { toast } = useToast();
 
   const handleAnswerChange = (key: string, value: string) => {
     setAnswers(prev => ({ ...prev, [key]: value }));
     setFeedback(prev => ({ ...prev, [key]: null }));
     setIsChecked(false);
-    setAiHint(null);
+    setIsSubmitted(false);
+    setAiResponse(null);
   };
 
   const normalizeAnswer = (answer: string): string => {
@@ -46,8 +47,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       .trim();
   };
 
-  const checkAnswers = () => {
-    if (!question.answer) return;
+  const checkAnswersInternal = () => {
+    if (!question.answer) return { allCorrect: false, newFeedback: {} };
     
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
     let allCorrect = true;
@@ -85,23 +86,59 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       }
     }
 
+    return { allCorrect, newFeedback };
+  };
+
+  // Hint: Show concept related to the question
+  const handleHint = async () => {
+    setIsLoading(true);
+    setLoadingType('hint');
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-tutor', {
+        body: {
+          question: question.question,
+          actionType: 'hint',
+          topic: question.title,
+          hints: question.hints,
+          attemptCount
+        }
+      });
+
+      if (error) throw error;
+      setAiResponse({ type: 'hint', content: data.hint });
+    } catch (error) {
+      console.error('Hint error:', error);
+      // Fallback to static hints
+      if (question.hints.length > 0) {
+        const hintIndex = Math.min(attemptCount, question.hints.length - 1);
+        setAiResponse({ type: 'hint', content: question.hints[hintIndex] });
+      }
+    } finally {
+      setIsLoading(false);
+      setLoadingType(null);
+    }
+  };
+
+  // Check Work: Analyze answer and provide teacher-like guidance
+  const handleCheckWork = async () => {
+    const { allCorrect, newFeedback } = checkAnswersInternal();
     setFeedback(newFeedback);
     setIsChecked(true);
     setAttemptCount(prev => prev + 1);
 
     if (allCorrect && Object.keys(newFeedback).length > 0) {
-      markExampleComplete(question.id);
-      toast({
-        title: "Excellent! 🎉",
-        description: "You got it right!",
+      setAiResponse({ 
+        type: 'guidance', 
+        content: "Excellent work! Your answer is correct. You've demonstrated a solid understanding of this concept." 
       });
+      return;
     }
-  };
 
-  const getAIHint = async () => {
+    // Get AI guidance for incorrect answers
     setIsLoading(true);
+    setLoadingType('check');
     try {
-      const hasWrong = Object.values(feedback).some(f => f === 'incorrect');
+      const hasWrong = Object.values(newFeedback).some(f => f === 'incorrect');
       const hasMissing = question.parts 
         ? question.parts.some(p => !answers[p.key] || answers[p.key].trim() === '')
         : !answers['answer'] || answers['answer'].trim() === '';
@@ -109,26 +146,50 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
           question: question.question,
+          actionType: 'checkWork',
           userAnswers: answers,
           correctAnswers: question.answer,
+          topic: question.title,
           hints: question.hints,
-          attemptCount,
+          attemptCount: attemptCount + 1,
           hasMissing,
           hasWrong
         }
       });
 
       if (error) throw error;
-      setAiHint(data.hint);
+      setAiResponse({ type: 'guidance', content: data.hint });
     } catch (error) {
-      console.error('AI hint error:', error);
-      // Fallback hint
-      if (currentHintIndex < question.hints.length) {
-        setAiHint(question.hints[currentHintIndex]);
-        setCurrentHintIndex(prev => Math.min(prev + 1, question.hints.length - 1));
-      }
+      console.error('Check work error:', error);
+      setAiResponse({ 
+        type: 'guidance', 
+        content: "Review your work carefully. Check each step and make sure you've applied the correct method." 
+      });
     } finally {
       setIsLoading(false);
+      setLoadingType(null);
+    }
+  };
+
+  // Submit: Final submission with answer reveal
+  const handleSubmit = () => {
+    const { allCorrect, newFeedback } = checkAnswersInternal();
+    setFeedback(newFeedback);
+    setIsChecked(true);
+    setIsSubmitted(true);
+
+    if (allCorrect && Object.keys(newFeedback).length > 0) {
+      markExampleComplete(question.id);
+      toast({
+        title: "Excellent! 🎉",
+        description: "You got it right!",
+      });
+    } else {
+      toast({
+        title: "Answer Submitted",
+        description: "Review the correct answers below.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -136,14 +197,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     setAnswers({});
     setFeedback({});
     setIsChecked(false);
-    setAiHint(null);
-    setShowHint(false);
-    setCurrentHintIndex(0);
+    setIsSubmitted(false);
+    setAiResponse(null);
     setAttemptCount(0);
   };
 
   const allCorrect = Object.values(feedback).length > 0 && 
     Object.values(feedback).every(f => f === 'correct');
+
+  const getCorrectAnswerDisplay = () => {
+    if (typeof question.answer === 'string') {
+      return question.answer;
+    }
+    return Object.entries(question.answer)
+      .map(([key, val]) => `${key}: ${val}`)
+      .join('\n');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -179,9 +248,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                         value={answers[part.key] || ''}
                         onChange={(e) => handleAnswerChange(part.key, e.target.value)}
                         placeholder="Show your working..."
+                        disabled={isSubmitted}
                         className={cn(
                           "min-h-[80px] transition-colors",
-                          feedback[part.key] === 'correct' && "border-success bg-success/5",
+                          feedback[part.key] === 'correct' && "border-green-500 bg-green-500/5",
                           feedback[part.key] === 'incorrect' && "border-destructive bg-destructive/5"
                         )}
                       />
@@ -190,20 +260,27 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                         value={answers[part.key] || ''}
                         onChange={(e) => handleAnswerChange(part.key, e.target.value)}
                         placeholder="Enter your answer..."
+                        disabled={isSubmitted}
                         className={cn(
                           "transition-colors",
-                          feedback[part.key] === 'correct' && "border-success bg-success/5",
+                          feedback[part.key] === 'correct' && "border-green-500 bg-green-500/5",
                           feedback[part.key] === 'incorrect' && "border-destructive bg-destructive/5"
                         )}
                       />
                     )}
                     {feedback[part.key] === 'correct' && (
-                      <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-success" />
+                      <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
                     )}
                     {feedback[part.key] === 'incorrect' && (
                       <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
                     )}
                   </div>
+                  {/* Show correct answer after submit for incorrect parts */}
+                  {isSubmitted && feedback[part.key] === 'incorrect' && typeof question.answer === 'object' && (
+                    <p className="text-sm text-green-600 font-medium">
+                      Correct: {question.answer[part.key]}
+                    </p>
+                  )}
                 </div>
               ))
             ) : (
@@ -214,96 +291,111 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                     value={answers['answer'] || ''}
                     onChange={(e) => handleAnswerChange('answer', e.target.value)}
                     placeholder="Enter your answer..."
+                    disabled={isSubmitted}
                     className={cn(
                       "transition-colors",
-                      feedback['answer'] === 'correct' && "border-success bg-success/5",
+                      feedback['answer'] === 'correct' && "border-green-500 bg-green-500/5",
                       feedback['answer'] === 'incorrect' && "border-destructive bg-destructive/5"
                     )}
                   />
                   {feedback['answer'] === 'correct' && (
-                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-success" />
+                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
                   )}
                   {feedback['answer'] === 'incorrect' && (
                     <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
                   )}
                 </div>
+                {/* Show correct answer after submit */}
+                {isSubmitted && feedback['answer'] === 'incorrect' && typeof question.answer === 'string' && (
+                  <p className="text-sm text-green-600 font-medium">
+                    Correct: {question.answer}
+                  </p>
+                )}
               </div>
             )}
           </div>
 
-          {/* Hints Section */}
-          {showHint && (
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-              <div className="flex items-start gap-2">
-                <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
+          {/* AI Response (Hint or Guidance) */}
+          {aiResponse && (
+            <div className={cn(
+              "rounded-lg border p-4",
+              aiResponse.type === 'hint' 
+                ? "border-amber-500/30 bg-amber-500/10" 
+                : "border-blue-500/30 bg-blue-500/10"
+            )}>
+              <div className="flex items-start gap-3">
+                {aiResponse.type === 'hint' ? (
+                  <Lightbulb className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+                ) : (
+                  <BookOpen className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+                )}
                 <div className="flex-1">
-                  <p className="font-medium text-primary mb-2">Hint {currentHintIndex + 1}/{question.hints.length}</p>
-                  <p className="text-sm">{question.hints[currentHintIndex]}</p>
-                  {currentHintIndex < question.hints.length - 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => setCurrentHintIndex(prev => prev + 1)}
-                    >
-                      Next Hint
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* AI Hint */}
-          {aiHint && (
-            <div className="rounded-lg border border-secondary/50 bg-secondary/10 p-4">
-              <div className="flex items-start gap-2">
-                <Lightbulb className="h-5 w-5 text-secondary-foreground mt-0.5" />
-                <div className="flex-1">
-                  <p className="font-medium text-secondary-foreground mb-2">AI Tutor</p>
-                  <p className="text-sm whitespace-pre-line">{aiHint}</p>
+                  <p className={cn(
+                    "font-medium mb-2",
+                    aiResponse.type === 'hint' ? "text-amber-600" : "text-blue-600"
+                  )}>
+                    {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
+                  </p>
+                  <p className="text-sm whitespace-pre-line">{aiResponse.content}</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Success Message */}
-          {allCorrect && (
-            <div className="rounded-lg border border-success/50 bg-success/10 p-4 flex items-center gap-3">
-              <Award className="h-6 w-6 text-success" />
+          {allCorrect && isSubmitted && (
+            <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4 flex items-center gap-3">
+              <Award className="h-6 w-6 text-green-500" />
               <div>
-                <p className="font-medium text-success">Excellent work!</p>
+                <p className="font-medium text-green-600">Excellent work!</p>
                 <p className="text-sm text-muted-foreground">You've completed this question correctly.</p>
               </div>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={checkAnswers} className="flex-1">
-              Check Answer
-            </Button>
+          <div className="grid grid-cols-3 gap-3">
             <Button
               variant="outline"
-              onClick={() => setShowHint(!showHint)}
+              onClick={handleHint}
+              disabled={isLoading || isSubmitted}
+              className="flex items-center gap-2"
             >
-              <Lightbulb className="h-4 w-4 mr-2" />
-              {showHint ? 'Hide Hints' : 'Show Hint'}
+              {loadingType === 'hint' ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                <HelpCircle className="h-4 w-4" />
+              )}
+              Hint
             </Button>
-            {isChecked && !allCorrect && (
-              <Button
-                variant="secondary"
-                onClick={getAIHint}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Getting help...' : 'Get AI Help'}
-              </Button>
-            )}
-            <Button variant="ghost" onClick={resetWorkspace}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Reset
+            <Button
+              variant="secondary"
+              onClick={handleCheckWork}
+              disabled={isLoading || isSubmitted}
+              className="flex items-center gap-2"
+            >
+              {loadingType === 'check' ? (
+                <span className="animate-pulse">...</span>
+              ) : (
+                <BookOpen className="h-4 w-4" />
+              )}
+              Check Work
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitted}
+              className="flex items-center gap-2"
+            >
+              <Send className="h-4 w-4" />
+              Submit
             </Button>
           </div>
+
+          {/* Reset Button */}
+          <Button variant="ghost" onClick={resetWorkspace} className="w-full">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Reset & Try Again
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

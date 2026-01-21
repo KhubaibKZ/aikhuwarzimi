@@ -195,15 +195,35 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     }
   };
 
+  // Check if all parts have answers
+  const areAllPartsCompleted = (): boolean => {
+    if (question.parts) {
+      return question.parts.every(part => answers[part.key]?.trim());
+    }
+    return !!answers['answer']?.trim();
+  };
+
   // Submit: Final submission with answer reveal
   const handleSubmit = () => {
+    // Check if all parts are completed first
+    if (!areAllPartsCompleted()) {
+      toast({
+        title: "Incomplete Work",
+        description: "Please complete all parts of the question before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const { allCorrect, newFeedback } = checkAnswersInternal();
     setFeedback(newFeedback);
     setIsChecked(true);
     setIsSubmitted(true);
 
+    // Always record progress when submitted (all parts completed)
+    markExampleComplete(question.id);
+
     if (allCorrect && Object.keys(newFeedback).length > 0) {
-      markExampleComplete(question.id);
       toast({
         title: "Excellent! 🎉",
         description: "You got it right!",
@@ -211,8 +231,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     } else {
       toast({
         title: "Answer Submitted",
-        description: "Review the correct answers below.",
-        variant: "destructive"
+        description: "Your progress has been recorded. Review the correct answers below.",
       });
     }
   };

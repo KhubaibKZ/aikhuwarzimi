@@ -20,7 +20,8 @@ serve(async (req) => {
       hints, 
       attemptCount, 
       hasMissing, 
-      hasWrong 
+      hasWrong,
+      specificPart
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -58,6 +59,8 @@ Provide a helpful conceptual hint that guides the student toward understanding h
 
     } else if (actionType === "checkWork") {
       // Check Work: Provide teacher-like guidance based on their work
+      const partContext = specificPart ? `\n\nFOCUS: The student is specifically asking for help with "${specificPart}". Focus your guidance ONLY on this specific part.` : "";
+      
       systemPrompt = `You are an experienced, warm math teacher reviewing a student's work. Your goal is to guide them without giving away the answer.
 
 YOUR APPROACH:
@@ -67,6 +70,7 @@ YOUR APPROACH:
 - Ask probing questions that lead to understanding
 - Never reveal the correct answer directly
 - Be conversational and natural
+${specificPart ? `- Focus ONLY on the specific part they asked about: "${specificPart}"` : ""}
 
 BASED ON THEIR PROGRESS:
 ${hasWrong ? "- They have some incorrect answers. Gently guide them to reconsider." : ""}
@@ -78,16 +82,17 @@ ATTEMPT-BASED GUIDANCE:
 - Attempt 3-4: Be more specific about where to look
 - Attempt 5+: Give stronger hints about the method, but still don't reveal the answer
 
-Keep response to 2-4 sentences. Be natural and caring.`;
+Keep response to 2-4 sentences. Be natural and caring.${partContext}`;
 
       userPrompt = `Question: "${question}"
 Topic: ${topic || "Mathematics"}
+${specificPart ? `Specific part being checked: "${specificPart}"` : ""}
 Student's answers: ${JSON.stringify(userAnswers)}
 Attempt number: ${attemptCount || 1}
 
 ${hints && hints.length > 0 ? `Key concepts:\n${hints.join('\n')}` : ''}
 
-Provide teacher-like guidance to help the student. Remember: be encouraging, guide without giving answers, and ask questions that make them think.`;
+Provide teacher-like guidance ${specificPart ? `specifically for "${specificPart}"` : "to help the student"}. Remember: be encouraging, guide without giving answers, and ask questions that make them think.`;
 
     } else {
       // Fallback for legacy calls

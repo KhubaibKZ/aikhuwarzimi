@@ -340,25 +340,54 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             ) : (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Answer</label>
-                <div className="relative">
-                  <Input
-                    value={answers['answer'] || ''}
-                    onChange={(e) => handleAnswerChange('answer', e.target.value)}
-                    placeholder="Enter your answer..."
-                    disabled={isSubmitted}
-                    className={cn(
-                      "transition-colors",
-                      feedback['answer'] === 'correct' && "border-green-500 bg-green-500/5",
-                      feedback['answer'] === 'incorrect' && "border-destructive bg-destructive/5"
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      value={answers['answer'] || ''}
+                      onChange={(e) => handleAnswerChange('answer', e.target.value)}
+                      placeholder="Enter your answer..."
+                      disabled={isSubmitted}
+                      className={cn(
+                        "transition-colors pr-10",
+                        feedback['answer'] === 'correct' && "border-green-500 bg-green-500/5",
+                        feedback['answer'] === 'incorrect' && "border-destructive bg-destructive/5"
+                      )}
+                    />
+                    {feedback['answer'] === 'correct' && (
+                      <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
                     )}
-                  />
-                  {feedback['answer'] === 'correct' && (
-                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                  )}
-                  {feedback['answer'] === 'incorrect' && (
-                    <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
-                  )}
+                    {feedback['answer'] === 'incorrect' && (
+                      <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCheckWorkForPart('answer', 'Answer')}
+                    disabled={isLoading || isSubmitted}
+                    className="shrink-0"
+                  >
+                    {loadingPartKey === 'answer' ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      <BookOpen className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
+                {/* Show AI response for single answer */}
+                {aiResponse?.partKey === 'answer' && (
+                  <div className={cn(
+                    "rounded-lg border p-3 text-sm",
+                    aiResponse.type === 'hint' 
+                      ? "border-amber-500/30 bg-amber-500/10" 
+                      : "border-blue-500/30 bg-blue-500/10"
+                  )}>
+                    <div className="flex items-start gap-2">
+                      <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <p className="whitespace-pre-line">{aiResponse.content}</p>
+                    </div>
+                  </div>
+                )}
                 {/* Show correct answer after submit */}
                 {isSubmitted && feedback['answer'] === 'incorrect' && typeof question.answer === 'string' && (
                   <p className="text-sm text-green-600 font-medium">

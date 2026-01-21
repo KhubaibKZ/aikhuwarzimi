@@ -76,7 +76,7 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
     id: 'pp_0580_s22_q1d',
     questionNumber: '1(d)',
     title: 'Number types',
-    question: 'From this list of numbers: 9, 16, 18, 29\n\nWrite down:\n(i) a factor of 48\n(ii) a cube number\n(iii) a prime number',
+    question: 'From this list of numbers: 9, 16, 18, 29, 57, 64, 87, 96\n\nWrite down:\n(i) a factor of 48\n(ii) a cube number\n(iii) a prime number',
     marks: 3,
     hints: [
       'Factors of 48 divide into 48 exactly',
@@ -91,7 +91,7 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       factor: '16',
-      cube: '27',
+      cube: '64',
       prime: '29'
     }
   },

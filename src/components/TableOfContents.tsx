@@ -1,30 +1,42 @@
-import { chapters, ChapterSection } from '@/lib/questionData';
+import { igcseMathsSyllabus, SubTopic, MainTopic } from '@/lib/syllabusData';
+import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TableOfContentsProps {
-  onSectionSelect: (chapterId: number, section: ChapterSection) => void;
+  onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
 }
 
-export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfContentsProps) {
-  const [expandedChapter, setExpandedChapter] = useState<number | null>(1);
+export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOfContentsProps) {
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(1);
+  const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>('1-1');
   const [expandedPaper, setExpandedPaper] = useState<string | null>(pastPapers[0]?.id || null);
   const { isCompleted } = useProgress();
 
-  const getSectionIcon = (type: ChapterSection['type']) => {
-    switch (type) {
-      case 'overview':
-        return BookOpen;
-      case 'example':
-        return Calculator;
-      case 'exercise':
-        return FileText;
-    }
+  // Calculate completion percentage for a subtopic
+  const getSubtopicProgress = (subtopic: SubTopic) => {
+    if (subtopic.questionIds.length === 0) return 0;
+    const completed = subtopic.questionIds.filter(id => isCompleted(id)).length;
+    return Math.round((completed / subtopic.questionIds.length) * 100);
+  };
+
+  // Check if all questions in subtopic are completed
+  const isSubtopicComplete = (subtopic: SubTopic) => {
+    if (subtopic.questionIds.length === 0) return false;
+    return subtopic.questionIds.every(id => isCompleted(id));
+  };
+
+  // Calculate topic progress
+  const getTopicProgress = (topic: MainTopic) => {
+    const allQuestions = topic.subtopics.flatMap(s => s.questionIds);
+    if (allQuestions.length === 0) return 0;
+    const completed = allQuestions.filter(id => isCompleted(id)).length;
+    return Math.round((completed / allQuestions.length) * 100);
   };
 
   return (
@@ -41,98 +53,162 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
       </TabsList>
 
       <TabsContent value="syllabus" className="space-y-3">
-        <h2 className="mb-4 text-xl font-bold text-foreground">Syllabus</h2>
+        <h2 className="mb-4 text-xl font-bold text-foreground">IGCSE Mathematics (0580)</h2>
         
-        {chapters.map((chapter, index) => (
-          <div
-            key={chapter.id}
-            className={cn(
-              "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up",
-              chapter.locked && "opacity-60"
-            )}
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <button
-              onClick={() => !chapter.locked && setExpandedChapter(expandedChapter === chapter.id ? null : chapter.id)}
-              disabled={chapter.locked}
+        {igcseMathsSyllabus.topics.map((topic, index) => {
+          const topicProgress = getTopicProgress(topic);
+          const hasUnlockedSubtopics = topic.subtopics.some(s => !s.locked);
+          
+          return (
+            <div
+              key={topic.id}
               className={cn(
-                "flex w-full items-center justify-between p-4 text-left transition-colors",
-                !chapter.locked && "hover:bg-muted/50",
-                chapter.locked && "cursor-not-allowed"
+                "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up"
               )}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold",
-                  chapter.locked 
-                    ? "bg-muted text-muted-foreground" 
-                    : "bg-primary text-primary-foreground"
-                )}>
-                  {chapter.id}
+              {/* Main Topic Header */}
+              <button
+                onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
+                className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold",
+                    hasUnlockedSubtopics 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {topic.id}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">{topic.title}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {topic.subtopics.length} subtopics • {topicProgress}% complete
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">{chapter.title}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {chapter.locked ? 'Complete previous chapters to unlock' : `${chapter.sections.length} sections`}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                {chapter.locked ? (
-                  <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground">
-                    <Lock className="h-3 w-3" />
-                    Locked
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-xs text-success">
-                    <Unlock className="h-3 w-3" />
-                    Unlocked
-                  </span>
-                )}
                 
-                {!chapter.locked && (
-                  expandedChapter === chapter.id 
+                <div className="flex items-center gap-2">
+                  {topicProgress === 100 ? (
+                    <span className="flex items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-xs text-success">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Complete
+                    </span>
+                  ) : topicProgress > 0 ? (
+                    <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+                      {topicProgress}%
+                    </span>
+                  ) : null}
+                  
+                  {expandedTopic === topic.id 
                     ? <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     : <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-            </button>
+                  }
+                </div>
+              </button>
 
-            {expandedChapter === chapter.id && !chapter.locked && (
-              <div className="border-t border-border bg-muted/30 p-2">
-                {chapter.sections.map((section) => {
-                  const Icon = getSectionIcon(section.type);
-                  const completed = section.questionId && isCompleted(section.questionId);
-                  
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => onSectionSelect(chapter.id, section)}
-                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all hover:bg-card hover:shadow-sm"
-                    >
-                      <div className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg",
-                        completed ? "bg-success/10 text-success" : "bg-secondary text-secondary-foreground"
-                      )}>
-                        {completed ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+              {/* Subtopics List */}
+              {expandedTopic === topic.id && (
+                <div className="border-t border-border bg-muted/30 p-2">
+                  {topic.subtopics.map((subtopic) => {
+                    const progress = getSubtopicProgress(subtopic);
+                    const complete = isSubtopicComplete(subtopic);
+                    const isExpanded = expandedSubtopic === subtopic.id;
+                    
+                    return (
+                      <div key={subtopic.id} className="mb-1">
+                        {/* Subtopic Header */}
+                        <button
+                          onClick={() => {
+                            if (!subtopic.locked) {
+                              setExpandedSubtopic(isExpanded ? null : subtopic.id);
+                            }
+                          }}
+                          disabled={subtopic.locked}
+                          className={cn(
+                            "flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all",
+                            subtopic.locked 
+                              ? "opacity-50 cursor-not-allowed" 
+                              : "hover:bg-card hover:shadow-sm"
+                          )}
+                        >
+                          <div className={cn(
+                            "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium",
+                            complete ? "bg-success/10 text-success" : 
+                            subtopic.locked ? "bg-muted text-muted-foreground" :
+                            "bg-secondary text-secondary-foreground"
+                          )}>
+                            {subtopic.locked ? <Lock className="h-3 w-3" /> : 
+                             complete ? <CheckCircle2 className="h-4 w-4" /> : 
+                             <span>{subtopic.code}</span>}
+                          </div>
+                          <div className="flex-1">
+                            <span className={cn(
+                              "text-sm font-medium",
+                              complete ? "text-success" : 
+                              subtopic.locked ? "text-muted-foreground" : 
+                              "text-foreground"
+                            )}>
+                              {subtopic.code} {subtopic.title}
+                            </span>
+                            {!subtopic.locked && subtopic.questionIds.length > 0 && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {subtopic.questionIds.length} questions • {progress}% complete
+                              </p>
+                            )}
+                            {subtopic.locked && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Coming soon
+                              </p>
+                            )}
+                          </div>
+                          {!subtopic.locked && subtopic.questionIds.length > 0 && (
+                            isExpanded 
+                              ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                              : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+
+                        {/* Questions within Subtopic */}
+                        {isExpanded && !subtopic.locked && subtopic.questionIds.length > 0 && (
+                          <div className="ml-11 pl-3 border-l-2 border-border space-y-1 mt-1 mb-2">
+                            {subtopic.questionIds.map((questionId) => {
+                              const question = questionDatabase[questionId];
+                              if (!question) return null;
+                              const questionComplete = isCompleted(questionId);
+                              
+                              return (
+                                <button
+                                  key={questionId}
+                                  onClick={() => onSubTopicSelect(topic.id, subtopic)}
+                                  className="flex w-full items-center gap-2 rounded-lg p-2 text-left transition-all hover:bg-card hover:shadow-sm"
+                                >
+                                  <div className={cn(
+                                    "flex h-6 w-6 items-center justify-center rounded",
+                                    questionComplete ? "bg-success/10 text-success" : "bg-secondary/50 text-secondary-foreground"
+                                  )}>
+                                    {questionComplete ? <CheckCircle2 className="h-3 w-3" /> : <Calculator className="h-3 w-3" />}
+                                  </div>
+                                  <span className={cn(
+                                    "text-xs font-medium",
+                                    questionComplete ? "text-success" : "text-foreground"
+                                  )}>
+                                    {question.title}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <span className={cn(
-                          "text-sm font-medium",
-                          completed ? "text-success" : "text-foreground"
-                        )}>
-                          {section.title}
-                        </span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </TabsContent>
 
       <TabsContent value="pastpapers" className="space-y-3">
@@ -229,4 +305,3 @@ export function TableOfContents({ onSectionSelect, onPastPaperSelect }: TableOfC
     </Tabs>
   );
 }
-

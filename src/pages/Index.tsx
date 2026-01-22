@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
-import { ChapterContent } from '@/components/ChapterContent';
+import { SubTopicContent } from '@/components/SubTopicContent';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { CourseSelection } from '@/components/CourseSelection';
 import { ProgressProvider } from '@/context/ProgressContext';
-import { chapters, ChapterSection } from '@/lib/questionData';
+import { igcseMathsSyllabus, SubTopic } from '@/lib/syllabusData';
 import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
 
 type ViewState = 
   | { type: 'courses' }
   | { type: 'toc'; courseId: string }
-  | { type: 'content'; courseId: string; chapterId: number; sectionIndex: number };
+  | { type: 'subtopic'; courseId: string; topicId: number; subtopicId: string };
 
 function Dashboard() {
   const [view, setView] = useState<ViewState>({ type: 'courses' });
@@ -29,14 +29,10 @@ function Dashboard() {
     setView({ type: 'courses' });
   };
 
-  const handleSectionSelect = (chapterId: number, section: ChapterSection) => {
-    if (view.type !== 'toc' && view.type !== 'content') return;
-    const courseId = view.type === 'toc' ? view.courseId : view.courseId;
-    const chapter = chapters.find(c => c.id === chapterId);
-    if (chapter) {
-      const sectionIndex = chapter.sections.findIndex(s => s.id === section.id);
-      setView({ type: 'content', courseId, chapterId, sectionIndex });
-    }
+  const handleSubTopicSelect = (topicId: number, subtopic: SubTopic) => {
+    if (view.type !== 'toc' && view.type !== 'subtopic') return;
+    const courseId = view.courseId;
+    setView({ type: 'subtopic', courseId, topicId, subtopicId: subtopic.id });
   };
 
   const handlePastPaperSelect = (paperId: string, section: PastPaperSection) => {
@@ -44,45 +40,19 @@ function Dashboard() {
   };
 
   const handleBackToToc = () => {
-    if (view.type === 'content') {
+    if (view.type === 'subtopic') {
       setView({ type: 'toc', courseId: view.courseId });
     }
   };
 
-  const handleNavigate = (direction: 'prev' | 'next') => {
-    if (view.type !== 'content') return;
-    
-    const chapter = chapters.find(c => c.id === view.chapterId);
-    if (!chapter) return;
-
-    const newIndex = direction === 'prev' 
-      ? view.sectionIndex - 1 
-      : view.sectionIndex + 1;
-
-    if (newIndex >= 0 && newIndex < chapter.sections.length) {
-      setView({ type: 'content', courseId: view.courseId, chapterId: view.chapterId, sectionIndex: newIndex });
-    }
+  const getCurrentSubTopic = () => {
+    if (view.type !== 'subtopic') return null;
+    const topic = igcseMathsSyllabus.topics.find(t => t.id === view.topicId);
+    const subtopic = topic?.subtopics.find(s => s.id === view.subtopicId);
+    return { topic, subtopic };
   };
 
-  const getCurrentSection = () => {
-    if (view.type !== 'content') return null;
-    const chapter = chapters.find(c => c.id === view.chapterId);
-    return chapter?.sections[view.sectionIndex] || null;
-  };
-
-  const getNavState = () => {
-    if (view.type !== 'content') return { hasPrev: false, hasNext: false };
-    const chapter = chapters.find(c => c.id === view.chapterId);
-    if (!chapter) return { hasPrev: false, hasNext: false };
-    
-    return {
-      hasPrev: view.sectionIndex > 0,
-      hasNext: view.sectionIndex < chapter.sections.length - 1
-    };
-  };
-
-  const currentSection = getCurrentSection();
-  const navState = getNavState();
+  const currentData = getCurrentSubTopic();
   const currentPastPaperQuestion = pastPaperModal.questionId 
     ? getPastPaperQuestion(pastPaperModal.questionId) 
     : null;
@@ -105,18 +75,15 @@ function Dashboard() {
             <div>
               {view.type === 'toc' ? (
                 <TableOfContents 
-                  onSectionSelect={handleSectionSelect}
+                  onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
                 />
-              ) : currentSection ? (
-                <ChapterContent
-                  chapterId={view.chapterId}
-                  section={currentSection}
-                  onBack={() => handleNavigate('prev')}
+              ) : currentData?.topic && currentData?.subtopic ? (
+                <SubTopicContent
+                  topicId={currentData.topic.id}
+                  topicTitle={currentData.topic.title}
+                  subtopic={currentData.subtopic}
                   onTableOfContents={handleBackToToc}
-                  onNavigate={handleNavigate}
-                  hasPrev={navState.hasPrev}
-                  hasNext={navState.hasNext}
                 />
               ) : null}
             </div>

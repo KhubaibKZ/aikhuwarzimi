@@ -475,6 +475,128 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   </p>
                 )}
               </div>
+            ) : question.type === 'formula-fraction' && question.formulaTemplate ? (
+              /* Formula Fraction Layout */
+              <div className="space-y-4">
+                <label className="flex items-center justify-between text-sm font-medium">
+                  <span>Complete the formula</span>
+                  <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
+                </label>
+                
+                {/* Formula display with fillable fields */}
+                <div className="flex items-center justify-center gap-4 p-6 bg-muted/30 rounded-lg">
+                  {/* Fraction structure */}
+                  <div className="flex flex-col items-center">
+                    {/* Numerator: ( [n] - 2 ) × 180 */}
+                    <div className="flex items-center gap-1 text-lg">
+                      <span>(</span>
+                      <Input
+                        value={answers['n_value'] || ''}
+                        onChange={(e) => handleAnswerChange('n_value', e.target.value)}
+                        placeholder="n"
+                        disabled={isSubmitted}
+                        className={cn(
+                          "w-12 h-8 text-center p-1",
+                          feedback['n_value'] === 'correct' && "border-green-500 bg-green-500/5",
+                          feedback['n_value'] === 'incorrect' && "border-destructive bg-destructive/5"
+                        )}
+                      />
+                      <span>- 2 ) × 180</span>
+                    </div>
+                    
+                    {/* Fraction line */}
+                    <div className="w-full h-[2px] bg-foreground my-2" />
+                    
+                    {/* Denominator: n value again */}
+                    <Input
+                      value={answers['n_value'] || ''}
+                      disabled={true}
+                      className="w-12 h-8 text-center p-1 bg-muted"
+                    />
+                  </div>
+                  
+                  {/* Equals sign */}
+                  <span className="text-xl">=</span>
+                  
+                  {/* Numerator result / n */}
+                  <div className="flex flex-col items-center">
+                    <Input
+                      value={answers['numerator_result'] || ''}
+                      onChange={(e) => handleAnswerChange('numerator_result', e.target.value)}
+                      placeholder="?"
+                      disabled={isSubmitted}
+                      className={cn(
+                        "w-16 h-8 text-center p-1",
+                        feedback['numerator_result'] === 'correct' && "border-green-500 bg-green-500/5",
+                        feedback['numerator_result'] === 'incorrect' && "border-destructive bg-destructive/5"
+                      )}
+                    />
+                    
+                    {/* Fraction line */}
+                    <div className="w-16 h-[2px] bg-foreground my-2" />
+                    
+                    {/* Denominator */}
+                    <Input
+                      value={answers['n_value'] || ''}
+                      disabled={true}
+                      className="w-12 h-8 text-center p-1 bg-muted"
+                    />
+                  </div>
+                  
+                  {/* Equals sign */}
+                  <span className="text-xl">=</span>
+                  
+                  {/* Final answer */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={answers['final_answer'] || ''}
+                      onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
+                      placeholder="?"
+                      disabled={isSubmitted}
+                      className={cn(
+                        "w-16 h-8 text-center p-1",
+                        feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
+                        feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
+                      )}
+                    />
+                    <span className="text-lg">°</span>
+                  </div>
+                </div>
+                
+                {/* Feedback icons */}
+                <div className="flex justify-center gap-8 text-sm">
+                  {feedback['n_value'] === 'correct' && (
+                    <span className="text-green-500 flex items-center gap-1">
+                      <CheckCircle2 className="h-4 w-4" /> n correct
+                    </span>
+                  )}
+                  {feedback['numerator_result'] === 'correct' && (
+                    <span className="text-green-500 flex items-center gap-1">
+                      <CheckCircle2 className="h-4 w-4" /> Sum correct
+                    </span>
+                  )}
+                  {feedback['final_answer'] === 'correct' && (
+                    <span className="text-green-500 flex items-center gap-1">
+                      <CheckCircle2 className="h-4 w-4" /> Answer correct
+                    </span>
+                  )}
+                </div>
+                
+                {/* Show correct answers after submit */}
+                {isSubmitted && typeof question.answer === 'object' && (
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    {feedback['n_value'] === 'incorrect' && (
+                      <p className="text-green-600">n = {question.answer['n_value']}</p>
+                    )}
+                    {feedback['numerator_result'] === 'incorrect' && (
+                      <p className="text-green-600">Sum = {question.answer['numerator_result']}</p>
+                    )}
+                    {feedback['final_answer'] === 'incorrect' && (
+                      <p className="text-green-600">Answer = {question.answer['final_answer']}°</p>
+                    )}
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Answer</label>

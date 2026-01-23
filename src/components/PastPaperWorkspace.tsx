@@ -278,12 +278,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             <p className="whitespace-pre-line text-foreground">{question.question}</p>
-            {question.id === 'pp_0580_s22_q2b' && (
-              <div className="mt-4 flex justify-center">
-                <TriangleDiagram />
-              </div>
-            )}
-            {question.image && question.id !== 'pp_0580_s22_q2b' && (
+            {question.image && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

@@ -13,6 +13,13 @@ import { useToast } from '@/hooks/use-toast';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
+import { 
+  CoordinateGrid, 
+  PrismDiagram, 
+  CirclesInRectangle, 
+  ParallelogramDiagram,
+  IsoscelesTriangleDiagram 
+} from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
@@ -278,7 +285,88 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             <p className="whitespace-pre-line text-foreground">{question.question}</p>
-            {question.image && (
+            
+            {/* Interactive Diagrams based on question ID */}
+            {question.id === 'pp_0580_s22_q2b' && (
+              <div className="mt-4">
+                <IsoscelesTriangleDiagram showEqualMarks={true} showAngleToMeasure={true} angleLabel="Angle CAB" />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q2d' && (
+              <div className="mt-4">
+                <ParallelogramDiagram reflexAngle={248} showReflex={true} />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q4a' && (
+              <div className="mt-4">
+                <PrismDiagram 
+                  baseWidth={4} 
+                  baseHeight={3} 
+                  length={7}
+                  labels={{ base: '4 cm', height: '3 cm', length: '7 cm' }}
+                />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q4b' && (
+              <div className="mt-4">
+                <CirclesInRectangle rows={2} cols={3} radius={8} showLabels={true} showShading={true} />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q8a' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={350}
+                  height={350}
+                  xRange={[-6, 4]}
+                  yRange={[-2, 6]}
+                  lines={[
+                    {
+                      points: [{ x: -4, y: 4 }, { x: 2, y: 1 }],
+                      color: 'hsl(var(--primary))',
+                      label: 'L'
+                    }
+                  ]}
+                  showPoints={[
+                    { x: -4, y: 4, label: '(-4, 4)' },
+                    { x: 2, y: 1, label: '(2, 1)' }
+                  ]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {(question.id === 'pp_0580_s22_q8b' || question.id === 'pp_0580_s22_q8c' || question.id === 'pp_0580_s22_q8d') && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={350}
+                  height={350}
+                  xRange={[-6, 4]}
+                  yRange={[-6, 6]}
+                  lines={[
+                    {
+                      points: [{ x: -4, y: 4 }, { x: 2, y: 1 }],
+                      color: 'hsl(var(--primary))',
+                      label: 'L'
+                    },
+                    {
+                      points: [{ x: -5, y: -5 }, { x: 0, y: 5 }],
+                      color: 'hsl(var(--accent-foreground))',
+                      label: 'y = 2x + 5',
+                      dashed: true
+                    }
+                  ]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Fallback to static image if no interactive diagram and image exists */}
+            {question.image && 
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d'].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

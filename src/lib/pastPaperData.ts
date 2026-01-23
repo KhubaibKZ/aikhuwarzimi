@@ -255,18 +255,14 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
     },
     parts: [
       { label: 'n value', key: 'n1', marks: 0 },
-      { label: 'multiplier', key: 'mult', marks: 0 },
-      { label: 'denominator 1', key: 'd1', marks: 0 },
-      { label: 'simplified numerator', key: 'n2', marks: 1 },
-      { label: 'denominator 2', key: 'd2', marks: 0 },
+      { label: 'multiplier', key: 'mult', marks: 1 },
+      { label: 'denominator', key: 'd1', marks: 0 },
       { label: 'answer', key: 'answer', marks: 1 }
     ],
     answer: {
       n1: '5',
       mult: '180',
       d1: '5',
-      n2: '3',
-      d2: '5',
       answer: '108'
     }
   },

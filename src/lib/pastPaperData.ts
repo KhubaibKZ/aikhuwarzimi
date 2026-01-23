@@ -1,3 +1,9 @@
+export interface FormulaTemplate {
+  numeratorLabel: string;
+  denominatorLabel: string;
+  resultLabel: string;
+}
+
 export interface PastPaperQuestion {
   id: string;
   questionNumber: string;
@@ -5,12 +11,13 @@ export interface PastPaperQuestion {
   question: string;
   marks: number;
   hints: string[];
-  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder';
+  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder' | 'formula-fraction';
   parts?: { label: string; key: string; marks: number }[];
   answer?: string | Record<string, string>;
   targetNumber?: number; // For prime factorization questions
   lcmNumbers?: [number, number]; // For LCM ladder questions
   image?: string; // Optional image for the question
+  formulaTemplate?: FormulaTemplate; // For formula-fraction type
 }
 
 export interface PastPaperSection {
@@ -240,12 +247,21 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'Pentagon has 5 sides, so sum = (5-2) × 180° = 540°',
       'For a regular pentagon, divide by 5'
     ],
-    type: 'proof',
+    type: 'formula-fraction',
+    formulaTemplate: {
+      numeratorLabel: '( n - 2 ) × 180',
+      denominatorLabel: 'n',
+      resultLabel: '='
+    },
     parts: [
-      { label: 'Show your working', key: 'working', marks: 2 }
+      { label: 'n (number of sides)', key: 'n_value', marks: 0 },
+      { label: 'numerator result', key: 'numerator_result', marks: 1 },
+      { label: 'final answer', key: 'final_answer', marks: 1 }
     ],
     answer: {
-      working: '108'
+      n_value: '5',
+      numerator_result: '540',
+      final_answer: '108'
     }
   },
   'pp_0580_s22_q2d': {

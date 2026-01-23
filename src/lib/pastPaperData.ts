@@ -5,9 +5,10 @@ export interface PastPaperQuestion {
   question: string;
   marks: number;
   hints: string[];
-  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof';
+  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor';
   parts?: { label: string; key: string; marks: number }[];
   answer?: string | Record<string, string>;
+  targetNumber?: number; // For prime factorization questions
 }
 
 export interface PastPaperSection {
@@ -147,13 +148,9 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       '180 = 2 × 90 = 2 × 2 × 45 = 2 × 2 × 9 × 5',
       'Use index notation: 2² × 3² × 5'
     ],
-    type: 'calculation',
-    parts: [
-      { label: 'Prime factorization (use index notation)', key: 'answer', marks: 2 }
-    ],
-    answer: {
-      answer: '2² × 3² × 5'
-    }
+    type: 'prime-factor',
+    targetNumber: 180,
+    answer: '2² × 3² × 5'
   },
   'pp_0580_s22_q1i': {
     id: 'pp_0580_s22_q1i',

@@ -240,16 +240,12 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'Pentagon has 5 sides, so sum = (5-2) × 180° = 540°',
       'For a regular pentagon, divide by 5'
     ],
-    type: 'multi-part',
+    type: 'proof',
     parts: [
-      { label: 'Sum of interior angles formula: (n-2) × 180 =', key: 'sum_formula', marks: 1 },
-      { label: 'Sum of interior angles =', key: 'sum_value', marks: 0 },
-      { label: 'Each interior angle = sum ÷ 5 =', key: 'each_angle', marks: 1 }
+      { label: 'Show your working', key: 'working', marks: 2 }
     ],
     answer: {
-      sum_formula: '(5-2) × 180',
-      sum_value: '540',
-      each_angle: '108'
+      working: '108'
     }
   },
   'pp_0580_s22_q2d': {

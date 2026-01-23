@@ -10,6 +10,7 @@ import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, Hel
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
@@ -356,6 +357,59 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   )}
                 </div>
               ))
+            ) : question.type === 'prime-factor' && question.targetNumber ? (
+              /* Prime Factorization Ladder */
+              <div className="space-y-2">
+                <label className="flex items-center justify-between text-sm font-medium">
+                  <span>Prime factorization (use the ladder method)</span>
+                  <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
+                </label>
+                <div className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <PrimeFactorLadder
+                      value={answers['answer'] || ''}
+                      onChange={(val) => handleAnswerChange('answer', val)}
+                      disabled={isSubmitted}
+                      targetNumber={question.targetNumber}
+                      isCorrect={feedback['answer'] === 'correct'}
+                      isIncorrect={feedback['answer'] === 'incorrect'}
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCheckWorkForPart('answer', 'Prime factorization')}
+                    disabled={isLoading || isSubmitted}
+                    className="shrink-0 mt-1"
+                  >
+                    {loadingPartKey === 'answer' ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      <BookOpen className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {/* Show AI response for prime factor */}
+                {aiResponse?.partKey === 'answer' && (
+                  <div className={cn(
+                    "rounded-lg border p-3 text-sm",
+                    aiResponse.type === 'hint' 
+                      ? "border-amber-500/30 bg-amber-500/10" 
+                      : "border-blue-500/30 bg-blue-500/10"
+                  )}>
+                    <div className="flex items-start gap-2">
+                      <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <p className="whitespace-pre-line">{aiResponse.content}</p>
+                    </div>
+                  </div>
+                )}
+                {/* Show correct answer after submit */}
+                {isSubmitted && feedback['answer'] === 'incorrect' && typeof question.answer === 'string' && (
+                  <p className="text-sm text-green-600 font-medium">
+                    Correct: {question.answer}
+                  </p>
+                )}
+              </div>
             ) : (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Answer</label>

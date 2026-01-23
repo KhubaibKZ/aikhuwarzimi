@@ -5,10 +5,11 @@ export interface PastPaperQuestion {
   question: string;
   marks: number;
   hints: string[];
-  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor';
+  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder';
   parts?: { label: string; key: string; marks: number }[];
   answer?: string | Record<string, string>;
   targetNumber?: number; // For prime factorization questions
+  lcmNumbers?: [number, number]; // For LCM ladder questions
 }
 
 export interface PastPaperSection {
@@ -163,13 +164,9 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'LCM uses highest power of each prime',
       'LCM = 2⁵ × 3² × 5'
     ],
-    type: 'calculation',
-    parts: [
-      { label: 'LCM of 160 and 180', key: 'answer', marks: 2 }
-    ],
-    answer: {
-      answer: '1440'
-    }
+    type: 'lcm-ladder',
+    lcmNumbers: [160, 180],
+    answer: '1440'
   },
   'pp_0580_s22_q1j': {
     id: 'pp_0580_s22_q1j',

@@ -484,7 +484,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 </label>
                 
                 {/* Single unified formula block */}
-                <div className="flex items-center gap-2 py-4 text-xl font-medium flex-wrap">
+                <div className="flex items-center gap-3 py-4 text-xl font-medium overflow-x-auto">
                   <span>=</span>
                   
                   {/* First fraction: (n-2) × 180 / n */}

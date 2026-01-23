@@ -278,6 +278,7 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'In a parallelogram, adjacent angles are supplementary (add to 180°)'
     ],
     type: 'calculation',
+    image: '/assets/parallelogram-q2d.png',
     parts: [
       { label: 'Angle DCB', key: 'answer', marks: 2 }
     ],

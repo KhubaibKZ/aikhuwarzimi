@@ -217,7 +217,7 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'Angles are classified: acute (<90°), right (=90°), obtuse (>90° and <180°)'
     ],
     type: 'multi-part',
-    image: '/assets/triangle-q2b.png',
+    image: '/assets/triangle-q2b-clean.png',
     parts: [
       { label: '(i) Name of triangle', key: 'name', marks: 1 },
       { label: '(ii) Angle CAB (degrees)', key: 'angle', marks: 1 },

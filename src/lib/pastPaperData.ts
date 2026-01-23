@@ -254,11 +254,19 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       resultLabel: '='
     },
     parts: [
-      { label: 'Working', key: 'working', marks: 1 },
+      { label: 'Line 1: n', key: 'line1_n', marks: 0 },
+      { label: 'Line 1: multiplier', key: 'line1_mult', marks: 0 },
+      { label: 'Line 1: denominator', key: 'line1_denom', marks: 0 },
+      { label: 'Line 2: numerator', key: 'line2_num', marks: 1 },
+      { label: 'Line 2: denominator', key: 'line2_denom', marks: 0 },
       { label: 'Final answer', key: 'final_answer', marks: 1 }
     ],
     answer: {
-      working: '(5-2) × 180 / 5 = 3 × 180 / 5 = 540 / 5',
+      line1_n: '5',
+      line1_mult: '180',
+      line1_denom: '5',
+      line2_num: '3',
+      line2_denom: '5',
       final_answer: '108'
     }
   },

@@ -476,87 +476,104 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'formula-fraction' && question.formulaTemplate ? (
-              /* Formula Fraction Layout - Single working area */
+              /* Formula Fraction Layout - Exact handwritten style with inline blanks */
               <div className="space-y-4">
                 <label className="flex items-center justify-between text-sm font-medium">
                   <span>Show your working</span>
                   <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
                 </label>
                 
-                {/* Formula reference */}
-                <div className="flex flex-col items-start bg-muted/50 rounded-lg p-4">
-                  <div className="text-sm text-muted-foreground mb-2">Formula:</div>
-                  <div className="flex flex-col items-center text-lg font-medium">
-                    <span>(n - 2) × 180</span>
-                    <div className="w-28 h-[2px] bg-foreground my-1" />
-                    <span>n</span>
-                  </div>
-                </div>
-                
-                {/* Single working area */}
-                <div className="flex gap-2 items-start">
-                  <div className="relative flex-1">
-                    <Textarea
-                      value={answers['working'] || ''}
-                      onChange={(e) => handleAnswerChange('working', e.target.value)}
-                      placeholder="Write your complete working here..."
-                      disabled={isSubmitted}
-                      className={cn(
-                        "min-h-[120px] font-mono transition-colors",
-                        feedback['working'] === 'correct' && "border-green-500 bg-green-500/5",
-                        feedback['working'] === 'incorrect' && "border-destructive bg-destructive/5"
-                      )}
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleCheckWorkForPart('working', 'Working')}
-                    disabled={isLoading || isSubmitted}
-                    className="shrink-0 mt-1"
-                  >
-                    {loadingPartKey === 'working' ? (
-                      <span className="animate-pulse">...</span>
-                    ) : (
-                      <BookOpen className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-                
-                {/* Final answer field */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Answer =</span>
-                  <Input
-                    value={answers['final_answer'] || ''}
-                    onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
-                    placeholder="..."
-                    disabled={isSubmitted}
-                    className={cn(
-                      "w-20 text-center font-medium",
-                      feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
-                      feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
-                    )}
-                  />
-                  <span>°</span>
-                </div>
-                
-                {/* Show AI response */}
-                {aiResponse?.partKey === 'working' && (
-                  <div className={cn(
-                    "rounded-lg border p-3 text-sm",
-                    aiResponse.type === 'hint' 
-                      ? "border-amber-500/30 bg-amber-500/10" 
-                      : "border-blue-500/30 bg-blue-500/10"
-                  )}>
-                    <div className="flex items-start gap-2">
-                      <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                      <p className="whitespace-pre-line">{aiResponse.content}</p>
+                {/* Handwritten-style working with inline blanks */}
+                <div className="space-y-3 py-2 text-lg font-medium">
+                  
+                  {/* Line 1: = (5-2) × 180 / 5 */}
+                  <div className="flex items-center gap-1">
+                    <span>=</span>
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center">
+                        <span>(</span>
+                        <Input
+                          value={answers['line1_n'] || ''}
+                          onChange={(e) => handleAnswerChange('line1_n', e.target.value)}
+                          disabled={isSubmitted}
+                          className={cn(
+                            "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
+                            feedback['line1_n'] === 'correct' && "border-green-500",
+                            feedback['line1_n'] === 'incorrect' && "border-destructive"
+                          )}
+                        />
+                        <span>- 2) ×</span>
+                        <Input
+                          value={answers['line1_mult'] || ''}
+                          onChange={(e) => handleAnswerChange('line1_mult', e.target.value)}
+                          disabled={isSubmitted}
+                          className={cn(
+                            "w-12 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
+                            feedback['line1_mult'] === 'correct' && "border-green-500",
+                            feedback['line1_mult'] === 'incorrect' && "border-destructive"
+                          )}
+                        />
+                      </div>
+                      <div className="w-32 h-[2px] bg-foreground" />
+                      <Input
+                        value={answers['line1_denom'] || ''}
+                        onChange={(e) => handleAnswerChange('line1_denom', e.target.value)}
+                        disabled={isSubmitted}
+                        className={cn(
+                          "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
+                          feedback['line1_denom'] === 'correct' && "border-green-500",
+                          feedback['line1_denom'] === 'incorrect' && "border-destructive"
+                        )}
+                      />
                     </div>
                   </div>
-                )}
+                  
+                  {/* Line 2: = 3×180 / 5 = 108° */}
+                  <div className="flex items-center gap-1">
+                    <span>=</span>
+                    <div className="flex flex-col items-center">
+                      <div className="flex items-center">
+                        <Input
+                          value={answers['line2_num'] || ''}
+                          onChange={(e) => handleAnswerChange('line2_num', e.target.value)}
+                          disabled={isSubmitted}
+                          className={cn(
+                            "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
+                            feedback['line2_num'] === 'correct' && "border-green-500",
+                            feedback['line2_num'] === 'incorrect' && "border-destructive"
+                          )}
+                        />
+                        <span>× 180</span>
+                      </div>
+                      <div className="w-20 h-[2px] bg-foreground" />
+                      <Input
+                        value={answers['line2_denom'] || ''}
+                        onChange={(e) => handleAnswerChange('line2_denom', e.target.value)}
+                        disabled={isSubmitted}
+                        className={cn(
+                          "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
+                          feedback['line2_denom'] === 'correct' && "border-green-500",
+                          feedback['line2_denom'] === 'incorrect' && "border-destructive"
+                        )}
+                      />
+                    </div>
+                    <span>=</span>
+                    <Input
+                      value={answers['final_answer'] || ''}
+                      onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
+                      disabled={isSubmitted}
+                      className={cn(
+                        "w-14 h-10 text-center text-lg font-medium border-2 rounded",
+                        feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
+                        feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
+                      )}
+                    />
+                    <span>°</span>
+                  </div>
+                </div>
                 
                 {/* Show correct answer after submit */}
-                {isSubmitted && (feedback['working'] === 'incorrect' || feedback['final_answer'] === 'incorrect') && (
+                {isSubmitted && Object.values(feedback).some(f => f === 'incorrect') && (
                   <div className="text-sm text-green-600 font-medium">
                     Correct: (5-2) × 180 ÷ 5 = 3 × 180 ÷ 5 = 108°
                   </div>

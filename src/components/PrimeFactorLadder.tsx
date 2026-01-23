@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, BookOpen, CheckCircle2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface LadderRow {
   prime: string;
   quotient: string;
+  feedback?: 'correct' | 'incorrect' | null;
 }
 
 interface PrimeFactorLadderProps {
@@ -16,6 +17,8 @@ interface PrimeFactorLadderProps {
   targetNumber: number;
   isCorrect?: boolean | null;
   isIncorrect?: boolean | null;
+  onCheckStep?: (stepIndex: number, prime: string, quotient: string, previousQuotient: number) => void;
+  stepFeedback?: Record<number, { type: 'correct' | 'incorrect'; message: string }>;
 }
 
 export function PrimeFactorLadder({ 
@@ -24,10 +27,12 @@ export function PrimeFactorLadder({
   disabled, 
   targetNumber,
   isCorrect,
-  isIncorrect
+  isIncorrect,
+  onCheckStep,
+  stepFeedback = {}
 }: PrimeFactorLadderProps) {
   const [rows, setRows] = useState<LadderRow[]>([
-    { prime: '', quotient: targetNumber.toString() }
+    { prime: '', quotient: '' }
   ]);
 
   // Parse value from parent if provided
@@ -39,7 +44,7 @@ export function PrimeFactorLadder({
           setRows(parsed);
         }
       } catch {
-        // If not JSON, it's the final answer format - don't modify rows
+        // If not JSON, ignore
       }
     }
   }, []);
@@ -73,16 +78,13 @@ export function PrimeFactorLadder({
         .join(' × ');
       
       onChange(answer || JSON.stringify(rows));
+    } else {
+      onChange(JSON.stringify(rows));
     }
   }, [rows, onChange]);
 
   const addRow = () => {
-    const lastRow = rows[rows.length - 1];
-    const lastQuotient = lastRow?.quotient ? parseInt(lastRow.quotient) : targetNumber;
-    const lastPrime = lastRow?.prime ? parseInt(lastRow.prime) : 2;
-    const newQuotient = lastPrime && lastQuotient ? Math.floor(lastQuotient / lastPrime) : '';
-    
-    setRows([...rows, { prime: '', quotient: newQuotient.toString() }]);
+    setRows([...rows, { prime: '', quotient: '' }]);
   };
 
   const removeRow = () => {
@@ -93,19 +95,48 @@ export function PrimeFactorLadder({
 
   const updateRow = (index: number, field: 'prime' | 'quotient', val: string) => {
     const newRows = [...rows];
-    newRows[index] = { ...newRows[index], [field]: val };
-    
-    // Auto-calculate next quotient when prime is entered
-    if (field === 'prime' && val && index < newRows.length - 1) {
-      const currentQuotient = index === 0 ? targetNumber : parseInt(newRows[index - 1]?.quotient || '0');
-      const prime = parseInt(val);
-      if (prime && currentQuotient) {
-        newRows[index].quotient = Math.floor(currentQuotient / prime).toString();
-      }
-    }
-    
+    newRows[index] = { ...newRows[index], [field]: val, feedback: null };
     setRows(newRows);
   };
+
+  const checkStep = (index: number) => {
+    const row = rows[index];
+    const previousQuotient = index === 0 ? targetNumber : parseInt(rows[index - 1]?.quotient || '0');
+    
+    if (!row.prime || !row.quotient) return;
+    
+    const prime = parseInt(row.prime);
+    const quotient = parseInt(row.quotient);
+    
+    // Check if the division is correct
+    const expectedQuotient = previousQuotient / prime;
+    const isCorrect = expectedQuotient === quotient && previousQuotient % prime === 0;
+    
+    // Check if the prime is actually prime
+    const isPrime = (n: number) => {
+      if (n < 2) return false;
+      for (let i = 2; i <= Math.sqrt(n); i++) {
+        if (n % i === 0) return false;
+      }
+      return true;
+    };
+    
+    const newRows = [...rows];
+    newRows[index] = { 
+      ...newRows[index], 
+      feedback: isCorrect && isPrime(prime) ? 'correct' : 'incorrect' 
+    };
+    setRows(newRows);
+
+    // Notify parent if callback provided
+    if (onCheckStep) {
+      onCheckStep(index, row.prime, row.quotient, previousQuotient);
+    }
+  };
+
+  // Check if final quotient is 1 (complete factorization)
+  const lastQuotient = rows[rows.length - 1]?.quotient;
+  const isComplete = lastQuotient === '1';
 
   return (
     <div className="space-y-2">
@@ -116,69 +147,153 @@ export function PrimeFactorLadder({
       )}>
         {/* Header */}
         <div className="flex items-center mb-2 text-xs text-muted-foreground font-medium">
-          <div className="w-16 text-center">Prime</div>
-          <div className="w-px h-4 bg-border mx-2"></div>
-          <div className="flex-1">Quotient</div>
+          <div className="w-14 text-center">Prime</div>
+          <div className="w-px h-4 bg-border mx-1"></div>
+          <div className="flex-1">Number</div>
+          <div className="w-8"></div>
         </div>
         
-        {/* First row with target number */}
-        <div className="flex items-center border-b border-border pb-1 mb-1">
-          <div className="w-16">
+        {/* First row with target number display */}
+        <div className="flex items-center border-b border-border pb-2 mb-2">
+          <div className="w-14">
             <Input
               type="text"
+              inputMode="numeric"
               value={rows[0]?.prime || ''}
               onChange={(e) => updateRow(0, 'prime', e.target.value)}
               disabled={disabled}
-              className="h-8 text-center text-red-600 font-bold"
+              className={cn(
+                "h-9 text-center font-bold",
+                rows[0]?.feedback === 'correct' && "border-green-500 text-green-600",
+                rows[0]?.feedback === 'incorrect' && "border-destructive text-destructive"
+              )}
               placeholder=""
             />
           </div>
-          <div className="w-px h-8 bg-border mx-2"></div>
-          <div className="flex-1 font-medium text-lg pl-2">{targetNumber}</div>
+          <div className="w-px h-9 bg-foreground mx-1"></div>
+          <div className="flex-1 font-bold text-lg pl-2">{targetNumber}</div>
+          <div className="w-8"></div>
         </div>
 
-        {/* Dynamic rows */}
+        {/* First quotient row */}
+        <div className="flex items-center border-b border-border pb-2 mb-2">
+          <div className="w-14">
+            {rows.length > 1 ? (
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={rows[1]?.prime || ''}
+                onChange={(e) => updateRow(1, 'prime', e.target.value)}
+                disabled={disabled}
+                className={cn(
+                  "h-9 text-center font-bold",
+                  rows[1]?.feedback === 'correct' && "border-green-500 text-green-600",
+                  rows[1]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                )}
+                placeholder=""
+              />
+            ) : null}
+          </div>
+          <div className="w-px h-9 bg-foreground mx-1"></div>
+          <div className="flex-1 pl-2">
+            <Input
+              type="text"
+              inputMode="numeric"
+              value={rows[0]?.quotient || ''}
+              onChange={(e) => updateRow(0, 'quotient', e.target.value)}
+              disabled={disabled}
+              className={cn(
+                "h-9",
+                rows[0]?.feedback === 'correct' && "border-green-500 bg-green-500/5",
+                rows[0]?.feedback === 'incorrect' && "border-destructive bg-destructive/5"
+              )}
+              placeholder="Result..."
+            />
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => checkStep(0)}
+            disabled={disabled || !rows[0]?.prime || !rows[0]?.quotient}
+            className="w-8 h-8 p-0 shrink-0"
+          >
+            {rows[0]?.feedback === 'correct' ? (
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+            ) : rows[0]?.feedback === 'incorrect' ? (
+              <XCircle className="h-4 w-4 text-destructive" />
+            ) : (
+              <BookOpen className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* Additional rows */}
         {rows.slice(1).map((row, idx) => {
           const actualIndex = idx + 1;
-          const previousQuotient = rows[actualIndex - 1]?.quotient;
-          const previousPrime = rows[actualIndex - 1]?.prime;
-          const expectedQuotient = previousQuotient && previousPrime 
-            ? Math.floor(parseInt(previousQuotient) / parseInt(previousPrime)) 
-            : '';
+          const nextIndex = actualIndex + 1;
+          const hasNextRow = nextIndex < rows.length;
           
           return (
-            <div key={actualIndex} className="flex items-center border-b border-border pb-1 mb-1">
-              <div className="w-16">
-                <Input
-                  type="text"
-                  value={row.prime}
-                  onChange={(e) => updateRow(actualIndex, 'prime', e.target.value)}
-                  disabled={disabled}
-                  className="h-8 text-center text-red-600 font-bold"
-                  placeholder=""
-                />
+            <div key={actualIndex} className="flex items-center border-b border-border pb-2 mb-2">
+              <div className="w-14">
+                {hasNextRow ? (
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    value={rows[nextIndex]?.prime || ''}
+                    onChange={(e) => updateRow(nextIndex, 'prime', e.target.value)}
+                    disabled={disabled}
+                    className={cn(
+                      "h-9 text-center font-bold",
+                      rows[nextIndex]?.feedback === 'correct' && "border-green-500 text-green-600",
+                      rows[nextIndex]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                    )}
+                    placeholder=""
+                  />
+                ) : null}
               </div>
-              <div className="w-px h-8 bg-border mx-2"></div>
+              <div className="w-px h-9 bg-foreground mx-1"></div>
               <div className="flex-1 pl-2">
                 <Input
                   type="text"
-                  value={row.quotient || expectedQuotient.toString()}
+                  inputMode="numeric"
+                  value={row.quotient}
                   onChange={(e) => updateRow(actualIndex, 'quotient', e.target.value)}
                   disabled={disabled}
-                  className="h-8"
-                  placeholder=""
+                  className={cn(
+                    "h-9",
+                    row.feedback === 'correct' && "border-green-500 bg-green-500/5",
+                    row.feedback === 'incorrect' && "border-destructive bg-destructive/5"
+                  )}
+                  placeholder="Result..."
                 />
               </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => checkStep(actualIndex)}
+                disabled={disabled || !row.prime || !row.quotient}
+                className="w-8 h-8 p-0 shrink-0"
+              >
+                {row.feedback === 'correct' ? (
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                ) : row.feedback === 'incorrect' ? (
+                  <XCircle className="h-4 w-4 text-destructive" />
+                ) : (
+                  <BookOpen className="h-4 w-4" />
+                )}
+              </Button>
             </div>
           );
         })}
 
-        {/* Final row showing 1 */}
-        {rows.length > 0 && rows[rows.length - 1]?.quotient === '1' && (
-          <div className="flex items-center pt-1">
-            <div className="w-16"></div>
-            <div className="w-px h-6 bg-border mx-2"></div>
-            <div className="flex-1 font-bold pl-2">1</div>
+        {/* Completion indicator */}
+        {isComplete && (
+          <div className="flex items-center text-green-600 text-sm font-medium pt-1">
+            <CheckCircle2 className="h-4 w-4 mr-2" />
+            Factorization complete!
           </div>
         )}
 
@@ -193,7 +308,7 @@ export function PrimeFactorLadder({
               className="flex-1"
             >
               <Plus className="h-4 w-4 mr-1" />
-              Add Row
+              Add Step
             </Button>
             <Button
               type="button"

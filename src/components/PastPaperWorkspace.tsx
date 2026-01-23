@@ -476,27 +476,27 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'formula-fraction' && question.formulaTemplate ? (
-              /* Formula Fraction Layout */
+              /* Formula Fraction Layout - Clean formula style */
               <div className="space-y-4">
                 <label className="flex items-center justify-between text-sm font-medium">
                   <span>Complete the formula</span>
                   <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
                 </label>
                 
-                {/* Formula display with fillable fields */}
-                <div className="flex items-center justify-center gap-4 p-6 bg-muted/30 rounded-lg">
-                  {/* Fraction structure */}
+                {/* Clean formula display */}
+                <div className="flex items-center justify-center gap-3 p-6 bg-muted/30 rounded-lg">
+                  {/* Main fraction: (n-2) × 180 / n */}
                   <div className="flex flex-col items-center">
                     {/* Numerator: ( [n] - 2 ) × 180 */}
-                    <div className="flex items-center gap-1 text-lg">
+                    <div className="flex items-center gap-1 text-lg font-medium">
                       <span>(</span>
                       <Input
                         value={answers['n_value'] || ''}
                         onChange={(e) => handleAnswerChange('n_value', e.target.value)}
-                        placeholder="n"
+                        placeholder=""
                         disabled={isSubmitted}
                         className={cn(
-                          "w-12 h-8 text-center p-1",
+                          "w-10 h-8 text-center p-0 text-lg font-medium",
                           feedback['n_value'] === 'correct' && "border-green-500 bg-green-500/5",
                           feedback['n_value'] === 'incorrect' && "border-destructive bg-destructive/5"
                         )}
@@ -505,97 +505,68 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                     </div>
                     
                     {/* Fraction line */}
-                    <div className="w-full h-[2px] bg-foreground my-2" />
+                    <div className="w-full h-[2px] bg-foreground my-1" />
                     
-                    {/* Denominator: n value again */}
-                    <Input
-                      value={answers['n_value'] || ''}
-                      disabled={true}
-                      className="w-12 h-8 text-center p-1 bg-muted"
-                    />
+                    {/* Denominator: auto-filled from n */}
+                    <span className="text-lg font-medium h-8 flex items-center">
+                      {answers['n_value'] || 'n'}
+                    </span>
                   </div>
                   
-                  {/* Equals sign */}
-                  <span className="text-xl">=</span>
+                  {/* Equals */}
+                  <span className="text-xl font-medium">=</span>
                   
-                  {/* Numerator result / n */}
+                  {/* Result fraction: sum / n */}
                   <div className="flex flex-col items-center">
                     <Input
                       value={answers['numerator_result'] || ''}
                       onChange={(e) => handleAnswerChange('numerator_result', e.target.value)}
-                      placeholder="?"
+                      placeholder=""
                       disabled={isSubmitted}
                       className={cn(
-                        "w-16 h-8 text-center p-1",
+                        "w-14 h-8 text-center p-0 text-lg font-medium",
                         feedback['numerator_result'] === 'correct' && "border-green-500 bg-green-500/5",
                         feedback['numerator_result'] === 'incorrect' && "border-destructive bg-destructive/5"
                       )}
                     />
                     
                     {/* Fraction line */}
-                    <div className="w-16 h-[2px] bg-foreground my-2" />
+                    <div className="w-14 h-[2px] bg-foreground my-1" />
                     
                     {/* Denominator */}
-                    <Input
-                      value={answers['n_value'] || ''}
-                      disabled={true}
-                      className="w-12 h-8 text-center p-1 bg-muted"
-                    />
+                    <span className="text-lg font-medium h-8 flex items-center">
+                      {answers['n_value'] || 'n'}
+                    </span>
                   </div>
                   
-                  {/* Equals sign */}
-                  <span className="text-xl">=</span>
+                  {/* Equals */}
+                  <span className="text-xl font-medium">=</span>
                   
-                  {/* Final answer */}
-                  <div className="flex items-center gap-2">
+                  {/* Final answer with degree symbol */}
+                  <div className="flex items-center">
                     <Input
                       value={answers['final_answer'] || ''}
                       onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
-                      placeholder="?"
+                      placeholder=""
                       disabled={isSubmitted}
                       className={cn(
-                        "w-16 h-8 text-center p-1",
+                        "w-14 h-10 text-center p-0 text-xl font-medium",
                         feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
                         feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
                       )}
                     />
-                    <span className="text-lg">°</span>
+                    <span className="text-xl font-medium ml-1">°</span>
                   </div>
-                </div>
-                
-                {/* Feedback icons */}
-                <div className="flex justify-center gap-8 text-sm">
-                  {feedback['n_value'] === 'correct' && (
-                    <span className="text-green-500 flex items-center gap-1">
-                      <CheckCircle2 className="h-4 w-4" /> n correct
-                    </span>
-                  )}
-                  {feedback['numerator_result'] === 'correct' && (
-                    <span className="text-green-500 flex items-center gap-1">
-                      <CheckCircle2 className="h-4 w-4" /> Sum correct
-                    </span>
-                  )}
-                  {feedback['final_answer'] === 'correct' && (
-                    <span className="text-green-500 flex items-center gap-1">
-                      <CheckCircle2 className="h-4 w-4" /> Answer correct
-                    </span>
-                  )}
                 </div>
                 
                 {/* Show correct answers after submit */}
-                {isSubmitted && typeof question.answer === 'object' && (
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    {feedback['n_value'] === 'incorrect' && (
-                      <p className="text-green-600">n = {question.answer['n_value']}</p>
-                    )}
-                    {feedback['numerator_result'] === 'incorrect' && (
-                      <p className="text-green-600">Sum = {question.answer['numerator_result']}</p>
-                    )}
-                    {feedback['final_answer'] === 'incorrect' && (
-                      <p className="text-green-600">Answer = {question.answer['final_answer']}°</p>
-                    )}
-                  </div>
-                )}
+                {isSubmitted && typeof question.answer === 'object' && 
+                  Object.entries(feedback).some(([_, v]) => v === 'incorrect') && (
+                    <div className="text-sm text-center text-green-600 font-medium">
+                      Correct: (5 - 2) × 180 ÷ 5 = 540 ÷ 5 = 108°
+                    </div>
+                  )
+                }
               </div>
             ) : (
               <div className="space-y-2">

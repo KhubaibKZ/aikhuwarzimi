@@ -17,8 +17,7 @@ interface PrimeFactorLadderProps {
   targetNumber: number;
   isCorrect?: boolean | null;
   isIncorrect?: boolean | null;
-  onCheckStep?: (stepIndex: number, prime: string, quotient: string, previousQuotient: number) => void;
-  stepFeedback?: Record<number, { type: 'correct' | 'incorrect'; message: string }>;
+  onCheckStep?: (stepIndex: number, prime: string, quotient: string, previousQuotient: number) => Promise<string | null>;
 }
 
 export function PrimeFactorLadder({ 
@@ -28,12 +27,13 @@ export function PrimeFactorLadder({
   targetNumber,
   isCorrect,
   isIncorrect,
-  onCheckStep,
-  stepFeedback = {}
+  onCheckStep
 }: PrimeFactorLadderProps) {
   const [rows, setRows] = useState<LadderRow[]>([
     { prime: '', quotient: '' }
   ]);
+  const [stepMessages, setStepMessages] = useState<Record<number, string>>({});
+  const [loadingStep, setLoadingStep] = useState<number | null>(null);
 
   // Parse value from parent if provided
   useEffect(() => {
@@ -89,7 +89,12 @@ export function PrimeFactorLadder({
 
   const removeRow = () => {
     if (rows.length > 1) {
-      setRows(rows.slice(0, -1));
+      const newRows = rows.slice(0, -1);
+      setRows(newRows);
+      // Clear message for removed step
+      const newMessages = { ...stepMessages };
+      delete newMessages[rows.length - 1];
+      setStepMessages(newMessages);
     }
   };
 
@@ -97,9 +102,23 @@ export function PrimeFactorLadder({
     const newRows = [...rows];
     newRows[index] = { ...newRows[index], [field]: val, feedback: null };
     setRows(newRows);
+    // Clear message when editing
+    setStepMessages(prev => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
   };
 
-  const checkStep = (index: number) => {
+  const isPrime = (n: number) => {
+    if (n < 2) return false;
+    for (let i = 2; i <= Math.sqrt(n); i++) {
+      if (n % i === 0) return false;
+    }
+    return true;
+  };
+
+  const checkStep = async (index: number) => {
     const row = rows[index];
     const previousQuotient = index === 0 ? targetNumber : parseInt(rows[index - 1]?.quotient || '0');
     
@@ -110,27 +129,44 @@ export function PrimeFactorLadder({
     
     // Check if the division is correct
     const expectedQuotient = previousQuotient / prime;
-    const isCorrect = expectedQuotient === quotient && previousQuotient % prime === 0;
-    
-    // Check if the prime is actually prime
-    const isPrime = (n: number) => {
-      if (n < 2) return false;
-      for (let i = 2; i <= Math.sqrt(n); i++) {
-        if (n % i === 0) return false;
-      }
-      return true;
-    };
+    const divisionCorrect = expectedQuotient === quotient && previousQuotient % prime === 0;
+    const primeCorrect = isPrime(prime);
+    const stepCorrect = divisionCorrect && primeCorrect;
     
     const newRows = [...rows];
     newRows[index] = { 
       ...newRows[index], 
-      feedback: isCorrect && isPrime(prime) ? 'correct' : 'incorrect' 
+      feedback: stepCorrect ? 'correct' : 'incorrect' 
     };
     setRows(newRows);
 
-    // Notify parent if callback provided
-    if (onCheckStep) {
-      onCheckStep(index, row.prime, row.quotient, previousQuotient);
+    // Generate feedback message
+    if (stepCorrect) {
+      setStepMessages(prev => ({ ...prev, [index]: `Correct! ${prime} is prime and ${previousQuotient} ÷ ${prime} = ${quotient}` }));
+    } else {
+      // Get AI feedback if available
+      if (onCheckStep) {
+        setLoadingStep(index);
+        const aiMessage = await onCheckStep(index, row.prime, row.quotient, previousQuotient);
+        setLoadingStep(null);
+        if (aiMessage) {
+          setStepMessages(prev => ({ ...prev, [index]: aiMessage }));
+          return;
+        }
+      }
+      
+      // Fallback feedback
+      if (!primeCorrect) {
+        setStepMessages(prev => ({ 
+          ...prev, 
+          [index]: `${prime} is not a prime number. What are the factors of ${prime}?` 
+        }));
+      } else if (!divisionCorrect) {
+        setStepMessages(prev => ({ 
+          ...prev, 
+          [index]: `Check your division: does ${previousQuotient} ÷ ${prime} = ${quotient}?` 
+        }));
+      }
     }
   };
 
@@ -176,56 +212,71 @@ export function PrimeFactorLadder({
         </div>
 
         {/* First quotient row */}
-        <div className="flex items-center border-b border-border pb-2 mb-2">
-          <div className="w-14">
-            {rows.length > 1 ? (
+        <div className="space-y-2 mb-2">
+          <div className="flex items-center border-b border-border pb-2">
+            <div className="w-14">
+              {rows.length > 1 ? (
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={rows[1]?.prime || ''}
+                  onChange={(e) => updateRow(1, 'prime', e.target.value)}
+                  disabled={disabled}
+                  className={cn(
+                    "h-9 text-center font-bold",
+                    rows[1]?.feedback === 'correct' && "border-green-500 text-green-600",
+                    rows[1]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                  )}
+                  placeholder=""
+                />
+              ) : null}
+            </div>
+            <div className="w-px h-9 bg-foreground mx-1"></div>
+            <div className="flex-1 pl-2">
               <Input
                 type="text"
                 inputMode="numeric"
-                value={rows[1]?.prime || ''}
-                onChange={(e) => updateRow(1, 'prime', e.target.value)}
+                value={rows[0]?.quotient || ''}
+                onChange={(e) => updateRow(0, 'quotient', e.target.value)}
                 disabled={disabled}
                 className={cn(
-                  "h-9 text-center font-bold",
-                  rows[1]?.feedback === 'correct' && "border-green-500 text-green-600",
-                  rows[1]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                  "h-9",
+                  rows[0]?.feedback === 'correct' && "border-green-500 bg-green-500/5",
+                  rows[0]?.feedback === 'incorrect' && "border-destructive bg-destructive/5"
                 )}
-                placeholder=""
+                placeholder="Result..."
               />
-            ) : null}
-          </div>
-          <div className="w-px h-9 bg-foreground mx-1"></div>
-          <div className="flex-1 pl-2">
-            <Input
-              type="text"
-              inputMode="numeric"
-              value={rows[0]?.quotient || ''}
-              onChange={(e) => updateRow(0, 'quotient', e.target.value)}
-              disabled={disabled}
-              className={cn(
-                "h-9",
-                rows[0]?.feedback === 'correct' && "border-green-500 bg-green-500/5",
-                rows[0]?.feedback === 'incorrect' && "border-destructive bg-destructive/5"
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => checkStep(0)}
+              disabled={disabled || !rows[0]?.prime || !rows[0]?.quotient || loadingStep === 0}
+              className="w-8 h-8 p-0 shrink-0"
+            >
+              {loadingStep === 0 ? (
+                <span className="animate-pulse text-xs">...</span>
+              ) : rows[0]?.feedback === 'correct' ? (
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              ) : rows[0]?.feedback === 'incorrect' ? (
+                <XCircle className="h-4 w-4 text-destructive" />
+              ) : (
+                <BookOpen className="h-4 w-4" />
               )}
-              placeholder="Result..."
-            />
+            </Button>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => checkStep(0)}
-            disabled={disabled || !rows[0]?.prime || !rows[0]?.quotient}
-            className="w-8 h-8 p-0 shrink-0"
-          >
-            {rows[0]?.feedback === 'correct' ? (
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-            ) : rows[0]?.feedback === 'incorrect' ? (
-              <XCircle className="h-4 w-4 text-destructive" />
-            ) : (
-              <BookOpen className="h-4 w-4" />
-            )}
-          </Button>
+          {/* Feedback message for step 0 */}
+          {stepMessages[0] && (
+            <div className={cn(
+              "rounded-md px-3 py-2 text-sm ml-16",
+              rows[0]?.feedback === 'correct' 
+                ? "bg-green-500/10 text-green-700 border border-green-500/30" 
+                : "bg-blue-500/10 text-blue-700 border border-blue-500/30"
+            )}>
+              {stepMessages[0]}
+            </div>
+          )}
         </div>
 
         {/* Additional rows */}
@@ -235,56 +286,71 @@ export function PrimeFactorLadder({
           const hasNextRow = nextIndex < rows.length;
           
           return (
-            <div key={actualIndex} className="flex items-center border-b border-border pb-2 mb-2">
-              <div className="w-14">
-                {hasNextRow ? (
+            <div key={actualIndex} className="space-y-2 mb-2">
+              <div className="flex items-center border-b border-border pb-2">
+                <div className="w-14">
+                  {hasNextRow ? (
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={rows[nextIndex]?.prime || ''}
+                      onChange={(e) => updateRow(nextIndex, 'prime', e.target.value)}
+                      disabled={disabled}
+                      className={cn(
+                        "h-9 text-center font-bold",
+                        rows[nextIndex]?.feedback === 'correct' && "border-green-500 text-green-600",
+                        rows[nextIndex]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                      )}
+                      placeholder=""
+                    />
+                  ) : null}
+                </div>
+                <div className="w-px h-9 bg-foreground mx-1"></div>
+                <div className="flex-1 pl-2">
                   <Input
                     type="text"
                     inputMode="numeric"
-                    value={rows[nextIndex]?.prime || ''}
-                    onChange={(e) => updateRow(nextIndex, 'prime', e.target.value)}
+                    value={row.quotient}
+                    onChange={(e) => updateRow(actualIndex, 'quotient', e.target.value)}
                     disabled={disabled}
                     className={cn(
-                      "h-9 text-center font-bold",
-                      rows[nextIndex]?.feedback === 'correct' && "border-green-500 text-green-600",
-                      rows[nextIndex]?.feedback === 'incorrect' && "border-destructive text-destructive"
+                      "h-9",
+                      row.feedback === 'correct' && "border-green-500 bg-green-500/5",
+                      row.feedback === 'incorrect' && "border-destructive bg-destructive/5"
                     )}
-                    placeholder=""
+                    placeholder="Result..."
                   />
-                ) : null}
-              </div>
-              <div className="w-px h-9 bg-foreground mx-1"></div>
-              <div className="flex-1 pl-2">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={row.quotient}
-                  onChange={(e) => updateRow(actualIndex, 'quotient', e.target.value)}
-                  disabled={disabled}
-                  className={cn(
-                    "h-9",
-                    row.feedback === 'correct' && "border-green-500 bg-green-500/5",
-                    row.feedback === 'incorrect' && "border-destructive bg-destructive/5"
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => checkStep(actualIndex)}
+                  disabled={disabled || !row.prime || !row.quotient || loadingStep === actualIndex}
+                  className="w-8 h-8 p-0 shrink-0"
+                >
+                  {loadingStep === actualIndex ? (
+                    <span className="animate-pulse text-xs">...</span>
+                  ) : row.feedback === 'correct' ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  ) : row.feedback === 'incorrect' ? (
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  ) : (
+                    <BookOpen className="h-4 w-4" />
                   )}
-                  placeholder="Result..."
-                />
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => checkStep(actualIndex)}
-                disabled={disabled || !row.prime || !row.quotient}
-                className="w-8 h-8 p-0 shrink-0"
-              >
-                {row.feedback === 'correct' ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                ) : row.feedback === 'incorrect' ? (
-                  <XCircle className="h-4 w-4 text-destructive" />
-                ) : (
-                  <BookOpen className="h-4 w-4" />
-                )}
-              </Button>
+              {/* Feedback message */}
+              {stepMessages[actualIndex] && (
+                <div className={cn(
+                  "rounded-md px-3 py-2 text-sm ml-16",
+                  row.feedback === 'correct' 
+                    ? "bg-green-500/10 text-green-700 border border-green-500/30" 
+                    : "bg-blue-500/10 text-blue-700 border border-blue-500/30"
+                )}>
+                  {stepMessages[actualIndex]}
+                </div>
+              )}
             </div>
           );
         })}

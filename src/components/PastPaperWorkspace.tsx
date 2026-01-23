@@ -277,6 +277,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             <p className="whitespace-pre-line text-foreground">{question.question}</p>
+            {question.image && (
+              <div className="mt-4 flex justify-center">
+                <img 
+                  src={question.image} 
+                  alt={`Diagram for ${question.questionNumber}`}
+                  className="max-w-[200px] h-auto"
+                />
+              </div>
+            )}
           </div>
 
           {/* Answer Fields */}

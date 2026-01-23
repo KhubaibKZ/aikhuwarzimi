@@ -10,6 +10,7 @@ export interface PastPaperQuestion {
   answer?: string | Record<string, string>;
   targetNumber?: number; // For prime factorization questions
   lcmNumbers?: [number, number]; // For LCM ladder questions
+  image?: string; // Optional image for the question
 }
 
 export interface PastPaperSection {
@@ -216,6 +217,7 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       'Angles are classified: acute (<90°), right (=90°), obtuse (>90° and <180°)'
     ],
     type: 'multi-part',
+    image: '/assets/triangle-q2b.png',
     parts: [
       { label: '(i) Name of triangle', key: 'name', marks: 1 },
       { label: '(ii) Angle CAB (degrees)', key: 'angle', marks: 1 },

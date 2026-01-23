@@ -254,19 +254,11 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       resultLabel: '='
     },
     parts: [
-      { label: 'Step 2: n value', key: 'step2_n', marks: 0 },
-      { label: 'Step 2: multiplier', key: 'step2_mult', marks: 0 },
-      { label: 'Step 2: denominator', key: 'step2_denom', marks: 0 },
-      { label: 'Step 3: result', key: 'step3_result', marks: 1 },
-      { label: 'Step 3: denominator', key: 'step3_denom', marks: 0 },
+      { label: 'Working', key: 'working', marks: 1 },
       { label: 'Final answer', key: 'final_answer', marks: 1 }
     ],
     answer: {
-      step2_n: '5',
-      step2_mult: '180',
-      step2_denom: '5',
-      step3_result: '3',
-      step3_denom: '5',
+      working: '(5-2) × 180 / 5 = 3 × 180 / 5 = 540 / 5',
       final_answer: '108'
     }
   },

@@ -43,19 +43,27 @@ RULES:
 2. Explain the concept or formula needed
 3. Give a general approach or method
 4. Use simple, clear language
-5. Keep hints concise (2-4 sentences)
+5. Keep hints concise (2-3 sentences max)
+6. NEVER use LaTeX notation like $x$ or \\times - use plain text/Unicode instead
+
+FORMATTING (CRITICAL):
+- Use × for multiplication (not * or \\times)
+- Use ÷ for division
+- Use ² ³ for exponents (not ^2 or ^3)
+- Use √ for square root
+- Write fractions as a/b
+- Use plain numbers: "2 × 3 = 6" not "$2 \\times 3 = 6$"
 
 Examples of good hints:
-- "This problem involves the concept of percentage. Remember, to find X% of a number, you multiply the number by X/100."
-- "Think about the properties of a right triangle. The Pythagorean theorem might be useful here."
-- "When solving equations, remember to perform the same operation on both sides to maintain equality."`;
+- "To find the prime factorization, keep dividing by the smallest prime (2, 3, 5...) until you reach 1."
+- "For HCF, find common factors. For LCM, multiply all prime factors with highest powers."`;
 
       userPrompt = `Question: "${question}"
 Topic: ${topic || "Mathematics"}
 
 ${hints && hints.length > 0 ? `Related concepts from the curriculum:\n${hints.join('\n')}` : ''}
 
-Provide a helpful conceptual hint that guides the student toward understanding how to approach this problem. Focus on the mathematical concept, not the specific answer.`;
+Provide a helpful conceptual hint (2-3 sentences max). Use plain text, NOT LaTeX.`;
 
     } else if (actionType === "checkWork") {
       // Check Work: Provide teacher-like guidance based on their work
@@ -67,7 +75,14 @@ RULES:
 - Maximum 2-3 short sentences
 - Never reveal the answer
 - Be natural and encouraging
+- NEVER use LaTeX notation like $x$ or \\times
 ${specificPart ? `- Focus ONLY on "${specificPart}"` : ""}
+
+FORMATTING (CRITICAL - use plain text only):
+- Use × for multiplication (not * or \\times)
+- Use ÷ for division, ² ³ for powers
+- Use √ for roots, write fractions as a/b
+- Example: "2 × 2 × 2 = 8" NOT "$2 \\times 2 \\times 2 = 8$"
 
 ADAPT TO SITUATION:
 ${hasWrong && hasMissing ? "They have errors AND missing parts. Address the most critical issue only." : ""}
@@ -80,7 +95,7 @@ ${(attemptCount || 1) <= 2 ? "Be gentle - remind them of the core concept with a
 ${(attemptCount || 1) >= 3 && (attemptCount || 1) <= 4 ? "Be more direct - point to the specific step that needs attention." : ""}
 ${(attemptCount || 1) >= 5 ? "Give a stronger methodological hint, but still don't give the answer." : ""}
 
-CRITICAL: Keep it SHORT - 2-3 lines maximum. One focused observation + one guiding question.${partContext}`;
+CRITICAL: 2-3 lines max. Plain text only, no LaTeX.${partContext}`;
 
       userPrompt = `Question: "${question}"
 Topic: ${topic || "Mathematics"}

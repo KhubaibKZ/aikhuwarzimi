@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
+import { TriangleDiagram } from '@/components/TriangleDiagram';
 
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
@@ -277,7 +278,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             <p className="whitespace-pre-line text-foreground">{question.question}</p>
-            {question.image && (
+            {question.id === 'pp_0580_s22_q2b' && (
+              <div className="mt-4 flex justify-center">
+                <TriangleDiagram />
+              </div>
+            )}
+            {question.image && question.id !== 'pp_0580_s22_q2b' && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

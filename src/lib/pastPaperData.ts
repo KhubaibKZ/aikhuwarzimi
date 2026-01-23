@@ -254,20 +254,20 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       resultLabel: '='
     },
     parts: [
-      { label: 'Line 1: n', key: 'line1_n', marks: 0 },
-      { label: 'Line 1: multiplier', key: 'line1_mult', marks: 0 },
-      { label: 'Line 1: denominator', key: 'line1_denom', marks: 0 },
-      { label: 'Line 2: numerator', key: 'line2_num', marks: 1 },
-      { label: 'Line 2: denominator', key: 'line2_denom', marks: 0 },
-      { label: 'Final answer', key: 'final_answer', marks: 1 }
+      { label: 'n value', key: 'n1', marks: 0 },
+      { label: 'multiplier', key: 'mult', marks: 0 },
+      { label: 'denominator 1', key: 'd1', marks: 0 },
+      { label: 'simplified numerator', key: 'n2', marks: 1 },
+      { label: 'denominator 2', key: 'd2', marks: 0 },
+      { label: 'answer', key: 'answer', marks: 1 }
     ],
     answer: {
-      line1_n: '5',
-      line1_mult: '180',
-      line1_denom: '5',
-      line2_num: '3',
-      line2_denom: '5',
-      final_answer: '108'
+      n1: '5',
+      mult: '180',
+      d1: '5',
+      n2: '3',
+      d2: '5',
+      answer: '108'
     }
   },
   'pp_0580_s22_q2d': {

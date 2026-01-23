@@ -476,35 +476,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'formula-fraction' && question.formulaTemplate ? (
-              /* Formula Fraction Layout - Fillable blanks style */
-              <div className="space-y-6">
+              /* Formula Fraction Layout - Single formula with fillable blanks */
+              <div className="space-y-4">
                 <label className="flex items-center justify-between text-sm font-medium">
-                  <span>Complete the calculation</span>
+                  <span>Complete the formula</span>
                   <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
                 </label>
                 
-                {/* Number of sides input */}
-                <div className="flex items-center gap-3">
-                  <span className="text-base">Number of sides =</span>
-                  <Input
-                    value={answers['n_value'] || ''}
-                    onChange={(e) => handleAnswerChange('n_value', e.target.value)}
-                    placeholder=""
-                    disabled={isSubmitted}
-                    className={cn(
-                      "w-14 h-10 text-center text-lg font-medium",
-                      feedback['n_value'] === 'correct' && "border-green-500 bg-green-500/5",
-                      feedback['n_value'] === 'incorrect' && "border-destructive bg-destructive/5"
-                    )}
-                  />
-                </div>
-                
-                {/* Formula with fillable blanks - handwritten style */}
-                <div className="flex items-center gap-4 py-6">
+                {/* Single formula with all blanks */}
+                <div className="flex items-center gap-3 py-4">
                   {/* The fraction structure */}
                   <div className="flex flex-col items-center">
                     {/* Numerator: ( [__] - 2 ) × [___] */}
-                    <div className="flex items-center gap-1 text-xl">
+                    <div className="flex items-center text-xl">
                       <span className="font-medium">(</span>
                       <Input
                         value={answers['n_num'] || ''}
@@ -512,7 +496,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                         placeholder=""
                         disabled={isSubmitted}
                         className={cn(
-                          "w-10 h-9 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0",
+                          "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0 mx-1",
                           feedback['n_num'] === 'correct' && "border-green-500",
                           feedback['n_num'] === 'incorrect' && "border-destructive"
                         )}
@@ -524,7 +508,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                         placeholder=""
                         disabled={isSubmitted}
                         className={cn(
-                          "w-14 h-9 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0",
+                          "w-12 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0 mx-1",
                           feedback['multiplier'] === 'correct' && "border-green-500",
                           feedback['multiplier'] === 'incorrect' && "border-destructive"
                         )}
@@ -532,46 +516,45 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                     </div>
                     
                     {/* Fraction line */}
-                    <div className="w-full h-[2px] bg-foreground my-3" />
+                    <div className="w-full h-[2px] bg-foreground my-2" />
                     
-                    {/* Denominator: [__] */}
+                    {/* Denominator */}
                     <Input
                       value={answers['n_denom'] || ''}
                       onChange={(e) => handleAnswerChange('n_denom', e.target.value)}
                       placeholder=""
                       disabled={isSubmitted}
                       className={cn(
-                        "w-10 h-9 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent px-0",
+                        "w-8 h-8 text-center text-lg font-medium border-b-2 border-t-0 border-l-0 border-r-0 rounded-none bg-transparent p-0",
                         feedback['n_denom'] === 'correct' && "border-green-500",
                         feedback['n_denom'] === 'incorrect' && "border-destructive"
                       )}
                     />
                   </div>
                   
-                  {/* Equals and final answer */}
+                  {/* Equals */}
                   <span className="text-2xl font-medium">=</span>
                   
-                  <div className="flex items-center gap-1">
-                    <Input
-                      value={answers['final_answer'] || ''}
-                      onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
-                      placeholder=""
-                      disabled={isSubmitted}
-                      className={cn(
-                        "w-16 h-12 text-center text-xl font-medium",
-                        feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
-                        feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
-                      )}
-                    />
-                    <span className="text-2xl font-medium">°</span>
-                  </div>
+                  {/* Final answer */}
+                  <Input
+                    value={answers['final_answer'] || ''}
+                    onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
+                    placeholder=""
+                    disabled={isSubmitted}
+                    className={cn(
+                      "w-14 h-10 text-center text-xl font-medium",
+                      feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
+                      feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
+                    )}
+                  />
+                  <span className="text-2xl font-medium">°</span>
                 </div>
                 
                 {/* Show correct answer after submit */}
                 {isSubmitted && typeof question.answer === 'object' && 
                   Object.entries(feedback).some(([_, v]) => v === 'incorrect') && (
                     <div className="text-sm text-green-600 font-medium">
-                      Correct: (5 - 2) × 180 ÷ 5 = 540 ÷ 5 = 108°
+                      Correct: (5 - 2) × 180 ÷ 5 = 108°
                     </div>
                   )
                 }

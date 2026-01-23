@@ -254,14 +254,12 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       resultLabel: '='
     },
     parts: [
-      { label: 'n (number of sides)', key: 'n_value', marks: 0 },
       { label: 'n in numerator', key: 'n_num', marks: 0 },
       { label: 'multiplier (180)', key: 'multiplier', marks: 1 },
       { label: 'n in denominator', key: 'n_denom', marks: 0 },
       { label: 'final answer', key: 'final_answer', marks: 1 }
     ],
     answer: {
-      n_value: '5',
       n_num: '5',
       multiplier: '180',
       n_denom: '5',

@@ -476,93 +476,70 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'formula-fraction' && question.formulaTemplate ? (
-              /* Formula Fraction Layout - Clean formula style */
-              <div className="space-y-4">
+              /* Formula Fraction Layout */
+              <div className="space-y-6">
                 <label className="flex items-center justify-between text-sm font-medium">
-                  <span>Complete the formula</span>
+                  <span>Complete the calculation</span>
                   <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
                 </label>
                 
-                {/* Clean formula display */}
-                <div className="flex items-center justify-center gap-3 p-6 bg-muted/30 rounded-lg">
-                  {/* Main fraction: (n-2) × 180 / n */}
+                {/* Step 1: Number of sides */}
+                <div className="space-y-2">
+                  <label className="text-sm text-muted-foreground">Number of sides (n) =</label>
+                  <Input
+                    value={answers['n_value'] || ''}
+                    onChange={(e) => handleAnswerChange('n_value', e.target.value)}
+                    placeholder=""
+                    disabled={isSubmitted}
+                    className={cn(
+                      "w-20 h-10 text-center text-lg font-medium",
+                      feedback['n_value'] === 'correct' && "border-green-500 bg-green-500/5",
+                      feedback['n_value'] === 'incorrect' && "border-destructive bg-destructive/5"
+                    )}
+                  />
+                </div>
+                
+                {/* Step 2: Formula fraction - exactly like handwritten */}
+                <div className="flex items-center justify-start gap-4 py-4">
+                  {/* The fraction (n-2) × 180 / n */}
                   <div className="flex flex-col items-center">
-                    {/* Numerator: ( [n] - 2 ) × 180 */}
-                    <div className="flex items-center gap-1 text-lg font-medium">
-                      <span>(</span>
-                      <Input
-                        value={answers['n_value'] || ''}
-                        onChange={(e) => handleAnswerChange('n_value', e.target.value)}
-                        placeholder=""
-                        disabled={isSubmitted}
-                        className={cn(
-                          "w-10 h-8 text-center p-0 text-lg font-medium",
-                          feedback['n_value'] === 'correct' && "border-green-500 bg-green-500/5",
-                          feedback['n_value'] === 'incorrect' && "border-destructive bg-destructive/5"
-                        )}
-                      />
-                      <span>- 2 ) × 180</span>
-                    </div>
-                    
-                    {/* Fraction line */}
-                    <div className="w-full h-[2px] bg-foreground my-1" />
-                    
-                    {/* Denominator: auto-filled from n */}
-                    <span className="text-lg font-medium h-8 flex items-center">
-                      {answers['n_value'] || 'n'}
+                    {/* Numerator */}
+                    <span className="text-xl font-medium tracking-wide">
+                      ( {answers['n_value'] || 'n'} - 2 ) × 180
                     </span>
-                  </div>
-                  
-                  {/* Equals */}
-                  <span className="text-xl font-medium">=</span>
-                  
-                  {/* Result fraction: sum / n */}
-                  <div className="flex flex-col items-center">
-                    <Input
-                      value={answers['numerator_result'] || ''}
-                      onChange={(e) => handleAnswerChange('numerator_result', e.target.value)}
-                      placeholder=""
-                      disabled={isSubmitted}
-                      className={cn(
-                        "w-14 h-8 text-center p-0 text-lg font-medium",
-                        feedback['numerator_result'] === 'correct' && "border-green-500 bg-green-500/5",
-                        feedback['numerator_result'] === 'incorrect' && "border-destructive bg-destructive/5"
-                      )}
-                    />
                     
                     {/* Fraction line */}
-                    <div className="w-14 h-[2px] bg-foreground my-1" />
+                    <div className="w-full h-[2px] bg-foreground my-2" />
                     
                     {/* Denominator */}
-                    <span className="text-lg font-medium h-8 flex items-center">
+                    <span className="text-xl font-medium">
                       {answers['n_value'] || 'n'}
                     </span>
                   </div>
                   
-                  {/* Equals */}
-                  <span className="text-xl font-medium">=</span>
+                  {/* Equals and final answer */}
+                  <span className="text-2xl font-medium">=</span>
                   
-                  {/* Final answer with degree symbol */}
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-1">
                     <Input
                       value={answers['final_answer'] || ''}
                       onChange={(e) => handleAnswerChange('final_answer', e.target.value)}
                       placeholder=""
                       disabled={isSubmitted}
                       className={cn(
-                        "w-14 h-10 text-center p-0 text-xl font-medium",
+                        "w-20 h-12 text-center text-xl font-medium",
                         feedback['final_answer'] === 'correct' && "border-green-500 bg-green-500/5",
                         feedback['final_answer'] === 'incorrect' && "border-destructive bg-destructive/5"
                       )}
                     />
-                    <span className="text-xl font-medium ml-1">°</span>
+                    <span className="text-2xl font-medium">°</span>
                   </div>
                 </div>
                 
-                {/* Show correct answers after submit */}
+                {/* Show correct answer after submit */}
                 {isSubmitted && typeof question.answer === 'object' && 
                   Object.entries(feedback).some(([_, v]) => v === 'incorrect') && (
-                    <div className="text-sm text-center text-green-600 font-medium">
+                    <div className="text-sm text-green-600 font-medium">
                       Correct: (5 - 2) × 180 ÷ 5 = 540 ÷ 5 = 108°
                     </div>
                   )

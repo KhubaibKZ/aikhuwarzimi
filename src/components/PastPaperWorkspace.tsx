@@ -13,7 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
-import { AngleStepsWorkspace } from '@/components/AngleStepsWorkspace';
+import { QuestionWorkspace } from '@/components/workspace';
+import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
   PrismDiagram, 
@@ -489,9 +490,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'angle-steps' && question.parts ? (
-              /* Angle Steps Workspace - with working area and specialized keyboard */
-              <AngleStepsWorkspace
-                parts={question.parts}
+              /* Angle Steps Workspace - uses new QuestionWorkspace with smart keyboard */
+              <QuestionWorkspace
+                parts={question.parts.map(p => ({
+                  ...p,
+                  suffix: '°' // Angle questions always have degree suffix
+                }))}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -501,6 +505,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
+                keyboardKeys={getKeyboardConfig(question.id)}
+                roughWorkPlaceholder={`Example for ${question.title}:
+Step 1: Identify given information
+Step 2: Apply the relevant formula/rule
+Step 3: Calculate the answer`}
+                showRoughWork={true}
               />
             ) : question.parts ? (
               question.parts.map((part) => (

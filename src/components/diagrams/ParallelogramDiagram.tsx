@@ -5,38 +5,31 @@ interface ParallelogramDiagramProps {
 }
 
 export function ParallelogramDiagram({ reflexAngle = 248 }: ParallelogramDiagramProps) {
-  const width = 340;
-  const height = 180;
+  const width = 300;
+  const height = 200;
   
-  // Parallelogram vertices - matching exam paper layout
+  // Parallelogram vertices - matching exam paper layout exactly
   // A bottom-left, B top-left, C top-right, D bottom-right
-  const A = { x: 30, y: 140 };
-  const B = { x: 80, y: 45 };
-  const C = { x: 290, y: 45 };
-  const D = { x: 240, y: 140 };
+  const A = { x: 50, y: 150 };
+  const B = { x: 100, y: 55 };
+  const C = { x: 250, y: 55 };
+  const D = { x: 200, y: 150 };
 
-  // Extended line from A through D (for exterior angle)
-  const vecAD = { x: D.x - A.x, y: D.y - A.y };
-  const vecADLen = Math.sqrt(vecAD.x ** 2 + vecAD.y ** 2);
-  const extendLength = 50;
-  const extendedX = D.x + (vecAD.x / vecADLen) * extendLength;
-  const extendedY = D.y + (vecAD.y / vecADLen) * extendLength;
-
-  // Arc for the 248° exterior/reflex angle at D
-  const arcRadius = 28;
+  // Arc for the 248° reflex angle at D
+  // The arc should wrap around the exterior (below and around D)
+  const arcRadius = 30;
   
-  // Calculate angles for the arc
-  // Start: from D toward C (going up-right)
+  // Angle calculations for the arc
+  // From D going toward C (up-left)
   const angleDC = Math.atan2(C.y - D.y, C.x - D.x);
-  // End: along the extended line from A through D
-  const angleExtended = Math.atan2(vecAD.y, vecAD.x);
+  // From D going toward A (down-left)  
+  const angleDA = Math.atan2(A.y - D.y, A.x - D.x);
   
-  // Arc sweeps clockwise from DC direction around (exterior) to extended line
-  // For a reflex angle, we use large-arc-flag = 1
+  // Arc start (from DC direction) and end (toward DA direction going the long way around - reflex)
   const arcStartX = D.x + arcRadius * Math.cos(angleDC);
   const arcStartY = D.y + arcRadius * Math.sin(angleDC);
-  const arcEndX = D.x + arcRadius * Math.cos(angleExtended);
-  const arcEndY = D.y + arcRadius * Math.sin(angleExtended);
+  const arcEndX = D.x + arcRadius * Math.cos(angleDA);
+  const arcEndY = D.y + arcRadius * Math.sin(angleDA);
 
   return (
     <div className="flex justify-center">
@@ -49,17 +42,7 @@ export function ParallelogramDiagram({ reflexAngle = 248 }: ParallelogramDiagram
           strokeWidth={1.5}
         />
         
-        {/* Extended line from D continuing past the parallelogram */}
-        <line
-          x1={D.x}
-          y1={D.y}
-          x2={extendedX}
-          y2={extendedY}
-          stroke="black"
-          strokeWidth={1.5}
-        />
-        
-        {/* Exterior angle arc at D */}
+        {/* Reflex angle arc at D - sweeps the exterior (large arc) */}
         <path
           d={`M ${arcStartX} ${arcStartY} A ${arcRadius} ${arcRadius} 0 1 1 ${arcEndX} ${arcEndY}`}
           fill="none"
@@ -68,27 +51,27 @@ export function ParallelogramDiagram({ reflexAngle = 248 }: ParallelogramDiagram
         />
         
         {/* Vertex labels - italic like exam paper */}
-        <text x={A.x - 12} y={A.y + 4} fontSize={14} fontStyle="italic" fill="black">A</text>
-        <text x={B.x - 4} y={B.y - 8} fontSize={14} fontStyle="italic" fill="black">B</text>
-        <text x={C.x + 6} y={C.y - 8} fontSize={14} fontStyle="italic" fill="black">C</text>
-        <text x={D.x + 2} y={D.y + 16} fontSize={14} fontStyle="italic" fill="black">D</text>
+        <text x={A.x - 10} y={A.y + 15} fontSize={14} fontStyle="italic" fill="black">A</text>
+        <text x={B.x - 5} y={B.y - 8} fontSize={14} fontStyle="italic" fill="black">B</text>
+        <text x={C.x + 5} y={C.y - 8} fontSize={14} fontStyle="italic" fill="black">C</text>
+        <text x={D.x + 5} y={D.y + 5} fontSize={14} fontStyle="italic" fill="black">D</text>
         
-        {/* 248° label - positioned near the arc at D */}
+        {/* 248° label - positioned below the arc */}
         <text
-          x={D.x + 45}
-          y={D.y + 30}
+          x={D.x + 20}
+          y={D.y + 40}
           fontSize={13}
           fill="black"
         >
           {reflexAngle}°
         </text>
         
-        {/* NOT TO SCALE - small text at bottom */}
+        {/* NOT TO SCALE */}
         <text
           x={width / 2}
           y={height - 5}
           fontSize={9}
-          fill="#666"
+          fill="#888"
           textAnchor="middle"
           fontStyle="italic"
         >

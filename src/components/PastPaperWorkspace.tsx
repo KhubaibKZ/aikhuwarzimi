@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
-import { QuestionWorkspace } from '@/components/workspace';
+import { StepWorkspace } from '@/components/workspace';
 import { getKeyboardConfig, getRoughWorkPlaceholder } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
@@ -490,88 +490,99 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'angle-steps' && question.parts ? (
-              /* Angle Steps Workspace - uses QuestionWorkspace with smart keyboard */
-              <QuestionWorkspace
-                parts={question.parts.map(p => ({
-                  ...p,
-                  suffix: '°'
-                }))}
+              /* Angle Steps Workspace - uses StepWorkspace with horizontal keyboard */
+              <StepWorkspace
+                steps={[
+                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
+                  ...question.parts.map(p => ({
+                    ...p,
+                    suffix: '°',
+                    type: 'input' as const
+                  }))
+                ]}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
                 onCheckWork={handleCheckWorkForPart}
                 isLoading={isLoading}
-                loadingPartKey={loadingPartKey}
+                loadingStepKey={loadingPartKey}
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-                showRoughWork={true}
+                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'calculation' && question.parts ? (
-              /* Calculation questions - use QuestionWorkspace */
-              <QuestionWorkspace
-                parts={question.parts.map(p => ({
-                  ...p,
-                  suffix: p.label.includes('°') || p.label.includes('degree') ? '°' : 
-                          p.label.includes('$') ? '' :
-                          p.label.includes('cm³') ? ' cm³' :
-                          p.label.includes('cm²') ? ' cm²' :
-                          p.label.includes('%') ? '%' : ''
-                }))}
+              /* Calculation questions - use StepWorkspace */
+              <StepWorkspace
+                steps={[
+                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
+                  ...question.parts.map(p => ({
+                    ...p,
+                    suffix: p.label.includes('°') || p.label.includes('degree') ? '°' : 
+                            p.label.includes('$') ? '' :
+                            p.label.includes('cm³') ? ' cm³' :
+                            p.label.includes('cm²') ? ' cm²' :
+                            p.label.includes('%') ? '%' : '',
+                    type: 'input' as const
+                  }))
+                ]}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
                 onCheckWork={handleCheckWorkForPart}
                 isLoading={isLoading}
-                loadingPartKey={loadingPartKey}
+                loadingStepKey={loadingPartKey}
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-                showRoughWork={true}
+                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
-              /* Multi-part questions - use QuestionWorkspace */
-              <QuestionWorkspace
-                parts={question.parts.map(p => ({
-                  ...p,
-                  suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
-                          p.label.includes('hour') ? ' hr' :
-                          p.label.includes('minute') ? ' min' :
-                          p.label.includes('%') ? '%' : ''
-                }))}
+              /* Multi-part questions - use StepWorkspace */
+              <StepWorkspace
+                steps={[
+                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
+                  ...question.parts.map(p => ({
+                    ...p,
+                    suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
+                            p.label.includes('hour') ? ' hr' :
+                            p.label.includes('minute') ? ' min' :
+                            p.label.includes('%') ? '%' : '',
+                    type: 'input' as const
+                  }))
+                ]}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
                 onCheckWork={handleCheckWorkForPart}
                 isLoading={isLoading}
-                loadingPartKey={loadingPartKey}
+                loadingStepKey={loadingPartKey}
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-                showRoughWork={true}
+                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.parts ? (
-              /* Generic parts - use QuestionWorkspace for consistency */
-              <QuestionWorkspace
-                parts={question.parts}
+              /* Generic parts - use StepWorkspace for consistency */
+              <StepWorkspace
+                steps={[
+                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
+                  ...question.parts.map(p => ({ ...p, type: 'input' as const }))
+                ]}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
                 onCheckWork={handleCheckWorkForPart}
                 isLoading={isLoading}
-                loadingPartKey={loadingPartKey}
+                loadingStepKey={loadingPartKey}
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-                showRoughWork={true}
+                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'prime-factor' && question.targetNumber ? (
               /* Prime Factorization Ladder */
@@ -681,21 +692,27 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : (
-              /* Short/single answer questions - also use QuestionWorkspace for consistency */
-              <QuestionWorkspace
-                parts={[{ key: 'answer', label: 'Answer', marks: question.marks }]}
+              /* Short/single answer questions - also use StepWorkspace for consistency */
+              <StepWorkspace
+                steps={
+                  question.marks > 1 
+                    ? [
+                        { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
+                        { key: 'answer', label: 'Answer', marks: question.marks, type: 'input' }
+                      ]
+                    : [{ key: 'answer', label: 'Answer', marks: question.marks, type: 'input' }]
+                }
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
                 onCheckWork={handleCheckWorkForPart}
                 isLoading={isLoading}
-                loadingPartKey={loadingPartKey}
+                loadingStepKey={loadingPartKey}
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-                showRoughWork={question.marks > 1}
+                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             )}
           </div>

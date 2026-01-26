@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
+import { AngleStepsWorkspace } from '@/components/AngleStepsWorkspace';
 import { 
   CoordinateGrid, 
   PrismDiagram, 
@@ -186,7 +187,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           attemptCount: (attemptCount[partKey] || 0) + 1,
           hasMissing: false,
           hasWrong: true,
-          specificPart: partLabel
+          specificPart: partLabel,
+          workingContent: answers['working'] || '' // Include working space content for AI review
         }
       });
 
@@ -486,6 +488,20 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   </div>
                 )}
               </div>
+            ) : question.type === 'angle-steps' && question.parts ? (
+              /* Angle Steps Workspace - with working area and specialized keyboard */
+              <AngleStepsWorkspace
+                parts={question.parts}
+                answers={answers}
+                feedback={feedback}
+                onAnswerChange={handleAnswerChange}
+                onCheckWork={handleCheckWorkForPart}
+                isLoading={isLoading}
+                loadingPartKey={loadingPartKey}
+                isSubmitted={isSubmitted}
+                correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                aiResponse={aiResponse}
+              />
             ) : question.parts ? (
               question.parts.map((part) => (
                 <div key={part.key} className="space-y-2">

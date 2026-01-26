@@ -5,8 +5,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, XCircle, BookOpen, Keyboard, ChevronDown, ChevronUp } from 'lucide-react';
 
+interface AngleStepsWorkspacePart {
+  label: string;
+  key: string;
+  marks: number;
+}
+
 interface AngleStepsWorkspaceProps {
-  parts: { label: string; key: string; marks: number }[];
+  parts: AngleStepsWorkspacePart[];
   answers: Record<string, string>;
   feedback: Record<string, 'correct' | 'incorrect' | null>;
   onAnswerChange: (key: string, value: string) => void;
@@ -15,15 +21,16 @@ interface AngleStepsWorkspaceProps {
   loadingPartKey: string | null;
   isSubmitted: boolean;
   correctAnswers?: Record<string, string>;
+  aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
 }
 
-// Custom keyboard for angle problems - numbers, x, degree symbol, operators
+// Custom keyboard for angle problems
 const ANGLE_KEYBOARD_KEYS = [
   ['7', '8', '9', '360'],
   ['4', '5', '6', '248'],
   ['1', '2', '3', '180'],
   ['0', 'x', '°', '−'],
-  ['=', '(', ')', '⌫'],
+  ['=', '+', '/', '⌫'],
 ];
 
 export function AngleStepsWorkspace({
@@ -35,9 +42,10 @@ export function AngleStepsWorkspace({
   isLoading,
   loadingPartKey,
   isSubmitted,
-  correctAnswers
+  correctAnswers,
+  aiResponse
 }: AngleStepsWorkspaceProps) {
-  const [keyboardOpen, setKeyboardOpen] = useState(true); // Open by default
+  const [keyboardOpen, setKeyboardOpen] = useState(true);
   const [focusedInput, setFocusedInput] = useState<string | null>('working');
   const [showWorkingArea, setShowWorkingArea] = useState(true);
   const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
@@ -53,7 +61,6 @@ export function AngleStepsWorkspace({
     const currentValue = answers[focusedInput] || '';
 
     if (key === '⌫') {
-      // Backspace
       if (start === end && start > 0) {
         const newValue = currentValue.slice(0, start - 1) + currentValue.slice(end);
         onAnswerChange(focusedInput, newValue);
@@ -70,7 +77,6 @@ export function AngleStepsWorkspace({
         }, 0);
       }
     } else {
-      // Insert character
       const newValue = currentValue.slice(0, start) + key + currentValue.slice(end);
       onAnswerChange(focusedInput, newValue);
       setTimeout(() => {
@@ -82,7 +88,7 @@ export function AngleStepsWorkspace({
 
   return (
     <div className="space-y-4">
-      {/* Step-by-step working area - free form */}
+      {/* Working Space - rough work area */}
       <div className="space-y-3">
         <Button
           variant="ghost"
@@ -98,10 +104,9 @@ export function AngleStepsWorkspace({
         
         {showWorkingArea && (
           <div className="space-y-3 pl-1">
-            {/* Free-form working area */}
             <div className="space-y-2">
               <label className="text-xs text-muted-foreground">
-                Work through the problem step by step (in any order):
+                Work through the problem step by step:
               </label>
               <Textarea
                 ref={(el) => { inputRefs.current['working'] = el; }}
@@ -109,22 +114,58 @@ export function AngleStepsWorkspace({
                 onChange={(e) => onAnswerChange('working', e.target.value)}
                 onFocus={() => setFocusedInput('working')}
                 placeholder="Example:
-360° − 248° = 112° (interior angle at D)
-180° − 112° = 68° (adjacent angles in parallelogram)"
+Reflex angle at D = 248°
+Interior angle D = 360° − 248° = 112°
+Adjacent angles in parallelogram add to 180°
+Angle DCB = 180° − 112° = 68°"
                 disabled={isSubmitted}
                 className={cn(
-                  "min-h-[100px] font-mono text-sm resize-none",
+                  "min-h-[120px] font-mono text-sm resize-none",
                   focusedInput === 'working' && "ring-2 ring-primary/30"
                 )}
               />
+              
+              {/* Check Work button for working space */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onCheckWork('working', 'Working steps')}
+                disabled={isLoading || isSubmitted || !answers['working']?.trim()}
+                className="gap-2"
+                title="Check your working"
+              >
+                {loadingPartKey === 'working' ? (
+                  <span className="animate-pulse">Checking...</span>
+                ) : (
+                  <>
+                    <BookOpen className="h-4 w-4" />
+                    Check My Working
+                  </>
+                )}
+              </Button>
+              
+              {/* AI Response for working area */}
+              {aiResponse?.partKey === 'working' && (
+                <div className={cn(
+                  "rounded-lg border p-3 text-sm",
+                  aiResponse.type === 'hint' 
+                    ? "border-amber-500/30 bg-amber-500/10" 
+                    : "border-blue-500/30 bg-blue-500/10"
+                )}>
+                  <div className="flex items-start gap-2">
+                    <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                    <p className="whitespace-pre-line">{aiResponse.content}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      {/* Answer fields for each step */}
+      {/* Answer fields for each part */}
       <div className="space-y-4 border-t pt-4">
-        <p className="text-sm font-medium">Enter your final values:</p>
+        <p className="text-sm font-medium">Enter your final answers:</p>
         
         {parts.map((part, index) => (
           <div key={part.key} className="space-y-2">
@@ -141,14 +182,6 @@ export function AngleStepsWorkspace({
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <div className="flex items-center gap-2">
-                  {/* Contextual formula hint */}
-                  {index === 0 && (
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">360° − 248° =</span>
-                  )}
-                  {index === 1 && (
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">180° − x =</span>
-                  )}
-                  
                   <div className="relative flex-1">
                     <Input
                       ref={(el) => { inputRefs.current[part.key] = el; }}
@@ -175,14 +208,14 @@ export function AngleStepsWorkspace({
                 </div>
               </div>
               
-              {/* Check Work button for each step */}
+              {/* Check Work button for each part */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onCheckWork(part.key, part.label)}
                 disabled={isLoading || isSubmitted}
                 className="shrink-0"
-                title="Check this step"
+                title="Check this answer"
               >
                 {loadingPartKey === part.key ? (
                   <span className="animate-pulse">...</span>
@@ -191,6 +224,21 @@ export function AngleStepsWorkspace({
                 )}
               </Button>
             </div>
+            
+            {/* AI Response for this part */}
+            {aiResponse?.partKey === part.key && (
+              <div className={cn(
+                "rounded-lg border p-3 text-sm",
+                aiResponse.type === 'hint' 
+                  ? "border-amber-500/30 bg-amber-500/10" 
+                  : "border-blue-500/30 bg-blue-500/10"
+              )}>
+                <div className="flex items-start gap-2">
+                  <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                  <p className="whitespace-pre-line">{aiResponse.content}</p>
+                </div>
+              </div>
+            )}
             
             {/* Show correct answer after submit for incorrect parts */}
             {isSubmitted && feedback[part.key] === 'incorrect' && correctAnswers && (
@@ -246,7 +294,7 @@ export function AngleStepsWorkspace({
         )}
       </div>
 
-      {/* Solution approach reminder */}
+      {/* Key concepts reminder */}
       <div className="bg-muted/30 rounded-lg p-3 text-sm text-muted-foreground">
         <p className="font-medium mb-1">💡 Key concepts:</p>
         <ul className="list-disc list-inside space-y-1 text-xs">

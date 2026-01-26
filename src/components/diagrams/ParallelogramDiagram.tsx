@@ -11,60 +11,49 @@ export function ParallelogramDiagram({
   showReflex = true,
   vertexLabels = { A: 'A', B: 'B', C: 'C', D: 'D' }
 }: ParallelogramDiagramProps) {
-  const width = 380;
-  const height = 260;
+  const width = 400;
+  const height = 200;
   
-  // Parallelogram vertices - positioned to leave room for exterior angle arc
-  const A = { x: 70, y: 170 };   // Bottom left
-  const B = { x: 130, y: 70 };   // Top left
-  const C = { x: 310, y: 70 };   // Top right
-  const D = { x: 250, y: 170 };  // Bottom right
+  // Parallelogram vertices - matching the reference image layout
+  // A is bottom left, B is top left, C is top right, D is bottom right
+  const A = { x: 50, y: 150 };   // Bottom left
+  const B = { x: 100, y: 50 };   // Top left
+  const C = { x: 340, y: 50 };   // Top right
+  const D = { x: 290, y: 150 };  // Bottom right
 
-  // Calculate vectors for the exterior angle arc at D
-  // Vector DC (from D to C) and extended DA (from D beyond A)
+  // Extended line from A through D and beyond (for exterior angle)
+  const vecAD = { x: D.x - A.x, y: D.y - A.y };
+  const vecADLen = Math.sqrt(vecAD.x ** 2 + vecAD.y ** 2);
+  const extendLength = 50;
+  const extendedDX = D.x + (vecAD.x / vecADLen) * extendLength;
+  const extendedDY = D.y + (vecAD.y / vecADLen) * extendLength;
+
+  // Arc for the exterior reflex angle at D (248°)
+  // The arc should be drawn outside the parallelogram
+  const arcRadius = 30;
+  
+  // Calculate angles for the arc
+  // Direction from D to C
   const vecDC = { x: C.x - D.x, y: C.y - D.y };
-  const vecDA = { x: A.x - D.x, y: A.y - D.y };
-  
-  // Angle of DC from positive x-axis
   const angleDC = Math.atan2(vecDC.y, vecDC.x);
-  // Angle of extended line beyond A (opposite direction of DA)
-  const vecDAExtended = { x: -(A.x - D.x), y: -(A.y - D.y) };
-  const angleDAExtended = Math.atan2(vecDAExtended.y, vecDAExtended.x);
   
-  // Arc radius for the reflex angle indicator
-  const arcRadius = 40;
+  // Direction from D along extended AD line (exterior)
+  const angleExtended = Math.atan2(vecAD.y, vecAD.x);
   
-  // For a reflex angle of 248°, we draw an arc going the "long way" around
-  // Starting from the DC direction and sweeping counterclockwise (exterior)
-  const startAngle = angleDC;
-  // The reflex angle is 248°, so the arc goes 248° counterclockwise from DC
-  const sweepAngleDeg = reflexAngle;
-  const sweepAngle = (sweepAngleDeg * Math.PI) / 180;
+  // Arc start and end points
+  const arcStartX = D.x + arcRadius * Math.cos(angleDC);
+  const arcStartY = D.y + arcRadius * Math.sin(angleDC);
+  const arcEndX = D.x + arcRadius * Math.cos(angleExtended);
+  const arcEndY = D.y + arcRadius * Math.sin(angleExtended);
   
-  // Calculate arc endpoints
-  const arcStartX = D.x + arcRadius * Math.cos(startAngle);
-  const arcStartY = D.y + arcRadius * Math.sin(startAngle);
-  const arcEndX = D.x + arcRadius * Math.cos(startAngle - sweepAngle);
-  const arcEndY = D.y + arcRadius * Math.sin(startAngle - sweepAngle);
-  
-  // Large arc flag for >180° arcs
-  const largeArcFlag = sweepAngleDeg > 180 ? 1 : 0;
-  
-  // Position for the angle label (outside, roughly at the midpoint of the arc)
-  const labelAngle = startAngle - sweepAngle / 2;
-  const labelRadius = arcRadius + 25;
-  const labelX = D.x + labelRadius * Math.cos(labelAngle);
-  const labelY = D.y + labelRadius * Math.sin(labelAngle);
-
-  // Extended line from D beyond A (to show exterior angle context)
-  const extendLength = 35;
-  const extendedAX = D.x + (vecDAExtended.x / Math.sqrt(vecDAExtended.x ** 2 + vecDAExtended.y ** 2)) * extendLength;
-  const extendedAY = D.y + (vecDAExtended.y / Math.sqrt(vecDAExtended.x ** 2 + vecDAExtended.y ** 2)) * extendLength;
+  // Position for the angle label (below and to the right of D)
+  const labelX = D.x + 15;
+  const labelY = D.y + 50;
 
   return (
     <div className="flex justify-center">
       <svg width={width} height={height} className="bg-card rounded-lg border">
-        {/* Parallelogram */}
+        {/* Parallelogram shape */}
         <polygon
           points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y} ${D.x},${D.y}`}
           fill="none"
@@ -72,48 +61,42 @@ export function ParallelogramDiagram({
           strokeWidth={2}
         />
         
-        {/* Extended line from D beyond A (dashed) to show exterior angle */}
+        {/* Extended line from D beyond the parallelogram (to show exterior angle) */}
         {showReflex && (
           <line
             x1={D.x}
             y1={D.y}
-            x2={extendedAX}
-            y2={extendedAY}
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth={1.5}
-            strokeDasharray="4,3"
+            x2={extendedDX}
+            y2={extendedDY}
+            stroke="hsl(var(--foreground))"
+            strokeWidth={2}
           />
         )}
         
         {/* Vertex labels */}
-        <text x={A.x - 18} y={A.y + 5} fontSize={14} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.A}</text>
-        <text x={B.x - 5} y={B.y - 12} fontSize={14} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.B}</text>
-        <text x={C.x + 8} y={C.y - 8} fontSize={14} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.C}</text>
-        <text x={D.x + 10} y={D.y - 8} fontSize={14} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.D}</text>
+        <text x={A.x - 15} y={A.y + 5} fontSize={16} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.A}</text>
+        <text x={B.x - 5} y={B.y - 10} fontSize={16} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.B}</text>
+        <text x={C.x + 8} y={C.y - 8} fontSize={16} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.C}</text>
+        <text x={D.x + 10} y={D.y + 5} fontSize={16} fontStyle="italic" fill="hsl(var(--foreground))">{vertexLabels.D}</text>
         
-        {/* Reflex angle arc at D - sweeping outside the parallelogram */}
+        {/* Exterior angle arc at D */}
         {showReflex && (
           <>
-            {/* Arc path for the reflex (exterior) angle */}
+            {/* Arc for the reflex angle - drawn below the parallelogram */}
             <path
-              d={`M ${arcStartX} ${arcStartY} A ${arcRadius} ${arcRadius} 0 ${largeArcFlag} 0 ${arcEndX} ${arcEndY}`}
+              d={`M ${arcStartX} ${arcStartY} A ${arcRadius} ${arcRadius} 0 1 1 ${arcEndX} ${arcEndY}`}
               fill="none"
               stroke="hsl(var(--foreground))"
               strokeWidth={1.5}
             />
             
-            {/* Small tick marks at arc ends to indicate the angle being measured */}
-            <circle cx={arcStartX} cy={arcStartY} r={2} fill="hsl(var(--foreground))" />
-            <circle cx={arcEndX} cy={arcEndY} r={2} fill="hsl(var(--foreground))" />
-            
-            {/* Angle label positioned outside */}
+            {/* Angle label positioned below D */}
             <text
               x={labelX}
               y={labelY}
-              fontSize={14}
+              fontSize={16}
               fill="hsl(var(--foreground))"
               textAnchor="middle"
-              dominantBaseline="middle"
             >
               {reflexAngle}°
             </text>
@@ -123,7 +106,7 @@ export function ParallelogramDiagram({
         {/* NOT TO SCALE label */}
         <text
           x={width / 2}
-          y={height - 10}
+          y={height - 5}
           fontSize={10}
           fill="hsl(var(--muted-foreground))"
           textAnchor="middle"

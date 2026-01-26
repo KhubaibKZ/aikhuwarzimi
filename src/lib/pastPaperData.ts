@@ -11,7 +11,7 @@ export interface PastPaperQuestion {
   question: string;
   marks: number;
   hints: string[];
-  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder' | 'formula-fraction';
+  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder' | 'formula-fraction' | 'angle-steps';
   parts?: { label: string; key: string; marks: number }[];
   answer?: string | Record<string, string>;
   targetNumber?: number; // For prime factorization questions
@@ -270,20 +270,21 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
     id: 'pp_0580_s22_q2d',
     questionNumber: '2(d)',
     title: 'Parallelogram angles',
-    question: 'ABCD is a parallelogram. The reflex angle at D is 248°.\n\nFind angle DCB.',
+    question: 'ABCD is a parallelogram. The reflex angle at D is 248°.\n\nFind:\n(i) angle D\n(ii) angle DCB',
     marks: 2,
     hints: [
       'Reflex angle + interior angle = 360°',
       'So angle D = 360° - 248° = 112°',
       'In a parallelogram, adjacent angles are supplementary (add to 180°)'
     ],
-    type: 'calculation',
-    image: '/assets/parallelogram-q2d.png',
+    type: 'angle-steps',
     parts: [
-      { label: 'Angle DCB', key: 'answer', marks: 2 }
+      { label: 'Angle D (interior)', key: 'angleD', marks: 1 },
+      { label: 'Angle DCB', key: 'angleDCB', marks: 1 }
     ],
     answer: {
-      answer: '68'
+      angleD: '112',
+      angleDCB: '68'
     }
   },
   'pp_0580_s22_q2e': {

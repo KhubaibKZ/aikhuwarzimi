@@ -14,7 +14,7 @@ import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { QuestionWorkspace } from '@/components/workspace';
-import { getKeyboardConfig } from '@/lib/keyboardConfigs';
+import { getKeyboardConfig, getRoughWorkPlaceholder } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
   PrismDiagram, 
@@ -490,11 +490,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 )}
               </div>
             ) : question.type === 'angle-steps' && question.parts ? (
-              /* Angle Steps Workspace - uses new QuestionWorkspace with smart keyboard */
+              /* Angle Steps Workspace - uses QuestionWorkspace with smart keyboard */
               <QuestionWorkspace
                 parts={question.parts.map(p => ({
                   ...p,
-                  suffix: '°' // Angle questions always have degree suffix
+                  suffix: '°'
                 }))}
                 answers={answers}
                 feedback={feedback}
@@ -505,90 +505,74 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id)}
-                roughWorkPlaceholder={`Example for ${question.title}:
-Step 1: Identify given information
-Step 2: Apply the relevant formula/rule
-Step 3: Calculate the answer`}
+                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
+                showRoughWork={true}
+              />
+            ) : question.type === 'calculation' && question.parts ? (
+              /* Calculation questions - use QuestionWorkspace */
+              <QuestionWorkspace
+                parts={question.parts.map(p => ({
+                  ...p,
+                  suffix: p.label.includes('°') || p.label.includes('degree') ? '°' : 
+                          p.label.includes('$') ? '' :
+                          p.label.includes('cm³') ? ' cm³' :
+                          p.label.includes('cm²') ? ' cm²' :
+                          p.label.includes('%') ? '%' : ''
+                }))}
+                answers={answers}
+                feedback={feedback}
+                onAnswerChange={handleAnswerChange}
+                onCheckWork={handleCheckWorkForPart}
+                isLoading={isLoading}
+                loadingPartKey={loadingPartKey}
+                isSubmitted={isSubmitted}
+                correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                aiResponse={aiResponse}
+                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
+                showRoughWork={true}
+              />
+            ) : question.type === 'multi-part' && question.parts ? (
+              /* Multi-part questions - use QuestionWorkspace */
+              <QuestionWorkspace
+                parts={question.parts.map(p => ({
+                  ...p,
+                  suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
+                          p.label.includes('hour') ? ' hr' :
+                          p.label.includes('minute') ? ' min' :
+                          p.label.includes('%') ? '%' : ''
+                }))}
+                answers={answers}
+                feedback={feedback}
+                onAnswerChange={handleAnswerChange}
+                onCheckWork={handleCheckWorkForPart}
+                isLoading={isLoading}
+                loadingPartKey={loadingPartKey}
+                isSubmitted={isSubmitted}
+                correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                aiResponse={aiResponse}
+                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
                 showRoughWork={true}
               />
             ) : question.parts ? (
-              question.parts.map((part) => (
-                <div key={part.key} className="space-y-2">
-                  <label className="flex items-center justify-between text-sm font-medium">
-                    <span>{part.label}</span>
-                    <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      {question.type === 'proof' || part.key === 'working' || part.key === 'steps' ? (
-                        <Textarea
-                          value={answers[part.key] || ''}
-                          onChange={(e) => handleAnswerChange(part.key, e.target.value)}
-                          placeholder="Show your working..."
-                          disabled={isSubmitted}
-                          className={cn(
-                            "min-h-[80px] transition-colors",
-                            feedback[part.key] === 'correct' && "border-green-500 bg-green-500/5",
-                            feedback[part.key] === 'incorrect' && "border-destructive bg-destructive/5"
-                          )}
-                        />
-                      ) : (
-                        <Input
-                          value={answers[part.key] || ''}
-                          onChange={(e) => handleAnswerChange(part.key, e.target.value)}
-                          placeholder="Enter your answer..."
-                          disabled={isSubmitted}
-                          className={cn(
-                            "transition-colors pr-10",
-                            feedback[part.key] === 'correct' && "border-green-500 bg-green-500/5",
-                            feedback[part.key] === 'incorrect' && "border-destructive bg-destructive/5"
-                          )}
-                        />
-                      )}
-                      {feedback[part.key] === 'correct' && (
-                        <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                      )}
-                      {feedback[part.key] === 'incorrect' && (
-                        <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCheckWorkForPart(part.key, part.label)}
-                      disabled={isLoading || isSubmitted}
-                      className="shrink-0"
-                    >
-                      {loadingPartKey === part.key ? (
-                        <span className="animate-pulse">...</span>
-                      ) : (
-                        <BookOpen className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {/* Show AI response for this specific part */}
-                  {aiResponse?.partKey === part.key && (
-                    <div className={cn(
-                      "rounded-lg border p-3 text-sm",
-                      aiResponse.type === 'hint' 
-                        ? "border-amber-500/30 bg-amber-500/10" 
-                        : "border-blue-500/30 bg-blue-500/10"
-                    )}>
-                      <div className="flex items-start gap-2">
-                        <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                        <p className="whitespace-pre-line">{aiResponse.content}</p>
-                      </div>
-                    </div>
-                  )}
-                  {/* Show correct answer after submit for incorrect parts */}
-                  {isSubmitted && feedback[part.key] === 'incorrect' && typeof question.answer === 'object' && (
-                    <p className="text-sm text-green-600 font-medium">
-                      Correct: {question.answer[part.key]}
-                    </p>
-                  )}
-                </div>
-              ))
+              /* Generic parts - use QuestionWorkspace for consistency */
+              <QuestionWorkspace
+                parts={question.parts}
+                answers={answers}
+                feedback={feedback}
+                onAnswerChange={handleAnswerChange}
+                onCheckWork={handleCheckWorkForPart}
+                isLoading={isLoading}
+                loadingPartKey={loadingPartKey}
+                isSubmitted={isSubmitted}
+                correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                aiResponse={aiResponse}
+                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
+                showRoughWork={true}
+              />
             ) : question.type === 'prime-factor' && question.targetNumber ? (
               /* Prime Factorization Ladder */
               <div className="space-y-2">
@@ -697,63 +681,22 @@ Step 3: Calculate the answer`}
                 )}
               </div>
             ) : (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Answer</label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      value={answers['answer'] || ''}
-                      onChange={(e) => handleAnswerChange('answer', e.target.value)}
-                      placeholder="Enter your answer..."
-                      disabled={isSubmitted}
-                      className={cn(
-                        "transition-colors pr-10",
-                        feedback['answer'] === 'correct' && "border-green-500 bg-green-500/5",
-                        feedback['answer'] === 'incorrect' && "border-destructive bg-destructive/5"
-                      )}
-                    />
-                    {feedback['answer'] === 'correct' && (
-                      <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-                    )}
-                    {feedback['answer'] === 'incorrect' && (
-                      <XCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
-                    )}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleCheckWorkForPart('answer', 'Answer')}
-                    disabled={isLoading || isSubmitted}
-                    className="shrink-0"
-                  >
-                    {loadingPartKey === 'answer' ? (
-                      <span className="animate-pulse">...</span>
-                    ) : (
-                      <BookOpen className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-                {/* Show AI response for single answer */}
-                {aiResponse?.partKey === 'answer' && (
-                  <div className={cn(
-                    "rounded-lg border p-3 text-sm",
-                    aiResponse.type === 'hint' 
-                      ? "border-amber-500/30 bg-amber-500/10" 
-                      : "border-blue-500/30 bg-blue-500/10"
-                  )}>
-                    <div className="flex items-start gap-2">
-                      <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                      <p className="whitespace-pre-line">{aiResponse.content}</p>
-                    </div>
-                  </div>
-                )}
-                {/* Show correct answer after submit */}
-                {isSubmitted && feedback['answer'] === 'incorrect' && typeof question.answer === 'string' && (
-                  <p className="text-sm text-green-600 font-medium">
-                    Correct: {question.answer}
-                  </p>
-                )}
-              </div>
+              /* Short/single answer questions - also use QuestionWorkspace for consistency */
+              <QuestionWorkspace
+                parts={[{ key: 'answer', label: 'Answer', marks: question.marks }]}
+                answers={answers}
+                feedback={feedback}
+                onAnswerChange={handleAnswerChange}
+                onCheckWork={handleCheckWorkForPart}
+                isLoading={isLoading}
+                loadingPartKey={loadingPartKey}
+                isSubmitted={isSubmitted}
+                correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
+                aiResponse={aiResponse}
+                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                roughWorkPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
+                showRoughWork={question.marks > 1}
+              />
             )}
           </div>
 

@@ -24,13 +24,13 @@ interface AngleStepsWorkspaceProps {
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
 }
 
-// Custom keyboard for angle problems
+// Custom keyboard for angle problems - includes all symbols needed for Q2(d) solution
 const ANGLE_KEYBOARD_KEYS = [
-  ['7', '8', '9', '360'],
-  ['4', '5', '6', '248'],
-  ['1', '2', '3', '180'],
-  ['0', 'x', '°', '−'],
-  ['=', '+', '/', '⌫'],
+  ['7', '8', '9', '°'],
+  ['4', '5', '6', '−'],
+  ['1', '2', '3', '+'],
+  ['0', '=', '/', '⌫'],
+  ['360', '248', '180', '112'],
 ];
 
 export function AngleStepsWorkspace({
@@ -250,7 +250,7 @@ Angle DCB = 180° − 112° = 68°"
         ))}
       </div>
 
-      {/* Custom Keyboard */}
+      {/* Custom Keyboard - positioned near workspace */}
       <div className="border-t pt-4">
         <Button
           variant="outline"
@@ -271,17 +271,17 @@ Angle DCB = 180° − 112° = 68°"
                   {row.map((key) => (
                     <Button
                       key={key}
-                      variant={key === '⌫' ? 'destructive' : key === '360' || key === '248' || key === '180' ? 'secondary' : 'outline'}
+                      variant={key === '⌫' ? 'destructive' : (key === '360' || key === '248' || key === '180' || key === '112') ? 'secondary' : 'outline'}
                       size="sm"
                       onClick={() => handleKeyPress(key)}
                       disabled={isSubmitted || !focusedInput}
                       className={cn(
-                        "w-14 h-10 text-base font-medium",
+                        "w-12 h-10 text-base font-medium",
                         key === '⌫' && "bg-destructive/80 hover:bg-destructive",
-                        (key === '360' || key === '248' || key === '180') && "text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20"
+                        (key === '360' || key === '248' || key === '180' || key === '112') && "text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20"
                       )}
                     >
-                      {key === '360' || key === '248' || key === '180' ? `${key}°` : key}
+                      {key}
                     </Button>
                   ))}
                 </div>
@@ -292,15 +292,6 @@ Angle DCB = 180° − 112° = 68°"
             </p>
           </div>
         )}
-      </div>
-
-      {/* Key concepts reminder */}
-      <div className="bg-muted/30 rounded-lg p-3 text-sm text-muted-foreground">
-        <p className="font-medium mb-1">💡 Key concepts:</p>
-        <ul className="list-disc list-inside space-y-1 text-xs">
-          <li>Reflex angle + Interior angle = 360°</li>
-          <li>Adjacent angles in a parallelogram = 180°</li>
-        </ul>
       </div>
     </div>
   );

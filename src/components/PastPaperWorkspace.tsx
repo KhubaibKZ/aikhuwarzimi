@@ -18,7 +18,8 @@ import {
   PrismDiagram, 
   CirclesInRectangle, 
   ParallelogramDiagram,
-  IsoscelesTriangleDiagram 
+  IsoscelesTriangleDiagram,
+  DigitalProtractor
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -289,7 +290,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {/* Interactive Diagrams based on question ID */}
             {question.id === 'pp_0580_s22_q2b' && (
               <div className="mt-4">
-                <IsoscelesTriangleDiagram showEqualMarks={true} showAngleToMeasure={true} angleLabel="Angle CAB" />
+                <DigitalProtractor 
+                  size={180} 
+                  targetAngle={125} 
+                  tolerance={2}
+                />
               </div>
             )}
             

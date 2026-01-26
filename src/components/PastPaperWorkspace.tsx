@@ -290,11 +290,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {/* Interactive Diagrams based on question ID */}
             {question.id === 'pp_0580_s22_q2b' && (
               <div className="mt-4">
-                <DigitalProtractor 
-                  size={180} 
-                  targetAngle={125} 
-                  tolerance={2}
-                />
+                <DigitalProtractor />
               </div>
             )}
             

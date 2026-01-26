@@ -21,7 +21,8 @@ serve(async (req) => {
       attemptCount, 
       hasMissing, 
       hasWrong,
-      specificPart
+      specificPart,
+      workingContent
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -120,15 +121,22 @@ ${(attemptCount || 1) >= 5 ? "Give a methodological hint about the PROCESS only.
 
 CRITICAL: 2-3 lines max. Plain text only. NEVER mention ANY numbers from the calculation.${partContext}`;
 
+      // Build context with working content if available
+      const workingSection = workingContent 
+        ? `\nStudent's working/rough work:\n"""${workingContent}"""\n`
+        : '';
+
       userPrompt = `Question: "${question}"
 Topic: ${topic || "Mathematics"}
-${specificPart ? `Specific part being checked: "${specificPart}"` : ""}
+${specificPart ? `Specific part being checked: "${specificPart}"` : ''}
+${workingSection}
 Student's answers: ${JSON.stringify(userAnswers)}
 Attempt number: ${attemptCount || 1}
 
 ${hints && hints.length > 0 ? `Key concepts:\n${hints.join('\n')}` : ''}
 
 IMPORTANT: Do NOT mention any numerical values from the calculation or answer. Only guide on METHOD.
+${workingContent ? 'Review their working space content and provide guidance on any errors in their steps.' : ''}
 Provide teacher-like guidance ${specificPart ? `specifically for "${specificPart}"` : "to help the student"}.`;
 
     } else {

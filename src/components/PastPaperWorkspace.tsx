@@ -298,7 +298,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             
             {question.id === 'pp_0580_s22_q2d' && (
               <div className="mt-4">
-                <ParallelogramDiagram reflexAngle={248} showReflex={true} />
+                <ParallelogramDiagram reflexAngle={248} />
               </div>
             )}
             

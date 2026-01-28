@@ -369,95 +369,153 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
-            {/* Q9(a) - Table of values for y = 12/x (no graph, just context) */}
-            {question.id === 'pp_0580_s22_q9a' && (
-              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                <p className="text-sm font-medium mb-2">Complete the table for y = 12/x</p>
-                <div className="overflow-x-auto">
-                  <table className="text-sm border-collapse w-full">
-                    <thead>
-                      <tr>
-                        <td className="border border-border px-3 py-2 font-medium bg-muted">x</td>
-                        <td className="border border-border px-3 py-2 text-center">−6</td>
-                        <td className="border border-border px-3 py-2 text-center">−4</td>
-                        <td className="border border-border px-3 py-2 text-center">−3</td>
-                        <td className="border border-border px-3 py-2 text-center">−2</td>
-                        <td className="border border-border px-3 py-2 text-center">−1</td>
-                        <td className="border border-border px-3 py-2 text-center">1</td>
-                        <td className="border border-border px-3 py-2 text-center">2</td>
-                        <td className="border border-border px-3 py-2 text-center">3</td>
-                        <td className="border border-border px-3 py-2 text-center">4</td>
-                        <td className="border border-border px-3 py-2 text-center">6</td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-border px-3 py-2 font-medium bg-muted">y</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                        <td className="border border-border px-3 py-2 text-center">−3</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                        <td className="border border-border px-3 py-2 text-center">−6</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                        <td className="border border-border px-3 py-2 text-center">6</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                        <td className="border border-border px-3 py-2 text-center">3</td>
-                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
-                      </tr>
-                    </tbody>
-                  </table>
+            {/* Q9 - Unified Reciprocal Graph workspace */}
+            {question.id === 'pp_0580_s22_q9' && (
+              <div className="mt-4 space-y-4">
+                {/* Part (a) - Table */}
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <p className="text-sm font-medium mb-2">(a) Complete the table for y = 12/x [3 marks]</p>
+                  <div className="overflow-x-auto">
+                    <table className="text-sm border-collapse w-full">
+                      <thead>
+                        <tr>
+                          <td className="border border-border px-2 py-1.5 font-medium bg-muted text-xs">x</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−6</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−4</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−3</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−2</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−1</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">1</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">2</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">3</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">4</td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">6</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border border-border px-2 py-1.5 font-medium bg-muted text-xs">y</td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_neg6'] || ''}
+                              onChange={(e) => handleAnswerChange('y_neg6', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_neg6'] === 'correct' && "bg-green-500/10",
+                                feedback['y_neg6'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−3</td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_neg3'] || ''}
+                              onChange={(e) => handleAnswerChange('y_neg3', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_neg3'] === 'correct' && "bg-green-500/10",
+                                feedback['y_neg3'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">−6</td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_neg1'] || ''}
+                              onChange={(e) => handleAnswerChange('y_neg1', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_neg1'] === 'correct' && "bg-green-500/10",
+                                feedback['y_neg1'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_1'] || ''}
+                              onChange={(e) => handleAnswerChange('y_1', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_1'] === 'correct' && "bg-green-500/10",
+                                feedback['y_1'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">6</td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_3'] || ''}
+                              onChange={(e) => handleAnswerChange('y_3', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_3'] === 'correct' && "bg-green-500/10",
+                                feedback['y_3'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                          <td className="border border-border px-2 py-1.5 text-center text-xs">3</td>
+                          <td className="border border-border p-0">
+                            <Input
+                              value={answers['y_6'] || ''}
+                              onChange={(e) => handleAnswerChange('y_6', e.target.value)}
+                              disabled={isSubmitted}
+                              className={cn(
+                                "h-7 w-full text-center text-xs border-0 rounded-none",
+                                feedback['y_6'] === 'correct' && "bg-green-500/10",
+                                feedback['y_6'] === 'incorrect' && "bg-destructive/10"
+                              )}
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">Fill in the missing values below</p>
-              </div>
-            )}
-            
-            {question.id === 'pp_0580_s22_q9b' && (
-              <div className="mt-4">
-                <ReciprocalGraph
-                  width={400}
-                  height={400}
-                  xRange={[-6, 6]}
-                  yRange={[-12, 12]}
-                  k={12}
-                  interactive={true}
-                  showTablePoints={true}
-                />
-              </div>
-            )}
-            
-            {question.id === 'pp_0580_s22_q9c' && (
-              <div className="mt-4">
-                <ReciprocalGraph
-                  width={400}
-                  height={400}
-                  xRange={[-6, 6]}
-                  yRange={[-12, 12]}
-                  k={12}
-                  showHorizontalLine={5}
-                  interactive={true}
-                  showTablePoints={true}
-                />
-              </div>
-            )}
-            
-            {question.id === 'pp_0580_s22_q9d' && (
-              <div className="mt-4">
-                <ReciprocalGraph
-                  width={400}
-                  height={400}
-                  xRange={[-6, 6]}
-                  yRange={[-12, 12]}
-                  k={12}
-                  showHorizontalLine={5}
-                  interactive={true}
-                  showTablePoints={true}
-                />
+
+                {/* Parts (b), (c), (d) - Graph */}
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <p className="text-sm font-medium mb-1">(b) Draw the graph of y = 12/x [4 marks]</p>
+                  <p className="text-sm font-medium mb-1">(c) Draw the line y = 5 [1 mark]</p>
+                  <p className="text-sm font-medium mb-3">(d) Use your graph to solve 12/x = 5 [1 mark]</p>
+                  
+                  <ReciprocalGraph
+                    width={380}
+                    height={380}
+                    xRange={[-6, 6]}
+                    yRange={[-12, 12]}
+                    k={12}
+                    showHorizontalLine={5}
+                    interactive={true}
+                    showTablePoints={false}
+                  />
+                  
+                  {/* Part (d) answer input */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-sm font-medium">(d) x =</span>
+                    <Input
+                      value={answers['solution'] || ''}
+                      onChange={(e) => handleAnswerChange('solution', e.target.value)}
+                      disabled={isSubmitted}
+                      className={cn(
+                        "w-20 h-8 text-center",
+                        feedback['solution'] === 'correct' && "border-green-500 bg-green-500/10",
+                        feedback['solution'] === 'incorrect' && "border-destructive bg-destructive/10"
+                      )}
+                      placeholder="?"
+                    />
+                  </div>
+                </div>
               </div>
             )}
             
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
-             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9a', 'pp_0580_s22_q9b', 'pp_0580_s22_q9c', 'pp_0580_s22_q9d'].includes(question.id) && (
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9'].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

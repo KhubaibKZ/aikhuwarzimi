@@ -11,7 +11,7 @@ export interface PastPaperQuestion {
   question: string;
   marks: number;
   hints: string[];
-  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder' | 'formula-fraction' | 'angle-steps';
+  type: 'short' | 'calculation' | 'multi-part' | 'grid' | 'proof' | 'prime-factor' | 'lcm-ladder' | 'formula-fraction' | 'angle-steps' | 'reciprocal-graph';
   parts?: { label: string; key: string; marks: number }[];
   answer?: string | Record<string, string>;
   targetNumber?: number; // For prime factorization questions
@@ -639,27 +639,32 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
     answer: 'y = 2x + 18'
   },
 
-  // Question 9 - Reciprocal Graphs
-  'pp_0580_s22_q9a': {
-    id: 'pp_0580_s22_q9a',
-    questionNumber: '9(a)',
-    title: 'Table of values for reciprocal',
-    question: 'Complete the table of values for y = 12/x, where x ≠ 0.\n\n| x | -6 | -4 | -3 | -2 | -1 | 1 | 2 | 3 | 4 | 6 |\n| y |    | -3 |    | -6 |    |   | 6 |   | 3 |   |',
-    marks: 3,
+  // Question 9 - Reciprocal Graphs (Unified question with all parts)
+  'pp_0580_s22_q9': {
+    id: 'pp_0580_s22_q9',
+    questionNumber: '9',
+    title: 'Reciprocal graphs',
+    question: '(a) Complete the table of values for y = 12/x, where x ≠ 0. [3 marks]\n\n(b) On the grid, draw the graph of y = 12/x for −6 ≤ x ≤ −1 and 1 ≤ x ≤ 6. [4 marks]\n\n(c) On the grid, draw the line y = 5. [1 mark]\n\n(d) Use your graph to solve the equation 12/x = 5. [1 mark]',
+    marks: 9,
     hints: [
-      'Substitute each x value into y = 12/x',
+      'For part (a): Substitute each x value into y = 12/x',
       'When x = -6: y = 12 ÷ (-6) = -2',
-      'When x = 1: y = 12 ÷ 1 = 12',
-      'Remember: dividing by a negative gives a negative result'
+      'For part (b): Plot points from your table and draw smooth curves',
+      'The graph has two separate branches in opposite quadrants',
+      'For part (c): y = 5 is a horizontal line passing through y = 5',
+      'For part (d): Find where y = 5 intersects the curve y = 12/x'
     ],
-    type: 'multi-part',
+    type: 'reciprocal-graph',
     parts: [
-      { label: 'y when x = -6', key: 'y_neg6', marks: 1 },
-      { label: 'y when x = -3', key: 'y_neg3', marks: 0 },
-      { label: 'y when x = -1', key: 'y_neg1', marks: 1 },
-      { label: 'y when x = 1', key: 'y_1', marks: 0 },
-      { label: 'y when x = 3', key: 'y_3', marks: 0 },
-      { label: 'y when x = 6', key: 'y_6', marks: 1 }
+      { label: '(a) y when x = −6', key: 'y_neg6', marks: 1 },
+      { label: '(a) y when x = −3', key: 'y_neg3', marks: 0 },
+      { label: '(a) y when x = −1', key: 'y_neg1', marks: 1 },
+      { label: '(a) y when x = 1', key: 'y_1', marks: 0 },
+      { label: '(a) y when x = 3', key: 'y_3', marks: 0 },
+      { label: '(a) y when x = 6', key: 'y_6', marks: 1 },
+      { label: '(b) Graph plotted', key: 'graph_done', marks: 4 },
+      { label: '(c) Line y = 5 drawn', key: 'line_done', marks: 1 },
+      { label: '(d) Solution x =', key: 'solution', marks: 1 }
     ],
     answer: {
       y_neg6: '-2',
@@ -667,51 +672,11 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
       y_neg1: '-12',
       y_1: '12',
       y_3: '4',
-      y_6: '2'
+      y_6: '2',
+      graph_done: 'done',
+      line_done: 'done',
+      solution: '2.4'
     }
-  },
-  'pp_0580_s22_q9b': {
-    id: 'pp_0580_s22_q9b',
-    questionNumber: '9(b)',
-    title: 'Draw reciprocal graph',
-    question: 'On the grid, draw the graph of y = 12/x for -6 ≤ x ≤ -1 and 1 ≤ x ≤ 6.',
-    marks: 4,
-    hints: [
-      'Plot the points from your table',
-      'Draw a smooth curve through the points',
-      'The graph has two separate branches',
-      'The curves should not touch the axes'
-    ],
-    type: 'grid',
-    answer: 'Graph drawn correctly with two smooth curves in opposite quadrants'
-  },
-  'pp_0580_s22_q9c': {
-    id: 'pp_0580_s22_q9c',
-    questionNumber: '9(c)',
-    title: 'Draw horizontal line',
-    question: 'On the grid, draw the line y = 5.',
-    marks: 1,
-    hints: [
-      'y = 5 is a horizontal line',
-      'It passes through all points where y = 5',
-      'Draw a straight horizontal line at y = 5'
-    ],
-    type: 'grid',
-    answer: 'Horizontal line at y = 5'
-  },
-  'pp_0580_s22_q9d': {
-    id: 'pp_0580_s22_q9d',
-    questionNumber: '9(d)',
-    title: 'Solve equation graphically',
-    question: 'Use your graph to solve the equation 12/x = 5.',
-    marks: 1,
-    hints: [
-      'Find where y = 5 intersects y = 12/x',
-      'Read the x-coordinate at the intersection point',
-      'The answer should be between 2 and 3'
-    ],
-    type: 'short',
-    answer: '2.4'
   }
 };
 
@@ -757,10 +722,7 @@ export const pastPapers: PastPaper[] = [
       { id: 'q8b', title: 'Q8(b): Table of values', questionId: 'pp_0580_s22_q8b' },
       { id: 'q8c', title: 'Q8(c): Intersection point', questionId: 'pp_0580_s22_q8c' },
       { id: 'q8d', title: 'Q8(d): Parallel lines', questionId: 'pp_0580_s22_q8d' },
-      { id: 'q9a', title: 'Q9(a): Table of values for reciprocal', questionId: 'pp_0580_s22_q9a' },
-      { id: 'q9b', title: 'Q9(b): Draw reciprocal graph', questionId: 'pp_0580_s22_q9b' },
-      { id: 'q9c', title: 'Q9(c): Draw horizontal line', questionId: 'pp_0580_s22_q9c' },
-      { id: 'q9d', title: 'Q9(d): Solve equation graphically', questionId: 'pp_0580_s22_q9d' }
+      { id: 'q9', title: 'Q9: Reciprocal graphs', questionId: 'pp_0580_s22_q9' }
     ]
   },
   {

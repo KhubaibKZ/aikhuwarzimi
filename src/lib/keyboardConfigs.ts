@@ -126,28 +126,10 @@ export const KEYBOARD_CONFIGS = {
     ['x', 'y', '+', '−', '×', '=', '.', '(', ')', '⌫'],
   ],
 
-  // ========== Question 9 - Reciprocal Graphs ==========
+  // ========== Question 9 - Reciprocal Graphs (Unified) ==========
   
-  // Q9(a) - Table of values for y = 12/x
-  'pp_0580_s22_q9a': [
-    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    ['x', 'y', '+', '−', '×', '÷', '=', '/', '.', '⌫'],
-  ],
-
-  // Q9(b) - Draw graph (grid type - uses generic)
-  'pp_0580_s22_q9b': [
-    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    ['x', 'y', '+', '−', '×', '÷', '=', '.', '⌫', 'Clear'],
-  ],
-
-  // Q9(c) - Draw line y = 5 (grid type)
-  'pp_0580_s22_q9c': [
-    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    ['x', 'y', '=', '+', '−', '.', '(', ')', '⌫', 'Clear'],
-  ],
-
-  // Q9(d) - Solve equation graphically
-  'pp_0580_s22_q9d': [
+  // Q9 - Complete question for y = 12/x
+  'pp_0580_s22_q9': [
     ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     ['x', 'y', '+', '−', '×', '÷', '=', '/', '.', '⌫'],
   ],
@@ -295,17 +277,14 @@ m = (1 - 4) ÷ (2 - (-4))
 m = -3 ÷ 6 = ?
 Use y = mx + c with a point to find c`,
     
-    'pp_0580_s22_q9a': `Example:
+    'pp_0580_s22_q9': `Part (a): Complete the table
 y = 12/x
-When x = -6: y = 12 ÷ (-6) = -2
-When x = -1: y = 12 ÷ (-1) = -12
-When x = 1: y = 12 ÷ 1 = 12`,
-    
-    'pp_0580_s22_q9d': `Example:
-Find where y = 5 crosses y = 12/x
-At intersection: 12/x = 5
-x = 12 ÷ 5 = ?
-Read the value from your graph`,
+When x = -6: y = 12 ÷ (-6) = ?
+When x = -1: y = 12 ÷ (-1) = ?
+
+Part (b): Plot points and draw curves
+Part (c): Draw horizontal line at y = 5
+Part (d): Find x where curves meet y = 5`,
   };
 
   if (questionId in placeholders) {

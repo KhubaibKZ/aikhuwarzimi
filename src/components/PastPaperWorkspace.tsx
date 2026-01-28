@@ -369,21 +369,45 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
-            {/* Q9 - Reciprocal Graph y = 12/x */}
+            {/* Q9(a) - Table of values for y = 12/x (no graph, just context) */}
             {question.id === 'pp_0580_s22_q9a' && (
-              <div className="mt-4">
-                <ReciprocalGraph
-                  width={400}
-                  height={400}
-                  xRange={[-6, 6]}
-                  yRange={[-12, 12]}
-                  k={12}
-                  interactive={false}
-                  showTablePoints={false}
-                />
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  Complete the table for y = 12/x
-                </p>
+              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                <p className="text-sm font-medium mb-2">Complete the table for y = 12/x</p>
+                <div className="overflow-x-auto">
+                  <table className="text-sm border-collapse w-full">
+                    <thead>
+                      <tr>
+                        <td className="border border-border px-3 py-2 font-medium bg-muted">x</td>
+                        <td className="border border-border px-3 py-2 text-center">−6</td>
+                        <td className="border border-border px-3 py-2 text-center">−4</td>
+                        <td className="border border-border px-3 py-2 text-center">−3</td>
+                        <td className="border border-border px-3 py-2 text-center">−2</td>
+                        <td className="border border-border px-3 py-2 text-center">−1</td>
+                        <td className="border border-border px-3 py-2 text-center">1</td>
+                        <td className="border border-border px-3 py-2 text-center">2</td>
+                        <td className="border border-border px-3 py-2 text-center">3</td>
+                        <td className="border border-border px-3 py-2 text-center">4</td>
+                        <td className="border border-border px-3 py-2 text-center">6</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="border border-border px-3 py-2 font-medium bg-muted">y</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                        <td className="border border-border px-3 py-2 text-center">−3</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                        <td className="border border-border px-3 py-2 text-center">−6</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                        <td className="border border-border px-3 py-2 text-center">6</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                        <td className="border border-border px-3 py-2 text-center">3</td>
+                        <td className="border border-border px-3 py-2 text-center text-muted-foreground">?</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Fill in the missing values below</p>
               </div>
             )}
             

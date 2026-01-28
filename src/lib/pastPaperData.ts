@@ -1,3 +1,5 @@
+import { questions0580_43_2021, sections0580_43_2021 } from './pastPaper0580_43_2021';
+
 export interface FormulaTemplate {
   numeratorLabel: string;
   denominatorLabel: string;
@@ -38,7 +40,9 @@ export interface PastPaper {
   locked?: boolean;
 }
 
+// Combine all questions
 export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
+  ...questions0580_43_2021,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -733,8 +737,8 @@ export const pastPapers: PastPaper[] = [
     title: '0580/43 May/June 2021',
     totalMarks: 130,
     duration: '2 hours 30 minutes',
-    sections: [],
-    locked: true
+    sections: sections0580_43_2021,
+    locked: false
   }
 ];
 

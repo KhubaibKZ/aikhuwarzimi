@@ -5,3 +5,6 @@ export { ParallelogramDiagram } from './ParallelogramDiagram';
 export { IsoscelesTriangleDiagram } from './IsoscelesTriangle';
 export { DigitalProtractor } from './DigitalProtractor';
 export { ReciprocalGraph } from './ReciprocalGraph';
+export { VennDiagram } from './VennDiagram';
+export { CuboidDiagram, CubeDiagram } from './CuboidDiagram';
+export { NumberLineDiagram } from './NumberLineDiagram';

@@ -22,7 +22,11 @@ import {
   ParallelogramDiagram,
   IsoscelesTriangleDiagram,
   DigitalProtractor,
-  ReciprocalGraph
+  ReciprocalGraph,
+  VennDiagram,
+  CuboidDiagram,
+  CubeDiagram,
+  NumberLineDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -513,9 +517,76 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* ========== 0580/43 May/June 2021 Diagrams ========== */}
+            
+            {/* Q4 - Coordinates & Vectors */}
+            {question.id === 'pp_0580_s21_q4' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={320}
+                  height={320}
+                  xRange={[-2, 10]}
+                  yRange={[-8, 10]}
+                  showPoints={[
+                    { x: 1, y: 5, label: 'A(1,5)' },
+                    { x: 3, y: 9, label: 'B(3,9)' },
+                    { x: 3, y: 5, label: 'P(3,5)' }
+                  ]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q6 - Venn Diagrams */}
+            {question.id === 'pp_0580_s21_q6' && (
+              <div className="mt-4">
+                <VennDiagram
+                  leftLabel="H"
+                  rightLabel="T"
+                  leftOnly={8}
+                  rightOnly={5}
+                  intersection={10}
+                  outside={1}
+                />
+              </div>
+            )}
+            
+            {/* Q7 - Number Line */}
+            {question.id === 'pp_0580_s21_q7' && (
+              <div className="mt-4">
+                <NumberLineDiagram
+                  min={-4}
+                  max={3}
+                  leftBound={-2}
+                  rightBound={1}
+                  leftInclusive={false}
+                  rightInclusive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q8 - Cuboid */}
+            {question.id === 'pp_0580_s21_q8' && (
+              <div className="mt-4">
+                <CuboidDiagram
+                  length={20}
+                  width={12}
+                  height={5}
+                  labels={{ length: '20 cm', width: '12 cm', height: '5 cm' }}
+                />
+              </div>
+            )}
+            
+            {/* Q9 - Cube with diagonal for 3D geometry */}
+            {question.id === 'pp_0580_s21_q9' && (
+              <div className="mt-4">
+                <CubeDiagram diagonalLength={8.5} />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
-             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9'].includes(question.id) && (
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9', 'pp_0580_s21_q4', 'pp_0580_s21_q6', 'pp_0580_s21_q7', 'pp_0580_s21_q8', 'pp_0580_s21_q9'].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

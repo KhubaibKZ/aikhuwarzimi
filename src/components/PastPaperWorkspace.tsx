@@ -21,7 +21,8 @@ import {
   CirclesInRectangle, 
   ParallelogramDiagram,
   IsoscelesTriangleDiagram,
-  DigitalProtractor
+  DigitalProtractor,
+  ReciprocalGraph
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -368,9 +369,71 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* Q9 - Reciprocal Graph y = 12/x */}
+            {question.id === 'pp_0580_s22_q9a' && (
+              <div className="mt-4">
+                <ReciprocalGraph
+                  width={400}
+                  height={400}
+                  xRange={[-6, 6]}
+                  yRange={[-12, 12]}
+                  k={12}
+                  interactive={false}
+                  showTablePoints={false}
+                />
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Complete the table for y = 12/x
+                </p>
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q9b' && (
+              <div className="mt-4">
+                <ReciprocalGraph
+                  width={400}
+                  height={400}
+                  xRange={[-6, 6]}
+                  yRange={[-12, 12]}
+                  k={12}
+                  interactive={true}
+                  showTablePoints={true}
+                />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q9c' && (
+              <div className="mt-4">
+                <ReciprocalGraph
+                  width={400}
+                  height={400}
+                  xRange={[-6, 6]}
+                  yRange={[-12, 12]}
+                  k={12}
+                  showHorizontalLine={5}
+                  interactive={true}
+                  showTablePoints={true}
+                />
+              </div>
+            )}
+            
+            {question.id === 'pp_0580_s22_q9d' && (
+              <div className="mt-4">
+                <ReciprocalGraph
+                  width={400}
+                  height={400}
+                  xRange={[-6, 6]}
+                  yRange={[-12, 12]}
+                  k={12}
+                  showHorizontalLine={5}
+                  interactive={true}
+                  showTablePoints={true}
+                />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
-             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d'].includes(question.id) && (
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9a', 'pp_0580_s22_q9b', 'pp_0580_s22_q9c', 'pp_0580_s22_q9d'].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

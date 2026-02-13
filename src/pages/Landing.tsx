@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  BookOpen, Brain, Target, TrendingUp, Zap, CheckCircle, 
+import {
+  BookOpen, Brain, Target, TrendingUp, Zap, CheckCircle,
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
-  GraduationCap, BarChart3, FileText
-} from 'lucide-react';
+  GraduationCap, BarChart3, FileText } from
+'lucide-react';
 import heroBg from '@/assets/hero-bg.jpg';
 
 export default function Landing() {
@@ -61,10 +61,10 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 opacity-20 dark:opacity-30"
-          style={{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        />
+          style={{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
         <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-primary/20 blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-72 h-72 rounded-full bg-primary/10 blur-[100px]" />
@@ -76,10 +76,10 @@ export default function Landing() {
               AI-Powered Mathematics Learning
             </div>
             
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">
-              Your Personal
-              <span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                Math Tutor.
+            <h1 className="md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-3xl">AI KHUWARZIMI
+
+Math Tutor.<span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Your AI assisted Math Tutor.
+
               </span>
             </h1>
             
@@ -133,54 +133,54 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              {
-                icon: Brain,
-                title: 'AI Tutor',
-                desc: 'Get personalized hints and explanations when you\'re stuck. Our AI understands exactly where you need help.',
-                color: 'from-primary/20 to-primary/5',
-              },
-              {
-                icon: FileText,
-                title: 'Past Paper Practice',
-                desc: 'Work through real Cambridge past papers with interactive workspaces, diagrams, and instant marking.',
-                color: 'from-primary/20 to-primary/5',
-              },
-              {
-                icon: Target,
-                title: 'Step-by-Step Solutions',
-                desc: 'Every question broken into clear steps. Understand the method, not just the answer.',
-                color: 'from-primary/20 to-primary/5',
-              },
-              {
-                icon: BarChart3,
-                title: 'Track Progress',
-                desc: 'Visual progress tracking across all topics. Know your strengths and where to focus next.',
-                color: 'from-primary/20 to-primary/5',
-              },
-              {
-                icon: GraduationCap,
-                title: 'Full Syllabus Coverage',
-                desc: 'Complete Cambridge IGCSE (0580) and O Level (4024) syllabi with structured learning paths.',
-                color: 'from-primary/20 to-primary/5',
-              },
-              {
-                icon: Zap,
-                title: 'Interactive Diagrams',
-                desc: 'Dynamic graphs, geometry tools, Venn diagrams, and coordinate grids right in your workspace.',
-                color: 'from-primary/20 to-primary/5',
-              },
-            ].map((feature, i) => (
-              <div 
-                key={i} 
-                className="group relative rounded-2xl border border-border bg-card p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
-              >
+            {
+              icon: Brain,
+              title: 'AI Tutor',
+              desc: 'Get personalized hints and explanations when you\'re stuck. Our AI understands exactly where you need help.',
+              color: 'from-primary/20 to-primary/5'
+            },
+            {
+              icon: FileText,
+              title: 'Past Paper Practice',
+              desc: 'Work through real Cambridge past papers with interactive workspaces, diagrams, and instant marking.',
+              color: 'from-primary/20 to-primary/5'
+            },
+            {
+              icon: Target,
+              title: 'Step-by-Step Solutions',
+              desc: 'Every question broken into clear steps. Understand the method, not just the answer.',
+              color: 'from-primary/20 to-primary/5'
+            },
+            {
+              icon: BarChart3,
+              title: 'Track Progress',
+              desc: 'Visual progress tracking across all topics. Know your strengths and where to focus next.',
+              color: 'from-primary/20 to-primary/5'
+            },
+            {
+              icon: GraduationCap,
+              title: 'Full Syllabus Coverage',
+              desc: 'Complete Cambridge IGCSE (0580) and O Level (4024) syllabi with structured learning paths.',
+              color: 'from-primary/20 to-primary/5'
+            },
+            {
+              icon: Zap,
+              title: 'Interactive Diagrams',
+              desc: 'Dynamic graphs, geometry tools, Venn diagrams, and coordinate grids right in your workspace.',
+              color: 'from-primary/20 to-primary/5'
+            }].
+            map((feature, i) =>
+            <div
+              key={i}
+              className="group relative rounded-2xl border border-border bg-card p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+
                 <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} mb-4`}>
                   <feature.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -195,18 +195,18 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { step: '01', title: 'Choose Your Course', desc: 'Select IGCSE 0580 or O Level 4024 and access the full syllabus.' },
-              { step: '02', title: 'Learn & Practice', desc: 'Study topics with lessons, then practice with real past papers in interactive workspaces.' },
-              { step: '03', title: 'Get AI Help', desc: 'Stuck on a problem? Get instant hints and step-by-step guidance from the AI tutor.' },
-            ].map((item, i) => (
-              <div key={i} className="text-center space-y-4">
+            { step: '01', title: 'Choose Your Course', desc: 'Select IGCSE 0580 or O Level 4024 and access the full syllabus.' },
+            { step: '02', title: 'Learn & Practice', desc: 'Study topics with lessons, then practice with real past papers in interactive workspaces.' },
+            { step: '03', title: 'Get AI Help', desc: 'Stuck on a problem? Get instant hints and step-by-step guidance from the AI tutor.' }].
+            map((item, i) =>
+            <div key={i} className="text-center space-y-4">
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground text-xl font-bold shadow-glow">
                   {item.step}
                 </div>
                 <h3 className="text-xl font-semibold">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -221,23 +221,23 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {[
-              { code: '0580', title: 'IGCSE Mathematics', desc: 'Extended curriculum covering algebra, geometry, statistics, and more.', available: true },
-              { code: '4024', title: 'O Level Mathematics', desc: 'Comprehensive O Level syllabus with past paper practice.', available: false },
-            ].map((course, i) => (
-              <div key={i} className="relative rounded-2xl border-2 border-primary/20 bg-card p-8 hover:border-primary/50 transition-all duration-300">
+            { code: '0580', title: 'IGCSE Mathematics', desc: 'Extended curriculum covering algebra, geometry, statistics, and more.', available: true },
+            { code: '4024', title: 'O Level Mathematics', desc: 'Comprehensive O Level syllabus with past paper practice.', available: false }].
+            map((course, i) =>
+            <div key={i} className="relative rounded-2xl border-2 border-primary/20 bg-card p-8 hover:border-primary/50 transition-all duration-300">
                 <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">{course.code}</span>
                 <h3 className="text-2xl font-bold mt-3">{course.title}</h3>
                 <p className="text-sm text-muted-foreground mt-2 mb-6">{course.desc}</p>
-                <Button 
-                  onClick={course.available ? handleGetStarted : undefined} 
-                  disabled={!course.available}
-                  className={course.available ? 'shadow-glow' : ''}
-                >
+                <Button
+                onClick={course.available ? handleGetStarted : undefined}
+                disabled={!course.available}
+                className={course.available ? 'shadow-glow' : ''}>
+
                   {course.available ? 'Start Now' : 'Coming Soon'}
                   {course.available && <ArrowRight className="h-4 w-4 ml-2" />}
                 </Button>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -246,7 +246,7 @@ export default function Landing() {
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container px-4 md:px-6 text-center max-w-3xl mx-auto space-y-6">
           <div className="flex justify-center gap-1">
-            {[1,2,3,4,5].map(i => <Star key={i} className="h-5 w-5 fill-primary text-primary" />)}
+            {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="h-5 w-5 fill-primary text-primary" />)}
           </div>
           <blockquote className="text-xl md:text-2xl font-medium italic leading-relaxed">
             "AI Khuwarizmi helped me understand topics I'd been struggling with for months. 
@@ -295,9 +295,9 @@ export default function Landing() {
       </footer>
 
       {/* Login Modal */}
-      {showLogin && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={() => setShowLogin(false)}>
-          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl mx-4" onClick={e => e.stopPropagation()}>
+      {showLogin &&
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={() => setShowLogin(false)}>
+          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-2xl mx-4" onClick={(e) => e.stopPropagation()}>
             <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => setShowLogin(false)}>
               <X className="h-4 w-4" />
             </Button>
@@ -313,21 +313,21 @@ export default function Landing() {
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Email</label>
-                <Input 
-                  type="email" 
-                  placeholder="you@example.com" 
-                  value={loginForm.email}
-                  onChange={e => setLoginForm(f => ({ ...f, email: e.target.value }))}
-                />
+                <Input
+                type="email"
+                placeholder="you@example.com"
+                value={loginForm.email}
+                onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
+
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Password</label>
-                <Input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={loginForm.password}
-                  onChange={e => setLoginForm(f => ({ ...f, password: e.target.value }))}
-                />
+                <Input
+                type="password"
+                placeholder="••••••••"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
+
               </div>
               <Button type="submit" className="w-full shadow-glow">
                 Sign In
@@ -343,7 +343,7 @@ export default function Landing() {
             </p>
           </div>
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }

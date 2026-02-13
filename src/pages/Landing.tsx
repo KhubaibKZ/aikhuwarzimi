@@ -7,7 +7,7 @@ import {
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
   GraduationCap, BarChart3, FileText, Menu } from
 'lucide-react';
-import alKhwarizmiImg from '@/assets/al-khwarizmi.jpg';
+
 
 // Floating math symbols for decoration
 const mathSymbols = [
@@ -99,6 +99,21 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.06]"
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+
+        {/* Al-Khwarizmi shadow silhouette — hero background */}
+        <div className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none select-none overflow-hidden hidden md:block">
+          <svg viewBox="0 0 400 600" className="absolute left-[-15%] top-1/2 -translate-y-1/2 h-[120%] opacity-[0.03] dark:opacity-[0.05] text-foreground fill-current">
+            <ellipse cx="200" cy="100" rx="65" ry="75" />
+            <path d="M200 60 L180 20 Q200 5 220 20 Z" />
+            <rect x="140" y="165" width="120" height="20" rx="10" />
+            <path d="M130 175 Q120 175 115 185 L90 350 Q85 370 100 375 L160 390 Q170 392 175 385 L180 175 Z" />
+            <path d="M270 175 Q280 175 285 185 L310 350 Q315 370 300 375 L240 390 Q230 392 225 385 L220 175 Z" />
+            <path d="M160 390 L150 550 Q148 570 165 570 L190 570 Q200 570 198 555 L195 390 Z" />
+            <path d="M240 390 L250 550 Q252 570 235 570 L210 570 Q200 570 202 555 L205 390 Z" />
+            <circle cx="260" cy="280" r="25" />
+            <rect x="250" y="305" width="20" height="60" rx="5" />
+          </svg>
+        </div>
         
         {/* Glow orbs */}
         <div className="absolute top-20 left-1/4 w-72 md:w-96 h-72 md:h-96 rounded-full bg-primary/15 blur-[120px]" />
@@ -174,25 +189,28 @@ export default function Landing() {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-        <div className="container px-4 md:px-6">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center max-w-5xl mx-auto">
-            {/* Portrait */}
-            <div className="relative mx-auto md:mx-0 w-64 sm:w-72 md:w-full max-w-sm">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 rotate-3 scale-105" />
-              <div className="relative rounded-3xl overflow-hidden border-2 border-primary/20 shadow-2xl">
-                <img
-                  src={alKhwarizmiImg}
-                  alt="Al-Khwarizmi — Father of Algebra"
-                  className="w-full h-auto object-cover" />
+        {/* Al-Khwarizmi silhouette shadow in background */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
+          <svg viewBox="0 0 400 600" className="absolute right-[-10%] top-1/2 -translate-y-1/2 h-[110%] opacity-[0.04] dark:opacity-[0.07] text-primary fill-current">
+            {/* Stylized scholar silhouette */}
+            <ellipse cx="200" cy="100" rx="65" ry="75" />
+            <path d="M200 60 L180 20 Q200 5 220 20 Z" />
+            <rect x="140" y="165" width="120" height="20" rx="10" />
+            <path d="M130 175 Q120 175 115 185 L90 350 Q85 370 100 375 L160 390 Q170 392 175 385 L180 175 Z" />
+            <path d="M270 175 Q280 175 285 185 L310 350 Q315 370 300 375 L240 390 Q230 392 225 385 L220 175 Z" />
+            <path d="M160 390 L150 550 Q148 570 165 570 L190 570 Q200 570 198 555 L195 390 Z" />
+            <path d="M240 390 L250 550 Q252 570 235 570 L210 570 Q200 570 202 555 L205 390 Z" />
+            <circle cx="260" cy="280" r="25" />
+            <rect x="250" y="305" width="20" height="60" rx="5" />
+            <circle cx="140" cy="310" r="15" />
+            <rect x="125" y="270" width="30" height="40" rx="3" />
+          </svg>
+        </div>
 
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-4 md:p-6">
-                  <p className="font-arabic text-lg md:text-xl text-primary text-center">محمد بن موسى الخوارزمي</p>
-                </div>
-              </div>
-            </div>
-
+        <div className="container relative px-4 md:px-6">
+          <div className="max-w-3xl mx-auto">
             {/* Story */}
-            <div className="space-y-5 md:space-y-6 text-center md:text-left">
+            <div className="space-y-5 md:space-y-6 text-center">
               <div>
                 <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">The Legacy</span>
                 <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">
@@ -213,7 +231,7 @@ export default function Landing() {
                 making mathematics accessible and methodical for every student.
               </p>
 
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                <div className="flex flex-wrap gap-3 justify-center">
                 {['Algebra', 'Algorithms', 'Hindu-Arabic Numerals', 'Astronomy'].map((tag) =>
                 <span key={tag} className="px-3 py-1 text-xs rounded-full border border-primary/20 bg-primary/5 text-primary font-medium">
                     {tag}

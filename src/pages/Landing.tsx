@@ -38,7 +38,8 @@ export default function Landing() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
               <BookOpen className="h-5 w-5" />
             </div>
-            <span className="text-lg font-bold">AI KHUWARIZMI</span>
+            <span className="text-lg font-bold">
+            </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
@@ -61,9 +62,8 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-20 dark:opacity-30"
-          style={{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        <div className="absolute inset-0 opacity-20 dark:opacity-30"
+        style={{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
 
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
         <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full bg-primary/20 blur-[120px]" />

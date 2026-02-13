@@ -35,12 +35,17 @@ export default {
   				'Courier New',
   				'monospace'
   			],
-  			serif: [
+  		serif: [
+  				'Playfair Display',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
   				'Times New Roman',
   				'Times',
+  				'serif'
+  			],
+  			arabic: [
+  				'Amiri',
   				'serif'
   			]
   		},

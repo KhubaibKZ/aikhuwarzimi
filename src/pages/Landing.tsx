@@ -5,23 +5,23 @@ import { Input } from '@/components/ui/input';
 import {
   BookOpen, Brain, Target, Zap, CheckCircle,
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
-  GraduationCap, BarChart3, FileText, Menu
-} from 'lucide-react';
+  GraduationCap, BarChart3, FileText, Menu } from
+'lucide-react';
 import alKhwarizmiImg from '@/assets/al-khwarizmi.jpg';
 
 // Floating math symbols for decoration
 const mathSymbols = [
-  { symbol: '∫', className: 'top-[15%] left-[8%] text-4xl animate-float-slow' },
-  { symbol: 'π', className: 'top-[25%] right-[12%] text-5xl animate-float-medium' },
-  { symbol: '∑', className: 'top-[60%] left-[5%] text-3xl animate-float-fast' },
-  { symbol: '√', className: 'bottom-[20%] right-[8%] text-4xl animate-float-slow' },
-  { symbol: 'Δ', className: 'top-[40%] right-[5%] text-3xl animate-float-medium' },
-  { symbol: '∞', className: 'bottom-[35%] left-[12%] text-5xl animate-float-fast' },
-  { symbol: 'θ', className: 'top-[10%] right-[25%] text-3xl animate-float-slow' },
-  { symbol: 'λ', className: 'bottom-[15%] left-[20%] text-4xl animate-float-medium' },
-  { symbol: 'φ', className: 'top-[50%] left-[15%] text-3xl animate-float-fast hidden md:block' },
-  { symbol: 'α', className: 'bottom-[40%] right-[18%] text-4xl animate-float-slow hidden md:block' },
-];
+{ symbol: '∫', className: 'top-[15%] left-[8%] text-4xl animate-float-slow' },
+{ symbol: 'π', className: 'top-[25%] right-[12%] text-5xl animate-float-medium' },
+{ symbol: '∑', className: 'top-[60%] left-[5%] text-3xl animate-float-fast' },
+{ symbol: '√', className: 'bottom-[20%] right-[8%] text-4xl animate-float-slow' },
+{ symbol: 'Δ', className: 'top-[40%] right-[5%] text-3xl animate-float-medium' },
+{ symbol: '∞', className: 'bottom-[35%] left-[12%] text-5xl animate-float-fast' },
+{ symbol: 'θ', className: 'top-[10%] right-[25%] text-3xl animate-float-slow' },
+{ symbol: 'λ', className: 'bottom-[15%] left-[20%] text-4xl animate-float-medium' },
+{ symbol: 'φ', className: 'top-[50%] left-[15%] text-3xl animate-float-fast hidden md:block' },
+{ symbol: 'α', className: 'bottom-[40%] right-[18%] text-4xl animate-float-slow hidden md:block' }];
+
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -79,18 +79,18 @@ export default function Landing() {
             </Button>
           </div>
         </div>
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-2">
+        {mobileMenuOpen &&
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-2">
             <a href="#legacy" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Legacy</a>
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Features</a>
             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Method</a>
             <a href="#courses" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Courses</a>
             <div className="flex gap-2 pt-2 border-t border-border/30">
-              <Button variant="outline" size="sm" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="flex-1">Log in</Button>
-              <Button size="sm" onClick={() => { handleGetStarted(); setMobileMenuOpen(false); }} className="flex-1 shadow-glow">Begin Journey</Button>
+              <Button variant="outline" size="sm" onClick={() => {setShowLogin(true);setMobileMenuOpen(false);}} className="flex-1">Log in</Button>
+              <Button size="sm" onClick={() => {handleGetStarted();setMobileMenuOpen(false);}} className="flex-1 shadow-glow">Begin Journey</Button>
             </div>
           </div>
-        )}
+        }
       </nav>
 
       {/* Hero Section — Scholarly & Grand */}
@@ -98,18 +98,18 @@ export default function Landing() {
         {/* Deep gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.06]"
-          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
+        style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
         
         {/* Glow orbs */}
         <div className="absolute top-20 left-1/4 w-72 md:w-96 h-72 md:h-96 rounded-full bg-primary/15 blur-[120px]" />
         <div className="absolute bottom-0 right-1/3 w-56 md:w-72 h-56 md:h-72 rounded-full bg-primary/10 blur-[100px]" />
 
         {/* Floating math symbols */}
-        {mathSymbols.map((s, i) => (
-          <span key={i} className={`absolute font-mono text-primary/20 dark:text-primary/15 pointer-events-none select-none ${s.className}`}>
+        {mathSymbols.map((s, i) =>
+        <span key={i} className={`absolute font-mono text-primary/20 dark:text-primary/15 pointer-events-none select-none ${s.className}`}>
             {s.symbol}
           </span>
-        ))}
+        )}
 
         <div className="container relative px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
@@ -122,13 +122,13 @@ export default function Landing() {
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]">
               <span className="block gold-shimmer">Al-Khuwarizmi</span>
-              <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">
-                Your AI Mathematics Tutor
+              <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted  Mathematics Tutor
+
               </span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">
-              In the tradition of the great scholar who gave the world <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics with AI-assisted hints, interactive past papers, and step-by-step enlighte
+              <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
               master IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
             </p>
 
@@ -183,8 +183,8 @@ export default function Landing() {
                 <img
                   src={alKhwarizmiImg}
                   alt="Al-Khwarizmi — Father of Algebra"
-                  className="w-full h-auto object-cover"
-                />
+                  className="w-full h-auto object-cover" />
+
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background/90 to-transparent p-4 md:p-6">
                   <p className="font-arabic text-lg md:text-xl text-primary text-center">محمد بن موسى الخوارزمي</p>
                 </div>
@@ -214,11 +214,11 @@ export default function Landing() {
               </p>
 
               <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                {['Algebra', 'Algorithms', 'Hindu-Arabic Numerals', 'Astronomy'].map((tag) => (
-                  <span key={tag} className="px-3 py-1 text-xs rounded-full border border-primary/20 bg-primary/5 text-primary font-medium">
+                {['Algebra', 'Algorithms', 'Hindu-Arabic Numerals', 'Astronomy'].map((tag) =>
+                <span key={tag} className="px-3 py-1 text-xs rounded-full border border-primary/20 bg-primary/5 text-primary font-medium">
                     {tag}
                   </span>
-                ))}
+                )}
               </div>
             </div>
           </div>
@@ -240,24 +240,24 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[
-              { icon: Brain, title: 'AI Tutor', desc: 'Personalized hints and explanations that understand exactly where you struggle.' },
-              { icon: FileText, title: 'Past Papers', desc: 'Real Cambridge past papers with interactive workspaces, diagrams, and instant marking.' },
-              { icon: Target, title: 'Step-by-Step', desc: 'Every question broken into clear methodical steps — understand the method, not just the answer.' },
-              { icon: BarChart3, title: 'Progress Tracking', desc: 'Visual analytics across all topics. Know your strengths and where to focus next.' },
-              { icon: GraduationCap, title: 'Full Syllabus', desc: 'Complete IGCSE (0580) and O Level (4024) syllabi with structured learning paths.' },
-              { icon: Zap, title: 'Interactive Diagrams', desc: 'Dynamic graphs, geometry tools, Venn diagrams, and coordinate grids in your workspace.' },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="group relative rounded-2xl border border-border/60 bg-card/50 p-5 md:p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 backdrop-blur-sm"
-              >
+            { icon: Brain, title: 'AI Tutor', desc: 'Personalized hints and explanations that understand exactly where you struggle.' },
+            { icon: FileText, title: 'Past Papers', desc: 'Real Cambridge past papers with interactive workspaces, diagrams, and instant marking.' },
+            { icon: Target, title: 'Step-by-Step', desc: 'Every question broken into clear methodical steps — understand the method, not just the answer.' },
+            { icon: BarChart3, title: 'Progress Tracking', desc: 'Visual analytics across all topics. Know your strengths and where to focus next.' },
+            { icon: GraduationCap, title: 'Full Syllabus', desc: 'Complete IGCSE (0580) and O Level (4024) syllabi with structured learning paths.' },
+            { icon: Zap, title: 'Interactive Diagrams', desc: 'Dynamic graphs, geometry tools, Venn diagrams, and coordinate grids in your workspace.' }].
+            map((feature, i) =>
+            <div
+              key={i}
+              className="group relative rounded-2xl border border-border/60 bg-card/50 p-5 md:p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 backdrop-blur-sm">
+
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
                   <feature.icon className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-1.5 text-base">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -276,18 +276,18 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
             {[
-              { step: 'I', title: 'Choose Your Path', desc: 'Select IGCSE 0580 or O Level 4024 and access the complete structured syllabus.' },
-              { step: 'II', title: 'Learn & Practice', desc: 'Study topics with guided lessons, then master them with real Cambridge past papers.' },
-              { step: 'III', title: 'Seek Guidance', desc: 'When stuck, the AI tutor provides hints and step-by-step wisdom to light your way.' },
-            ].map((item, i) => (
-              <div key={i} className="text-center space-y-4 group">
+            { step: 'I', title: 'Choose Your Path', desc: 'Select IGCSE 0580 or O Level 4024 and access the complete structured syllabus.' },
+            { step: 'II', title: 'Learn & Practice', desc: 'Study topics with guided lessons, then master them with real Cambridge past papers.' },
+            { step: 'III', title: 'Seek Guidance', desc: 'When stuck, the AI tutor provides hints and step-by-step wisdom to light your way.' }].
+            map((item, i) =>
+            <div key={i} className="text-center space-y-4 group">
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground font-serif text-2xl font-bold shadow-glow group-hover:scale-110 transition-transform">
                   {item.step}
                 </div>
                 <h3 className="text-lg md:text-xl font-semibold">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -303,23 +303,23 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 gap-5 md:gap-6 max-w-3xl mx-auto">
             {[
-              { code: '0580', title: 'IGCSE Mathematics', desc: 'Extended curriculum — algebra, geometry, statistics, trigonometry and more.', available: true },
-              { code: '4024', title: 'O Level Mathematics', desc: 'Comprehensive O Level syllabus with structured learning and past paper practice.', available: false },
-            ].map((course, i) => (
-              <div key={i} className="relative rounded-2xl border-2 border-primary/15 bg-card/50 backdrop-blur-sm p-6 md:p-8 hover:border-primary/40 transition-all duration-300">
+            { code: '0580', title: 'IGCSE Mathematics', desc: 'Extended curriculum — algebra, geometry, statistics, trigonometry and more.', available: true },
+            { code: '4024', title: 'O Level Mathematics', desc: 'Comprehensive O Level syllabus with structured learning and past paper practice.', available: false }].
+            map((course, i) =>
+            <div key={i} className="relative rounded-2xl border-2 border-primary/15 bg-card/50 backdrop-blur-sm p-6 md:p-8 hover:border-primary/40 transition-all duration-300">
                 <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">{course.code}</span>
                 <h3 className="font-serif text-xl md:text-2xl font-bold mt-3">{course.title}</h3>
                 <p className="text-sm text-muted-foreground mt-2 mb-5">{course.desc}</p>
                 <Button
-                  onClick={course.available ? handleGetStarted : undefined}
-                  disabled={!course.available}
-                  className={course.available ? 'shadow-glow' : ''}
-                >
+                onClick={course.available ? handleGetStarted : undefined}
+                disabled={!course.available}
+                className={course.available ? 'shadow-glow' : ''}>
+
                   {course.available ? 'Start Now' : 'Coming Soon'}
                   {course.available && <ArrowRight className="h-4 w-4 ml-2" />}
                 </Button>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -383,8 +383,8 @@ export default function Landing() {
       </footer>
 
       {/* Login Modal */}
-      {showLogin && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setShowLogin(false)}>
+      {showLogin &&
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setShowLogin(false)}>
           <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 md:p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <Button variant="ghost" size="icon" className="absolute top-3 right-3" onClick={() => setShowLogin(false)}>
               <X className="h-4 w-4" />
@@ -402,12 +402,12 @@ export default function Landing() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Email</label>
                 <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
-                  onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
+              onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Password</label>
                 <Input type="password" placeholder="••••••••" value={loginForm.password}
-                  onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
+              onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
               </div>
               <Button type="submit" className="w-full shadow-glow">
                 Enter <ArrowRight className="h-4 w-4 ml-2" />
@@ -422,7 +422,7 @@ export default function Landing() {
             </p>
           </div>
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }

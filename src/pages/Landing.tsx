@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  BookOpen, Brain, Target, TrendingUp, Zap, CheckCircle,
+  BookOpen, Brain, Target, Zap, CheckCircle,
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
-  GraduationCap, BarChart3, FileText } from
+  GraduationCap, BarChart3, FileText, Menu } from
 'lucide-react';
+import { cn } from '@/lib/utils';
 import heroBg from '@/assets/hero-bg.jpg';
 
 export default function Landing() {
@@ -14,6 +15,7 @@ export default function Landing() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [showLogin, setShowLogin] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
@@ -33,31 +35,50 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Nav */}
       <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-              <BookOpen className="h-5 w-5" />
+        <div className="container flex h-14 md:h-16 items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
+              <BookOpen className="h-4 w-4 md:h-5 md:w-5" />
             </div>
-            <span className="text-lg font-bold">
-            </span>
+            <span className="text-base md:text-lg font-bold">AI Khuwarizmi</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
             <a href="#courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Courses</a>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9 rounded-lg">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 md:h-9 md:w-9 rounded-lg">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowLogin(true)}>
+            <Button variant="ghost" size="sm" onClick={() => setShowLogin(true)} className="hidden sm:inline-flex">
               Log in
             </Button>
-            <Button size="sm" onClick={handleGetStarted} className="shadow-glow">
+            <Button size="sm" onClick={handleGetStarted} className="shadow-glow hidden sm:inline-flex">
               Get Started <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden h-8 w-8">
+              <Menu className="h-5 w-5" />
             </Button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-2">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">Features</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">How It Works</a>
+            <a href="#courses" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-foreground">Courses</a>
+            <div className="flex gap-2 pt-2 border-t border-border/30">
+              <Button variant="outline" size="sm" onClick={() => { setShowLogin(true); setMobileMenuOpen(false); }} className="flex-1">
+                Log in
+              </Button>
+              <Button size="sm" onClick={() => { handleGetStarted(); setMobileMenuOpen(false); }} className="flex-1 shadow-glow">
+                Get Started
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -76,42 +97,41 @@ export default function Landing() {
               AI-Powered Mathematics Learning
             </div>
             
-            <h1 className="md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-3xl">AI KHUWARZIMI
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">AI KHUWARZIMI
 
-Math Tutor.<span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Your AI assisted Math Tutor.
-
+Math Tutor.<span className="block bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-5xl lg:text-6xl">Your AI assisted Math Tutor.
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2">
               Master IGCSE & O Level Mathematics with AI-guided lessons, 
               interactive past papers, and step-by-step solutions. 
               Built for students who want to excel.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={handleGetStarted} className="text-base px-8 shadow-glow">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 sm:px-0">
+              <Button size="lg" onClick={handleGetStarted} className="text-base px-8 shadow-glow w-full sm:w-auto">
                 Start Learning Free
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" className="text-base px-8 group">
+              <Button size="lg" variant="outline" className="text-base px-8 group w-full sm:w-auto">
                 <Play className="h-4 w-4 mr-2 group-hover:text-primary transition-colors" />
                 Watch Demo
               </Button>
             </div>
 
-            <div className="flex items-center justify-center gap-6 pt-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-primary" />
+                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                 Free to start
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                Past papers included
+                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                Past papers
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                AI-powered hints
+                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                AI hints
               </div>
             </div>
           </div>

@@ -209,7 +209,7 @@ export default function Landing() {
             <div className="space-y-5 md:space-y-6 text-center">
               <div>
                 <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">The Legacy</span>
-                <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">Built on inspiration of a Genious
+                <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">Built on inspiration of a Giant
                   <span className="text-primary">a Giant</span>
                 </h2>
               </div>

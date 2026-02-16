@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer,
-  Cell
-} from 'recharts';
-import { ChevronDown, ChevronUp, ArrowLeft, TrendingUp, Target, Zap, Brain, FileText, CheckCircle2 } from 'lucide-react';
+  ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
+  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3
+} from 'lucide-react';
 import {
   mockTopicMastery, mockPastPaperResults,
   getMasteryColor, getMasteryLabel,
@@ -29,7 +26,8 @@ const masteryBgMap = {
   red: 'bg-destructive/20 text-destructive',
 };
 
-function CircularProgress({ percentage, size = 80, strokeWidth = 6 }: { percentage: number; size?: number; strokeWidth?: number }) {
+// ─── Circular Gauge ───
+function MasteryGauge({ percentage, size = 160, strokeWidth = 10 }: { percentage: number; size?: number; strokeWidth?: number }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (percentage / 100) * circumference;
@@ -38,126 +36,151 @@ function CircularProgress({ percentage, size = 80, strokeWidth = 6 }: { percenta
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth={strokeWidth} />
         <circle
-          cx={size / 2} cy={size / 2} r={radius}
-          fill="none" stroke="hsl(var(--muted))" strokeWidth={strokeWidth}
-        />
-        <circle
-          cx={size / 2} cy={size / 2} r={radius}
-          fill="none"
-          stroke={masteryColorMap[color]}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-700 ease-out"
+          cx={size / 2} cy={size / 2} r={radius} fill="none"
+          stroke={masteryColorMap[color]} strokeWidth={strokeWidth}
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="round" className="transition-all duration-1000 ease-out"
         />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-sm font-bold text-foreground">{percentage}%</span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-3xl font-bold text-foreground">{percentage}%</span>
+        <span className="text-xs text-muted-foreground mt-0.5">{getMasteryLabel(percentage)}</span>
       </div>
     </div>
   );
 }
 
+function SmallCircle({ percentage, size = 70, strokeWidth = 5 }: { percentage: number; size?: number; strokeWidth?: number }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percentage / 100) * circumference;
+  const color = getMasteryColor(percentage);
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth={strokeWidth} />
+        <circle
+          cx={size / 2} cy={size / 2} r={radius} fill="none"
+          stroke={masteryColorMap[color]} strokeWidth={strokeWidth}
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="round" className="transition-all duration-700 ease-out"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-xs font-bold text-foreground">{percentage}%</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Trend Icon ───
+function TrendIndicator({ trend, delta }: { trend: TopicMastery['trend']; delta: number }) {
+  if (trend === 'new') return <span className="text-[10px] text-muted-foreground italic">NEW</span>;
+  if (trend === 'stable') return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
+  if (trend === 'up') return (
+    <span className="flex items-center gap-0.5 text-success text-xs font-semibold">
+      <TrendingUp className="h-3.5 w-3.5" />+{delta}
+    </span>
+  );
+  return (
+    <span className="flex items-center gap-0.5 text-destructive text-xs font-semibold">
+      <TrendingDown className="h-3.5 w-3.5" />{delta}
+    </span>
+  );
+}
+
+// ─── Topic Row with paper-wise expansion ───
 function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const color = getMasteryColor(topic.overallScore);
-  const label = getMasteryLabel(topic.overallScore);
-
-  const radarData = [
-    { metric: 'Accuracy', value: topic.accuracy, fullMark: 100 },
-    { metric: 'Readiness', value: topic.readiness, fullMark: 100 },
-    { metric: 'Speed', value: topic.speed, fullMark: 100 },
-  ];
-
-  const barData = [
-    { name: 'Accuracy', value: topic.accuracy, weight: '40%' },
-    { name: 'Readiness', value: topic.readiness, weight: '30%' },
-    { name: 'Speed', value: topic.speed, weight: '30%' },
-  ];
 
   return (
     <div
       className="rounded-xl border border-border bg-card overflow-hidden animate-fade-in"
-      style={{ animationDelay: `${index * 80}ms` }}
+      style={{ animationDelay: `${index * 60}ms` }}
     >
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-4 p-4 hover:bg-secondary/30 transition-colors"
+        className="w-full flex items-center gap-3 p-3.5 hover:bg-secondary/30 transition-colors"
       >
-        <div className="flex-1 flex items-center gap-4">
-          <span className="text-sm font-semibold text-foreground min-w-[160px] text-left">{topic.topic}</span>
-          <div className="flex-1 max-w-[300px]">
-            <Progress
-              value={topic.overallScore}
-              className="h-3 [&>div]:transition-all [&>div]:duration-700"
-              style={{
-                ['--progress-color' as string]: masteryColorMap[color],
-              }}
-            />
-          </div>
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${masteryBgMap[color]}`}>
-            {Math.round(topic.overallScore)}% — {label}
-          </span>
+        <span className="text-sm font-semibold text-foreground min-w-[140px] text-left truncate">{topic.topic}</span>
+        <div className="flex-1 max-w-[220px]">
+          <Progress
+            value={topic.overallScore}
+            className="h-2.5 [&>div]:transition-all [&>div]:duration-700"
+            style={{ ['--progress-color' as string]: masteryColorMap[color] }}
+          />
         </div>
-        {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[color]}`}>
+          {topic.overallScore}%
+        </span>
+        <TrendIndicator trend={topic.trend} delta={topic.trendDelta} />
+        {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
       </button>
 
       {expanded && (
-        <div className="border-t border-border p-5 bg-secondary/20 animate-fade-in">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Radar Chart */}
-            <div className="flex flex-col items-center">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Skill Breakdown</h4>
-              <ChartContainer config={{
-                value: { label: 'Score', color: masteryColorMap[color] }
-              }} className="w-full max-w-[250px] aspect-square">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="hsl(var(--border))" />
-                  <PolarAngleAxis dataKey="metric" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
-                  <Radar
-                    name="Score"
-                    dataKey="value"
-                    stroke={masteryColorMap[color]}
-                    fill={masteryColorMap[color]}
-                    fillOpacity={0.25}
-                    strokeWidth={2}
-                  />
-                </RadarChart>
-              </ChartContainer>
-            </div>
+        <div className="border-t border-border bg-secondary/10 animate-fade-in">
+          {/* Paper-wise breakdown table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-muted-foreground border-b border-border/50">
+                  <th className="text-left py-2 px-4 font-medium">Paper</th>
+                  <th className="text-center py-2 px-2 font-medium">Accuracy</th>
+                  <th className="text-center py-2 px-2 font-medium">Independence</th>
+                  <th className="text-center py-2 px-2 font-medium">Speed</th>
+                  <th className="text-center py-2 px-2 font-medium">Overall</th>
+                  <th className="text-center py-2 px-2 font-medium">Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topic.paperScores.map((ps, i) => {
+                  const prev = i > 0 ? topic.paperScores[i - 1].overall : null;
+                  const diff = prev !== null ? ps.overall - prev : null;
+                  const psColor = getMasteryColor(ps.overall);
+                  return (
+                    <tr key={ps.paperId} className="border-b border-border/30 last:border-0">
+                      <td className="py-2.5 px-4 font-medium text-foreground">{ps.paperLabel}</td>
+                      <td className="py-2.5 px-2 text-center">{ps.accuracy}%</td>
+                      <td className="py-2.5 px-2 text-center">{ps.readiness}%</td>
+                      <td className="py-2.5 px-2 text-center">{ps.speed}%</td>
+                      <td className="py-2.5 px-2 text-center">
+                        <span className={`font-bold px-1.5 py-0.5 rounded ${masteryBgMap[psColor]}`}>{ps.overall}%</span>
+                      </td>
+                      <td className="py-2.5 px-2 text-center">
+                        {diff === null ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : diff > 0 ? (
+                          <span className="text-success font-semibold">↑ +{diff}</span>
+                        ) : diff < 0 ? (
+                          <span className="text-destructive font-semibold">↓ {diff}</span>
+                        ) : (
+                          <span className="text-muted-foreground">→ 0</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Bar breakdown */}
-            <div className="flex flex-col">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Weighted Factors</h4>
-              <ChartContainer config={{
-                value: { label: 'Score', color: 'hsl(var(--primary))' }
-              }} className="w-full h-[200px]">
-                <BarChart data={barData} layout="vertical" margin={{ left: 10, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                  <XAxis type="number" domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
-                  <YAxis dataKey="name" type="category" width={80} tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={24}>
-                    {barData.map((entry, i) => (
-                      <Cell key={i} fill={entry.value > 80 ? masteryColorMap.green : entry.value >= 50 ? masteryColorMap.yellow : masteryColorMap.red} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ChartContainer>
-
-              <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                {barData.map((item) => (
-                  <div key={item.name} className="rounded-lg bg-muted/50 p-2">
-                    <p className="text-[10px] text-muted-foreground uppercase">{item.name}</p>
-                    <p className="text-sm font-bold text-foreground">{item.value}%</p>
-                    <p className="text-[10px] text-muted-foreground">Weight: {item.weight}</p>
-                  </div>
-                ))}
+          {/* Latest skill bars */}
+          <div className="px-4 py-3 grid grid-cols-3 gap-3 border-t border-border/30">
+            {[
+              { label: 'Accuracy', value: topic.latestAccuracy, weight: '40%' },
+              { label: 'Independence', value: topic.latestReadiness, weight: '30%' },
+              { label: 'Speed', value: topic.latestSpeed, weight: '30%' },
+            ].map(item => (
+              <div key={item.label} className="rounded-lg bg-muted/50 p-2.5 text-center">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{item.label}</p>
+                <p className="text-lg font-bold text-foreground">{item.value}%</p>
+                <p className="text-[10px] text-muted-foreground">Weight: {item.weight}</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       )}
@@ -165,124 +188,117 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
   );
 }
 
+// ─── Main Page ───
 export default function StudentAnalytics() {
   const navigate = useNavigate();
-  const avgScore = mockTopicMastery.reduce((sum, t) => sum + t.overallScore, 0) / mockTopicMastery.length;
+  const avgScore = Math.round(mockTopicMastery.reduce((s, t) => s + t.overallScore, 0) / mockTopicMastery.length);
+  const avgAccuracy = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestAccuracy, 0) / mockTopicMastery.length);
+  const avgIndependence = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestReadiness, 0) / mockTopicMastery.length);
+  const avgSpeed = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestSpeed, 0) / mockTopicMastery.length);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container px-4 py-8 md:px-6 max-w-5xl">
-        {/* Back button */}
-        <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="mb-6 gap-2">
+      <main className="container px-4 py-6 md:px-6 max-w-5xl">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="mb-4 gap-2">
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Button>
 
-        {/* Page title */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            Student Analytics
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your mastery across topics and past papers</p>
-        </div>
+        {/* ── Hero: Overall Mastery ── */}
+        <Card className="bg-card border-border mb-6 overflow-hidden">
+          <CardContent className="p-6 flex flex-col items-center text-center">
+            <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-1">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Student Analytics
+            </h1>
+            <p className="text-xs text-muted-foreground mb-5">Performance across all past papers attempted</p>
+            <MasteryGauge percentage={avgScore} />
+            <p className="text-xs text-muted-foreground mt-3">Overall Mastery</p>
+          </CardContent>
+        </Card>
 
-        {/* Summary cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* ── Key Metrics Row ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <Card className="bg-card border-border">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              <Target className="h-5 w-5 text-primary mb-2" />
-              <p className="text-2xl font-bold text-foreground">{Math.round(avgScore)}%</p>
-              <p className="text-xs text-muted-foreground">Avg Mastery</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <FileText className="h-5 w-5 text-primary mb-2" />
+              <FileText className="h-5 w-5 text-primary mb-1.5" />
               <p className="text-2xl font-bold text-foreground">{mockPastPaperResults.length}</p>
-              <p className="text-xs text-muted-foreground">Papers Attempted</p>
+              <p className="text-[11px] text-muted-foreground">Papers Attempted</p>
             </CardContent>
           </Card>
           <Card className="bg-card border-border">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              <Zap className="h-5 w-5 text-warning mb-2" />
-              <p className="text-2xl font-bold text-foreground">
-                {mockTopicMastery.filter(t => t.overallScore > 80).length}
-              </p>
-              <p className="text-xs text-muted-foreground">Topics Mastered</p>
+              <Brain className="h-5 w-5 text-success mb-1.5" />
+              <p className="text-2xl font-bold text-foreground">{avgIndependence}%</p>
+              <p className="text-[11px] text-muted-foreground">AI Independence</p>
             </CardContent>
           </Card>
           <Card className="bg-card border-border">
             <CardContent className="p-4 flex flex-col items-center text-center">
-              <Brain className="h-5 w-5 text-success mb-2" />
-              <p className="text-2xl font-bold text-foreground">
-                {Math.round(mockTopicMastery.reduce((s, t) => s + t.readiness, 0) / mockTopicMastery.length)}%
-              </p>
-              <p className="text-xs text-muted-foreground">Avg Independence</p>
+              <Target className="h-5 w-5 text-warning mb-1.5" />
+              <p className="text-2xl font-bold text-foreground">{avgAccuracy}%</p>
+              <p className="text-[11px] text-muted-foreground">Accuracy</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 flex flex-col items-center text-center">
+              <Zap className="h-5 w-5 text-primary mb-1.5" />
+              <p className="text-2xl font-bold text-foreground">{avgSpeed}%</p>
+              <p className="text-[11px] text-muted-foreground">Speed</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Section 1: Topic Mastery Matrix */}
+        {/* ── Topic Mastery Matrix ── */}
         <section className="mb-10">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
+          <h2 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
             Topic Mastery Matrix
           </h2>
-          <p className="text-xs text-muted-foreground mb-4">
-            Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Click a row to expand the breakdown.
+          <p className="text-[11px] text-muted-foreground mb-4">
+            Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Tap a topic for paper-wise breakdown & improvement trends.
           </p>
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {mockTopicMastery.map((topic, i) => (
-              <TopicRow key={topic.topic} topic={topic} index={i} />
+              <TopicRow key={topic.topicId} topic={topic} index={i} />
             ))}
           </div>
         </section>
 
-        {/* Section 2: Past Paper Timeline */}
+        {/* ── Past Paper Timeline ── */}
         <section>
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
+          <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+            <FileText className="h-4 w-4 text-primary" />
             Past Paper Timeline
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {mockPastPaperResults.map((paper, i) => (
-              <Card
-                key={paper.paperId}
-                className="bg-card border-border overflow-hidden animate-fade-in"
-                style={{ animationDelay: `${i * 100}ms` }}
-              >
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold">{paper.paperTitle}</CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    Completed: {new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </p>
-                </CardHeader>
-                <CardContent className="flex items-center gap-6">
-                  <CircularProgress percentage={paper.completionPercentage} size={90} strokeWidth={7} />
-                  <div className="flex-1 space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Questions Solved</span>
-                      <span className="font-medium text-foreground">{paper.solvedQuestions}/{paper.totalQuestions}</span>
+            {mockPastPaperResults.map((paper, i) => {
+              const scorePercent = Math.round((paper.marksObtained / paper.totalMarks) * 100);
+              return (
+                <Card
+                  key={paper.paperId}
+                  className="bg-card border-border overflow-hidden animate-fade-in"
+                  style={{ animationDelay: `${i * 100}ms` }}
+                >
+                  <CardContent className="p-5 flex items-center gap-5">
+                    <SmallCircle percentage={paper.completionPercentage} />
+                    <div className="flex-1 space-y-1.5">
+                      <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                      <div className="flex gap-4 text-xs">
+                        <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
+                        <span className="text-muted-foreground">Score: <span className={`font-bold ${
+                          scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
+                        }`}>{scorePercent}%</span></span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Marks Obtained</span>
-                      <span className="font-medium text-foreground">{paper.marksObtained}/{paper.totalMarks}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Score</span>
-                      <span className={`font-bold ${
-                        (paper.marksObtained / paper.totalMarks) * 100 > 70 ? 'text-success' :
-                        (paper.marksObtained / paper.totalMarks) * 100 >= 50 ? 'text-warning' : 'text-destructive'
-                      }`}>
-                        {Math.round((paper.marksObtained / paper.totalMarks) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
       </main>

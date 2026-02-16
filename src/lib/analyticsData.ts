@@ -1,12 +1,25 @@
-// Mock analytics data for student performance visualization
-// In production, this would come from the database based on actual student interactions
+// Analytics data for student performance visualization
+// Maps to all 9 IGCSE 0580 syllabus topics with paper-wise breakdown
+
+export interface PaperScore {
+  paperId: string;
+  paperLabel: string; // e.g. "0580/43 MJ21"
+  accuracy: number;
+  readiness: number;
+  speed: number;
+  overall: number;
+}
 
 export interface TopicMastery {
   topic: string;
-  accuracy: number; // 0-100 percentage
-  readiness: number; // 0-100 (1 - check work usage rate) * 100
-  speed: number; // 0-100 score based on time-per-step
-  overallScore: number; // weighted: accuracy*0.4 + readiness*0.3 + speed*0.3
+  topicId: number; // maps to syllabus topic id
+  latestAccuracy: number;
+  latestReadiness: number;
+  latestSpeed: number;
+  overallScore: number;
+  paperScores: PaperScore[]; // chronological, per-paper breakdown
+  trend: 'up' | 'down' | 'stable' | 'new'; // improvement/decline
+  trendDelta: number; // percentage change between last two papers
 }
 
 export interface PastPaperResult {
@@ -18,7 +31,7 @@ export interface PastPaperResult {
   totalQuestions: number;
   solvedQuestions: number;
   completionPercentage: number;
-  completedDate: string; // ISO string
+  completedDate: string;
   totalMarks: number;
   marksObtained: number;
 }
@@ -35,51 +48,113 @@ export function getMasteryLabel(score: number): string {
   return 'Needs Work';
 }
 
-// Mock data — simulates a student who has attempted the available past papers
-export const mockTopicMastery: TopicMastery[] = [
-  {
-    topic: 'Number & Arithmetic',
-    accuracy: 88,
-    readiness: 75,
-    speed: 82,
-    overallScore: 88 * 0.4 + 75 * 0.3 + 82 * 0.3,
-  },
-  {
-    topic: 'Geometry & Angles',
-    accuracy: 72,
-    readiness: 65,
-    speed: 58,
-    overallScore: 72 * 0.4 + 65 * 0.3 + 58 * 0.3,
-  },
-  {
-    topic: 'Algebra',
-    accuracy: 65,
-    readiness: 80,
-    speed: 55,
-    overallScore: 65 * 0.4 + 80 * 0.3 + 55 * 0.3,
-  },
-  {
-    topic: 'Mensuration',
-    accuracy: 90,
-    readiness: 85,
-    speed: 70,
-    overallScore: 90 * 0.4 + 85 * 0.3 + 70 * 0.3,
-  },
-  {
-    topic: 'Graphs & Functions',
-    accuracy: 45,
-    readiness: 40,
-    speed: 50,
-    overallScore: 45 * 0.4 + 40 * 0.3 + 50 * 0.3,
-  },
-  {
-    topic: 'Statistics & Probability',
-    accuracy: 78,
-    readiness: 70,
-    speed: 75,
-    overallScore: 78 * 0.4 + 70 * 0.3 + 75 * 0.3,
-  },
-];
+function calcOverall(a: number, r: number, s: number) {
+  return Math.round(a * 0.4 + r * 0.3 + s * 0.3);
+}
+
+function getTrend(scores: PaperScore[]): { trend: TopicMastery['trend']; delta: number } {
+  if (scores.length < 2) return { trend: 'new', delta: 0 };
+  const last = scores[scores.length - 1].overall;
+  const prev = scores[scores.length - 2].overall;
+  const delta = last - prev;
+  if (Math.abs(delta) <= 2) return { trend: 'stable', delta };
+  return { trend: delta > 0 ? 'up' : 'down', delta };
+}
+
+// All 9 syllabus topics with mock paper-wise progress
+export const mockTopicMastery: TopicMastery[] = (() => {
+  const raw: {
+    topic: string; topicId: number;
+    papers: { id: string; label: string; a: number; r: number; s: number }[];
+  }[] = [
+    {
+      topic: 'Number', topicId: 1,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 82, r: 70, s: 75 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 88, r: 75, s: 82 },
+      ],
+    },
+    {
+      topic: 'Algebra & Graphs', topicId: 2,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 60, r: 55, s: 50 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 65, r: 80, s: 55 },
+      ],
+    },
+    {
+      topic: 'Coordinate Geometry', topicId: 3,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 70, r: 65, s: 60 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 72, r: 65, s: 58 },
+      ],
+    },
+    {
+      topic: 'Geometry', topicId: 4,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 68, r: 60, s: 55 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 75, r: 68, s: 62 },
+      ],
+    },
+    {
+      topic: 'Mensuration', topicId: 5,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 85, r: 80, s: 65 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 90, r: 85, s: 70 },
+      ],
+    },
+    {
+      topic: 'Trigonometry', topicId: 6,
+      papers: [
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 55, r: 45, s: 50 },
+      ],
+    },
+    {
+      topic: 'Transformations & Vectors', topicId: 7,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 78, r: 72, s: 68 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 74, r: 70, s: 65 },
+      ],
+    },
+    {
+      topic: 'Probability', topicId: 8,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 80, r: 75, s: 78 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 78, r: 70, s: 75 },
+      ],
+    },
+    {
+      topic: 'Statistics', topicId: 9,
+      papers: [
+        { id: 'pp_0580_s22_31', label: '0580/31 MJ22', a: 40, r: 35, s: 45 },
+        { id: 'pp_0580_s21_43', label: '0580/43 MJ21', a: 45, r: 40, s: 50 },
+      ],
+    },
+  ];
+
+  return raw.map(t => {
+    const paperScores: PaperScore[] = t.papers.map(p => ({
+      paperId: p.id,
+      paperLabel: p.label,
+      accuracy: p.a,
+      readiness: p.r,
+      speed: p.s,
+      overall: calcOverall(p.a, p.r, p.s),
+    }));
+    const latest = paperScores[paperScores.length - 1];
+    const { trend, delta } = getTrend(paperScores);
+    return {
+      topic: t.topic,
+      topicId: t.topicId,
+      latestAccuracy: latest.accuracy,
+      latestReadiness: latest.readiness,
+      latestSpeed: latest.speed,
+      overallScore: latest.overall,
+      paperScores,
+      trend,
+      trendDelta: delta,
+    };
+  });
+})();
 
 export const mockPastPaperResults: PastPaperResult[] = [
   {

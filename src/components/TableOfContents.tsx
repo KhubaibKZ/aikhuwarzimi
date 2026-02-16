@@ -13,9 +13,9 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOfContentsProps) {
-  const [expandedTopic, setExpandedTopic] = useState<number | null>(1);
-  const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>('1-1');
-  const [expandedPaper, setExpandedPaper] = useState<string | null>(pastPapers[0]?.id || null);
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
+  const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
+  const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
   const { isCompleted } = useProgress();
 
   // Calculate completion percentage for a subtopic

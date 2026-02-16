@@ -64,7 +64,7 @@ export default function Landing() {
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-sm md:text-base font-bold tracking-wide">AI Khuwarizmi</span>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">Inspired  Father of Algebra</span>
+              <span className="text-[10px] text-muted-foreground hidden sm:block">Inspired by Father of Algebra</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-8">

@@ -28,7 +28,9 @@ export default function Landing() {
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [showLogin, setShowLogin] = useState(false);
+  const [authTab, setAuthTab] = useState<'login' | 'register'>('register');
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => {
@@ -69,11 +71,11 @@ export default function Landing() {
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 md:h-9 md:w-9 rounded-lg">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowLogin(true)} className="hidden sm:inline-flex font-medium">
+            <Button variant="ghost" size="sm" onClick={() => { setAuthTab('login'); setShowLogin(true); }} className="hidden sm:inline-flex font-medium">
               Log in
             </Button>
             <Button size="sm" onClick={handleGetStarted} className="shadow-glow hidden sm:inline-flex">
-              Begin Journey <ChevronRight className="h-4 w-4 ml-1" />
+              Try it for free <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden h-8 w-8">
               <Menu className="h-5 w-5" />
@@ -87,8 +89,8 @@ export default function Landing() {
             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Method</a>
             <a href="#courses" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm text-muted-foreground">Courses</a>
             <div className="flex gap-2 pt-2 border-t border-border/30">
-              <Button variant="outline" size="sm" onClick={() => {setShowLogin(true);setMobileMenuOpen(false);}} className="flex-1">Log in</Button>
-              <Button size="sm" onClick={() => {handleGetStarted();setMobileMenuOpen(false);}} className="flex-1 shadow-glow">Begin Journey</Button>
+              <Button variant="outline" size="sm" onClick={() => {setAuthTab('login');setShowLogin(true);setMobileMenuOpen(false);}} className="flex-1">Log in</Button>
+              <Button size="sm" onClick={() => {handleGetStarted();setMobileMenuOpen(false);}} className="flex-1 shadow-glow">Try it for free</Button>
             </div>
           </div>
         }
@@ -145,7 +147,7 @@ export default function Landing() {
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 sm:px-0">
               <Button size="lg" onClick={handleGetStarted} className="text-base px-8 shadow-glow w-full sm:w-auto group">
-                Begin Your Journey
+                Try it for free
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button size="lg" variant="outline" className="text-base px-8 group w-full sm:w-auto border-primary/30 hover:bg-primary/5">
@@ -363,7 +365,7 @@ export default function Landing() {
                 Join students who are already transforming their mathematical understanding with AI-powered learning.
               </p>
               <Button size="lg" variant="secondary" onClick={handleGetStarted} className="text-base px-8">
-                Begin Your Journey
+                Try it for free
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             </div>
@@ -400,32 +402,76 @@ export default function Landing() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow mx-auto mb-4">
                 <span className="font-serif text-xl font-bold italic">خ</span>
               </div>
-              <h2 className="font-serif text-2xl font-bold">Welcome Back</h2>
-              <p className="text-sm text-muted-foreground mt-1">Continue your journey of knowledge</p>
+              <h2 className="font-serif text-2xl font-bold">
+                {authTab === 'login' ? 'Welcome Back' : 'Join Al-Khuwarizmi'}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {authTab === 'login' ? 'Continue your journey of knowledge' : 'Register to begin your journey'}
+              </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
-                <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
-              onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
-                <Input type="password" placeholder="••••••••" value={loginForm.password}
-              onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
-              </div>
-              <Button type="submit" className="w-full shadow-glow">
-                Enter <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </form>
-
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              New student?{' '}
-              <button className="text-primary hover:underline font-medium" onClick={handleGetStarted}>
-                Begin free
+            {/* Tabs */}
+            <div className="flex rounded-lg bg-muted p-1 mb-5">
+              <button
+                onClick={() => setAuthTab('register')}
+                className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'register' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Register
               </button>
-            </p>
+              <button
+                onClick={() => setAuthTab('login')}
+                className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'login' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Log in
+              </button>
+            </div>
+
+            {authTab === 'register' ? (
+              <form onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }} className="space-y-3">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Full Name</label>
+                  <Input type="text" placeholder="Your full name" value={registerForm.name}
+                    onChange={(e) => setRegisterForm((f) => ({ ...f, name: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Email</label>
+                  <Input type="email" placeholder="scholar@example.com" value={registerForm.email}
+                    onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Password</label>
+                  <Input type="password" placeholder="Create a password" value={registerForm.password}
+                    onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Confirm Password</label>
+                  <Input type="password" placeholder="Confirm your password" value={registerForm.confirmPassword}
+                    onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} />
+                </div>
+                <Button type="submit" className="w-full shadow-glow mt-2">
+                  Create Account <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleLogin} className="space-y-3">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Email</label>
+                  <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
+                    onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Password</label>
+                  <Input type="password" placeholder="••••••••" value={loginForm.password}
+                    onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
+                </div>
+                <Button type="submit" className="w-full shadow-glow mt-2">
+                  Log in <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  <button type="button" className="text-primary hover:underline font-medium">Forgot password?</button>
+                </p>
+              </form>
+            )}
           </div>
         </div>
       }

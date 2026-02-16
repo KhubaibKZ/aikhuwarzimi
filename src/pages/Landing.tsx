@@ -136,7 +136,7 @@ export default function Landing() {
             <div className="inline-flex items-center gap-2.5 rounded-full border border-primary/30 bg-primary/5 px-5 py-2 text-sm">
               <span className="font-arabic text-base text-primary">الخوارزمي</span>
               <span className="w-px h-4 bg-primary/30" />
-              <span className="text-primary font-medium">The Father of Algebra</span>
+              <span className="text-primary font-medium">Beta Version</span>
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]">
@@ -146,7 +146,7 @@ export default function Landing() {
               </span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics with AI-assisted hints, interactive past papers, and step-by-step enlighte
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to stude IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
               <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
               master IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
             </p>

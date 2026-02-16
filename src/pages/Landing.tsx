@@ -140,8 +140,8 @@ export default function Landing() {
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]">
-              <span className="block gold-shimmer">Al-Khuwarizmi</span>
-              <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted  Mathematics Tutor
+              <span className="block gold-shimmer">Ai-Khuwarizmi</span>
+              <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted Mathematics Tutor
 
               </span>
             </h1>

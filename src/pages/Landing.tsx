@@ -64,7 +64,7 @@ export default function Landing() {
             </div>
             <div className="flex flex-col leading-none">
               <span className="text-sm md:text-base font-bold tracking-wide">AI Khuwarizmi</span>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">The Father of Algebra</span>
+              <span className="text-[10px] text-muted-foreground hidden sm:block">Inspired  Father of Algebra</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-8">
@@ -77,7 +77,7 @@ export default function Landing() {
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 md:h-9 md:w-9 rounded-lg">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => { setAuthTab('login'); setShowLogin(true); }} className="hidden sm:inline-flex font-medium">
+            <Button variant="ghost" size="sm" onClick={() => {setAuthTab('login');setShowLogin(true);}} className="hidden sm:inline-flex font-medium">
               Log in
             </Button>
             <Button size="sm" onClick={handleGetStarted} className="shadow-glow hidden sm:inline-flex">
@@ -115,8 +115,8 @@ export default function Landing() {
             src={alKhwarizmiSilhouette}
             alt=""
             className="absolute right-[-5%] top-1/2 -translate-y-1/2 h-[90%] object-contain opacity-[0.04] dark:opacity-[0.07] grayscale"
-            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }}
-          />
+            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }} />
+
         </div>
         
         {/* Glow orbs */}
@@ -199,8 +199,8 @@ export default function Landing() {
             src={alKhwarizmiSilhouette}
             alt=""
             className="absolute left-[-5%] top-1/2 -translate-y-1/2 h-[100%] object-contain opacity-[0.05] dark:opacity-[0.08] grayscale"
-            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }}
-          />
+            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }} />
+
         </div>
 
         <div className="container relative px-4 md:px-6">
@@ -419,56 +419,56 @@ export default function Landing() {
             {/* Tabs */}
             <div className="flex rounded-lg bg-muted p-1 mb-5">
               <button
-                onClick={() => setAuthTab('register')}
-                className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'register' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-              >
+              onClick={() => setAuthTab('register')}
+              className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'register' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
+
                 Register
               </button>
               <button
-                onClick={() => setAuthTab('login')}
-                className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'login' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-              >
+              onClick={() => setAuthTab('login')}
+              className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'login' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
+
                 Log in
               </button>
             </div>
 
-            {authTab === 'register' ? (
-              <form onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }} className="space-y-3">
+            {authTab === 'register' ?
+          <form onSubmit={(e) => {e.preventDefault();navigate('/dashboard');}} className="space-y-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Full Name</label>
                   <Input type="text" placeholder="Your full name" value={registerForm.name}
-                    onChange={(e) => setRegisterForm((f) => ({ ...f, name: e.target.value }))} />
+              onChange={(e) => setRegisterForm((f) => ({ ...f, name: e.target.value }))} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Email</label>
                   <Input type="email" placeholder="scholar@example.com" value={registerForm.email}
-                    onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} />
+              onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Password</label>
                   <Input type="password" placeholder="Create a password" value={registerForm.password}
-                    onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} />
+              onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Confirm Password</label>
                   <Input type="password" placeholder="Confirm your password" value={registerForm.confirmPassword}
-                    onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} />
+              onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} />
                 </div>
                 <Button type="submit" className="w-full shadow-glow mt-2">
                   Create Account <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-              </form>
-            ) : (
-              <form onSubmit={handleLogin} className="space-y-3">
+              </form> :
+
+          <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Email</label>
                   <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
-                    onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
+              onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Password</label>
                   <Input type="password" placeholder="••••••••" value={loginForm.password}
-                    onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
+              onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
                 </div>
                 <Button type="submit" className="w-full shadow-glow mt-2">
                   Log in <ArrowRight className="h-4 w-4 ml-2" />
@@ -477,7 +477,7 @@ export default function Landing() {
                   <button type="button" className="text-primary hover:underline font-medium">Forgot password?</button>
                 </p>
               </form>
-            )}
+          }
           </div>
         </div>
       }

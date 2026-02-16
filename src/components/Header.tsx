@@ -67,7 +67,7 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
 
-          <Button variant="outline" size="sm" className="hidden gap-2 sm:flex">
+          <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/analytics')}>
             <TrendingUp className="h-4 w-4" />
             Progress
           </Button>

@@ -1,6 +1,7 @@
-import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft } from 'lucide-react';
+import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCourse } from '@/lib/courseData';
 
 interface HeaderProps {
@@ -9,6 +10,7 @@ interface HeaderProps {
 }
 
 export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
+  const navigate = useNavigate();
   const [isDark, setIsDark] = useState(false);
   const currentCourse = currentCourseId ? getCourse(currentCourseId) : null;
 
@@ -26,6 +28,14 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="h-9 w-9 rounded-lg mr-1"
+          >
+            <Home className="h-4 w-4" />
+          </Button>
           {currentCourse && onBackToCourses && (
             <Button
               variant="ghost"

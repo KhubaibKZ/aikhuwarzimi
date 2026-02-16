@@ -146,7 +146,7 @@ export default function Landing() {
               </span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to stude IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce there .
               <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
               master IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
             </p>

@@ -49,7 +49,8 @@ export default function Landing() {
   };
 
   const handleGetStarted = () => {
-    navigate('/dashboard');
+    setAuthTab('register');
+    setShowLogin(true);
   };
 
   return (

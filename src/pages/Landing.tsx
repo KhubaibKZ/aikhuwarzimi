@@ -26,7 +26,12 @@ const mathSymbols = [
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const [isDark, setIsDark] = useState(() => {
+    if (!document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+    }
+    return true;
+  });
   const [showLogin, setShowLogin] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('register');
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });

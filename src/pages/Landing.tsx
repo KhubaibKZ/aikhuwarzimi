@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import alKhwarizmiSilhouette from '@/assets/al-khwarizmi-silhouette.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -100,19 +101,14 @@ export default function Landing() {
         <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.06]"
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
 
-        {/* Al-Khwarizmi shadow silhouette — hero background */}
-        <div className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none select-none overflow-hidden hidden md:block">
-          <svg viewBox="0 0 400 600" className="absolute left-[-15%] top-1/2 -translate-y-1/2 h-[120%] opacity-[0.03] dark:opacity-[0.05] text-foreground fill-current">
-            <ellipse cx="200" cy="100" rx="65" ry="75" />
-            <path d="M200 60 L180 20 Q200 5 220 20 Z" />
-            <rect x="140" y="165" width="120" height="20" rx="10" />
-            <path d="M130 175 Q120 175 115 185 L90 350 Q85 370 100 375 L160 390 Q170 392 175 385 L180 175 Z" />
-            <path d="M270 175 Q280 175 285 185 L310 350 Q315 370 300 375 L240 390 Q230 392 225 385 L220 175 Z" />
-            <path d="M160 390 L150 550 Q148 570 165 570 L190 570 Q200 570 198 555 L195 390 Z" />
-            <path d="M240 390 L250 550 Q252 570 235 570 L210 570 Q200 570 202 555 L205 390 Z" />
-            <circle cx="260" cy="280" r="25" />
-            <rect x="250" y="305" width="20" height="60" rx="5" />
-          </svg>
+        {/* Al-Khwarizmi silhouette — hero background */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
+          <img
+            src={alKhwarizmiSilhouette}
+            alt=""
+            className="absolute right-[-5%] top-1/2 -translate-y-1/2 h-[90%] object-contain opacity-[0.04] dark:opacity-[0.07] grayscale"
+            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }}
+          />
         </div>
         
         {/* Glow orbs */}
@@ -190,21 +186,13 @@ export default function Landing() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
         {/* Al-Khwarizmi silhouette shadow in background */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
-          <svg viewBox="0 0 400 600" className="absolute right-[-10%] top-1/2 -translate-y-1/2 h-[110%] opacity-[0.04] dark:opacity-[0.07] text-primary fill-current">
-            {/* Stylized scholar silhouette */}
-            <ellipse cx="200" cy="100" rx="65" ry="75" />
-            <path d="M200 60 L180 20 Q200 5 220 20 Z" />
-            <rect x="140" y="165" width="120" height="20" rx="10" />
-            <path d="M130 175 Q120 175 115 185 L90 350 Q85 370 100 375 L160 390 Q170 392 175 385 L180 175 Z" />
-            <path d="M270 175 Q280 175 285 185 L310 350 Q315 370 300 375 L240 390 Q230 392 225 385 L220 175 Z" />
-            <path d="M160 390 L150 550 Q148 570 165 570 L190 570 Q200 570 198 555 L195 390 Z" />
-            <path d="M240 390 L250 550 Q252 570 235 570 L210 570 Q200 570 202 555 L205 390 Z" />
-            <circle cx="260" cy="280" r="25" />
-            <rect x="250" y="305" width="20" height="60" rx="5" />
-            <circle cx="140" cy="310" r="15" />
-            <rect x="125" y="270" width="30" height="40" rx="3" />
-          </svg>
+        <div className="absolute left-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
+          <img
+            src={alKhwarizmiSilhouette}
+            alt=""
+            className="absolute left-[-5%] top-1/2 -translate-y-1/2 h-[100%] object-contain opacity-[0.05] dark:opacity-[0.08] grayscale"
+            style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }}
+          />
         </div>
 
         <div className="container relative px-4 md:px-6">

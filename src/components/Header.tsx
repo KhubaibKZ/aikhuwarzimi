@@ -1,8 +1,9 @@
-import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home } from 'lucide-react';
+import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCourse } from '@/lib/courseData';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HeaderProps {
   currentCourseId?: string;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [isDark, setIsDark] = useState(false);
   const currentCourse = currentCourseId ? getCourse(currentCourseId) : null;
 
@@ -73,8 +75,12 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
           </Button>
 
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">
-            KZ
+            {user?.email?.charAt(0).toUpperCase() || '?'}
           </div>
+
+          <Button variant="ghost" size="icon" onClick={async () => { await signOut(); navigate('/'); }} className="h-9 w-9 rounded-lg">
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </header>

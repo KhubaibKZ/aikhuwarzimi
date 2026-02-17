@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,8 @@ import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, Hel
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useQueryClient } from '@tanstack/react-query';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
@@ -47,6 +49,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const [attemptCount, setAttemptCount] = useState<Record<string, number>>({});
   const { markExampleComplete } = useProgress();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const startTimeRef = useRef(Date.now());
+  const aiUsageRef = useRef(0);
 
   const handleAnswerChange = (key: string, value: string) => {
     setAnswers(prev => ({ ...prev, [key]: value }));
@@ -115,6 +121,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const handleHint = async () => {
     setIsLoading(true);
     setLoadingType('hint');
+    aiUsageRef.current += 1;
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -181,6 +188,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     setIsLoading(true);
     setLoadingType('check');
     setLoadingPartKey(partKey);
+    aiUsageRef.current += 1;
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -223,7 +231,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   };
 
   // Submit: Final submission with answer reveal
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Check if all parts are completed first
     if (!areAllPartsCompleted()) {
       toast({
@@ -241,6 +249,35 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
 
     // Always record progress when submitted (all parts completed)
     markExampleComplete(question.id);
+
+    // Save progress to database
+    if (user) {
+      const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
+      const correctCount = Object.values(newFeedback).filter(f => f === 'correct').length;
+      const totalCount = Object.values(newFeedback).length;
+      const accuracyScore = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+      const speedScore = Math.round(Math.max(0, Math.min(100, 100 - (timeSpent - 60) / 3)));
+
+      // Extract paper ID from question ID (e.g. pp_0580_s22_q1a -> pp_0580_s22_31 or similar)
+      const paperId = question.id.includes('s21') ? 'pp_0580_s21_43' : 'pp_0580_s22_31';
+
+      await supabase.from('student_paper_progress').upsert({
+        user_id: user.id,
+        paper_id: paperId,
+        question_id: question.id,
+        is_correct: allCorrect,
+        accuracy_score: accuracyScore,
+        speed_score: speedScore,
+        ai_usage_count: aiUsageRef.current,
+        time_spent_seconds: timeSpent,
+        total_steps: totalCount,
+        completed_steps: correctCount,
+        submitted_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,paper_id,question_id' });
+
+      // Invalidate progress queries
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+    }
 
     if (allCorrect && Object.keys(newFeedback).length > 0) {
       toast({

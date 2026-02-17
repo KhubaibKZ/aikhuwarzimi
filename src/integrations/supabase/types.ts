@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      student_paper_progress: {
+        Row: {
+          accuracy_score: number | null
+          ai_usage_count: number | null
+          completed_steps: number | null
+          created_at: string
+          id: string
+          is_correct: boolean
+          paper_id: string
+          question_id: string
+          speed_score: number | null
+          submitted_at: string
+          time_spent_seconds: number | null
+          total_steps: number | null
+          user_id: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          ai_usage_count?: number | null
+          completed_steps?: number | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          paper_id: string
+          question_id: string
+          speed_score?: number | null
+          submitted_at?: string
+          time_spent_seconds?: number | null
+          total_steps?: number | null
+          user_id: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          ai_usage_count?: number | null
+          completed_steps?: number | null
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          paper_id?: string
+          question_id?: string
+          speed_score?: number | null
+          submitted_at?: string
+          time_spent_seconds?: number | null
+          total_steps?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

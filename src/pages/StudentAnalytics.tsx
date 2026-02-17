@@ -8,8 +8,8 @@ import {
   ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
   Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3
 } from 'lucide-react';
+import { useStudentProgress } from '@/hooks/useStudentProgress';
 import {
-  mockTopicMastery, mockPastPaperResults,
   getMasteryColor, getMasteryLabel,
   type TopicMastery
 } from '@/lib/analyticsData';
@@ -123,7 +123,6 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
 
       {expanded && (
         <div className="border-t border-border bg-secondary/10 animate-fade-in">
-          {/* Paper-wise breakdown table */}
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -168,7 +167,6 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
             </table>
           </div>
 
-          {/* Latest skill bars */}
           <div className="px-4 py-3 grid grid-cols-3 gap-3 border-t border-border/30">
             {[
               { label: 'Accuracy', value: topic.latestAccuracy, weight: '40%' },
@@ -191,10 +189,15 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
 // ─── Main Page ───
 export default function StudentAnalytics() {
   const navigate = useNavigate();
-  const avgScore = Math.round(mockTopicMastery.reduce((s, t) => s + t.overallScore, 0) / mockTopicMastery.length);
-  const avgAccuracy = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestAccuracy, 0) / mockTopicMastery.length);
-  const avgIndependence = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestReadiness, 0) / mockTopicMastery.length);
-  const avgSpeed = Math.round(mockTopicMastery.reduce((s, t) => s + t.latestSpeed, 0) / mockTopicMastery.length);
+  const { data, isLoading } = useStudentProgress();
+
+  const topicMastery = data?.topicMastery || [];
+  const paperResults = data?.paperResults || [];
+
+  const avgScore = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.overallScore, 0) / topicMastery.length) : 0;
+  const avgAccuracy = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestAccuracy, 0) / topicMastery.length) : 0;
+  const avgIndependence = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestReadiness, 0) / topicMastery.length) : 0;
+  const avgSpeed = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestSpeed, 0) / topicMastery.length) : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -212,7 +215,11 @@ export default function StudentAnalytics() {
               <BarChart3 className="h-5 w-5 text-primary" />
               Student Analytics
             </h1>
-            <p className="text-xs text-muted-foreground mb-5">Performance across all past papers attempted</p>
+            <p className="text-xs text-muted-foreground mb-5">
+              {topicMastery.length === 0 && !isLoading
+                ? 'Complete some past paper questions to see your analytics here.'
+                : 'Performance across all past papers attempted'}
+            </p>
             <MasteryGauge percentage={avgScore} />
             <p className="text-xs text-muted-foreground mt-3">Overall Mastery</p>
           </CardContent>
@@ -223,7 +230,7 @@ export default function StudentAnalytics() {
           <Card className="bg-card border-border">
             <CardContent className="p-4 flex flex-col items-center text-center">
               <FileText className="h-5 w-5 text-primary mb-1.5" />
-              <p className="text-2xl font-bold text-foreground">{mockPastPaperResults.length}</p>
+              <p className="text-2xl font-bold text-foreground">{paperResults.length}</p>
               <p className="text-[11px] text-muted-foreground">Papers Attempted</p>
             </CardContent>
           </Card>
@@ -259,11 +266,15 @@ export default function StudentAnalytics() {
           <p className="text-[11px] text-muted-foreground mb-4">
             Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Tap a topic for paper-wise breakdown & improvement trends.
           </p>
-          <div className="space-y-2.5">
-            {mockTopicMastery.map((topic, i) => (
-              <TopicRow key={topic.topicId} topic={topic} index={i} />
-            ))}
-          </div>
+          {topicMastery.length === 0 && !isLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-8">No data yet. Submit answers on past papers to see your topic mastery.</p>
+          ) : (
+            <div className="space-y-2.5">
+              {topicMastery.map((topic, i) => (
+                <TopicRow key={topic.topicId} topic={topic} index={i} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ── Past Paper Timeline ── */}
@@ -272,34 +283,38 @@ export default function StudentAnalytics() {
             <FileText className="h-4 w-4 text-primary" />
             Past Paper Timeline
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {mockPastPaperResults.map((paper, i) => {
-              const scorePercent = Math.round((paper.marksObtained / paper.totalMarks) * 100);
-              return (
-                <Card
-                  key={paper.paperId}
-                  className="bg-card border-border overflow-hidden animate-fade-in"
-                  style={{ animationDelay: `${i * 100}ms` }}
-                >
-                  <CardContent className="p-5 flex items-center gap-5">
-                    <SmallCircle percentage={paper.completionPercentage} />
-                    <div className="flex-1 space-y-1.5">
-                      <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </p>
-                      <div className="flex gap-4 text-xs">
-                        <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
-                        <span className="text-muted-foreground">Score: <span className={`font-bold ${
-                          scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
-                        }`}>{scorePercent}%</span></span>
+          {paperResults.length === 0 && !isLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-8">No papers attempted yet. Start solving past papers to track your progress.</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {paperResults.map((paper, i) => {
+                const scorePercent = paper.totalMarks > 0 ? Math.round((paper.marksObtained / paper.totalMarks) * 100) : 0;
+                return (
+                  <Card
+                    key={paper.paperId}
+                    className="bg-card border-border overflow-hidden animate-fade-in"
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  >
+                    <CardContent className="p-5 flex items-center gap-5">
+                      <SmallCircle percentage={paper.completionPercentage} />
+                      <div className="flex-1 space-y-1.5">
+                        <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {paper.completedDate ? new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                        </p>
+                        <div className="flex gap-4 text-xs">
+                          <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
+                          <span className="text-muted-foreground">Score: <span className={`font-bold ${
+                            scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
+                          }`}>{scorePercent}%</span></span>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </section>
       </main>
     </div>

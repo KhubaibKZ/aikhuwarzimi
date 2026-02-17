@@ -146,7 +146,7 @@ export default function Landing() {
               </span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce thier concept.
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce thier concept.
               <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
               master IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
             </p>
@@ -209,14 +209,14 @@ export default function Landing() {
             <div className="space-y-5 md:space-y-6 text-center">
               <div>
                 <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">The Legacy</span>
-                <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">Built on inspiration of a Genious
-                  <span className="text-primary">a Giant</span>
+                <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">
+                  Built on Inspiration of a <span className="text-primary">Genius</span>
                 </h2>
               </div>
 
               <blockquote className="border-l-2 border-primary/40 pl-4 md:pl-6 italic text-muted-foreground text-sm md:text-base leading-relaxed">
-                "When I considered what people generally want in calculating, I found that it always is a number."
-                <footer className="mt-2 not-italic text-xs text-primary font-semibold">— Al-Khwarizmi, c. 820 CE</footer>
+                "That fondness for science, ... that affability and condescension which God shows to the learned, that promptitude with which he protects and supports them in the elucidation of obscurities and in the removal of difficulties."
+                <footer className="mt-2 not-italic text-xs text-primary font-semibold">— Al-Khwarizmi, Al-Kitāb al-Mukhtaṣar fī Ḥisāb al-Jabr wal-Muqābala, c. 820 CE</footer>
               </blockquote>
 
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -307,180 +307,188 @@ export default function Landing() {
       </section>
 
       {/* Courses Preview */}
-      <section id="courses" className="py-16 md:py-24">
+      <section id="courses" className="py-16 md:py-24 relative">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12 md:mb-16 space-y-3">
             <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Curriculum</span>
-            <h2 className="font-serif text-3xl md:text-4xl font-bold">Available Courses</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-sm">Cambridge qualifications, mastered methodically</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold">
+              Two Paths, <span className="text-primary">One Destination</span>
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto text-sm md:text-base">
+              Complete coverage of both major Cambridge mathematics qualifications
+            </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5 md:gap-6 max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {[
-            { code: '0580', title: 'IGCSE Mathematics', desc: 'Extended curriculum — algebra, geometry, statistics, trigonometry and more.', available: true },
-            { code: '4024', title: 'O Level Mathematics', desc: 'Comprehensive O Level syllabus with structured learning and past paper practice.', available: false }].
-            map((course, i) =>
-            <div key={i} className="relative rounded-2xl border-2 border-primary/15 bg-card/50 backdrop-blur-sm p-6 md:p-8 hover:border-primary/40 transition-all duration-300">
-                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary">{course.code}</span>
-                <h3 className="font-serif text-xl md:text-2xl font-bold mt-3">{course.title}</h3>
-                <p className="text-sm text-muted-foreground mt-2 mb-5">{course.desc}</p>
-                <Button
-                onClick={course.available ? handleGetStarted : undefined}
-                disabled={!course.available}
-                className={course.available ? 'shadow-glow' : ''}>
+            {
+              code: '0580',
+              title: 'IGCSE Mathematics',
+              level: 'Extended',
+              topics: '10 core topics',
+              papers: '5+ past papers',
+              color: 'from-primary/20 to-primary/5' },
 
-                  {course.available ? 'Start Now' : 'Coming Soon'}
-                  {course.available && <ArrowRight className="h-4 w-4 ml-2" />}
-                </Button>
+            {
+              code: '4024',
+              title: 'O Level Mathematics',
+              level: 'Paper 1 & 2',
+              topics: '12 core topics',
+              papers: 'Coming soon',
+              color: 'from-primary/15 to-primary/5' }].
+
+            map((course, i) =>
+            <div key={i} className={`rounded-2xl border border-border/60 bg-gradient-to-b ${course.color} p-6 md:p-8 hover:border-primary/40 transition-all duration-300 hover:shadow-lg`}>
+                <div className="space-y-4">
+                  <div>
+                    <span className="font-mono text-sm text-primary font-semibold">{course.code}</span>
+                    <h3 className="text-xl font-bold mt-1">{course.title}</h3>
+                    <span className="text-sm text-muted-foreground">{course.level}</span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                      <span>{course.topics}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-primary" />
+                      <span>{course.papers}</span>
+                    </div>
+                  </div>
+                  <Button variant="outline" onClick={handleGetStarted} className="w-full border-primary/30 hover:bg-primary/10">
+                    Start Learning <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="py-16 md:py-24 bg-muted/20 relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="container px-4 md:px-6 text-center max-w-3xl mx-auto space-y-6">
-          <div className="flex justify-center gap-1">
-            {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="h-4 w-4 md:h-5 md:w-5 fill-primary text-primary" />)}
-          </div>
-          <blockquote className="font-serif text-lg md:text-2xl font-medium italic leading-relaxed">
-            "Al-Khuwarizmi helped me understand topics I'd been struggling with for months. 
-            The step-by-step approach and past paper practice made a real difference in my grades."
-          </blockquote>
-          <p className="text-sm text-muted-foreground">— IGCSE Mathematics Student</p>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="py-16 md:py-24">
-        <div className="container px-4 md:px-6">
-          <div className="relative rounded-3xl bg-gradient-to-br from-primary to-primary/60 p-8 md:p-16 text-center overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)]" />
-            {/* Decorative math symbols in CTA */}
-            <span className="absolute top-6 left-8 text-4xl text-primary-foreground/10 font-mono hidden md:block">∫</span>
-            <span className="absolute bottom-8 right-12 text-5xl text-primary-foreground/10 font-mono hidden md:block">∑</span>
-            <span className="absolute top-12 right-20 text-3xl text-primary-foreground/10 font-mono hidden md:block">π</span>
-
-            <div className="relative space-y-5">
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary-foreground leading-tight">
-                Ready to follow in the footsteps<br className="hidden sm:block" /> of the great scholars?
-              </h2>
-              <p className="text-primary-foreground/80 max-w-xl mx-auto text-sm md:text-base">
-                Join students who are already transforming their mathematical understanding with AI-powered learning.
-              </p>
-              <Button size="lg" variant="secondary" onClick={handleGetStarted} className="text-base px-8">
-                Try it for free
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </div>
+      <section className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] md:w-[800px] h-[500px] md:h-[800px] rounded-full bg-primary/5 blur-[150px]" />
+        
+        <div className="container relative px-4 md:px-6 text-center">
+          <div className="max-w-2xl mx-auto space-y-6">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold">
+              Begin Your <span className="text-primary">Mathematical Journey</span>
+            </h2>
+            <p className="text-muted-foreground text-sm md:text-base">
+              Join students who are mastering mathematics through the wisdom of Al-Khwarizmi, 
+              enhanced by modern AI. Start free, progress far.
+            </p>
+            <Button size="lg" onClick={handleGetStarted} className="text-base px-10 shadow-glow group">
+              Try it for free
+              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 py-8 md:py-12">
+      <footer className="border-t border-border/40 py-8 md:py-12 bg-background">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <span className="font-serif text-sm font-bold italic">خ</span>
               </div>
-              <span className="font-serif font-semibold tracking-wide">Al-Khuwarizmi</span>
+              <span className="text-sm font-semibold">AI Khuwarizmi</span>
             </div>
-            <p className="text-xs text-muted-foreground text-center md:text-left">
-              © 2025 AI Khuwarizmi · In the tradition of methodical learning · الخوارزمي
+            <p className="text-xs text-muted-foreground text-center">
+              Inspired by the legacy of Al-Khwarizmi. Built for the students of today.
             </p>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
+              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+              <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+            </div>
           </div>
         </div>
       </footer>
 
-      {/* Login Modal */}
+      {/* Login/Register Modal */}
       {showLogin &&
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setShowLogin(false)}>
-          <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 md:p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="absolute top-3 right-3" onClick={() => setShowLogin(false)}>
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setShowLogin(false)} />
+          <div className="relative w-full max-w-sm rounded-2xl border border-border bg-card shadow-2xl shadow-primary/10">
+            <Button variant="ghost" size="icon" className="absolute right-3 top-3 h-7 w-7 rounded-full" onClick={() => setShowLogin(false)}>
               <X className="h-4 w-4" />
             </Button>
 
-            <div className="text-center mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow mx-auto mb-4">
-                <span className="font-serif text-xl font-bold italic">خ</span>
+            <div className="p-6 pt-8">
+              <div className="text-center mb-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground mx-auto mb-3 shadow-glow">
+                  <span className="font-serif text-xl font-bold italic">خ</span>
+                </div>
+                <h3 className="text-lg font-bold">{authTab === 'login' ? 'Welcome Back' : 'Begin Your Journey'}</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {authTab === 'login' ? 'Continue your mathematical journey' : 'Start learning with AI Khuwarizmi'}
+                </p>
               </div>
-              <h2 className="font-serif text-2xl font-bold">
-                {authTab === 'login' ? 'Welcome Back' : 'Join Al-Khuwarizmi'}
-              </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {authTab === 'login' ? 'Continue your journey of knowledge' : 'Register to begin your journey'}
+
+              {/* Tabs */}
+              <div className="flex rounded-lg bg-muted p-1 mb-6">
+                <button
+                  onClick={() => setAuthTab('login')}
+                  className={`flex-1 text-sm py-2 rounded-md font-medium transition-all ${authTab === 'login' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                  Log In
+                </button>
+                <button
+                  onClick={() => setAuthTab('register')}
+                  className={`flex-1 text-sm py-2 rounded-md font-medium transition-all ${authTab === 'register' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                  Register
+                </button>
+              </div>
+
+              {authTab === 'login' ?
+              <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Email</label>
+                    <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
+                  onChange={e => setLoginForm({ ...loginForm, email: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Password</label>
+                    <Input type="password" placeholder="••••••••" value={loginForm.password}
+                  onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} />
+                  </div>
+                  <Button type="submit" className="w-full shadow-glow">
+                    Enter the Academy <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </form> :
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Full Name</label>
+                    <Input placeholder="Ibn al-Haytham" value={registerForm.name}
+                  onChange={e => setRegisterForm({ ...registerForm, name: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Email</label>
+                    <Input type="email" placeholder="scholar@example.com" value={registerForm.email}
+                  onChange={e => setRegisterForm({ ...registerForm, email: e.target.value })} />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Password</label>
+                    <Input type="password" placeholder="••••••••" value={registerForm.password}
+                  onChange={e => setRegisterForm({ ...registerForm, password: e.target.value })} />
+                  </div>
+                  <Button type="submit" className="w-full shadow-glow">
+                    Join the Academy <Star className="h-4 w-4 ml-2" />
+                  </Button>
+                </form>
+              }
+
+              <p className="text-xs text-center text-muted-foreground mt-4">
+                By continuing, you agree to our Terms & Privacy Policy
               </p>
             </div>
-
-            {/* Tabs */}
-            <div className="flex rounded-lg bg-muted p-1 mb-5">
-              <button
-              onClick={() => setAuthTab('register')}
-              className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'register' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-
-                Register
-              </button>
-              <button
-              onClick={() => setAuthTab('login')}
-              className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${authTab === 'login' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-
-                Log in
-              </button>
-            </div>
-
-            {authTab === 'register' ?
-          <form onSubmit={(e) => {e.preventDefault();navigate('/dashboard');}} className="space-y-3">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Full Name</label>
-                  <Input type="text" placeholder="Your full name" value={registerForm.name}
-              onChange={(e) => setRegisterForm((f) => ({ ...f, name: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Email</label>
-                  <Input type="email" placeholder="scholar@example.com" value={registerForm.email}
-              onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Password</label>
-                  <Input type="password" placeholder="Create a password" value={registerForm.password}
-              onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Confirm Password</label>
-                  <Input type="password" placeholder="Confirm your password" value={registerForm.confirmPassword}
-              onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} />
-                </div>
-                <Button type="submit" className="w-full shadow-glow mt-2">
-                  Create Account <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </form> :
-
-          <form onSubmit={handleLogin} className="space-y-3">
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Email</label>
-                  <Input type="email" placeholder="scholar@example.com" value={loginForm.email}
-              onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Password</label>
-                  <Input type="password" placeholder="••••••••" value={loginForm.password}
-              onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
-                </div>
-                <Button type="submit" className="w-full shadow-glow mt-2">
-                  Log in <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-                <p className="text-center text-xs text-muted-foreground">
-                  <button type="button" className="text-primary hover:underline font-medium">Forgot password?</button>
-                </p>
-              </form>
-          }
           </div>
         </div>
       }
-    </div>);
-
+    </div>
+  );
 }

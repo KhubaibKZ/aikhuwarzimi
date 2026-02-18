@@ -42,11 +42,6 @@ export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // If already logged in, redirect
-  if (!authLoading && user) {
-    navigate('/dashboard', { replace: true });
-    return null;
-  }
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

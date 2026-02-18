@@ -191,9 +191,8 @@ export default function Landing() {
               <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted Mathematics Tutor</span>
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce thier concept.
-              <em className="text-foreground font-medium">algebra</em> and <em className="text-foreground font-medium">algorithms</em> — 
-              master IGCSE & O Level Mathematics with AI-guided wisdom, interactive past papers, and step-by-step enlightenment.
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">
+              An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce their concept.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center px-4 sm:px-0">

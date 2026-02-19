@@ -19,6 +19,9 @@ interface LCMLadderProps {
   number2: number;
   isCorrect?: boolean | null;
   isIncorrect?: boolean | null;
+  correctAnswer?: string;
+  onCheckFinalAnswer?: (answer: string) => void;
+  isCheckingFinal?: boolean;
 }
 
 export function LCMLadder({ 
@@ -28,7 +31,10 @@ export function LCMLadder({
   number1,
   number2,
   isCorrect,
-  isIncorrect
+  isIncorrect,
+  correctAnswer,
+  onCheckFinalAnswer,
+  isCheckingFinal
 }: LCMLadderProps) {
   const [steps, setSteps] = useState<LCMStep[]>([
     { prime: '', quotient1: '', quotient2: '' }
@@ -305,18 +311,56 @@ export function LCMLadder({
 
         {/* LCM Final Answer */}
         <div className="mt-4 pt-3 border-t">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium">LCM =</span>
-            <Input
-              type="text"
-              inputMode="numeric"
-              value={finalAnswer}
-              onChange={(e) => setFinalAnswer(e.target.value)}
-              disabled={disabled}
-              className="w-32 h-10 font-bold text-lg"
-              placeholder="Answer"
-            />
+            <div className="relative">
+              <Input
+                type="text"
+                inputMode="numeric"
+                value={finalAnswer}
+                onChange={(e) => setFinalAnswer(e.target.value)}
+                disabled={disabled}
+                className={cn(
+                  "w-32 h-10 font-bold text-lg",
+                  isCorrect && "border-green-500 bg-green-500/5",
+                  isIncorrect && "border-destructive bg-destructive/5"
+                )}
+                placeholder="Answer"
+              />
+              {isCorrect && (
+                <CheckCircle2 className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+              )}
+              {isIncorrect && (
+                <XCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-destructive" />
+              )}
+            </div>
+            {onCheckFinalAnswer && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onCheckFinalAnswer(finalAnswer)}
+                disabled={disabled || !finalAnswer.trim() || isCheckingFinal}
+                className="gap-1"
+                title="Check LCM answer"
+              >
+                {isCheckingFinal ? (
+                  <span className="animate-pulse text-xs">...</span>
+                ) : (
+                  <>
+                    <BookOpen className="h-4 w-4" />
+                    <span className="text-xs">Check</span>
+                  </>
+                )}
+              </Button>
+            )}
           </div>
+          {isCorrect && (
+            <p className="text-sm text-green-600 font-medium mt-1">✓ Correct LCM!</p>
+          )}
+          {isIncorrect && correctAnswer && (
+            <p className="text-sm text-green-600 font-medium mt-1">Correct answer: {correctAnswer}</p>
+          )}
         </div>
       </div>
     </div>

@@ -148,8 +148,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   };
 
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
-  const handleCheckWorkForPart = async (partKey: string, partLabel: string) => {
-    const userAnswer = normalizeAnswer(answers[partKey] || '');
+  // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
+  const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
+    const rawAnswer = directAnswer !== undefined ? directAnswer : (answers[partKey] || '');
+    const userAnswer = normalizeAnswer(rawAnswer);
     const correctAnswer = normalizeAnswer(
       typeof question.answer === 'object' ? question.answer[partKey] || '' : 
       typeof question.answer === 'string' ? question.answer : ''
@@ -893,32 +895,21 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   <span>Find LCM using the ladder method</span>
                   <span className="text-xs text-muted-foreground">[{question.marks} marks]</span>
                 </label>
-                <div className="flex gap-2 items-start">
-                  <div className="flex-1">
-                    <LCMLadder
-                      value={answers['answer'] || ''}
-                      onChange={(val) => handleAnswerChange('answer', val)}
-                      disabled={isSubmitted}
-                      number1={question.lcmNumbers[0]}
-                      number2={question.lcmNumbers[1]}
-                      isCorrect={feedback['answer'] === 'correct'}
-                      isIncorrect={feedback['answer'] === 'incorrect'}
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleCheckWorkForPart('answer', 'LCM')}
-                    disabled={isLoading || isSubmitted}
-                    className="shrink-0 mt-1"
-                  >
-                    {loadingPartKey === 'answer' ? (
-                      <span className="animate-pulse">...</span>
-                    ) : (
-                      <BookOpen className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
+                <LCMLadder
+                  value={answers['answer'] || ''}
+                  onChange={(val) => handleAnswerChange('answer', val)}
+                  disabled={isSubmitted}
+                  number1={question.lcmNumbers[0]}
+                  number2={question.lcmNumbers[1]}
+                  isCorrect={feedback['answer'] === 'correct'}
+                  isIncorrect={feedback['answer'] === 'incorrect'}
+                  correctAnswer={typeof question.answer === 'string' ? question.answer : undefined}
+                  onCheckFinalAnswer={(ans) => {
+                    setAnswers(prev => ({ ...prev, answer: ans }));
+                    handleCheckWorkForPart('answer', 'LCM', ans);
+                  }}
+                  isCheckingFinal={loadingPartKey === 'answer' && loadingType === 'check'}
+                />
                 {/* Show AI response for LCM */}
                 {aiResponse?.partKey === 'answer' && (
                   <div className={cn(

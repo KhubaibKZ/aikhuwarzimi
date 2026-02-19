@@ -88,9 +88,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           typeof question.answer === 'object' ? question.answer[part.key] || '' : ''
         );
         
-        if (userAnswer === correctAnswer || 
-            (userAnswer && correctAnswer && userAnswer.includes(correctAnswer)) ||
-            (userAnswer && correctAnswer && correctAnswer.includes(userAnswer))) {
+        if (userAnswer === correctAnswer) {
           newFeedback[part.key] = 'correct';
         } else if (userAnswer) {
           newFeedback[part.key] = 'incorrect';
@@ -157,9 +155,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       typeof question.answer === 'string' ? question.answer : ''
     );
     
-    const isCorrect = userAnswer === correctAnswer || 
-      (userAnswer && correctAnswer && userAnswer.includes(correctAnswer)) ||
-      (userAnswer && correctAnswer && correctAnswer.includes(userAnswer));
+    const isCorrect = userAnswer === correctAnswer;
     
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = { ...feedback, [partKey]: userAnswer ? (isCorrect ? 'correct' : 'incorrect') : null };
     setFeedback(newFeedback);

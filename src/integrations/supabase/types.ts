@@ -25,7 +25,9 @@ export type Database = {
           paper_id: string
           question_id: string
           speed_score: number | null
+          submitted_answers: Json | null
           submitted_at: string
+          submitted_feedback: Json | null
           time_spent_seconds: number | null
           total_steps: number | null
           user_id: string
@@ -40,7 +42,9 @@ export type Database = {
           paper_id: string
           question_id: string
           speed_score?: number | null
+          submitted_answers?: Json | null
           submitted_at?: string
+          submitted_feedback?: Json | null
           time_spent_seconds?: number | null
           total_steps?: number | null
           user_id: string
@@ -55,7 +59,9 @@ export type Database = {
           paper_id?: string
           question_id?: string
           speed_score?: number | null
+          submitted_answers?: Json | null
           submitted_at?: string
+          submitted_feedback?: Json | null
           time_spent_seconds?: number | null
           total_steps?: number | null
           user_id?: string

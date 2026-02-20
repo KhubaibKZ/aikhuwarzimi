@@ -54,19 +54,33 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
 
-  // Check if this question was already submitted when opening
+  // Check if this question was already submitted when opening — restore answers & feedback
   useEffect(() => {
     if (!isOpen || !user) return;
     const checkExistingSubmission = async () => {
       const { data } = await supabase
         .from('student_paper_progress')
-        .select('id')
+        .select('id, submitted_answers, submitted_feedback')
         .eq('user_id', user.id)
         .eq('question_id', question.id)
         .maybeSingle();
       if (data) {
         setIsSubmitted(true);
         setIsChecked(true);
+        if (data.submitted_answers && typeof data.submitted_answers === 'object') {
+          setAnswers(data.submitted_answers as Record<string, string>);
+        }
+        if (data.submitted_feedback && typeof data.submitted_feedback === 'object') {
+          setFeedback(data.submitted_feedback as Record<string, 'correct' | 'incorrect' | null>);
+        }
+      } else {
+        // Reset state for a fresh question
+        setIsSubmitted(false);
+        setIsChecked(false);
+        setAnswers({});
+        setFeedback({});
+        setAiResponse(null);
+        setAttemptCount({});
       }
     };
     checkExistingSubmission();
@@ -289,6 +303,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         total_steps: totalCount,
         completed_steps: correctCount,
         submitted_at: new Date().toISOString(),
+        submitted_answers: answers,
+        submitted_feedback: newFeedback,
       }, { onConflict: 'user_id,paper_id,question_id' });
 
       // Invalidate progress queries

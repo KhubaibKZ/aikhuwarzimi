@@ -7,10 +7,12 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { useStudentProgress } from '@/hooks/useStudentProgress';
 
 interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
@@ -26,6 +28,13 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  
+  // Use DB-backed progress data for submitted question tracking
+  const { data: progressData } = useStudentProgress();
+  const submittedQuestionIds = new Set(
+    (progressData?.rows || []).map((r: any) => r.question_id)
+  );
+  const isQuestionSubmitted = (questionId: string) => submittedQuestionIds.has(questionId);
 
   const handleResetPaper = async (paperId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -302,7 +311,7 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
             {!paper.locked && expandedPaper === paper.id && (
               <div className="border-t border-border bg-muted/30 p-2 max-h-96 overflow-y-auto">
                 {paper.sections.map((section) => {
-                  const completed = isCompleted(section.questionId);
+                  const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
                   
                   return (
                     <button
@@ -323,8 +332,15 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
                         )}>
                           {section.title}
                         </span>
+                        {completed && (
+                          <p className="text-[10px] text-success">Recorded</p>
+                        )}
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      {completed ? (
+                        <Badge variant="outline" className="text-[10px] border-success/30 text-success bg-success/5">Recorded</Badge>
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      )}
                     </button>
                   );
                 })}

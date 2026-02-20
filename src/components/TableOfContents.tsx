@@ -2,10 +2,15 @@ import { igcseMathsSyllabus, SubTopic, MainTopic } from '@/lib/syllabusData';
 import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
@@ -16,7 +21,33 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
+  const [resettingPaper, setResettingPaper] = useState<string | null>(null);
   const { isCompleted } = useProgress();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const handleResetPaper = async (paperId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast({ title: "Not logged in", description: "Please log in to reset progress.", variant: "destructive" });
+      return;
+    }
+    setResettingPaper(paperId);
+    try {
+      await supabase
+        .from('student_paper_progress')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('paper_id', paperId);
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      toast({ title: "Paper Reset", description: "All progress for this paper has been cleared." });
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to reset paper progress.", variant: "destructive" });
+    } finally {
+      setResettingPaper(null);
+    }
+  };
 
   // Calculate completion percentage for a subtopic
   const getSubtopicProgress = (subtopic: SubTopic) => {
@@ -297,6 +328,20 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
                     </button>
                   );
                 })}
+
+                {/* Paper-level Reset Button */}
+                <div className="border-t border-border mt-2 pt-2 px-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => handleResetPaper(paper.id, e)}
+                    disabled={resettingPaper === paper.id}
+                    className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <RotateCcw className={cn("h-4 w-4 mr-2", resettingPaper === paper.id && "animate-spin")} />
+                    {resettingPaper === paper.id ? 'Resetting...' : 'Reset Paper Progress'}
+                  </Button>
+                </div>
               </div>
             )}
           </div>

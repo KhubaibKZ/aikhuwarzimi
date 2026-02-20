@@ -1013,18 +1013,21 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             <Button
               onClick={handleSubmit}
               disabled={isSubmitted}
-              className="flex items-center gap-2"
+              className={cn("flex items-center gap-2", isSubmitted && "bg-green-600 hover:bg-green-600 text-white")}
             >
-              <Send className="h-4 w-4" />
-              Submit
+              {isSubmitted ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  Recorded
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" />
+                  Submit
+                </>
+              )}
             </Button>
           </div>
-
-          {/* Reset Button */}
-          <Button variant="ghost" onClick={resetWorkspace} className="w-full">
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset & Try Again
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,11 +54,29 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
 
+  // Check if this question was already submitted when opening
+  useEffect(() => {
+    if (!isOpen || !user) return;
+    const checkExistingSubmission = async () => {
+      const { data } = await supabase
+        .from('student_paper_progress')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('question_id', question.id)
+        .maybeSingle();
+      if (data) {
+        setIsSubmitted(true);
+        setIsChecked(true);
+      }
+    };
+    checkExistingSubmission();
+  }, [isOpen, user, question.id]);
+
   const handleAnswerChange = (key: string, value: string) => {
+    if (isSubmitted) return; // Don't allow changes once submitted
     setAnswers(prev => ({ ...prev, [key]: value }));
     setFeedback(prev => ({ ...prev, [key]: null }));
     setIsChecked(false);
-    setIsSubmitted(false);
     // Clear AI response only if it's for this part
     if (aiResponse?.partKey === key) {
       setAiResponse(null);

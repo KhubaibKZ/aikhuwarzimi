@@ -41,6 +41,7 @@ export default function Landing() {
   const [registerForm, setRegisterForm] = useState({ email: '', password: '', confirmPassword: '' });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
 
 
   const toggleTheme = () => {
@@ -205,7 +206,7 @@ export default function Landing() {
                 Try it for free
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button size="lg" variant="outline" className="text-base px-8 group w-full sm:w-auto border-primary/30 hover:bg-primary/5">
+              <Button size="lg" variant="outline" onClick={() => setShowDemo(true)} className="text-base px-8 group w-full sm:w-auto border-primary/30 hover:bg-primary/5">
                 <Play className="h-4 w-4 mr-2 group-hover:text-primary transition-colors" />
                 Watch Demo
               </Button>
@@ -488,6 +489,23 @@ export default function Landing() {
           </div>
         </div>
       }
+      {/* Fullscreen Demo Video Modal */}
+      {showDemo && (
+        <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center" onClick={() => setShowDemo(false)}>
+          <button onClick={() => setShowDemo(false)} className="absolute top-4 right-4 md:top-6 md:right-6 z-10 text-white/70 hover:text-white transition-colors">
+            <X className="h-8 w-8" />
+          </button>
+          <div className="w-full h-full" onClick={(e) => e.stopPropagation()}>
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/iDwNoewPTBg?autoplay=1&rel=0&modestbranding=1"
+              title="AI Khuwarizmi Demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
     </div>);
 
 }

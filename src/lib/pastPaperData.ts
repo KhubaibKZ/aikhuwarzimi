@@ -1,5 +1,6 @@
 import { questions0580_43_2021, sections0580_43_2021 } from './pastPaper0580_43_2021';
 import { questions0580_11_2020, sections0580_11_2020 } from './pastPaper0580_11_2020';
+import { questions0580_22_2022FM, sections0580_22_2022FM } from './pastPaper0580_22_2022FM';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -48,6 +49,7 @@ export interface PastPaper {
 export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions0580_43_2021,
   ...questions0580_11_2020,
+  ...questions0580_22_2022FM,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -757,6 +759,18 @@ export const pastPapers: PastPaper[] = [
     duration: '1 hour',
     category: 'Paper 01 (CORE)',
     sections: sections0580_11_2020,
+    locked: false
+  },
+  {
+    id: 'pp_0580_fm22_22',
+    code: '0580/22',
+    session: 'Feb/March',
+    year: 2022,
+    title: '0580/22 Feb/March 2022',
+    totalMarks: 70,
+    duration: '1 hour 30 minutes',
+    category: 'Paper 02 (EXTENDED)',
+    sections: sections0580_22_2022FM,
     locked: false
   }
 ];

@@ -1,4 +1,5 @@
 import { questions0580_43_2021, sections0580_43_2021 } from './pastPaper0580_43_2021';
+import { questions0580_11_2020, sections0580_11_2020 } from './pastPaper0580_11_2020';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -46,6 +47,7 @@ export interface PastPaper {
 // Combine all questions
 export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions0580_43_2021,
+  ...questions0580_11_2020,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -743,6 +745,18 @@ export const pastPapers: PastPaper[] = [
     duration: '2 hours 30 minutes',
     category: 'Paper 04 (EXTENDED)',
     sections: sections0580_43_2021,
+    locked: false
+  },
+  {
+    id: 'pp_0580_s20_11',
+    code: '0580/11',
+    session: 'May/June',
+    year: 2020,
+    title: '0580/11 May/June 2020',
+    totalMarks: 56,
+    duration: '1 hour',
+    category: 'Paper 01 (CORE)',
+    sections: sections0580_11_2020,
     locked: false
   }
 ];

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion } from '@/lib/pastPaperData';
+import { getQuestionSyllabusRef } from '@/lib/questionTopicMap';
 import { useProgress } from '@/context/ProgressContext';
 import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -359,6 +360,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground">{question.title}</p>
+          {(() => {
+            const syllabusRef = getQuestionSyllabusRef(question.id);
+            return syllabusRef ? (
+              <div className="flex items-center gap-1.5 mt-1">
+                <Badge variant="secondary" className="text-xs font-normal">
+                  <BookOpen className="w-3 h-3 mr-1" />
+                  {syllabusRef.subtopicCode} {syllabusRef.subtopicTitle}
+                </Badge>
+                <span className="text-xs text-muted-foreground">• {syllabusRef.topicTitle}</span>
+              </div>
+            ) : null;
+          })()}
         </DialogHeader>
 
         <div className="space-y-6">

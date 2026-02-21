@@ -54,11 +54,26 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
   },
 
   // ========== Question 4 - Symmetry ==========
+  'pp_0580_s20_q4a': {
+    id: 'pp_0580_s20_q4a',
+    questionNumber: '4(a)',
+    title: 'Lines of symmetry',
+    question: 'On each shape draw all the lines of symmetry.',
+    marks: 3,
+    hints: [
+      'A line of symmetry divides a shape into two identical halves',
+      'The first shape (kite/arrowhead) has 1 vertical line of symmetry',
+      'The second shape (arch) has 2 lines of symmetry — horizontal and vertical'
+    ],
+    type: 'short',
+    answer: 'Shape 1: 1 line (vertical), Shape 2: 2 lines (horizontal and vertical)'
+  },
+
   'pp_0580_s20_q4b': {
     id: 'pp_0580_s20_q4b',
     questionNumber: '4(b)',
     title: 'Rotational symmetry',
-    question: 'Write down the order of rotational symmetry of a shape.',
+    question: 'Write down the order of rotational symmetry of this shape.',
     marks: 1,
     hints: [
       'Rotational symmetry is how many times a shape looks the same in a full turn',
@@ -144,14 +159,33 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
   },
 
   // ========== Question 9 - Vectors ==========
-  'pp_0580_s20_q9': {
-    id: 'pp_0580_s20_q9',
-    questionNumber: '9',
-    title: 'Scalar multiplication of vector',
-    question: 'Write 3 × the column vector (−5, 3) as a single vector.',
+  'pp_0580_s20_q9a': {
+    id: 'pp_0580_s20_q9a',
+    questionNumber: '9(a)',
+    title: 'Column vector from grid',
+    question: 'P is the point (2, −1) and Q is the point (−3, 2).\n\nWrite PQ as a column vector.',
     marks: 1,
     hints: [
-      'Multiply each component by the scalar',
+      'PQ = Q − P',
+      'x-component: −3 − 2 = −5',
+      'y-component: 2 − (−1) = 3'
+    ],
+    type: 'multi-part',
+    parts: [
+      { label: 'Top component', key: 'top', marks: 0 },
+      { label: 'Bottom component', key: 'bottom', marks: 1 }
+    ],
+    answer: { top: '-5', bottom: '3' }
+  },
+
+  'pp_0580_s20_q9b': {
+    id: 'pp_0580_s20_q9b',
+    questionNumber: '9(b)',
+    title: 'Scalar multiplication of vector',
+    question: 'Write 3PQ as a single vector.',
+    marks: 1,
+    hints: [
+      'Multiply each component of PQ by 3',
       '3 × (−5) = −15',
       '3 × 3 = 9'
     ],
@@ -419,12 +453,14 @@ export const sections0580_11_2020: PastPaperSection[] = [
   { id: 'q1', title: 'Q1: Place value', questionId: 'pp_0580_s20_q1' },
   { id: 'q2', title: 'Q2: Mean temperature', questionId: 'pp_0580_s20_q2' },
   { id: 'q3', title: 'Q3: Ordering numbers', questionId: 'pp_0580_s20_q3' },
+  { id: 'q4a', title: 'Q4(a): Lines of symmetry', questionId: 'pp_0580_s20_q4a' },
   { id: 'q4b', title: 'Q4(b): Rotational symmetry', questionId: 'pp_0580_s20_q4b' },
   { id: 'q5', title: 'Q5: Isosceles triangle angle', questionId: 'pp_0580_s20_q5' },
   { id: 'q6', title: 'Q6: Travel — time, currency, speed', questionId: 'pp_0580_s20_q6' },
   { id: 'q7', title: 'Q7: Perimeter of composite shape', questionId: 'pp_0580_s20_q7' },
   { id: 'q8', title: 'Q8: Highest odd common factor', questionId: 'pp_0580_s20_q8' },
-  { id: 'q9', title: 'Q9: Vector multiplication', questionId: 'pp_0580_s20_q9' },
+  { id: 'q9a', title: 'Q9(a): Column vector from grid', questionId: 'pp_0580_s20_q9a' },
+  { id: 'q9b', title: 'Q9(b): Scalar multiplication', questionId: 'pp_0580_s20_q9b' },
   { id: 'q10', title: 'Q10: Interior angle of polygon', questionId: 'pp_0580_s20_q10' },
   { id: 'q11', title: 'Q11: Volume of cone', questionId: 'pp_0580_s20_q11' },
   { id: 'q12', title: 'Q12: Sequences', questionId: 'pp_0580_s20_q12' },

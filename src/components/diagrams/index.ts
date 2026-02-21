@@ -11,3 +11,8 @@ export { NumberLineDiagram } from './NumberLineDiagram';
 export { TrapeziumDiagram } from './TrapeziumDiagram';
 export { IsoscelesExteriorDiagram } from './IsoscelesExteriorDiagram';
 export { RectangularBoxDiagram } from './RectangularBoxDiagram';
+export { SymmetryShapes } from './SymmetryShapes';
+export { CompositeRectangles } from './CompositeRectangles';
+export { ScatterDiagram } from './ScatterDiagram';
+export { SimilarTriangles } from './SimilarTriangles';
+export { ConeDiagram } from './ConeDiagram';

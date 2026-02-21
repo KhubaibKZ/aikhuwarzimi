@@ -36,7 +36,15 @@ import {
   CompositeRectangles,
   ScatterDiagram,
   SimilarTriangles,
-  ConeDiagram
+  ConeDiagram,
+  CircleDiagram,
+  RectangleSectorDiagram,
+  VectorTrapeziumDiagram,
+  TransformationGrid,
+  AngleMeasureDiagram,
+  CylinderDiagram,
+  VectorTriangleDiagram,
+  QuadrilateralDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -609,7 +617,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {/* ========== 0580/43 May/June 2021 Diagrams ========== */}
             
             {/* Q4 - Coordinates & Vectors */}
-            {question.id === 'pp_0580_s21_q4' && (
+            {(question.id === 'pp_0580_s21_q4a' || question.id === 'pp_0580_s21_q4b') && (
               <div className="mt-4">
                 <CoordinateGrid
                   width={320}
@@ -627,7 +635,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             )}
             
             {/* Q6 - Venn Diagrams */}
-            {question.id === 'pp_0580_s21_q6' && (
+            {(question.id === 'pp_0580_s21_q6a' || question.id === 'pp_0580_s21_q6e' || question.id === 'pp_0580_s21_q6f') && (
               <div className="mt-4">
                 <VennDiagram
                   leftLabel="H"
@@ -641,7 +649,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             )}
             
             {/* Q7 - Number Line */}
-            {question.id === 'pp_0580_s21_q7' && (
+            {question.id === 'pp_0580_s21_q7a' && (
               <div className="mt-4">
                 <NumberLineDiagram
                   min={-4}
@@ -655,7 +663,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             )}
             
             {/* Q8 - Cuboid */}
-            {question.id === 'pp_0580_s21_q8' && (
+            {question.id === 'pp_0580_s21_q8a' && (
               <div className="mt-4">
                 <CuboidDiagram
                   length={20}
@@ -667,7 +675,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             )}
             
             {/* Q9 - Cube with diagonal for 3D geometry */}
-            {question.id === 'pp_0580_s21_q9' && (
+            {question.id === 'pp_0580_s21_q9b' && (
               <div className="mt-4">
                 <CubeDiagram diagonalLength={8.5} />
               </div>
@@ -774,6 +782,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             
             {/* ========== 0580/22 Feb/March 2022 Diagrams ========== */}
             
+            {/* Q1 - Angle to measure */}
+            {question.id === 'pp_0580_fm22_q1' && (
+              <div className="mt-4">
+                <AngleMeasureDiagram />
+              </div>
+            )}
+            
             {/* Q4 - Cuboid 7×4×5 */}
             {question.id === 'pp_0580_fm22_q4' && (
               <div className="mt-4">
@@ -797,6 +812,20 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   leftInclusive={false}
                   rightInclusive={false}
                 />
+              </div>
+            )}
+            
+            {/* Q8 - Transformations grid with triangles */}
+            {question.id === 'pp_0580_fm22_q8' && (
+              <div className="mt-4">
+                <TransformationGrid />
+              </div>
+            )}
+            
+            {/* Q14 - Circle with radius 4.7cm */}
+            {question.id === 'pp_0580_fm22_q14' && (
+              <div className="mt-4">
+                <CircleDiagram radius={4.7} />
               </div>
             )}
             
@@ -824,6 +853,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* Q17 - Rectangle OPQR with sector */}
+            {question.id === 'pp_0580_fm22_q17' && (
+              <div className="mt-4">
+                <RectangleSectorDiagram />
+              </div>
+            )}
+            
             {/* Q21 - 3D rectangular box with stick */}
             {question.id === 'pp_0580_fm22_q21' && (
               <div className="mt-4">
@@ -831,11 +867,62 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* Q22 - Vector trapezium OPQR */}
+            {question.id === 'pp_0580_fm22_q22' && (
+              <div className="mt-4">
+                <VectorTrapeziumDiagram />
+              </div>
+            )}
+            
+            {/* ========== 0580/43 Additional Diagrams ========== */}
+            
+            {/* Q4(c) - Vector triangle OTU */}
+            {question.id === 'pp_0580_s21_q4c' && (
+              <div className="mt-4">
+                <VectorTriangleDiagram />
+              </div>
+            )}
+            
+            {/* Q7(b) - Quadratic graph coordinate grid */}
+            {question.id === 'pp_0580_s21_q7b' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={320}
+                  height={320}
+                  xRange={[-6, 4]}
+                  yRange={[-5, 8]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q8(b) - Cylinder to sphere */}
+            {question.id === 'pp_0580_s21_q8b' && (
+              <div className="mt-4">
+                <CylinderDiagram radius={0} height={0} />
+              </div>
+            )}
+            
+            {/* Q8(c) - Horizontal cylinder with water */}
+            {question.id === 'pp_0580_s21_q8c' && (
+              <div className="mt-4">
+                <CylinderDiagram radius={20} height={150} horizontal={true} waterDepth={5} />
+              </div>
+            )}
+            
+            {/* Q9(a) - Quadrilateral with trigonometry */}
+            {question.id === 'pp_0580_s21_q9a' && (
+              <div className="mt-4">
+                <QuadrilateralDiagram />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
-             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9', 'pp_0580_s21_q4', 'pp_0580_s21_q6', 'pp_0580_s21_q7', 'pp_0580_s21_q8', 'pp_0580_s21_q9',
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9',
+               'pp_0580_s21_q4a', 'pp_0580_s21_q4b', 'pp_0580_s21_q4c', 'pp_0580_s21_q6a', 'pp_0580_s21_q6e', 'pp_0580_s21_q6f', 'pp_0580_s21_q7a', 'pp_0580_s21_q7b', 'pp_0580_s21_q8a', 'pp_0580_s21_q8b', 'pp_0580_s21_q8c', 'pp_0580_s21_q9a', 'pp_0580_s21_q9b',
                'pp_0580_s20_q4a', 'pp_0580_s20_q4b', 'pp_0580_s20_q5', 'pp_0580_s20_q7', 'pp_0580_s20_q9a', 'pp_0580_s20_q9b', 'pp_0580_s20_q11', 'pp_0580_s20_q14', 'pp_0580_s20_q18', 'pp_0580_s20_q22', 'pp_0580_s20_q23',
-               'pp_0580_fm22_q4', 'pp_0580_fm22_q7', 'pp_0580_fm22_q16', 'pp_0580_fm22_q21'
+               'pp_0580_fm22_q1', 'pp_0580_fm22_q4', 'pp_0580_fm22_q7', 'pp_0580_fm22_q8', 'pp_0580_fm22_q14', 'pp_0580_fm22_q16', 'pp_0580_fm22_q17', 'pp_0580_fm22_q21', 'pp_0580_fm22_q22'
              ].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 

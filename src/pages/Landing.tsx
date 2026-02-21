@@ -370,9 +370,7 @@ export default function Landing() {
             <span className="absolute top-12 right-20 text-3xl text-primary-foreground/10 font-mono hidden md:block">π</span>
 
             <div className="relative space-y-5">
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary-foreground leading-tight">Ready to follow in the footsteps
-of the great mathematician?<br className="hidden sm:block" /> of the great scholars?
-              </h2>
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-primary-foreground leading-tight">Ready to follow in the footsteps of the great mathematician?</h2>
               <p className="text-primary-foreground/80 max-w-xl mx-auto text-sm md:text-base">
                 Join students who are already transforming their mathematical understanding with AI-powered learning.
               </p>

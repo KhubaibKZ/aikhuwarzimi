@@ -33,8 +33,11 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       'Divide the total by 12'
     ],
     type: 'calculation',
-    parts: [{ label: 'Mean (°C)', key: 'answer', marks: 2 }],
-    answer: { answer: '19.25' }
+    parts: [
+      { label: 'Sum of all temperatures', key: 'sum', marks: 1 },
+      { label: 'Mean (sum ÷ 12)', key: 'answer', marks: 1 }
+    ],
+    answer: { sum: '231', answer: '19.25' }
   },
 
   // ========== Question 3 - Ordering numbers ==========
@@ -98,9 +101,10 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
     ],
     type: 'angle-steps',
     parts: [
-      { label: 'Angle ACD (°)', key: 'answer', marks: 3 }
+      { label: 'Angle ABC = Angle ACB (base angles)', key: 'baseAngle', marks: 1 },
+      { label: 'Angle ACD (exterior angle)', key: 'answer', marks: 2 }
     ],
-    answer: { answer: '109' }
+    answer: { baseAngle: '71', answer: '109' }
   },
 
   // ========== Question 6 - Travel problem ==========
@@ -138,8 +142,12 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       'Perimeter = (6 × 8) + (6 × 3) = 48 + 18 + ... check carefully'
     ],
     type: 'calculation',
-    parts: [{ label: 'Perimeter (cm)', key: 'answer', marks: 2 }],
-    answer: { answer: '86' }
+    parts: [
+      { label: 'Number of 8 cm edges on perimeter', key: 'long', marks: 0 },
+      { label: 'Number of 3 cm edges on perimeter', key: 'short', marks: 0 },
+      { label: 'Total perimeter (cm)', key: 'answer', marks: 2 }
+    ],
+    answer: { long: '6', short: '6', answer: '86' }
   },
 
   // ========== Question 8 - Highest odd factor ==========
@@ -210,8 +218,11 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       '(9 − 2) × 180° ÷ 9 = 7 × 180° ÷ 9 = 140°'
     ],
     type: 'calculation',
-    parts: [{ label: 'Interior angle (°)', key: 'answer', marks: 2 }],
-    answer: { answer: '140' }
+    parts: [
+      { label: 'Sum of interior angles: (n−2) × 180°', key: 'sum', marks: 1 },
+      { label: 'One interior angle (÷ 9)', key: 'answer', marks: 1 }
+    ],
+    answer: { sum: '1260', answer: '140' }
   },
 
   // ========== Question 11 - Volume of cone ==========
@@ -227,8 +238,12 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       'V = ⅓ × π × 20.25 × 10.4 = ⅓ × 210.6π = 70.2π'
     ],
     type: 'calculation',
-    parts: [{ label: 'Volume (___π cm³)', key: 'answer', marks: 2 }],
-    answer: { answer: '70.2' }
+    parts: [
+      { label: 'r² (radius squared)', key: 'rsq', marks: 0 },
+      { label: 'r² × h', key: 'rh', marks: 1 },
+      { label: 'Volume (___π cm³)', key: 'answer', marks: 1 }
+    ],
+    answer: { rsq: '20.25', rh: '210.6', answer: '70.2' }
   },
 
   // ========== Question 12 - Sequences ==========
@@ -281,8 +296,12 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       '2x = 14, so x = 7'
     ],
     type: 'calculation',
-    parts: [{ label: 'x =', key: 'answer', marks: 3 }],
-    answer: { answer: '7' }
+    parts: [
+      { label: 'Simplified equation: ___ + 2x = 180', key: 'simplified', marks: 1 },
+      { label: '2x =', key: 'twox', marks: 1 },
+      { label: 'x =', key: 'answer', marks: 1 }
+    ],
+    answer: { simplified: '166', twox: '14', answer: '7' }
   },
 
   // ========== Question 15 - Simplify indices ==========
@@ -391,8 +410,14 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       'Multiply numerators and denominators',
       'Simplify the result'
     ],
-    type: 'short',
-    answer: '6 6/25'
+    type: 'calculation',
+    parts: [
+      { label: '2⅘ as improper fraction', key: 'frac1', marks: 1 },
+      { label: '2⅕ as improper fraction', key: 'frac2', marks: 1 },
+      { label: 'Multiplication result (unsimplified)', key: 'product', marks: 1 },
+      { label: 'Final answer (mixed number)', key: 'answer', marks: 1 }
+    ],
+    answer: { frac1: '14/5', frac2: '11/5', product: '154/25', answer: '6 4/25' }
   },
 
   // ========== Question 21 - Compound interest ==========
@@ -408,8 +433,12 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
       'Calculate step by step or use a calculator'
     ],
     type: 'calculation',
-    parts: [{ label: 'Value ($)', key: 'answer', marks: 2 }],
-    answer: { answer: '6804.31' }
+    parts: [
+      { label: 'Multiplier (1 + r/100)', key: 'multiplier', marks: 0 },
+      { label: '(1.045)⁷ =', key: 'power', marks: 1 },
+      { label: 'Final value ($)', key: 'answer', marks: 1 }
+    ],
+    answer: { multiplier: '1.045', power: '1.36086', answer: '6804.31' }
   },
 
   // ========== Question 22 - Straight line graphs ==========

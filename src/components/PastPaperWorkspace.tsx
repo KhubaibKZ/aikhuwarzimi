@@ -359,7 +359,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               {question.marks} mark{question.marks > 1 ? 's' : ''}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">{question.title}</p>
+          <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
           {(() => {
             const syllabusRef = getQuestionSyllabusRef(question.id);
             return syllabusRef ? (

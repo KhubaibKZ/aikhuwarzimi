@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
@@ -16,7 +15,7 @@ import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { StepWorkspace } from '@/components/workspace';
-import { getKeyboardConfig, getRoughWorkPlaceholder } from '@/lib/keyboardConfigs';
+import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
   PrismDiagram, 
@@ -777,14 +776,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             ) : question.type === 'angle-steps' && question.parts ? (
               /* Angle Steps Workspace - uses StepWorkspace with horizontal keyboard */
               <StepWorkspace
-                steps={[
-                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
-                  ...question.parts.map(p => ({
+                steps={question.parts.map(p => ({
                     ...p,
-                    suffix: '°',
-                    type: 'input' as const
+                    suffix: '°'
                   }))
-                ]}
+                }
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -795,23 +791,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'calculation' && question.parts ? (
               /* Calculation questions - use StepWorkspace */
               <StepWorkspace
-                steps={[
-                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
-                  ...question.parts.map(p => ({
+                steps={question.parts.map(p => ({
                     ...p,
                     suffix: p.label.includes('°') || p.label.includes('degree') ? '°' : 
                             p.label.includes('$') ? '' :
                             p.label.includes('cm³') ? ' cm³' :
                             p.label.includes('cm²') ? ' cm²' :
-                            p.label.includes('%') ? '%' : '',
-                    type: 'input' as const
+                            p.label.includes('%') ? '%' : ''
                   }))
-                ]}
+                }
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -822,22 +814,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
               /* Multi-part questions - use StepWorkspace */
               <StepWorkspace
-                steps={[
-                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
-                  ...question.parts.map(p => ({
+                steps={question.parts.map(p => ({
                     ...p,
                     suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
                             p.label.includes('hour') ? ' hr' :
                             p.label.includes('minute') ? ' min' :
-                            p.label.includes('%') ? '%' : '',
-                    type: 'input' as const
+                            p.label.includes('%') ? '%' : ''
                   }))
-                ]}
+                }
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -848,15 +836,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
               <StepWorkspace
-                steps={[
-                  { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
-                  ...question.parts.map(p => ({ ...p, type: 'input' as const }))
-                ]}
+                steps={question.parts.map(p => ({ ...p }))}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -867,7 +851,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
               />
             ) : question.type === 'prime-factor' && question.targetNumber ? (
               /* Prime Factorization Ladder */
@@ -968,14 +951,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             ) : (
               /* Short/single answer questions - also use StepWorkspace for consistency */
               <StepWorkspace
-                steps={
-                  question.marks > 1 
-                    ? [
-                        { key: 'working', label: 'Rough Work', marks: 0, type: 'working' },
-                        { key: 'answer', label: 'Answer', marks: question.marks, type: 'input' }
-                      ]
-                    : [{ key: 'answer', label: 'Answer', marks: question.marks, type: 'input' }]
-                }
+                steps={[{ key: 'answer', label: 'Answer', marks: question.marks }]}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}
@@ -986,8 +962,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
                 aiResponse={aiResponse}
                 keyboardKeys={getKeyboardConfig(question.id, question.type)}
-                workingPlaceholder={getRoughWorkPlaceholder(question.id, question.title)}
-              />
+                />
             )}
           </div>
 

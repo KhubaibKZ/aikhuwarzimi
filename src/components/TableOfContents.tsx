@@ -17,9 +17,10 @@ import { useStudentProgress } from '@/hooks/useStudentProgress';
 interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
+  onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
 }
 
-export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOfContentsProps) {
+export function TableOfContents({ onSubTopicSelect, onPastPaperSelect, onTabChange }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
@@ -80,7 +81,7 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
   };
 
   return (
-    <Tabs defaultValue="syllabus" className="w-full">
+    <Tabs defaultValue="syllabus" className="w-full" onValueChange={(v) => onTabChange?.(v as 'syllabus' | 'pastpapers')}>
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="syllabus" className="flex items-center gap-2">
           <BookOpen className="h-4 w-4" />

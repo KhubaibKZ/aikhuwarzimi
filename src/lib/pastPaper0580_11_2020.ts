@@ -88,55 +88,26 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
     answer: { answer: '109' }
   },
 
-  // ========== Question 6(a) - Flight time ==========
-  'pp_0580_s20_q6a': {
-    id: 'pp_0580_s20_q6a',
-    questionNumber: '6(a)',
-    title: 'Flight time calculation',
-    question: 'Diego flies from Madrid to Buenos Aires.\nHis flight leaves at 20:55 and arrives at 03:50 local time.\nThe local time in Buenos Aires is 5 hours behind the local time in Madrid.\n\nWork out, in hours and minutes, the time the flight takes.',
-    marks: 2,
+  // ========== Question 6 - Travel problem ==========
+  'pp_0580_s20_q6': {
+    id: 'pp_0580_s20_q6',
+    questionNumber: '6',
+    title: 'Travel — time, currency, speed',
+    question: 'Diego flies from Madrid to Buenos Aires.\nHis flight leaves at 20:55 and arrives at 03:50 local time. The local time in Buenos Aires is 5 hours behind Madrid.\n\n(a) Work out, in hours and minutes, the time the flight takes.\n(b) Diego changes 200 euros into Argentine Peso. The exchange rate is 1 euro = 24.8 pesos. Work out how many pesos he receives.\n(c) The distance between Madrid and Buenos Aires is 10 050 km. Diego\'s return flight takes 12 hours 30 minutes. Calculate the average speed, in km/h.',
+    marks: 4,
     hints: [
-      'When it is 03:50 in Buenos Aires, it is 08:50 in Madrid',
-      'Flight time = 08:50 − 20:55 (Madrid time)',
-      'From 20:55 to 08:50 the next day = 11 hours 55 minutes'
+      'For (a): When it is 03:50 in Buenos Aires, it is 08:50 in Madrid. Flight = 08:50 − 20:55',
+      'For (b): Multiply 200 × 24.8',
+      'For (c): Speed = Distance ÷ Time = 10 050 ÷ 12.5'
     ],
     type: 'multi-part',
     parts: [
-      { label: 'Hours', key: 'hours', marks: 1 },
-      { label: 'Minutes', key: 'minutes', marks: 1 }
+      { label: '(a) Hours', key: 'hours', marks: 1 },
+      { label: '(a) Minutes', key: 'minutes', marks: 1 },
+      { label: '(b) Pesos received', key: 'pesos', marks: 1 },
+      { label: '(c) Average speed (km/h)', key: 'speed', marks: 1 }
     ],
-    answer: { hours: '11', minutes: '55' }
-  },
-
-  // ========== Question 6(b) - Currency exchange ==========
-  'pp_0580_s20_q6b': {
-    id: 'pp_0580_s20_q6b',
-    questionNumber: '6(b)',
-    title: 'Currency exchange',
-    question: 'Diego changes 200 euros into Argentine Peso.\nThe exchange rate is 1 euro = 24.8 pesos.\n\nWork out how many pesos he receives.',
-    marks: 1,
-    hints: [
-      'Multiply the number of euros by the exchange rate',
-      '200 × 24.8'
-    ],
-    type: 'short',
-    answer: '4960'
-  },
-
-  // ========== Question 6(c) - Average speed ==========
-  'pp_0580_s20_q6c': {
-    id: 'pp_0580_s20_q6c',
-    questionNumber: '6(c)',
-    title: 'Average speed',
-    question: 'The distance between Madrid and Buenos Aires is 10 050 km.\nDiego\'s return flight takes 12 hours 30 minutes.\n\nCalculate the average speed, in km/h, for the return flight.',
-    marks: 1,
-    hints: [
-      'Speed = Distance ÷ Time',
-      'Convert 12 hours 30 minutes to 12.5 hours',
-      'Speed = 10 050 ÷ 12.5'
-    ],
-    type: 'short',
-    answer: '804'
+    answer: { hours: '11', minutes: '55', pesos: '4960', speed: '804' }
   },
 
   // ========== Question 7 - Perimeter of composite shape ==========
@@ -226,37 +197,23 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
     answer: { answer: '70.2' }
   },
 
-  // ========== Question 12(a) - Largest number in sequence ==========
-  'pp_0580_s20_q12a': {
-    id: 'pp_0580_s20_q12a',
-    questionNumber: '12(a)',
-    title: 'Largest term in sequence',
-    question: 'The nth term of a sequence is 60 − 8n.\n\nFind the largest number in this sequence.',
-    marks: 1,
+  // ========== Question 12 - Sequences ==========
+  'pp_0580_s20_q12': {
+    id: 'pp_0580_s20_q12',
+    questionNumber: '12',
+    title: 'Sequences',
+    question: '(a) The nth term of a sequence is 60 − 8n. Find the largest number in this sequence.\n\n(b) Here are the first five terms of a different sequence: 12, 19, 26, 33, 40. Find an expression for the nth term of this sequence.',
+    marks: 3,
     hints: [
-      'The sequence decreases as n increases (since −8n)',
-      'The largest term is when n is smallest, i.e. n = 1',
-      '60 − 8(1) = 52'
+      'For (a): The sequence decreases, so largest term is when n = 1: 60 − 8(1) = 52',
+      'For (b): Common difference = 7, nth term = 7n + 5'
     ],
-    type: 'short',
-    answer: '52'
-  },
-
-  // ========== Question 12(b) - nth term ==========
-  'pp_0580_s20_q12b': {
-    id: 'pp_0580_s20_q12b',
-    questionNumber: '12(b)',
-    title: 'nth term expression',
-    question: 'Here are the first five terms of a different sequence.\n\n12, 19, 26, 33, 40\n\nFind an expression for the nth term of this sequence.',
-    marks: 2,
-    hints: [
-      'Find the common difference: 19 − 12 = 7',
-      'nth term = dn + c where d is the common difference',
-      'When n = 1: 7(1) + c = 12, so c = 5',
-      'nth term = 7n + 5'
+    type: 'multi-part',
+    parts: [
+      { label: '(a) Largest number', key: 'largest', marks: 1 },
+      { label: '(b) nth term expression', key: 'nth', marks: 2 }
     ],
-    type: 'short',
-    answer: '7n + 5'
+    answer: { largest: '52', nth: '7n + 5' }
   },
 
   // ========== Question 13 - Factorisation ==========
@@ -311,36 +268,23 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
     answer: '4p⁷q⁴'
   },
 
-  // ========== Question 16(a) - Standard form ==========
-  'pp_0580_s20_q16a': {
-    id: 'pp_0580_s20_q16a',
-    questionNumber: '16(a)',
+  // ========== Question 16 - Standard form ==========
+  'pp_0580_s20_q16': {
+    id: 'pp_0580_s20_q16',
+    questionNumber: '16',
     title: 'Standard form',
-    question: 'Write the number 0.0605 in standard form.',
-    marks: 1,
+    question: '(a) Write the number 0.0605 in standard form.\n\n(b) Calculate the given expression and give your answer in standard form.',
+    marks: 2,
     hints: [
-      'Standard form is A × 10ⁿ where 1 ≤ A < 10',
-      'Move the decimal point to get 6.05',
-      'Count places moved: 2 places right → 10⁻²'
+      'For (a): Standard form is A × 10ⁿ where 1 ≤ A < 10. 0.0605 = 6.05 × 10⁻²',
+      'For (b): Calculate first, then convert to standard form'
     ],
-    type: 'short',
-    answer: '6.05 × 10⁻²'
-  },
-
-  // ========== Question 16(b) - Standard form calculation ==========
-  'pp_0580_s20_q16b': {
-    id: 'pp_0580_s20_q16b',
-    questionNumber: '16(b)',
-    title: 'Standard form calculation',
-    question: 'Calculate a given expression and give your answer in standard form.',
-    marks: 1,
-    hints: [
-      'Perform the calculation first',
-      'Then convert the result to standard form',
-      'Make sure A is between 1 and 10'
+    type: 'multi-part',
+    parts: [
+      { label: '(a) 0.0605 in standard form', key: 'partA', marks: 1 },
+      { label: '(b) Answer in standard form', key: 'partB', marks: 1 }
     ],
-    type: 'short',
-    answer: '4.0261 × 10⁻¹'
+    answer: { partA: '6.05 × 10⁻²', partB: '4.0261 × 10⁻¹' }
   },
 
   // ========== Question 17 - Expand brackets ==========
@@ -360,47 +304,24 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
   },
 
   // ========== Question 18 - Scatter diagram ==========
-  'pp_0580_s20_q18a': {
-    id: 'pp_0580_s20_q18a',
-    questionNumber: '18(a)',
-    title: 'Scatter diagram — highest mark',
-    question: 'Mrs Salaman gives her class two mathematics tests. The scatter diagram shows information about the marks each student scored.\n\nWrite down the highest mark scored on test 1.',
-    marks: 1,
+  'pp_0580_s20_q18': {
+    id: 'pp_0580_s20_q18',
+    questionNumber: '18',
+    title: 'Scatter diagram',
+    question: 'Mrs Salaman gives her class two mathematics tests. The scatter diagram shows information about the marks each student scored.\n\n(a) Write down the highest mark scored on test 1.\n(b) Write down the type of correlation shown.\n(c) Draw a line of best fit on the scatter diagram.\n(d) Hamish scored 40 on test 1. He was absent for test 2. Use your line of best fit to estimate his mark on test 2.',
+    marks: 4,
     hints: [
-      'Look at the x-axis (Test 1) for the furthest right point',
-      'Read off the x-coordinate of that point'
+      'For (a): Look at the x-axis for the furthest right point',
+      'For (b): As test 1 marks increase, test 2 marks also increase → positive',
+      'For (d): Read from x = 40 on your line of best fit across to the y-axis'
     ],
-    type: 'short',
-    answer: '66'
-  },
-
-  'pp_0580_s20_q18b': {
-    id: 'pp_0580_s20_q18b',
-    questionNumber: '18(b)',
-    title: 'Type of correlation',
-    question: 'Write down the type of correlation shown in the scatter diagram.',
-    marks: 1,
-    hints: [
-      'As test 1 marks increase, do test 2 marks increase, decrease, or neither?',
-      'If both increase together, it is positive correlation'
+    type: 'multi-part',
+    parts: [
+      { label: '(a) Highest mark on test 1', key: 'highest', marks: 1 },
+      { label: '(b) Type of correlation', key: 'correlation', marks: 1 },
+      { label: '(d) Estimate for test 2 mark', key: 'estimate', marks: 1 }
     ],
-    type: 'short',
-    answer: 'Positive'
-  },
-
-  'pp_0580_s20_q18d': {
-    id: 'pp_0580_s20_q18d',
-    questionNumber: '18(d)',
-    title: 'Estimate from line of best fit',
-    question: 'Hamish scored a mark of 40 on test 1. He was absent for test 2.\n\nUse your line of best fit to find an estimate for his mark on test 2.',
-    marks: 1,
-    hints: [
-      'Draw a vertical line from x = 40 to your line of best fit',
-      'Then read across horizontally to the y-axis',
-      'The answer should be approximately 49'
-    ],
-    type: 'short',
-    answer: '49'
+    answer: { highest: '66', correlation: 'Positive', estimate: '49' }
   },
 
   // ========== Question 19 - Upper and lower bounds ==========
@@ -457,20 +378,24 @@ export const questions0580_11_2020: Record<string, PastPaperQuestion> = {
     answer: { answer: '6804.31' }
   },
 
-  // ========== Question 22(a) - Equation of a line ==========
-  'pp_0580_s20_q22a': {
-    id: 'pp_0580_s20_q22a',
-    questionNumber: '22(a)',
-    title: 'Equation of a line',
-    question: 'A line L passes through points (0, −3) and (2, 1).\n\nFind the equation of line L in the form y = mx + c.',
-    marks: 2,
+  // ========== Question 22 - Straight line graphs ==========
+  'pp_0580_s20_q22': {
+    id: 'pp_0580_s20_q22',
+    questionNumber: '22',
+    title: 'Straight line graphs',
+    question: 'A line L passes through points (0, −3) and (2, 1).\n\n(a) Find the equation of line L in the form y = mx + c.\n(b) On the grid, draw a line that is perpendicular to line L.',
+    marks: 3,
     hints: [
-      'Gradient m = (y₂ − y₁) / (x₂ − x₁) = (1 − (−3)) / (2 − 0) = 4/2 = 2',
-      'The y-intercept c = −3 (the point where x = 0)',
-      'y = 2x − 3'
+      'Gradient m = (1 − (−3)) / (2 − 0) = 4/2 = 2',
+      'The y-intercept c = −3, so y = 2x − 3',
+      'Perpendicular gradient = −1/m = −1/2'
     ],
-    type: 'short',
-    answer: 'y = 2x − 3'
+    type: 'multi-part',
+    parts: [
+      { label: '(a) Equation of line L', key: 'equation', marks: 2 },
+      { label: '(b) Perpendicular gradient', key: 'perpGradient', marks: 1 }
+    ],
+    answer: { equation: 'y = 2x − 3', perpGradient: '-1/2' }
   },
 
   // ========== Question 23 - Similar triangles ==========
@@ -496,28 +421,22 @@ export const sections0580_11_2020: PastPaperSection[] = [
   { id: 'q3', title: 'Q3: Ordering numbers', questionId: 'pp_0580_s20_q3' },
   { id: 'q4b', title: 'Q4(b): Rotational symmetry', questionId: 'pp_0580_s20_q4b' },
   { id: 'q5', title: 'Q5: Isosceles triangle angle', questionId: 'pp_0580_s20_q5' },
-  { id: 'q6a', title: 'Q6(a): Flight time', questionId: 'pp_0580_s20_q6a' },
-  { id: 'q6b', title: 'Q6(b): Currency exchange', questionId: 'pp_0580_s20_q6b' },
-  { id: 'q6c', title: 'Q6(c): Average speed', questionId: 'pp_0580_s20_q6c' },
+  { id: 'q6', title: 'Q6: Travel — time, currency, speed', questionId: 'pp_0580_s20_q6' },
   { id: 'q7', title: 'Q7: Perimeter of composite shape', questionId: 'pp_0580_s20_q7' },
   { id: 'q8', title: 'Q8: Highest odd common factor', questionId: 'pp_0580_s20_q8' },
   { id: 'q9', title: 'Q9: Vector multiplication', questionId: 'pp_0580_s20_q9' },
   { id: 'q10', title: 'Q10: Interior angle of polygon', questionId: 'pp_0580_s20_q10' },
   { id: 'q11', title: 'Q11: Volume of cone', questionId: 'pp_0580_s20_q11' },
-  { id: 'q12a', title: 'Q12(a): Largest term in sequence', questionId: 'pp_0580_s20_q12a' },
-  { id: 'q12b', title: 'Q12(b): nth term expression', questionId: 'pp_0580_s20_q12b' },
+  { id: 'q12', title: 'Q12: Sequences', questionId: 'pp_0580_s20_q12' },
   { id: 'q13', title: 'Q13: Factorise completely', questionId: 'pp_0580_s20_q13' },
   { id: 'q14', title: 'Q14: Trapezium algebra', questionId: 'pp_0580_s20_q14' },
   { id: 'q15', title: 'Q15: Simplify indices', questionId: 'pp_0580_s20_q15' },
-  { id: 'q16a', title: 'Q16(a): Standard form', questionId: 'pp_0580_s20_q16a' },
-  { id: 'q16b', title: 'Q16(b): Standard form calculation', questionId: 'pp_0580_s20_q16b' },
+  { id: 'q16', title: 'Q16: Standard form', questionId: 'pp_0580_s20_q16' },
   { id: 'q17', title: 'Q17: Expand and simplify', questionId: 'pp_0580_s20_q17' },
-  { id: 'q18a', title: 'Q18(a): Highest mark on test', questionId: 'pp_0580_s20_q18a' },
-  { id: 'q18b', title: 'Q18(b): Type of correlation', questionId: 'pp_0580_s20_q18b' },
-  { id: 'q18d', title: 'Q18(d): Estimate from line of best fit', questionId: 'pp_0580_s20_q18d' },
+  { id: 'q18', title: 'Q18: Scatter diagram', questionId: 'pp_0580_s20_q18' },
   { id: 'q19', title: 'Q19: Upper and lower bounds', questionId: 'pp_0580_s20_q19' },
   { id: 'q20', title: 'Q20: Fraction calculation', questionId: 'pp_0580_s20_q20' },
   { id: 'q21', title: 'Q21: Compound interest', questionId: 'pp_0580_s20_q21' },
-  { id: 'q22a', title: 'Q22(a): Equation of a line', questionId: 'pp_0580_s20_q22a' },
+  { id: 'q22', title: 'Q22: Straight line graphs', questionId: 'pp_0580_s20_q22' },
   { id: 'q23', title: 'Q23: Similar triangles', questionId: 'pp_0580_s20_q23' },
 ];

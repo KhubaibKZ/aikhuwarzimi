@@ -191,10 +191,6 @@ export default function Landing() {
               <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted Mathematics Tutor</span>
             </h1>
 
-            <p className="text-sm md:text-base text-muted-foreground/70 max-w-2xl mx-auto italic font-serif leading-relaxed px-2">
-              Named after <strong className="text-foreground not-italic">Muhammad ibn Musa al-Khwarizmi</strong> — the 9th-century Persian polymath whose groundbreaking work gave the world <span className="text-primary font-semibold not-italic">Algebra</span> and the very concept of the <span className="text-primary font-semibold not-italic">Algorithm</span>. Where he wrote the rules, we built the tutor.
-            </p>
-
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">
               An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce their concept.
             </p>
@@ -235,33 +231,31 @@ export default function Landing() {
 
         <div className="container relative px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
-            <div className="space-y-5 md:space-y-6 text-center">
-              <div>
-                <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">The Legacy</span>
-                <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">Built on Inspiration of a <span className="text-primary">Genius</span></h2>
-              </div>
+            <div className="text-center mb-8 md:mb-10">
+              <span className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">The Legacy</span>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold mt-2 leading-tight">Built on Inspiration of a <span className="text-primary">Genius</span></h2>
+            </div>
 
-              <blockquote className="border-l-2 border-primary/40 pl-4 md:pl-6 italic text-muted-foreground text-sm md:text-base leading-relaxed">
+            <div className="space-y-8 md:space-y-10">
+              <blockquote className="border-l-2 border-primary/40 pl-5 md:pl-8 italic text-muted-foreground text-sm md:text-base leading-[1.8]">
                 "The learned in times past... have not ceased to write books on the various branches of science... so that those who come after them may be benefited... either by completing what was previously incomplete, or by elucidating what was before obscure, or by correcting the errors of their predecessors."
-                <footer className="mt-3 not-italic text-xs text-muted-foreground/80 space-y-0.5">
-                  <p className="text-primary font-semibold">— Muhammad ibn Musa al-Khwarizmi</p>
+                <footer className="mt-4 not-italic text-xs text-muted-foreground/70 space-y-1">
+                  <p className="text-primary font-semibold text-sm">— Muhammad ibn Musa al-Khwarizmi</p>
                   <p><em>Al-Kitāb al-Mukhtaṣar fī Ḥisāb al-Jabr wal-Muqābala</em> (Preface), c. 820–830 AD</p>
-                  <p className="text-[10px]">Source: <em>The Algebra of Mohammed ben Musa</em>, trans. Frederic Rosen (1831), p. 2</p>
+                  <p className="text-[10px] text-muted-foreground/50">Source: <em>The Algebra of Mohammed ben Musa</em>, trans. Frederic Rosen (1831), p. 2</p>
                 </footer>
               </blockquote>
 
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">Muhammad ibn Musa al-Khwarizmi</strong> (c. 780–850 CE) 
-                revolutionized mathematics. His book <em>"al-Kitāb al-Mukhtaṣar"</em> gave us the word 
-                <strong className="text-primary"> "algebra"</strong>, and his name gave us the word 
-                <strong className="text-primary"> "algorithm"</strong>. This app carries forward his mission — 
-                making mathematics accessible and methodical for every student.
-              </p>
+              <div className="text-center space-y-4">
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                  <strong className="text-foreground">Muhammad ibn Musa al-Khwarizmi</strong> (c. 780–850 CE) was a Persian scholar at the House of Wisdom in Baghdad — one of the most influential mathematicians in history. His treatise on algebra, <em>al-Kitāb al-Mukhtaṣar fī Ḥisāb al-Jabr wal-Muqābala</em>, laid the foundations for solving equations systematically. His work on arithmetic introduced the Hindu-Arabic numeral system to the Western world, transforming how civilizations calculate. The very words "algebra" and "algorithm" trace back to his name and his writings. This app carries forward his mission — making mathematics accessible and methodical for every student.
+                </p>
 
-              <div className="flex flex-wrap gap-3 justify-center">
-                {['Algebra', 'Algorithms', 'Hindu-Arabic Numerals', 'Astronomy'].map((tag) =>
-                <span key={tag} className="px-3 py-1 text-xs rounded-full border border-primary/20 bg-primary/5 text-primary font-medium">{tag}</span>
-                )}
+                <div className="flex flex-wrap gap-3 justify-center pt-2">
+                  {['Algebra', 'Algorithms', 'Hindu-Arabic Numerals', 'Astronomy'].map((tag) =>
+                  <span key={tag} className="px-3 py-1 text-xs rounded-full border border-primary/20 bg-primary/5 text-primary font-medium">{tag}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

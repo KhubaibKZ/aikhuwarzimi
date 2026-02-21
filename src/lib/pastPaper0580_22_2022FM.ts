@@ -94,8 +94,21 @@ export const questions0580_22_2022FM: Record<string, PastPaperQuestion> = {
     answer: { gradient: '5', yIntercept: '7' }
   },
 
-  // ========== Question 6 - Construction (skip - drawing) ==========
-  // Construction with ruler and compasses — not suitable for digital
+  // ========== Question 6 - Construction ==========
+  'pp_0580_fm22_q6': {
+    id: 'pp_0580_fm22_q6',
+    questionNumber: '6',
+    title: 'Construct a triangle',
+    question: 'Using a ruler and compasses only, construct a triangle with sides 9.5 cm, 8 cm and 12 cm.\n\nThe side of length 12 cm has been drawn for you. Leave in your construction arcs.',
+    marks: 2,
+    hints: [
+      'Set your compasses to 9.5 cm and draw an arc from one end of the 12 cm line',
+      'Set your compasses to 8 cm and draw an arc from the other end',
+      'The triangle vertex is where the two arcs intersect'
+    ],
+    type: 'short',
+    answer: 'Construction with arcs shown'
+  },
 
   // ========== Question 7 - Inequality ==========
   'pp_0580_fm22_q7': {
@@ -301,7 +314,23 @@ export const questions0580_22_2022FM: Record<string, PastPaperQuestion> = {
     answer: { answer: '77.0' }
   },
 
-  // ========== Question 18 - (not clearly parsed, skip) ==========
+  // ========== Question 18 - Percentage shaded (alternate) ==========
+  'pp_0580_fm22_q18': {
+    id: 'pp_0580_fm22_q18',
+    questionNumber: '18',
+    title: 'Percentage problem',
+    question: 'A shop sells a jacket for $63.75.\nThis is a reduction of 15% on the original price.\n\nCalculate the original price.',
+    marks: 3,
+    hints: [
+      'The sale price is 85% of the original price',
+      '$63.75 = 0.85 × original',
+      'Original = 63.75 ÷ 0.85'
+    ],
+    type: 'calculation',
+    parts: [{ label: 'Original price ($)', key: 'answer', marks: 3 }],
+    answer: { answer: '75' }
+  },
+
 
   // ========== Question 19 - Inverse proportion ==========
   'pp_0580_fm22_q19': {
@@ -391,6 +420,7 @@ export const sections0580_22_2022FM: PastPaperSection[] = [
   { id: 'q3', title: 'Q3: Time calculation', questionId: 'pp_0580_fm22_q3' },
   { id: 'q4', title: 'Q4: Surface area of cuboid', questionId: 'pp_0580_fm22_q4' },
   { id: 'q5', title: 'Q5: Gradient and y-intercept', questionId: 'pp_0580_fm22_q5' },
+  { id: 'q6', title: 'Q6: Construct a triangle', questionId: 'pp_0580_fm22_q6' },
   { id: 'q7', title: 'Q7: Inequality', questionId: 'pp_0580_fm22_q7' },
   { id: 'q8', title: 'Q8: Transformations', questionId: 'pp_0580_fm22_q8' },
   { id: 'q9', title: 'Q9: Factorise completely', questionId: 'pp_0580_fm22_q9' },
@@ -402,6 +432,7 @@ export const sections0580_22_2022FM: PastPaperSection[] = [
   { id: 'q15', title: 'Q15: Fraction calculation', questionId: 'pp_0580_fm22_q15' },
   { id: 'q16', title: 'Q16: Straight line and perpendicular', questionId: 'pp_0580_fm22_q16' },
   { id: 'q17', title: 'Q17: Rectangle with sector', questionId: 'pp_0580_fm22_q17' },
+  { id: 'q18', title: 'Q18: Percentage problem', questionId: 'pp_0580_fm22_q18' },
   { id: 'q19', title: 'Q19: Inverse proportion', questionId: 'pp_0580_fm22_q19' },
   { id: 'q20', title: 'Q20: Simultaneous equations', questionId: 'pp_0580_fm22_q20' },
   { id: 'q21', title: 'Q21: 3D trigonometry', questionId: 'pp_0580_fm22_q21' },

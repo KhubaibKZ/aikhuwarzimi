@@ -8,3 +8,6 @@ export { ReciprocalGraph } from './ReciprocalGraph';
 export { VennDiagram } from './VennDiagram';
 export { CuboidDiagram, CubeDiagram } from './CuboidDiagram';
 export { NumberLineDiagram } from './NumberLineDiagram';
+export { TrapeziumDiagram } from './TrapeziumDiagram';
+export { IsoscelesExteriorDiagram } from './IsoscelesExteriorDiagram';
+export { RectangularBoxDiagram } from './RectangularBoxDiagram';

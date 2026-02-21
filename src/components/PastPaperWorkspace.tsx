@@ -27,7 +27,10 @@ import {
   VennDiagram,
   CuboidDiagram,
   CubeDiagram,
-  NumberLineDiagram
+  NumberLineDiagram,
+  TrapeziumDiagram,
+  IsoscelesExteriorDiagram,
+  RectangularBoxDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -652,9 +655,111 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* ========== 0580/11 May/June 2020 Diagrams ========== */}
+            
+            {/* Q5 - Isosceles triangle with exterior angle */}
+            {question.id === 'pp_0580_s20_q5' && (
+              <div className="mt-4">
+                <IsoscelesExteriorDiagram angleBAC={38} />
+              </div>
+            )}
+            
+            {/* Q14 - Trapezium with co-interior angles */}
+            {question.id === 'pp_0580_s20_q14' && (
+              <div className="mt-4">
+                <TrapeziumDiagram angleLeft="(97 − 3x)°" angleRight="(69 + 5x)°" />
+              </div>
+            )}
+            
+            {/* Q22 - Coordinate grid with line L */}
+            {question.id === 'pp_0580_s20_q22' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={320}
+                  height={320}
+                  xRange={[-3, 4]}
+                  yRange={[-5, 5]}
+                  lines={[
+                    {
+                      points: [{ x: 0, y: -3 }, { x: 2, y: 1 }],
+                      color: 'hsl(var(--primary))',
+                      label: 'L'
+                    }
+                  ]}
+                  showPoints={[
+                    { x: 0, y: -3, label: '(0, −3)' },
+                    { x: 2, y: 1, label: '(2, 1)' }
+                  ]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* ========== 0580/22 Feb/March 2022 Diagrams ========== */}
+            
+            {/* Q4 - Cuboid 7×4×5 */}
+            {question.id === 'pp_0580_fm22_q4' && (
+              <div className="mt-4">
+                <CuboidDiagram
+                  length={7}
+                  width={4}
+                  height={5}
+                  labels={{ length: '7 cm', width: '4 cm', height: '5 cm' }}
+                />
+              </div>
+            )}
+            
+            {/* Q7 - Number line for n > -1 */}
+            {question.id === 'pp_0580_fm22_q7' && (
+              <div className="mt-4">
+                <NumberLineDiagram
+                  min={-3}
+                  max={3}
+                  leftBound={-1}
+                  rightBound={3}
+                  leftInclusive={false}
+                  rightInclusive={false}
+                />
+              </div>
+            )}
+            
+            {/* Q16 - Coordinate grid with line through (-6,5) and (-2,-3) */}
+            {question.id === 'pp_0580_fm22_q16' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={350}
+                  height={350}
+                  xRange={[-8, 4]}
+                  yRange={[-6, 8]}
+                  lines={[
+                    {
+                      points: [{ x: -6, y: 5 }, { x: -2, y: -3 }],
+                      color: 'hsl(var(--primary))',
+                      label: 'l'
+                    }
+                  ]}
+                  showPoints={[
+                    { x: -6, y: 5, label: 'A(−6, 5)' },
+                    { x: -2, y: -3, label: 'B(−2, −3)' }
+                  ]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q21 - 3D rectangular box with stick */}
+            {question.id === 'pp_0580_fm22_q21' && (
+              <div className="mt-4">
+                <RectangularBoxDiagram ab={18.6} bc={9} cg={14.5} showStick={true} stickLength={30} />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
-             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9', 'pp_0580_s21_q4', 'pp_0580_s21_q6', 'pp_0580_s21_q7', 'pp_0580_s21_q8', 'pp_0580_s21_q9'].includes(question.id) && (
+             !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9', 'pp_0580_s21_q4', 'pp_0580_s21_q6', 'pp_0580_s21_q7', 'pp_0580_s21_q8', 'pp_0580_s21_q9',
+               'pp_0580_s20_q5', 'pp_0580_s20_q14', 'pp_0580_s20_q22',
+               'pp_0580_fm22_q4', 'pp_0580_fm22_q7', 'pp_0580_fm22_q16', 'pp_0580_fm22_q21'
+             ].includes(question.id) && (
               <div className="mt-4 flex justify-center">
                 <img 
                   src={question.image} 

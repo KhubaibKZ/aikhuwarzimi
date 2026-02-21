@@ -31,7 +31,12 @@ import {
   NumberLineDiagram,
   TrapeziumDiagram,
   IsoscelesExteriorDiagram,
-  RectangularBoxDiagram
+  RectangularBoxDiagram,
+  SymmetryShapes,
+  CompositeRectangles,
+  ScatterDiagram,
+  SimilarTriangles,
+  ConeDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -670,6 +675,20 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             
             {/* ========== 0580/11 May/June 2020 Diagrams ========== */}
             
+            {/* Q4(a) - Symmetry shapes */}
+            {question.id === 'pp_0580_s20_q4a' && (
+              <div className="mt-4">
+                <SymmetryShapes part="a" />
+              </div>
+            )}
+            
+            {/* Q4(b) - Rotational symmetry shape */}
+            {question.id === 'pp_0580_s20_q4b' && (
+              <div className="mt-4">
+                <SymmetryShapes part="b" />
+              </div>
+            )}
+            
             {/* Q5 - Isosceles triangle with exterior angle */}
             {question.id === 'pp_0580_s20_q5' && (
               <div className="mt-4">
@@ -677,10 +696,48 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* Q7 - Composite rectangles */}
+            {question.id === 'pp_0580_s20_q7' && (
+              <div className="mt-4">
+                <CompositeRectangles />
+              </div>
+            )}
+            
+            {/* Q9(a) & Q9(b) - Vector grid with P and Q */}
+            {(question.id === 'pp_0580_s20_q9a' || question.id === 'pp_0580_s20_q9b') && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={300}
+                  height={300}
+                  xRange={[-4, 4]}
+                  yRange={[-4, 4]}
+                  showPoints={[
+                    { x: 2, y: -1, label: 'P' },
+                    { x: -3, y: 2, label: 'Q' }
+                  ]}
+                  interactive={false}
+                />
+              </div>
+            )}
+            
+            {/* Q11 - Cone diagram */}
+            {question.id === 'pp_0580_s20_q11' && (
+              <div className="mt-4">
+                <ConeDiagram />
+              </div>
+            )}
+            
             {/* Q14 - Trapezium with co-interior angles */}
             {question.id === 'pp_0580_s20_q14' && (
               <div className="mt-4">
                 <TrapeziumDiagram angleLeft="(97 − 3x)°" angleRight="(69 + 5x)°" />
+              </div>
+            )}
+            
+            {/* Q18 - Scatter diagram */}
+            {question.id === 'pp_0580_s20_q18' && (
+              <div className="mt-4">
+                <ScatterDiagram />
               </div>
             )}
             
@@ -705,6 +762,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   ]}
                   interactive={true}
                 />
+              </div>
+            )}
+            
+            {/* Q23 - Similar triangles */}
+            {question.id === 'pp_0580_s20_q23' && (
+              <div className="mt-4">
+                <SimilarTriangles />
               </div>
             )}
             
@@ -770,7 +834,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
              !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9', 'pp_0580_s21_q4', 'pp_0580_s21_q6', 'pp_0580_s21_q7', 'pp_0580_s21_q8', 'pp_0580_s21_q9',
-               'pp_0580_s20_q5', 'pp_0580_s20_q14', 'pp_0580_s20_q22',
+               'pp_0580_s20_q4a', 'pp_0580_s20_q4b', 'pp_0580_s20_q5', 'pp_0580_s20_q7', 'pp_0580_s20_q9a', 'pp_0580_s20_q9b', 'pp_0580_s20_q11', 'pp_0580_s20_q14', 'pp_0580_s20_q18', 'pp_0580_s20_q22', 'pp_0580_s20_q23',
                'pp_0580_fm22_q4', 'pp_0580_fm22_q7', 'pp_0580_fm22_q16', 'pp_0580_fm22_q21'
              ].includes(question.id) && (
               <div className="mt-4 flex justify-center">

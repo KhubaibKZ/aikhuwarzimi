@@ -355,7 +355,8 @@ export default function Landing() {
             "Al-Khuwarizmi helped me understand topics I'd been struggling with for months. 
             The step-by-step approach and past paper practice made a real difference in my grades."
           </blockquote>
-          <p className="text-sm text-muted-foreground">— IGCSE Mathematics Student</p>
+          <p className="text-sm text-muted-foreground">Faran Uddin (O Levels/IGCSE Mathematics Instructor)
+          </p>
         </div>
       </section>
 
@@ -401,8 +402,7 @@ of the great mathematician?<br className="hidden sm:block" /> of the great schol
       </footer>
 
       {/* Login Modal */}
-      {showLogin &&
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setShowLogin(false)}>
+      {showLogin && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setShowLogin(false)}>
           <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 md:p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <Button variant="ghost" size="icon" className="absolute top-3 right-3" onClick={() => setShowLogin(false)}>
               <X className="h-4 w-4" />

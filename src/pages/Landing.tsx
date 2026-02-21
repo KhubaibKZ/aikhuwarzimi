@@ -191,6 +191,10 @@ export default function Landing() {
               <span className="block text-foreground text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2 md:mt-4 font-sans font-light tracking-wide">Your AI assisted Mathematics Tutor</span>
             </h1>
 
+            <p className="text-sm md:text-base text-muted-foreground/70 max-w-2xl mx-auto italic font-serif leading-relaxed px-2">
+              Named after <strong className="text-foreground not-italic">Muhammad ibn Musa al-Khwarizmi</strong> — the 9th-century Persian polymath whose groundbreaking work gave the world <span className="text-primary font-semibold not-italic">Algebra</span> and the very concept of the <span className="text-primary font-semibold not-italic">Algorithm</span>. Where he wrote the rules, we built the tutor.
+            </p>
+
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 font-light">
               An app to master IGCSE & O Level Mathematics board examination with AI-assisted hints, interactive questions, and step-by-step verification tailored to student needs & to help them reinforce their concept.
             </p>
@@ -238,8 +242,12 @@ export default function Landing() {
               </div>
 
               <blockquote className="border-l-2 border-primary/40 pl-4 md:pl-6 italic text-muted-foreground text-sm md:text-base leading-relaxed">
-                "That fondness for science, by which God has distinguished the Imam al-Ma'mun, the Commander of the Faithful, that affability and condescension which he shows to the learned, that promptitude with which he protects and supports them in the elucidation of obscurities and in the removal of difficulties."
-                <footer className="mt-2 not-italic text-xs text-primary font-semibold">— Al-Khwarizmi, Al-Kitāb al-Mukhtaṣar fī Ḥisāb al-Jabr wal-Muqābala, c. 820 CE</footer>
+                "The learned in times past... have not ceased to write books on the various branches of science... so that those who come after them may be benefited... either by completing what was previously incomplete, or by elucidating what was before obscure, or by correcting the errors of their predecessors."
+                <footer className="mt-3 not-italic text-xs text-muted-foreground/80 space-y-0.5">
+                  <p className="text-primary font-semibold">— Muhammad ibn Musa al-Khwarizmi</p>
+                  <p><em>Al-Kitāb al-Mukhtaṣar fī Ḥisāb al-Jabr wal-Muqābala</em> (Preface), c. 820–830 AD</p>
+                  <p className="text-[10px]">Source: <em>The Algebra of Mohammed ben Musa</em>, trans. Frederic Rosen (1831), p. 2</p>
+                </footer>
               </blockquote>
 
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed">

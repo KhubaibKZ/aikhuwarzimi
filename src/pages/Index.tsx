@@ -16,6 +16,7 @@ type ViewState =
 
 function Dashboard() {
   const [view, setView] = useState<ViewState>({ type: 'courses' });
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers'>('syllabus');
   const [pastPaperModal, setPastPaperModal] = useState<{
     isOpen: boolean;
     questionId: string | null;
@@ -77,6 +78,7 @@ function Dashboard() {
                 <TableOfContents 
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
+                  onTabChange={setActiveTab}
                 />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent
@@ -91,7 +93,7 @@ function Dashboard() {
             {/* Sidebar */}
             <div className="hidden lg:block">
               <div className="sticky top-24">
-                <ProgressSidebar />
+                <ProgressSidebar activeTab={activeTab} />
               </div>
             </div>
           </div>

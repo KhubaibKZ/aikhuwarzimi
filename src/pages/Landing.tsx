@@ -163,16 +163,21 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 md:pt-36 md:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.06]"
+        {/* Rich layered background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/8 to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,hsl(262_83%_58%_/_0.12),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(262_83%_58%_/_0.08),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,hsl(45_80%_60%_/_0.04),transparent_40%)]" />
+        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] dark:opacity-[0.05]"
         style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
 
         <div className="absolute right-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
           <img src={alKhwarizmiSilhouette} alt="" className="absolute right-[-5%] top-1/2 -translate-y-1/2 h-[90%] object-contain opacity-[0.04] dark:opacity-[0.07] grayscale" style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }} />
         </div>
         
-        <div className="absolute top-20 left-1/4 w-72 md:w-96 h-72 md:h-96 rounded-full bg-primary/15 blur-[120px]" />
-        <div className="absolute bottom-0 right-1/3 w-56 md:w-72 h-56 md:h-72 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="absolute top-10 left-[15%] w-80 md:w-[500px] h-80 md:h-[500px] rounded-full bg-primary/12 blur-[150px]" />
+        <div className="absolute bottom-[-10%] right-[20%] w-64 md:w-96 h-64 md:h-96 rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute top-[40%] right-[10%] w-48 md:w-72 h-48 md:h-72 rounded-full bg-[hsl(45_80%_60%_/_0.04)] blur-[100px]" />
 
         {mathSymbols.map((s, i) =>
         <span key={i} className={`absolute font-mono text-primary/20 dark:text-primary/15 pointer-events-none select-none ${s.className}`}>{s.symbol}</span>
@@ -222,12 +227,21 @@ export default function Landing() {
       </section>
 
       {/* Al-Khwarizmi Legacy Section */}
-      <section id="legacy" className="py-16 md:py-24 bg-muted/20 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute left-0 top-0 bottom-0 w-1/2 md:w-2/5 pointer-events-none select-none overflow-hidden">
-          <img src={alKhwarizmiSilhouette} alt="" className="absolute left-[-5%] top-1/2 -translate-y-1/2 h-[100%] object-contain opacity-[0.05] dark:opacity-[0.08] grayscale" style={{ filter: 'grayscale(100%) contrast(1.2)', mixBlendMode: 'multiply' }} />
+      <section id="legacy" className="py-20 md:py-32 relative overflow-hidden">
+        {/* Rich background layers */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/6 to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(262_83%_58%_/_0.08),transparent_70%)]" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        
+        {/* Prominent silhouette on the left */}
+        <div className="absolute left-0 top-0 bottom-0 w-[45%] md:w-[35%] pointer-events-none select-none overflow-hidden">
+          <img src={alKhwarizmiSilhouette} alt="" className="absolute left-[-2%] top-1/2 -translate-y-1/2 h-[110%] object-contain opacity-[0.12] dark:opacity-[0.18]" style={{ filter: 'contrast(1.3) brightness(0.8)', mixBlendMode: 'soft-light' }} />
         </div>
+
+        {/* Ambient glow behind silhouette */}
+        <div className="absolute left-[-5%] top-[20%] w-72 md:w-96 h-72 md:h-96 rounded-full bg-primary/10 blur-[140px]" />
+        <div className="absolute right-[10%] bottom-[10%] w-56 md:w-80 h-56 md:h-80 rounded-full bg-[hsl(45_80%_60%_/_0.04)] blur-[120px]" />
 
         <div className="container relative px-4 md:px-6">
           <div className="max-w-3xl mx-auto">

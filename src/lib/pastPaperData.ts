@@ -28,6 +28,8 @@ export interface PastPaperSection {
   questionId: string;
 }
 
+export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)';
+
 export interface PastPaper {
   id: string;
   code: string;
@@ -38,6 +40,7 @@ export interface PastPaper {
   duration: string;
   sections: PastPaperSection[];
   locked?: boolean;
+  category: PaperCategory;
 }
 
 // Combine all questions
@@ -693,6 +696,7 @@ export const pastPapers: PastPaper[] = [
     title: '0580/31 May/June 2022',
     totalMarks: 104,
     duration: '2 hours',
+    category: 'Paper 03 (CORE)',
     sections: [
       { id: 'q1a', title: 'Q1(a): Write number in figures', questionId: 'pp_0580_s22_q1a' },
       { id: 'q1b', title: 'Q1(b): Rounding to nearest ten', questionId: 'pp_0580_s22_q1b' },
@@ -737,6 +741,7 @@ export const pastPapers: PastPaper[] = [
     title: '0580/43 May/June 2021',
     totalMarks: 130,
     duration: '2 hours 30 minutes',
+    category: 'Paper 04 (EXTENDED)',
     sections: sections0580_43_2021,
     locked: false
   }

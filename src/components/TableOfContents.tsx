@@ -1,6 +1,6 @@
 import { igcseMathsSyllabus, SubTopic, MainTopic } from '@/lib/syllabusData';
 import { questionDatabase } from '@/lib/questionData';
-import { pastPapers, PastPaperSection } from '@/lib/pastPaperData';
+import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
 import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
@@ -251,117 +251,130 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect }: TableOf
         })}
       </TabsContent>
 
-      <TabsContent value="pastpapers" className="space-y-3">
+      <TabsContent value="pastpapers" className="space-y-5">
         <h2 className="mb-4 text-xl font-bold text-foreground">Past Papers</h2>
         
-        {pastPapers.map((paper, index) => (
-          <div
-            key={paper.id}
-            className={cn(
-              "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up",
-              paper.locked && "opacity-60"
-            )}
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <button
-              onClick={() => !paper.locked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
-              className={cn(
-                "flex w-full items-center justify-between p-4 text-left transition-colors",
-                paper.locked ? "cursor-not-allowed" : "hover:bg-muted/50"
-              )}
-              disabled={paper.locked}
-            >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg",
-                  paper.locked ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground"
-                )}>
-                  {paper.locked ? <Lock className="h-5 w-5" /> : <GraduationCap className="h-5 w-5" />}
-                </div>
-                <div>
-                  <h3 className={cn(
-                    "font-semibold",
-                    paper.locked ? "text-muted-foreground" : "text-foreground"
-                  )}>{paper.code}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {paper.session} {paper.year} • {paper.totalMarks} marks • {paper.duration}
-                  </p>
-                </div>
-              </div>
+        {(['Paper 01 (CORE)', 'Paper 02 (EXTENDED)', 'Paper 03 (CORE)', 'Paper 04 (EXTENDED)'] as PaperCategory[]).map((category) => {
+          const categoryPapers = pastPapers.filter(p => p.category === category);
+          if (categoryPapers.length === 0) return null;
+          
+          return (
+            <div key={category} className="space-y-2">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1">
+                {category}
+              </h3>
               
-              <div className="flex items-center gap-2">
-                {paper.locked ? (
-                  <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">
-                    Coming Soon
-                  </span>
-                ) : (
-                  <>
-                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
-                      {paper.sections.length} questions
-                    </span>
-                    {expandedPaper === paper.id 
-                      ? <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                      : <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    }
-                  </>
-                )}
-              </div>
-            </button>
-
-            {!paper.locked && expandedPaper === paper.id && (
-              <div className="border-t border-border bg-muted/30 p-2 max-h-96 overflow-y-auto">
-                {paper.sections.map((section) => {
-                  const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
-                  
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => onPastPaperSelect?.(paper.id, section)}
-                      className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all hover:bg-card hover:shadow-sm"
-                    >
-                      <div className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg",
-                        completed ? "bg-success/10 text-success" : "bg-secondary text-secondary-foreground"
-                      )}>
-                        {completed ? <CheckCircle2 className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-                      </div>
-                      <div className="flex-1">
-                        <span className={cn(
-                          "text-sm font-medium",
-                          completed ? "text-success" : "text-foreground"
-                        )}>
-                          {section.title}
-                        </span>
-                        {completed && (
-                          <p className="text-[10px] text-success">Recorded</p>
-                        )}
-                      </div>
-                      {completed ? (
-                        <Badge variant="outline" className="text-[10px] border-success/30 text-success bg-success/5">Recorded</Badge>
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </button>
-                  );
-                })}
-
-                {/* Paper-level Reset Button */}
-                <div className="border-t border-border mt-2 pt-2 px-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => handleResetPaper(paper.id, e)}
-                    disabled={resettingPaper === paper.id}
-                    className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+              {categoryPapers.map((paper, index) => (
+                <div
+                  key={paper.id}
+                  className={cn(
+                    "rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 animate-slide-up",
+                    paper.locked && "opacity-60"
+                  )}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <button
+                    onClick={() => !paper.locked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
+                    className={cn(
+                      "flex w-full items-center justify-between p-4 text-left transition-colors",
+                      paper.locked ? "cursor-not-allowed" : "hover:bg-muted/50"
+                    )}
+                    disabled={paper.locked}
                   >
-                    <RotateCcw className={cn("h-4 w-4 mr-2", resettingPaper === paper.id && "animate-spin")} />
-                    {resettingPaper === paper.id ? 'Resetting...' : 'Reset Paper Progress'}
-                  </Button>
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-lg",
+                        paper.locked ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground"
+                      )}>
+                        {paper.locked ? <Lock className="h-5 w-5" /> : <GraduationCap className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <h3 className={cn(
+                          "font-semibold",
+                          paper.locked ? "text-muted-foreground" : "text-foreground"
+                        )}>{paper.code}</h3>
+                        <p className="text-xs text-muted-foreground">
+                          {paper.session} {paper.year} • {paper.totalMarks} marks • {paper.duration}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      {paper.locked ? (
+                        <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">
+                          Coming Soon
+                        </span>
+                      ) : (
+                        <>
+                          <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
+                            {paper.sections.length} questions
+                          </span>
+                          {expandedPaper === paper.id 
+                            ? <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                            : <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          }
+                        </>
+                      )}
+                    </div>
+                  </button>
+
+                  {!paper.locked && expandedPaper === paper.id && (
+                    <div className="border-t border-border bg-muted/30 p-2 max-h-96 overflow-y-auto">
+                      {paper.sections.map((section) => {
+                        const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
+                        
+                        return (
+                          <button
+                            key={section.id}
+                            onClick={() => onPastPaperSelect?.(paper.id, section)}
+                            className="flex w-full items-center gap-3 rounded-lg p-3 text-left transition-all hover:bg-card hover:shadow-sm"
+                          >
+                            <div className={cn(
+                              "flex h-8 w-8 items-center justify-center rounded-lg",
+                              completed ? "bg-success/10 text-success" : "bg-secondary text-secondary-foreground"
+                            )}>
+                              {completed ? <CheckCircle2 className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
+                            </div>
+                            <div className="flex-1">
+                              <span className={cn(
+                                "text-sm font-medium",
+                                completed ? "text-success" : "text-foreground"
+                              )}>
+                                {section.title}
+                              </span>
+                              {completed && (
+                                <p className="text-[10px] text-success">Recorded</p>
+                              )}
+                            </div>
+                            {completed ? (
+                              <Badge variant="outline" className="text-[10px] border-success/30 text-success bg-success/5">Recorded</Badge>
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </button>
+                        );
+                      })}
+
+                      {/* Paper-level Reset Button */}
+                      <div className="border-t border-border mt-2 pt-2 px-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => handleResetPaper(paper.id, e)}
+                          disabled={resettingPaper === paper.id}
+                          className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <RotateCcw className={cn("h-4 w-4 mr-2", resettingPaper === paper.id && "animate-spin")} />
+                          {resettingPaper === paper.id ? 'Resetting...' : 'Reset Paper Progress'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              ))}
+            </div>
+          );
+        })}
       </TabsContent>
     </Tabs>
   );

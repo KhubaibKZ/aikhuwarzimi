@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion, pastPapers } from '@/lib/pastPaperData';
 import { getQuestionSyllabusRef } from '@/lib/questionTopicMap';
 import { useProgress } from '@/context/ProgressContext';
-import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -70,6 +70,23 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const queryClient = useQueryClient();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [finalTime, setFinalTime] = useState<number | null>(null);
+
+  // Live timer
+  useEffect(() => {
+    if (isSubmitted) return;
+    const interval = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isSubmitted]);
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   // Check if this question was already submitted when opening — restore answers & feedback
   useEffect(() => {
@@ -77,7 +94,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     const checkExistingSubmission = async () => {
       const { data } = await supabase
         .from('student_paper_progress')
-        .select('id, submitted_answers, submitted_feedback')
+        .select('id, submitted_answers, submitted_feedback, time_spent_seconds')
         .eq('user_id', user.id)
         .eq('question_id', question.id)
         .maybeSingle();
@@ -90,7 +107,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         if (data.submitted_feedback && typeof data.submitted_feedback === 'object') {
           setFeedback(data.submitted_feedback as Record<string, 'correct' | 'incorrect' | null>);
         }
-      } else {
+        if (data.time_spent_seconds != null) {
+          setFinalTime(data.time_spent_seconds as number);
+        }
         // Reset state for a fresh question
         setIsSubmitted(false);
         setIsChecked(false);
@@ -293,6 +312,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     setFeedback(newFeedback);
     setIsChecked(true);
     setIsSubmitted(true);
+    const timeSpentNow = Math.round((Date.now() - startTimeRef.current) / 1000);
+    setFinalTime(timeSpentNow);
 
     // Always record progress when submitted (all parts completed)
     markExampleComplete(question.id);
@@ -350,6 +371,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     setAiResponse(null);
     setAttemptCount({});
     setLoadingPartKey(null);
+    setFinalTime(null);
+    setElapsedSeconds(0);
+    startTimeRef.current = Date.now();
   };
 
   const allCorrect = Object.values(feedback).length > 0 && 
@@ -370,9 +394,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">{question.questionNumber}</DialogTitle>
-            <Badge variant="outline" className="ml-2">
-              {question.marks} mark{question.marks > 1 ? 's' : ''}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant={isSubmitted ? "secondary" : "outline"} className={cn("flex items-center gap-1 font-mono", !isSubmitted && "animate-pulse")}>
+                <Clock className="h-3 w-3" />
+                {formatTime(isSubmitted && finalTime !== null ? finalTime : elapsedSeconds)}
+              </Badge>
+              <Badge variant="outline">
+                {question.marks} mark{question.marks > 1 ? 's' : ''}
+              </Badge>
+            </div>
           </div>
           <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
           {(() => {
@@ -1271,13 +1301,21 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             </div>
           )}
 
-          {/* Success Message */}
-          {allCorrect && isSubmitted && (
-            <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4 flex items-center gap-3">
-              <Award className="h-6 w-6 text-green-500" />
-              <div>
-                <p className="font-medium text-green-600">Excellent work!</p>
-                <p className="text-sm text-muted-foreground">You've completed this question correctly.</p>
+          {/* Post-submission summary */}
+          {isSubmitted && (
+            <div className={cn(
+              "rounded-lg border p-4 flex items-center gap-3",
+              allCorrect ? "border-green-500/50 bg-green-500/10" : "border-primary/30 bg-primary/5"
+            )}>
+              {allCorrect ? <Award className="h-6 w-6 text-green-500" /> : <Clock className="h-6 w-6 text-primary" />}
+              <div className="flex-1">
+                <p className={cn("font-medium", allCorrect ? "text-green-600" : "text-foreground")}>
+                  {allCorrect ? 'Excellent work!' : 'Answer Submitted'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Time taken: <span className="font-mono font-semibold text-foreground">{formatTime(finalTime ?? 0)}</span>
+                  {allCorrect && ' • All correct!'}
+                </p>
               </div>
             </div>
           )}

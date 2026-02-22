@@ -44,7 +44,8 @@ import {
   AngleMeasureDiagram,
   CylinderDiagram,
   VectorTriangleDiagram,
-  QuadrilateralDiagram
+  QuadrilateralDiagram,
+  HistogramDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -615,6 +616,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             )}
             
             {/* ========== 0580/43 May/June 2021 Diagrams ========== */}
+            
+            {/* Q3(d) - Histogram */}
+            {question.id === 'pp_0580_s21_q3d' && (
+              <div className="mt-4">
+                <HistogramDiagram />
+              </div>
+            )}
             
             {/* Q4 - Coordinates & Vectors */}
             {(question.id === 'pp_0580_s21_q4a' || question.id === 'pp_0580_s21_q4b') && (

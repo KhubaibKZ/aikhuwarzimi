@@ -1,0 +1,1 @@
+UPDATE student_paper_progress SET paper_id = 'pp_0580_fm22_22' WHERE question_id LIKE 'pp_0580_fm22_%' AND paper_id != 'pp_0580_fm22_22';

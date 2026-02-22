@@ -1,14 +1,9 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
+import { useProgress } from '@/context/ProgressContext';
 import { CheckCircle2 } from 'lucide-react';
 import { pastPapers } from '@/lib/pastPaperData';
-import { getMasteryColor } from '@/lib/analyticsData';
-
-const masteryStrokeMap = {
-  green: 'hsl(142, 76%, 36%)',
-  yellow: 'hsl(38, 92%, 50%)',
-  red: 'hsl(0, 62%, 50%)',
-};
+import { igcseMathsSyllabus } from '@/lib/syllabusData';
 
 function ProgressRing({ percentage, size = 40, strokeWidth = 3.5 }: { percentage: number; size?: number; strokeWidth?: number }) {
   const radius = (size - strokeWidth) / 2;
@@ -34,30 +29,6 @@ function ProgressRing({ percentage, size = 40, strokeWidth = 3.5 }: { percentage
   );
 }
 
-function TopicProgressRing({ percentage, size = 40, strokeWidth = 3.5 }: { percentage: number; size?: number; strokeWidth?: number }) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percentage / 100) * circumference;
-  const color = getMasteryColor(percentage);
-
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth={strokeWidth} />
-        <circle
-          cx={size / 2} cy={size / 2} r={radius} fill="none"
-          stroke={masteryStrokeMap[color]} strokeWidth={strokeWidth}
-          strokeDasharray={circumference} strokeDashoffset={offset}
-          strokeLinecap="round" className="transition-all duration-700 ease-out"
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[9px] font-bold text-foreground">{percentage}%</span>
-      </div>
-    </div>
-  );
-}
-
 interface ProgressSidebarProps {
   activeTab?: 'syllabus' | 'pastpapers';
 }
@@ -65,7 +36,24 @@ interface ProgressSidebarProps {
 export function ProgressSidebar({ activeTab = 'syllabus' }: ProgressSidebarProps) {
   const { user } = useAuth();
   const { data, isLoading } = useStudentProgress();
+  const { isCompleted } = useProgress();
 
+  const showTopics = activeTab === 'syllabus';
+
+  // Syllabus-based topic progress (from ProgressContext, not past papers)
+  const syllabusTopicProgress = igcseMathsSyllabus.topics.map(topic => {
+    const allQuestions = topic.subtopics.flatMap(s => s.questionIds);
+    const completed = allQuestions.filter(id => isCompleted(id)).length;
+    const percentage = allQuestions.length > 0 ? Math.round((completed / allQuestions.length) * 100) : 0;
+    return {
+      id: topic.id,
+      title: topic.title,
+      subtopicCount: topic.subtopics.length,
+      percentage,
+    };
+  });
+
+  // Paper progress
   const paperProgress = pastPapers.map(paper => {
     const result = data?.paperResults.find(r => r.paperId === paper.id);
     return {
@@ -77,10 +65,6 @@ export function ProgressSidebar({ activeTab = 'syllabus' }: ProgressSidebarProps
     };
   });
 
-  const topicMastery = data?.topicMastery || [];
-
-  const showTopics = activeTab === 'syllabus';
-
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-border bg-card p-6 shadow-soft animate-fade-in">
@@ -89,26 +73,22 @@ export function ProgressSidebar({ activeTab = 'syllabus' }: ProgressSidebarProps
           {showTopics ? 'Topic Progress' : 'Paper Progress'}
         </h3>
 
-        {!user ? (
+        {showTopics ? (
+          <div className="space-y-4">
+            {syllabusTopicProgress.map((t) => (
+              <div key={t.id} className="flex items-center gap-3">
+                <ProgressRing percentage={t.percentage} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{t.title}</p>
+                  <p className="text-[10px] text-muted-foreground">{t.subtopicCount} subtopics</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !user ? (
           <p className="text-xs text-muted-foreground">Log in to track your progress.</p>
         ) : isLoading ? (
           <p className="text-xs text-muted-foreground">Loading...</p>
-        ) : showTopics ? (
-          <div className="space-y-4">
-            {topicMastery.length === 0 ? (
-              <p className="text-xs text-muted-foreground">Complete past paper questions to see topic mastery.</p>
-            ) : (
-              topicMastery.map((t) => (
-                <div key={t.topicId} className="flex items-center gap-3">
-                  <TopicProgressRing percentage={t.overallScore} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{t.topic}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.paperScores.length} paper{t.paperScores.length !== 1 ? 's' : ''} attempted</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
         ) : (
           <div className="space-y-4">
             {paperProgress.map((paper, i) => (

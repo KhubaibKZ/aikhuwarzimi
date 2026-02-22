@@ -36,7 +36,7 @@ export const igcseMathsSyllabus: SyllabusData = {
           code: '1.1',
           title: 'Types of Number',
           description: 'Natural numbers, integers, prime numbers, square numbers, cube numbers, common factors, common multiples, rational and irrational numbers, reciprocals. Express as product of prime factors. Finding HCF and LCM.',
-          locked: false,
+          locked: true,
           questionIds: ['example1', 'example2', 'example3', 'exercise1_1']
         },
         {
@@ -44,7 +44,7 @@ export const igcseMathsSyllabus: SyllabusData = {
           code: '1.2',
           title: 'Sets',
           description: 'Set language, notation and Venn diagrams. Union, intersection, complement, subsets, universal set.',
-          locked: false,
+          locked: true,
           questionIds: ['example4']
         },
         {

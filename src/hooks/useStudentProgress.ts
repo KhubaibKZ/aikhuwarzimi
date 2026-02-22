@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { pastPapers } from '@/lib/pastPaperData';
+import { pastPapers, pastPaperQuestions } from '@/lib/pastPaperData';
 import { questionTopicMap } from '@/lib/questionTopicMap';
 import type { TopicMastery, PastPaperResult, PaperScore } from '@/lib/analyticsData';
 
@@ -54,8 +54,12 @@ export function useStudentProgress() {
         if (!paper) return;
         const totalQ = paper.sections.length;
         const solvedQ = questions.length;
-        const totalAccuracy = questions.reduce((s, q) => s + Number(q.accuracy_score), 0);
-        const avgAccuracy = solvedQ > 0 ? Math.round(totalAccuracy / solvedQ) : 0;
+        // Calculate marks obtained by summing per-question marks weighted by accuracy
+        const marksObtained = questions.reduce((sum, q) => {
+          const qData = pastPaperQuestions[q.question_id];
+          const qMarks = qData?.marks || 0;
+          return sum + (Number(q.accuracy_score) / 100) * qMarks;
+        }, 0);
         paperResults.push({
           paperId,
           paperTitle: paper.title,
@@ -67,7 +71,7 @@ export function useStudentProgress() {
           completionPercentage: Math.round((solvedQ / totalQ) * 100),
           completedDate: questions[questions.length - 1]?.submitted_at || '',
           totalMarks: paper.totalMarks,
-          marksObtained: Math.round((avgAccuracy / 100) * paper.totalMarks),
+          marksObtained: Math.round(marksObtained),
         });
       });
 

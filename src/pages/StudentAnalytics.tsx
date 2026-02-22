@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
-  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock, Clock
+  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock
 } from 'lucide-react';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
 import {
@@ -309,50 +309,6 @@ export default function StudentAnalytics() {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Time per Question */}
-            {rows.length > 0 && (
-              <section className="mb-8">
-                <h2 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  Time per Question
-                </h2>
-                <p className="text-[11px] text-muted-foreground mb-4">
-                  Time taken to submit each question. Green ≤ 60s, Yellow ≤ 180s, Red &gt; 180s.
-                </p>
-                <Card className="bg-card border-border">
-                  <CardContent className="p-4 space-y-2">
-                    {(() => {
-                      const maxTime = Math.max(...rows.map((r: any) => r.time_spent_seconds || 0), 60);
-                      return rows.map((r: any, i: number) => {
-                        const secs = r.time_spent_seconds || 0;
-                        const barPct = Math.min(100, (secs / maxTime) * 100);
-                        const barColor = secs <= 60 ? 'bg-success' : secs <= 180 ? 'bg-warning' : 'bg-destructive';
-                        const mins = Math.floor(secs / 60);
-                        const remSecs = secs % 60;
-                        const timeLabel = mins > 0 ? `${mins}m ${remSecs}s` : `${secs}s`;
-                        return (
-                          <div key={r.id || i} className="flex items-center gap-3">
-                            <span className="text-[11px] text-muted-foreground min-w-[100px] truncate font-mono">
-                              {r.question_id.replace(/^pp_0580_/, '').replace(/_/g, ' ')}
-                            </span>
-                            <div className="flex-1 h-4 bg-muted/40 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full rounded-full ${barColor} transition-all duration-700`}
-                                style={{ width: `${barPct}%` }}
-                              />
-                            </div>
-                            <span className="text-[11px] font-medium text-foreground min-w-[50px] text-right">
-                              {timeLabel}
-                            </span>
-                          </div>
-                        );
-                      });
-                    })()}
-                  </CardContent>
-                </Card>
-              </section>
-            )}
 
             {/* Topic Mastery Matrix */}
             <section className="mb-10">

@@ -4,9 +4,10 @@ import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
-  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3
+  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock
 } from 'lucide-react';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
 import {
@@ -95,7 +96,11 @@ function TrendIndicator({ trend, delta }: { trend: TopicMastery['trend']; delta:
 // ─── Topic Row with paper-wise expansion ───
 function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const completionPct = (topic.totalQuestions && topic.totalQuestions > 0)
+    ? Math.round(((topic.completedQuestions || 0) / topic.totalQuestions) * 100)
+    : 0;
   const color = getMasteryColor(topic.overallScore);
+  const hasData = (topic.completedQuestions || 0) > 0;
 
   return (
     <div
@@ -103,26 +108,39 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
       style={{ animationDelay: `${index * 60}ms` }}
     >
       <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 p-3.5 hover:bg-secondary/30 transition-colors"
+        onClick={() => hasData && setExpanded(!expanded)}
+        className={`w-full flex items-center gap-3 p-3.5 transition-colors ${hasData ? 'hover:bg-secondary/30 cursor-pointer' : 'cursor-default'}`}
       >
         <span className="text-sm font-semibold text-foreground min-w-[140px] text-left truncate">{topic.topic}</span>
-        <div className="flex-1 max-w-[220px]">
-          <Progress
-            value={topic.overallScore}
-            className="h-2.5 [&>div]:transition-all [&>div]:duration-700"
-            style={{ ['--progress-color' as string]: masteryColorMap[color] }}
-          />
+        <div className="flex-1 flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 max-w-[220px]">
+              <Progress
+                value={completionPct}
+                className="h-2"
+              />
+            </div>
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+              {topic.completedQuestions || 0}/{topic.totalQuestions || 0} Qs
+            </span>
+          </div>
         </div>
-        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[color]}`}>
-          {topic.overallScore}%
-        </span>
-        <TrendIndicator trend={topic.trend} delta={topic.trendDelta} />
-        {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
+        {hasData ? (
+          <>
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[color]}`}>
+              {topic.overallScore}%
+            </span>
+            <TrendIndicator trend={topic.trend} delta={topic.trendDelta} />
+            {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
+          </>
+        ) : (
+          <span className="text-[10px] text-muted-foreground italic">Not started</span>
+        )}
       </button>
 
-      {expanded && (
+      {expanded && hasData && (
         <div className="border-t border-border bg-secondary/10 animate-fade-in">
+          {/* Per-paper breakdown */}
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -167,6 +185,7 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
             </table>
           </div>
 
+          {/* Topic-level averages (average across ALL questions for this topic) */}
           <div className="px-4 py-3 grid grid-cols-3 gap-3 border-t border-border/30">
             {[
               { label: 'Accuracy', value: topic.latestAccuracy, weight: '40%' },
@@ -193,11 +212,16 @@ export default function StudentAnalytics() {
 
   const topicMastery = data?.topicMastery || [];
   const paperResults = data?.paperResults || [];
+  const rows = data?.rows || [];
 
-  const avgScore = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.overallScore, 0) / topicMastery.length) : 0;
-  const avgAccuracy = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestAccuracy, 0) / topicMastery.length) : 0;
-  const avgIndependence = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestReadiness, 0) / topicMastery.length) : 0;
-  const avgSpeed = topicMastery.length > 0 ? Math.round(topicMastery.reduce((s, t) => s + t.latestSpeed, 0) / topicMastery.length) : 0;
+  // Overall = average across ALL individual questions (not average of topics)
+  const totalQs = rows.length;
+  const avgAccuracy = totalQs > 0 ? Math.round(rows.reduce((s, r: any) => s + Number(r.accuracy_score), 0) / totalQs) : 0;
+  const avgAiCount = totalQs > 0 ? rows.reduce((s, r: any) => s + r.ai_usage_count, 0) / totalQs : 0;
+  const avgIndependence = totalQs > 0 ? Math.round(Math.max(0, 100 - avgAiCount * 20)) : 0;
+  const avgTime = totalQs > 0 ? rows.reduce((s, r: any) => s + r.time_spent_seconds, 0) / totalQs : 0;
+  const avgSpeed = totalQs > 0 ? Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3))) : 0;
+  const avgScore = totalQs > 0 ? Math.round(avgAccuracy * 0.4 + avgIndependence * 0.3 + avgSpeed * 0.3) : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -208,114 +232,145 @@ export default function StudentAnalytics() {
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Button>
 
-        {/* ── Hero: Overall Mastery ── */}
-        <Card className="bg-card border-border mb-6 overflow-hidden">
-          <CardContent className="p-6 flex flex-col items-center text-center">
-            <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-1">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              Student Analytics
-            </h1>
-            <p className="text-xs text-muted-foreground mb-5">
-              {topicMastery.length === 0 && !isLoading
-                ? 'Complete some past paper questions to see your analytics here.'
-                : 'Performance across all past papers attempted'}
-            </p>
-            <MasteryGauge percentage={avgScore} />
-            <p className="text-xs text-muted-foreground mt-3">Overall Mastery</p>
-          </CardContent>
-        </Card>
+        <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5">
+          <BarChart3 className="h-5 w-5 text-primary" />
+          Your Progress
+        </h1>
 
-        {/* ── Key Metrics Row ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <FileText className="h-5 w-5 text-primary mb-1.5" />
-              <p className="text-2xl font-bold text-foreground">{paperResults.length}</p>
-              <p className="text-[11px] text-muted-foreground">Papers Attempted</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <Brain className="h-5 w-5 text-success mb-1.5" />
-              <p className="text-2xl font-bold text-foreground">{avgIndependence}%</p>
-              <p className="text-[11px] text-muted-foreground">AI Independence</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <Target className="h-5 w-5 text-warning mb-1.5" />
-              <p className="text-2xl font-bold text-foreground">{avgAccuracy}%</p>
-              <p className="text-[11px] text-muted-foreground">Accuracy</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 flex flex-col items-center text-center">
-              <Zap className="h-5 w-5 text-primary mb-1.5" />
-              <p className="text-2xl font-bold text-foreground">{avgSpeed}%</p>
-              <p className="text-[11px] text-muted-foreground">Speed</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs defaultValue="pastpapers" className="w-full">
+          <TabsList className="mb-6 w-full max-w-md">
+            <TabsTrigger value="syllabus" className="flex-1 gap-2" disabled>
+              <BookOpen className="h-4 w-4" />
+              Syllabus
+              <Lock className="h-3 w-3 ml-1 text-muted-foreground" />
+            </TabsTrigger>
+            <TabsTrigger value="pastpapers" className="flex-1 gap-2">
+              <FileText className="h-4 w-4" />
+              Past Paper Progress
+            </TabsTrigger>
+          </TabsList>
 
-        {/* ── Topic Mastery Matrix ── */}
-        <section className="mb-10">
-          <h2 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            Topic Mastery Matrix
-          </h2>
-          <p className="text-[11px] text-muted-foreground mb-4">
-            Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Tap a topic for paper-wise breakdown & improvement trends.
-          </p>
-          {topicMastery.length === 0 && !isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-8">No data yet. Submit answers on past papers to see your topic mastery.</p>
-          ) : (
-            <div className="space-y-2.5">
-              {topicMastery.map((topic, i) => (
-                <TopicRow key={topic.topicId} topic={topic} index={i} />
-              ))}
+          {/* ── Syllabus Tab (Coming Soon) ── */}
+          <TabsContent value="syllabus">
+            <Card className="bg-card border-border">
+              <CardContent className="p-10 text-center">
+                <Lock className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">Coming Soon</h3>
+                <p className="text-sm text-muted-foreground">
+                  Syllabus-based progress tracking will be available once syllabus content is complete.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Past Paper Progress Tab ── */}
+          <TabsContent value="pastpapers">
+            {/* Overall Mastery */}
+            <Card className="bg-card border-border mb-6 overflow-hidden">
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <p className="text-xs text-muted-foreground mb-5">
+                  {totalQs === 0 && !isLoading
+                    ? 'Complete some past paper questions to see your analytics here.'
+                    : `Performance across ${totalQs} questions from ${paperResults.length} paper(s)`}
+                </p>
+                <MasteryGauge percentage={avgScore} />
+                <p className="text-xs text-muted-foreground mt-3">Overall Mastery</p>
+              </CardContent>
+            </Card>
+
+            {/* Key Metrics Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <FileText className="h-5 w-5 text-primary mb-1.5" />
+                  <p className="text-2xl font-bold text-foreground">{paperResults.length}</p>
+                  <p className="text-[11px] text-muted-foreground">Papers Attempted</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <Brain className="h-5 w-5 text-success mb-1.5" />
+                  <p className="text-2xl font-bold text-foreground">{avgIndependence}%</p>
+                  <p className="text-[11px] text-muted-foreground">AI Independence</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <Target className="h-5 w-5 text-warning mb-1.5" />
+                  <p className="text-2xl font-bold text-foreground">{avgAccuracy}%</p>
+                  <p className="text-[11px] text-muted-foreground">Accuracy</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <Zap className="h-5 w-5 text-primary mb-1.5" />
+                  <p className="text-2xl font-bold text-foreground">{avgSpeed}%</p>
+                  <p className="text-[11px] text-muted-foreground">Speed</p>
+                </CardContent>
+              </Card>
             </div>
-          )}
-        </section>
 
-        {/* ── Past Paper Timeline ── */}
-        <section>
-          <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-            <FileText className="h-4 w-4 text-primary" />
-            Past Paper Timeline
-          </h2>
-          {paperResults.length === 0 && !isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-8">No papers attempted yet. Start solving past papers to track your progress.</p>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {paperResults.map((paper, i) => {
-                const scorePercent = paper.totalMarks > 0 ? Math.round((paper.marksObtained / paper.totalMarks) * 100) : 0;
-                return (
-                  <Card
-                    key={paper.paperId}
-                    className="bg-card border-border overflow-hidden animate-fade-in"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  >
-                    <CardContent className="p-5 flex items-center gap-5">
-                      <SmallCircle percentage={paper.completionPercentage} />
-                      <div className="flex-1 space-y-1.5">
-                        <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {paper.completedDate ? new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
-                        </p>
-                        <div className="flex gap-4 text-xs">
-                          <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
-                          <span className="text-muted-foreground">Score: <span className={`font-bold ${
-                            scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
-                          }`}>{scorePercent}%</span></span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </section>
+            {/* Topic Mastery Matrix */}
+            <section className="mb-10">
+              <h2 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Topic Mastery Matrix
+              </h2>
+              <p className="text-[11px] text-muted-foreground mb-4">
+                Completion shows questions done across all papers. Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Tap a topic for paper-wise breakdown.
+              </p>
+              {topicMastery.length === 0 && !isLoading ? (
+                <p className="text-sm text-muted-foreground text-center py-8">No data yet. Submit answers on past papers to see your topic mastery.</p>
+              ) : (
+                <div className="space-y-2.5">
+                  {topicMastery.map((topic, i) => (
+                    <TopicRow key={topic.topicId} topic={topic} index={i} />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Past Paper Timeline */}
+            <section>
+              <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                Past Paper Timeline
+              </h2>
+              {paperResults.length === 0 && !isLoading ? (
+                <p className="text-sm text-muted-foreground text-center py-8">No papers attempted yet. Start solving past papers to track your progress.</p>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {paperResults.map((paper, i) => {
+                    const scorePercent = paper.totalMarks > 0 ? Math.round((paper.marksObtained / paper.totalMarks) * 100) : 0;
+                    return (
+                      <Card
+                        key={paper.paperId}
+                        className="bg-card border-border overflow-hidden animate-fade-in"
+                        style={{ animationDelay: `${i * 100}ms` }}
+                      >
+                        <CardContent className="p-5 flex items-center gap-5">
+                          <SmallCircle percentage={paper.completionPercentage} />
+                          <div className="flex-1 space-y-1.5">
+                            <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
+                            <p className="text-[11px] text-muted-foreground">
+                              {paper.completedDate ? new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                            </p>
+                            <div className="flex gap-4 text-xs">
+                              <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
+                              <span className="text-muted-foreground">Score: <span className={`font-bold ${
+                                scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
+                              }`}>{scorePercent}%</span></span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

@@ -20,6 +20,8 @@ export interface TopicMastery {
   paperScores: PaperScore[]; // chronological, per-paper breakdown
   trend: 'up' | 'down' | 'stable' | 'new'; // improvement/decline
   trendDelta: number; // percentage change between last two papers
+  totalQuestions?: number; // total questions mapped to this topic across all papers
+  completedQuestions?: number; // questions the student has completed
 }
 
 export interface PastPaperResult {

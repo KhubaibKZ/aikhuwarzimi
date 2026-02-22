@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { pastPapers } from '@/lib/pastPaperData';
+import { questionTopicMap } from '@/lib/questionTopicMap';
 import type { TopicMastery, PastPaperResult, PaperScore } from '@/lib/analyticsData';
 
 interface ProgressRow {
@@ -16,23 +17,6 @@ interface ProgressRow {
   total_steps: number;
   completed_steps: number;
   submitted_at: string;
-}
-
-// Map question IDs to syllabus topic IDs
-function getTopicIdForQuestion(questionId: string): { topicId: number; topic: string } {
-  if (questionId.includes('q1')) return { topicId: 1, topic: 'Number' };
-  if (questionId.includes('q2')) return { topicId: 4, topic: 'Geometry' };
-  if (questionId.includes('q3')) return { topicId: 1, topic: 'Number' };
-  if (questionId.includes('q4')) return { topicId: 5, topic: 'Mensuration' };
-  if (questionId.includes('q5')) return { topicId: 2, topic: 'Algebra & Graphs' };
-  if (questionId.includes('q6')) return { topicId: 2, topic: 'Algebra & Graphs' };
-  if (questionId.includes('q7')) return { topicId: 7, topic: 'Transformations & Vectors' };
-  if (questionId.includes('q8')) return { topicId: 3, topic: 'Coordinate Geometry' };
-  if (questionId.includes('q9')) return { topicId: 2, topic: 'Algebra & Graphs' };
-  if (questionId.includes('q10')) return { topicId: 6, topic: 'Trigonometry' };
-  if (questionId.includes('q11')) return { topicId: 8, topic: 'Probability' };
-  if (questionId.includes('q12')) return { topicId: 9, topic: 'Statistics' };
-  return { topicId: 1, topic: 'Number' };
 }
 
 function calcOverall(a: number, r: number, s: number) {
@@ -56,7 +40,7 @@ export function useStudentProgress() {
       if (error) throw error;
       const rows = (data || []) as ProgressRow[];
 
-      // Build paper results
+      // ── Paper results ──
       const paperGroups = new Map<string, ProgressRow[]>();
       rows.forEach(r => {
         const group = paperGroups.get(r.paper_id) || [];
@@ -87,21 +71,31 @@ export function useStudentProgress() {
         });
       });
 
-      // Build topic mastery from per-paper data
-      const topicPaperMap = new Map<number, { topic: string; papers: Map<string, ProgressRow[]> }>();
+      // ── Topic mastery using questionTopicMap ──
+      // Group all questions by topicId using the authoritative map
+      const topicMap = new Map<number, { topic: string; papers: Map<string, ProgressRow[]> }>();
+
       rows.forEach(r => {
-        const { topicId, topic } = getTopicIdForQuestion(r.question_id);
-        if (!topicPaperMap.has(topicId)) {
-          topicPaperMap.set(topicId, { topic, papers: new Map() });
+        const ref = questionTopicMap[r.question_id];
+        if (!ref) return;
+        const { topicId, topicTitle } = ref;
+        if (!topicMap.has(topicId)) {
+          topicMap.set(topicId, { topic: topicTitle, papers: new Map() });
         }
-        const entry = topicPaperMap.get(topicId)!;
+        const entry = topicMap.get(topicId)!;
         const paperRows = entry.papers.get(r.paper_id) || [];
         paperRows.push(r);
         entry.papers.set(r.paper_id, paperRows);
       });
 
+      // Count total questions per topic across all papers (from questionTopicMap)
+      const totalQuestionsPerTopic = new Map<number, number>();
+      Object.values(questionTopicMap).forEach(ref => {
+        totalQuestionsPerTopic.set(ref.topicId, (totalQuestionsPerTopic.get(ref.topicId) || 0) + 1);
+      });
+
       const topicMastery: TopicMastery[] = [];
-      topicPaperMap.forEach(({ topic, papers }, topicId) => {
+      topicMap.forEach(({ topic, papers }, topicId) => {
         const paperScores: PaperScore[] = [];
         papers.forEach((qs, paperId) => {
           const paper = pastPapers.find(p => p.id === paperId);
@@ -121,12 +115,23 @@ export function useStudentProgress() {
           });
         });
 
-        const latest = paperScores[paperScores.length - 1];
+        // All questions across all papers for this topic (for averaging)
+        const allQs = Array.from(papers.values()).flat();
+        const avgAcc = Math.round(allQs.reduce((s, q) => s + Number(q.accuracy_score), 0) / allQs.length);
+        const avgAiCount = allQs.reduce((s, q) => s + q.ai_usage_count, 0) / allQs.length;
+        const avgIndependence = Math.round(Math.max(0, 100 - avgAiCount * 20));
+        const avgTime = allQs.reduce((s, q) => s + q.time_spent_seconds, 0) / allQs.length;
+        const avgSpeed = Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3)));
+
+        const totalForTopic = totalQuestionsPerTopic.get(topicId) || 1;
+        const completedForTopic = allQs.length;
+
         let trend: TopicMastery['trend'] = 'new';
         let trendDelta = 0;
         if (paperScores.length >= 2) {
           const prev = paperScores[paperScores.length - 2].overall;
-          const delta = latest.overall - prev;
+          const latest = paperScores[paperScores.length - 1].overall;
+          const delta = latest - prev;
           trendDelta = delta;
           trend = Math.abs(delta) <= 2 ? 'stable' : delta > 0 ? 'up' : 'down';
         }
@@ -134,15 +139,43 @@ export function useStudentProgress() {
         topicMastery.push({
           topic,
           topicId,
-          latestAccuracy: latest.accuracy,
-          latestReadiness: latest.readiness,
-          latestSpeed: latest.speed,
-          overallScore: latest.overall,
+          latestAccuracy: avgAcc,
+          latestReadiness: avgIndependence,
+          latestSpeed: avgSpeed,
+          overallScore: calcOverall(avgAcc, avgIndependence, avgSpeed),
           paperScores,
           trend,
           trendDelta,
+          totalQuestions: totalForTopic,
+          completedQuestions: completedForTopic,
         });
       });
+
+      // Also include topics with 0 completion (from questionTopicMap but no rows)
+      const allTopicIds = new Map<number, string>();
+      Object.values(questionTopicMap).forEach(ref => {
+        if (!allTopicIds.has(ref.topicId)) allTopicIds.set(ref.topicId, ref.topicTitle);
+      });
+      allTopicIds.forEach((topicTitle, topicId) => {
+        if (!topicMap.has(topicId)) {
+          topicMastery.push({
+            topic: topicTitle,
+            topicId,
+            latestAccuracy: 0,
+            latestReadiness: 0,
+            latestSpeed: 0,
+            overallScore: 0,
+            paperScores: [],
+            trend: 'new',
+            trendDelta: 0,
+            totalQuestions: totalQuestionsPerTopic.get(topicId) || 0,
+            completedQuestions: 0,
+          });
+        }
+      });
+
+      // Sort by topicId
+      topicMastery.sort((a, b) => a.topicId - b.topicId);
 
       return { topicMastery, paperResults, rows };
     },

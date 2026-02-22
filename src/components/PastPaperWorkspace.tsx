@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { PastPaperQuestion } from '@/lib/pastPaperData';
+import { PastPaperQuestion, pastPapers } from '@/lib/pastPaperData';
 import { getQuestionSyllabusRef } from '@/lib/questionTopicMap';
 import { useProgress } from '@/context/ProgressContext';
 import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle } from 'lucide-react';
@@ -305,8 +305,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       const accuracyScore = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
       const speedScore = Math.round(Math.max(0, Math.min(100, 100 - (timeSpent - 60) / 3)));
 
-      // Extract paper ID from question ID (e.g. pp_0580_s22_q1a -> pp_0580_s22_31 or similar)
-      const paperId = question.id.includes('s21') ? 'pp_0580_s21_43' : 'pp_0580_s22_31';
+      // Find the correct paper ID by looking up which paper contains this question
+      const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
+      const paperId = matchedPaper?.id || 'pp_0580_s22_31';
 
       await supabase.from('student_paper_progress').upsert({
         user_id: user.id,

@@ -71,7 +71,7 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
 
           <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/analytics')}>
             <TrendingUp className="h-4 w-4" />
-            Progress
+            Your Progress
           </Button>
 
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">

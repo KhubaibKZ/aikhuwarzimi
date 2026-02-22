@@ -24,3 +24,4 @@ export { AngleMeasureDiagram } from './AngleMeasureDiagram';
 export { CylinderDiagram } from './CylinderDiagram';
 export { VectorTriangleDiagram } from './VectorTriangleDiagram';
 export { QuadrilateralDiagram } from './QuadrilateralDiagram';
+export { HistogramDiagram } from './HistogramDiagram';

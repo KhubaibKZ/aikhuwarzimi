@@ -43,6 +43,12 @@ export default function Landing() {
   const [submitting, setSubmitting] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
 
+  // Redirect authenticated users to dashboard
+  if (!authLoading && user) {
+    navigate('/dashboard', { replace: true });
+    return null;
+  }
+
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

@@ -30,7 +30,7 @@ export interface PastPaperSection {
   questionId: string;
 }
 
-export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)';
+export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)' | 'Paper 1' | 'Paper 2';
 
 export interface PastPaper {
   id: string;
@@ -43,6 +43,7 @@ export interface PastPaper {
   sections: PastPaperSection[];
   locked?: boolean;
   category: PaperCategory;
+  courseId: string;
 }
 
 // Combine all questions
@@ -701,6 +702,7 @@ export const pastPapers: PastPaper[] = [
     totalMarks: 104,
     duration: '2 hours',
     category: 'Paper 03 (CORE)',
+    courseId: 'igcse-0580',
     sections: [
       { id: 'q1a', title: 'Q1(a): Write number in figures', questionId: 'pp_0580_s22_q1a' },
       { id: 'q1b', title: 'Q1(b): Rounding to nearest ten', questionId: 'pp_0580_s22_q1b' },
@@ -746,6 +748,7 @@ export const pastPapers: PastPaper[] = [
     totalMarks: 130,
     duration: '2 hours 30 minutes',
     category: 'Paper 04 (EXTENDED)',
+    courseId: 'igcse-0580',
     sections: sections0580_43_2021,
     locked: false
   },
@@ -758,6 +761,7 @@ export const pastPapers: PastPaper[] = [
     totalMarks: 56,
     duration: '1 hour',
     category: 'Paper 01 (CORE)',
+    courseId: 'igcse-0580',
     sections: sections0580_11_2020,
     locked: false
   },
@@ -770,6 +774,7 @@ export const pastPapers: PastPaper[] = [
     totalMarks: 70,
     duration: '1 hour 30 minutes',
     category: 'Paper 02 (EXTENDED)',
+    courseId: 'igcse-0580',
     sections: sections0580_22_2022FM,
     locked: false
   }

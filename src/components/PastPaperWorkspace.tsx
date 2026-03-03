@@ -99,8 +99,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         .eq('question_id', question.id)
         .maybeSingle();
       if (data) {
-        setIsSubmitted(true);
-        setIsChecked(true);
+        // Restore submitted state — read-only until paper reset
         if (data.submitted_answers && typeof data.submitted_answers === 'object') {
           setAnswers(data.submitted_answers as Record<string, string>);
         }
@@ -110,13 +109,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         if (data.time_spent_seconds != null) {
           setFinalTime(data.time_spent_seconds as number);
         }
-        // Reset state for a fresh question
+        setIsSubmitted(true);
+        setIsChecked(true);
+      } else {
+        // Fresh question — reset state
         setIsSubmitted(false);
         setIsChecked(false);
         setAnswers({});
         setFeedback({});
         setAiResponse(null);
         setAttemptCount({});
+        setFinalTime(null);
+        startTimeRef.current = Date.now();
+        aiUsageRef.current = 0;
       }
     };
     checkExistingSubmission();

@@ -25,6 +25,10 @@ import { questions4024_11_2023ON, sections4024_11_2023ON } from './pastPaper4024
 import { questions4024_12_2023ON, sections4024_12_2023ON } from './pastPaper4024_12_2023ON';
 import { questions4024_21_2023ON, sections4024_21_2023ON } from './pastPaper4024_21_2023ON';
 import { questions4024_22_2023ON, sections4024_22_2023ON } from './pastPaper4024_22_2023ON';
+import { questions4024_11_2022, sections4024_11_2022 } from './pastPaper4024_11_2022';
+import { questions4024_12_2022, sections4024_12_2022 } from './pastPaper4024_12_2022';
+import { questions4024_21_2022, sections4024_21_2022 } from './pastPaper4024_21_2022';
+import { questions4024_22_2022, sections4024_22_2022 } from './pastPaper4024_22_2022';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -99,6 +103,10 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions4024_12_2023ON,
   ...questions4024_21_2023ON,
   ...questions4024_22_2023ON,
+  ...questions4024_11_2022,
+  ...questions4024_12_2022,
+  ...questions4024_21_2022,
+  ...questions4024_22_2022,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -1111,7 +1119,28 @@ export const pastPapers: PastPaper[] = [
     id: 'pp_4024_on23_22', code: '4024/22', session: 'Oct/Nov', year: 2023,
     title: '4024/22 Oct/Nov 2023', totalMarks: 100, duration: '2 hours 30 minutes',
     category: 'Paper 2', courseId: 'olevel-4024', sections: sections4024_22_2023ON, locked: false
-  }
+  },
+  // May/June 2022
+  {
+    id: 'pp_4024_s22_11', code: '4024/11', session: 'May/Jun', year: 2022,
+    title: '4024/11 May/Jun 2022', totalMarks: 80, duration: '2 hours',
+    category: 'Paper 1', courseId: 'olevel-4024', sections: sections4024_11_2022, locked: false
+  },
+  {
+    id: 'pp_4024_s22_12', code: '4024/12', session: 'May/Jun', year: 2022,
+    title: '4024/12 May/Jun 2022', totalMarks: 80, duration: '2 hours',
+    category: 'Paper 1', courseId: 'olevel-4024', sections: sections4024_12_2022, locked: false
+  },
+  {
+    id: 'pp_4024_s22_21', code: '4024/21', session: 'May/Jun', year: 2022,
+    title: '4024/21 May/Jun 2022', totalMarks: 100, duration: '2 hours 30 minutes',
+    category: 'Paper 2', courseId: 'olevel-4024', sections: sections4024_21_2022, locked: false
+  },
+  {
+    id: 'pp_4024_s22_22', code: '4024/22', session: 'May/Jun', year: 2022,
+    title: '4024/22 May/Jun 2022', totalMarks: 100, duration: '2 hours 30 minutes',
+    category: 'Paper 2', courseId: 'olevel-4024', sections: sections4024_22_2022, locked: false
+  },
 ];
 
 export const getPastPaperQuestion = (id: string): PastPaperQuestion | undefined => {

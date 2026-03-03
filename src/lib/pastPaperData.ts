@@ -1,6 +1,10 @@
 import { questions0580_43_2021, sections0580_43_2021 } from './pastPaper0580_43_2021';
 import { questions0580_11_2020, sections0580_11_2020 } from './pastPaper0580_11_2020';
 import { questions0580_22_2022FM, sections0580_22_2022FM } from './pastPaper0580_22_2022FM';
+import { questions4024_12_2025, sections4024_12_2025 } from './pastPaper4024_12_2025';
+import { questions4024_13_2025, sections4024_13_2025 } from './pastPaper4024_13_2025';
+import { questions4024_22_2025, sections4024_22_2025 } from './pastPaper4024_22_2025';
+import { questions4024_23_2025, sections4024_23_2025 } from './pastPaper4024_23_2025';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -51,6 +55,10 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions0580_43_2021,
   ...questions0580_11_2020,
   ...questions0580_22_2022FM,
+  ...questions4024_12_2025,
+  ...questions4024_13_2025,
+  ...questions4024_22_2025,
+  ...questions4024_23_2025,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -776,6 +784,59 @@ export const pastPapers: PastPaper[] = [
     category: 'Paper 02 (EXTENDED)',
     courseId: 'igcse-0580',
     sections: sections0580_22_2022FM,
+    locked: false
+  },
+  // ===== O Level 4024 Papers =====
+  {
+    id: 'pp_4024_s25_12',
+    code: '4024/12',
+    session: 'May/June',
+    year: 2025,
+    title: '4024/12 May/June 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_12_2025,
+    locked: false
+  },
+  {
+    id: 'pp_4024_s25_13',
+    code: '4024/13',
+    session: 'May/June',
+    year: 2025,
+    title: '4024/13 May/June 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_13_2025,
+    locked: false
+  },
+  {
+    id: 'pp_4024_s25_22',
+    code: '4024/22',
+    session: 'May/June',
+    year: 2025,
+    title: '4024/22 May/June 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_22_2025,
+    locked: false
+  },
+  {
+    id: 'pp_4024_s25_23',
+    code: '4024/23',
+    session: 'May/June',
+    year: 2025,
+    title: '4024/23 May/June 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_23_2025,
     locked: false
   }
 ];

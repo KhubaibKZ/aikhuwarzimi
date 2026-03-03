@@ -462,15 +462,15 @@ export default function Landing() {
             </div>
 
             {authTab === 'register' ?
-          <form onSubmit={handleRegister} className="space-y-3">
+          <form onSubmit={handleRegister} className="space-y-3" name="register" autoComplete="on">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Email</label>
-                  <Input type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} />
+                  <label htmlFor="register-email" className="text-sm font-medium">Email</label>
+                  <Input id="register-email" name="email" type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Password</label>
+                  <label htmlFor="register-password" className="text-sm font-medium">Password</label>
                   <div className="relative">
-                    <Input type={showPassword ? "text" : "password"} placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} autoComplete="new-password" />
+                    <Input id="register-password" name="password" type={showPassword ? "text" : "password"} placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} autoComplete="new-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -490,15 +490,15 @@ export default function Landing() {
                   Create Account <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </form> :
-          <form onSubmit={handleLogin} className="space-y-3">
+          <form onSubmit={handleLogin} className="space-y-3" name="login" autoComplete="on">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Email</label>
-                  <Input type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} />
+                  <label htmlFor="login-email" className="text-sm font-medium">Email</label>
+                  <Input id="login-email" name="email" type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Password</label>
+                  <label htmlFor="login-password" className="text-sm font-medium">Password</label>
                   <div className="relative">
-                    <Input type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
+                    <Input id="login-password" name="password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowLoginPassword(!showLoginPassword)}>
                       {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>

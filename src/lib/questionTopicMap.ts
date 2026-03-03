@@ -802,6 +802,92 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_s22_22_q8': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
   'pp_4024_s22_22_q9': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.3', subtopicTitle: 'Non-Right-Angled Triangles' },
   'pp_4024_s22_22_q10': { topicId: 3, topicTitle: 'Coordinate Geometry', subtopicCode: '3.7', subtopicTitle: 'Perpendicular Lines' },
+
+  // =============================================
+  // 4024/11 Oct/Nov 2022
+  // =============================================
+  'pp_4024_on22_11_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
+  'pp_4024_on22_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.13', subtopicTitle: 'Percentages' },
+  'pp_4024_on22_11_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.5', subtopicTitle: 'Ordering' },
+  'pp_4024_on22_11_q4': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.3', subtopicTitle: 'Scale Drawings' },
+  'pp_4024_on22_11_q5': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.9', subtopicTitle: 'Estimation' },
+  'pp_4024_on22_11_q6': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.3', subtopicTitle: 'Powers and Roots' },
+  'pp_4024_on22_11_q7': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.4', subtopicTitle: 'Fractions, Decimals and Percentages' },
+  'pp_4024_on22_11_q8': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
+  'pp_4024_on22_11_q9': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.2', subtopicTitle: 'Sets' },
+  'pp_4024_on22_11_q10': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.8', subtopicTitle: 'Standard Form' },
+  'pp_4024_on22_11_q11': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
+  'pp_4024_on22_11_q12': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
+  'pp_4024_on22_11_q13': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.7', subtopicTitle: 'Sequences' },
+  'pp_4024_on22_11_q14': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.7', subtopicTitle: 'Circle Theorems I' },
+  'pp_4024_on22_11_q15': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.4', subtopicTitle: 'Similarity' },
+  'pp_4024_on22_11_q16': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.6', subtopicTitle: 'Inequalities' },
+  'pp_4024_on22_11_q17': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.9', subtopicTitle: 'Graphs in Practical Situations' },
+  'pp_4024_on22_11_q18': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Proportion' },
+  'pp_4024_on22_11_q19': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },
+  'pp_4024_on22_11_q20': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.4', subtopicTitle: 'Statistical Charts and Diagrams' },
+  'pp_4024_on22_11_q21': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.3', subtopicTitle: 'Matrices' },
+  'pp_4024_on22_11_q22': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
+  'pp_4024_on22_11_q23': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
+
+  // =============================================
+  // 4024/12 Oct/Nov 2022
+  // =============================================
+  'pp_4024_on22_12_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.3', subtopicTitle: 'Powers and Roots' },
+  'pp_4024_on22_12_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
+  'pp_4024_on22_12_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.8', subtopicTitle: 'Standard Form' },
+  'pp_4024_on22_12_q4': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
+  'pp_4024_on22_12_q5': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.2', subtopicTitle: 'Area and Perimeter' },
+  'pp_4024_on22_12_q6': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.4', subtopicTitle: 'Fractions, Decimals and Percentages' },
+  'pp_4024_on22_12_q7': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },
+  'pp_4024_on22_12_q8': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },
+  'pp_4024_on22_12_q9': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.9', subtopicTitle: 'Estimation' },
+  'pp_4024_on22_12_q10': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
+  'pp_4024_on22_12_q11': { topicId: 8, topicTitle: 'Probability', subtopicCode: '8.2', subtopicTitle: 'Relative and Expected Frequencies' },
+  'pp_4024_on22_12_q12': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.6', subtopicTitle: 'Inequalities' },
+  'pp_4024_on22_12_q13': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.12', subtopicTitle: 'Rates' },
+  'pp_4024_on22_12_q14': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.3', subtopicTitle: 'Scale Drawings' },
+  'pp_4024_on22_12_q15': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.6', subtopicTitle: 'Inequalities' },
+  'pp_4024_on22_12_q16': { topicId: 3, topicTitle: 'Coordinate Geometry', subtopicCode: '3.7', subtopicTitle: 'Perpendicular Lines' },
+  'pp_4024_on22_12_q17': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.3', subtopicTitle: 'Powers and Roots' },
+  'pp_4024_on22_12_q18': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Proportion' },
+  'pp_4024_on22_12_q19': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_on22_12_q20': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.4', subtopicTitle: 'Statistical Charts and Diagrams' },
+  'pp_4024_on22_12_q21': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.12', subtopicTitle: 'Functions' },
+  'pp_4024_on22_12_q22': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
+  'pp_4024_on22_12_q23': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.3', subtopicTitle: 'Matrices' },
+  'pp_4024_on22_12_q24': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.2', subtopicTitle: 'Right-Angled Triangles' },
+  'pp_4024_on22_12_q25': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_on22_12_q26': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.4', subtopicTitle: 'Vector Geometry' },
+
+  // =============================================
+  // 4024/21 Oct/Nov 2022
+  // =============================================
+  'pp_4024_on22_21_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.13', subtopicTitle: 'Percentages' },
+  'pp_4024_on22_21_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.5', subtopicTitle: 'Scatter Diagrams' },
+  'pp_4024_on22_21_q3': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.10', subtopicTitle: 'Graphs of Functions' },
+  'pp_4024_on22_21_q4': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.12', subtopicTitle: 'Functions' },
+  'pp_4024_on22_21_q5': { topicId: 8, topicTitle: 'Probability', subtopicCode: '8.3', subtopicTitle: 'Probability of Combined Events' },
+  'pp_4024_on22_21_q6': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.2', subtopicTitle: 'Vectors' },
+  'pp_4024_on22_21_q7': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
+  'pp_4024_on22_21_q8': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
+  'pp_4024_on22_21_q9': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_on22_21_q10': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.3', subtopicTitle: 'Non-Right-Angled Triangles' },
+  'pp_4024_on22_21_q11': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
+
+  // =============================================
+  // 4024/22 Oct/Nov 2022
+  // =============================================
+  'pp_4024_on22_22_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.15', subtopicTitle: 'Time' },
+  'pp_4024_on22_22_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on22_22_q3': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
+  'pp_4024_on22_22_q4': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.2', subtopicTitle: 'Sets' },
+  'pp_4024_on22_22_q5': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
+  'pp_4024_on22_22_q6': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
+  'pp_4024_on22_22_q7': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.3', subtopicTitle: 'Non-Right-Angled Triangles' },
+  'pp_4024_on22_22_q8': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.1', subtopicTitle: 'Introduction to Algebra' },
+  'pp_4024_on22_22_q9': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
+  'pp_4024_on22_22_q10': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.7', subtopicTitle: 'Circle Theorems I' },
 };
 
 // Get the syllabus reference for a question

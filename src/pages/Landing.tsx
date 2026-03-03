@@ -462,10 +462,10 @@ export default function Landing() {
             </div>
 
             {authTab === 'register' ?
-          <form onSubmit={handleRegister} className="space-y-3" name="register" autoComplete="on">
+          <form onSubmit={handleRegister} className="space-y-3" name="register" autoComplete="on" id="register-form">
                 <div className="space-y-1.5">
                   <label htmlFor="register-email" className="text-sm font-medium">Email</label>
-                  <Input id="register-email" name="email" type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
+                  <Input id="register-email" name="username" type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} autoComplete="username" />
                 </div>
                 <div className="space-y-1.5">
                   <label htmlFor="register-password" className="text-sm font-medium">Password</label>
@@ -490,10 +490,10 @@ export default function Landing() {
                   Create Account <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </form> :
-          <form onSubmit={handleLogin} className="space-y-3" name="login" autoComplete="on">
+          <form onSubmit={handleLogin} className="space-y-3" name="login" autoComplete="on" id="login-form">
                 <div className="space-y-1.5">
                   <label htmlFor="login-email" className="text-sm font-medium">Email</label>
-                  <Input id="login-email" name="email" type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
+                  <Input id="login-email" name="username" type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} autoComplete="username" />
                 </div>
                 <div className="space-y-1.5">
                   <label htmlFor="login-password" className="text-sm font-medium">Password</label>

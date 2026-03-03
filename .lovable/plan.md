@@ -1,44 +1,29 @@
 
 
-## Plan: Reorganize Past Papers into Paper → Year → Session Hierarchy
+## Plan: Add O Level 4024 Question-to-Syllabus Mapping
 
-### Current structure
-Papers are grouped flat: **Category (Paper 1/2)** → list of individual papers. All papers under a category appear in a single list.
+### What needs to happen
+Every O Level 4024 past paper question needs a `SyllabusRef` entry in `src/lib/questionTopicMap.ts`, mapping it to the correct topic/subtopic from `src/lib/olevelSyllabusData.ts`. This enables the syllabus badge (e.g. "1.1 Types of Number • Number") to appear in the question workspace header, and powers the topic mastery analytics.
 
-### New structure (3-level collapsible tree)
-```text
-├── Paper 1
-│   ├── 2025
-│   │   ├── May/June (4024/12, 4024/13)
-│   │   └── Oct/Nov (4024/11, 4024/12)
-│   └── 2024
-│       ├── May/June (4024/11, 4024/12)
-├── Paper 2
-│   ├── 2025
-│   │   ├── May/June (4024/22, 4024/23)
-│   │   └── Oct/Nov (4024/21, 4024/22)
-│   └── 2024
-│       ├── May/June (4024/21, 4024/22)
+### Scope
+16 paper files with ~300+ total questions across:
+- **Paper 1**: 4024/11 and /12 (May/June 2024, Oct/Nov 2024, 2025 sessions)
+- **Paper 2**: 4024/21 and /22 (same sessions)
+- **Paper 13, /23** (May/June 2025)
+
+### Changes
+
+**File: `src/lib/questionTopicMap.ts`**
+
+Add ~300 new entries mapping each `pp_4024_*` question ID to its O Level syllabus reference. Each entry uses the O Level topic structure (topics 1–9 from `olevelSyllabusData.ts`), for example:
+
+```ts
+'pp_4024_s24_11_q1': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
+'pp_4024_s24_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
 ```
 
-Same pattern applies to IGCSE (Paper 01 CORE, Paper 02 EXTENDED, etc.).
+Topic assignment is determined by analyzing each question's title and content against the 4024 syllabus subtopics.
 
-### Changes required
-
-**File: `src/components/TableOfContents.tsx`** — Past Papers tab only
-
-1. Add two new state variables: `expandedCategory` (string | null) and `expandedYear` (number | null) for the folder tree.
-2. Replace the current flat rendering logic (lines 266–403) with a 3-level nested structure:
-   - **Level 1 — Paper category**: Collapsible header (e.g. "Paper 1"). Click to expand/collapse years.
-   - **Level 2 — Year**: Group papers by `paper.year`, sorted descending (newest first). Collapsible.
-   - **Level 3 — Session**: Group papers by `paper.session` within each year. Each session shows its variant papers. Clicking a paper expands it to show individual questions (existing behavior).
-3. Keep the existing paper-expand and question-list rendering intact — just nest it under the new hierarchy.
-
-No data model changes needed — `year` and `session` fields already exist on every `PastPaper` object.
-
-### Technical details
-- Group using: `categories → filter by category → group by year → group by session`
-- Icons: `BookOpen` for category, `Calendar` for year, `GraduationCap` for session/paper
-- All levels collapse independently; expanding a new sibling collapses the previous one
-- Reset Paper Progress button stays at the individual paper level
+### No other file changes needed
+The existing rendering in `PastPaperWorkspace.tsx` and analytics in `useStudentProgress.ts` already consume `questionTopicMap` generically — once entries are added, the badges and topic mastery will work automatically for O Level papers.
 

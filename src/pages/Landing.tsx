@@ -101,6 +101,7 @@ export default function Landing() {
     if (error) {
       toast({ title: 'Registration failed', description: error.message, variant: 'destructive' });
     } else {
+      setLoginForm({ email: registerForm.email, password: registerForm.password });
       toast({ title: 'Check your email', description: 'We sent you a verification link. Please verify your email before logging in.' });
       setAuthTab('login');
     }
@@ -462,24 +463,24 @@ export default function Landing() {
             </div>
 
             {authTab === 'register' ?
-          <form onSubmit={handleRegister} className="space-y-3" name="register" autoComplete="on" id="register-form">
+          <form onSubmit={handleRegister} className="space-y-3" name="register" autoComplete="on" id="register-form" method="post">
                 <div className="space-y-1.5">
                   <label htmlFor="register-email" className="text-sm font-medium">Email</label>
-                  <Input id="register-email" name="username" type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} autoComplete="username" />
+                  <Input id="register-email" name="email" type="email" placeholder="scholar@example.com" value={registerForm.email} onChange={(e) => setRegisterForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
                 </div>
                 <div className="space-y-1.5">
                   <label htmlFor="register-password" className="text-sm font-medium">Password</label>
                   <div className="relative">
-                    <Input id="register-password" name="password" type={showPassword ? "text" : "password"} placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} autoComplete="new-password" />
+                    <Input id="register-password" name="new-password" type={showPassword ? "text" : "password"} placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} autoComplete="new-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Confirm Password</label>
+                  <label htmlFor="register-confirm-password" className="text-sm font-medium">Confirm Password</label>
                   <div className="relative">
-                    <Input type={showConfirmPassword ? "text" : "password"} placeholder="Confirm your password" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} autoComplete="new-password" />
+                    <Input id="register-confirm-password" name="new-password-confirm" type={showConfirmPassword ? "text" : "password"} placeholder="Confirm your password" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} autoComplete="new-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -490,15 +491,15 @@ export default function Landing() {
                   Create Account <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </form> :
-          <form onSubmit={handleLogin} className="space-y-3" name="login" autoComplete="on" id="login-form">
+          <form onSubmit={handleLogin} className="space-y-3" name="login" autoComplete="on" id="login-form" method="post">
                 <div className="space-y-1.5">
                   <label htmlFor="login-email" className="text-sm font-medium">Email</label>
-                  <Input id="login-email" name="username" type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} autoComplete="username" />
+                  <Input id="login-email" name="email" type="email" placeholder="scholar@example.com" value={loginForm.email} onChange={(e) => setLoginForm((f) => ({ ...f, email: e.target.value }))} autoComplete="email" />
                 </div>
                 <div className="space-y-1.5">
                   <label htmlFor="login-password" className="text-sm font-medium">Password</label>
                   <div className="relative">
-                    <Input id="login-password" name="password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
+                    <Input id="login-password" name="current-password" type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowLoginPassword(!showLoginPassword)}>
                       {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>

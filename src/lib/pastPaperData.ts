@@ -13,6 +13,10 @@ import { questions4024_11_2024, sections4024_11_2024 } from './pastPaper4024_11_
 import { questions4024_12_2024, sections4024_12_2024 } from './pastPaper4024_12_2024';
 import { questions4024_21_2024, sections4024_21_2024 } from './pastPaper4024_21_2024';
 import { questions4024_22_2024, sections4024_22_2024 } from './pastPaper4024_22_2024';
+import { questions4024_11_2024ON, sections4024_11_2024ON } from './pastPaper4024_11_2024ON';
+import { questions4024_12_2024ON, sections4024_12_2024ON } from './pastPaper4024_12_2024ON';
+import { questions4024_21_2024ON, sections4024_21_2024ON } from './pastPaper4024_21_2024ON';
+import { questions4024_22_2024ON, sections4024_22_2024ON } from './pastPaper4024_22_2024ON';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -75,6 +79,10 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions4024_12_2024,
   ...questions4024_21_2024,
   ...questions4024_22_2024,
+  ...questions4024_11_2024ON,
+  ...questions4024_12_2024ON,
+  ...questions4024_21_2024ON,
+  ...questions4024_22_2024ON,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -959,6 +967,59 @@ export const pastPapers: PastPaper[] = [
     category: 'Paper 2',
     courseId: 'olevel-4024',
     sections: sections4024_22_2024,
+    locked: false
+  },
+  // ===== O Level 4024 Oct/Nov 2024 Papers =====
+  {
+    id: 'pp_4024_on24_11',
+    code: '4024/11',
+    session: 'Oct/Nov',
+    year: 2024,
+    title: '4024/11 Oct/Nov 2024',
+    totalMarks: 80,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_11_2024ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on24_12',
+    code: '4024/12',
+    session: 'Oct/Nov',
+    year: 2024,
+    title: '4024/12 Oct/Nov 2024',
+    totalMarks: 80,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_12_2024ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on24_21',
+    code: '4024/21',
+    session: 'Oct/Nov',
+    year: 2024,
+    title: '4024/21 Oct/Nov 2024',
+    totalMarks: 100,
+    duration: '2 hours 30 minutes',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_21_2024ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on24_22',
+    code: '4024/22',
+    session: 'Oct/Nov',
+    year: 2024,
+    title: '4024/22 Oct/Nov 2024',
+    totalMarks: 100,
+    duration: '2 hours 30 minutes',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_22_2024ON,
     locked: false
   }
 ];

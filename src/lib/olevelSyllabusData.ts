@@ -1,6 +1,6 @@
 import { SyllabusData } from './syllabusData';
 
-// O Level Mathematics 4024 Syllabus Structure
+// O Level Mathematics (Syllabus D) 4024 — 2025-2027 Official Cambridge Syllabus
 export const olevelMathsSyllabus: SyllabusData = {
   courseId: 'olevel-4024',
   courseName: 'O Level Mathematics (4024)',
@@ -9,107 +9,122 @@ export const olevelMathsSyllabus: SyllabusData = {
       id: 1,
       title: 'Number',
       subtopics: [
-        { id: 'ol-1-1', code: '1.1', title: 'Types of Number', description: 'Natural numbers, integers, primes, squares, cubes. HCF and LCM. Prime factorisation.', locked: true, questionIds: [] },
-        { id: 'ol-1-2', code: '1.2', title: 'Fractions, Decimals and Percentages', description: 'Conversions, calculations, ordering.', locked: true, questionIds: [] },
-        { id: 'ol-1-3', code: '1.3', title: 'Powers and Roots', description: 'Squares, cubes, square roots, cube roots.', locked: true, questionIds: [] },
-        { id: 'ol-1-4', code: '1.4', title: 'Ordering and the Number Line', description: 'Ordering quantities using =, ≠, >, <, ≥, ≤.', locked: true, questionIds: [] },
-        { id: 'ol-1-5', code: '1.5', title: 'The Four Operations', description: 'Calculations with whole numbers, fractions and decimals. Order of operations.', locked: true, questionIds: [] },
-        { id: 'ol-1-6', code: '1.6', title: 'Indices', description: 'Positive, zero and negative indices. Rules of indices.', locked: true, questionIds: [] },
-        { id: 'ol-1-7', code: '1.7', title: 'Standard Form', description: 'Standard form A × 10ⁿ.', locked: true, questionIds: [] },
-        { id: 'ol-1-8', code: '1.8', title: 'Estimation and Limits of Accuracy', description: 'Rounding, significant figures, upper and lower bounds.', locked: true, questionIds: [] },
-        { id: 'ol-1-9', code: '1.9', title: 'Ratio and Proportion', description: 'Simplify ratios, divide in ratio, direct and inverse proportion.', locked: true, questionIds: [] },
-        { id: 'ol-1-10', code: '1.10', title: 'Percentages', description: 'Percentage increase/decrease, reverse percentages, simple and compound interest.', locked: true, questionIds: [] },
-        { id: 'ol-1-11', code: '1.11', title: 'Speed, Distance and Time', description: 'Average speed, converting units.', locked: true, questionIds: [] },
-        { id: 'ol-1-12', code: '1.12', title: 'Money and Finance', description: 'Currency conversions, profit and loss, discount.', locked: true, questionIds: [] },
+        { id: 'ol-1-1', code: '1.1', title: 'Types of Number', description: 'Natural numbers, integers, primes, squares, cubes, common factors, common multiples, rational and irrational numbers, reciprocals. Express as product of prime factors. HCF and LCM.', locked: true, questionIds: [] },
+        { id: 'ol-1-2', code: '1.2', title: 'Sets', description: 'Set language, notation and Venn diagrams (up to 3 sets). Union, intersection, complement, subsets, universal set, empty set.', locked: true, questionIds: [] },
+        { id: 'ol-1-3', code: '1.3', title: 'Powers and Roots', description: 'Squares, square roots, cubes, cube roots, other powers and roots. Recall squares 1–15 and cubes of 1–5, 10.', locked: true, questionIds: [] },
+        { id: 'ol-1-4', code: '1.4', title: 'Fractions, Decimals and Percentages', description: 'Proper/improper fractions, mixed numbers, decimals, percentages. Equivalence, conversions, recurring decimals.', locked: true, questionIds: [] },
+        { id: 'ol-1-5', code: '1.5', title: 'Ordering', description: 'Order quantities by magnitude using =, ≠, >, <, ≥, ≤.', locked: true, questionIds: [] },
+        { id: 'ol-1-6', code: '1.6', title: 'The Four Operations', description: 'Calculations with integers, fractions and decimals. Correct ordering of operations and brackets. Negative numbers, practical situations.', locked: true, questionIds: [] },
+        { id: 'ol-1-7', code: '1.7', title: 'Indices I', description: 'Positive, zero, negative and fractional indices. Rules of indices.', locked: true, questionIds: [] },
+        { id: 'ol-1-8', code: '1.8', title: 'Standard Form', description: 'A × 10ⁿ where 1 ≤ A < 10. Convert into and out of standard form. Calculate with standard form.', locked: true, questionIds: [] },
+        { id: 'ol-1-9', code: '1.9', title: 'Estimation', description: 'Round to decimal places and significant figures. Estimate calculations. Round answers appropriately.', locked: true, questionIds: [] },
+        { id: 'ol-1-10', code: '1.10', title: 'Limits of Accuracy', description: 'Upper and lower bounds for rounded data. Bounds of calculation results.', locked: true, questionIds: [] },
+        { id: 'ol-1-11', code: '1.11', title: 'Ratio and Proportion', description: 'Simplify ratios, divide in ratio, proportional reasoning in context (recipes, maps, best value).', locked: true, questionIds: [] },
+        { id: 'ol-1-12', code: '1.12', title: 'Rates', description: 'Common measures of rate (pay, exchange, flow, fuel). Pressure, density, population density. Average speed.', locked: true, questionIds: [] },
+        { id: 'ol-1-13', code: '1.13', title: 'Percentages', description: 'Percentage of quantity, one quantity as percentage of another, increase/decrease, simple and compound interest, reverse percentages.', locked: true, questionIds: [] },
+        { id: 'ol-1-14', code: '1.14', title: 'Using a Calculator', description: 'Use calculator efficiently, enter values appropriately, interpret display.', locked: true, questionIds: [] },
+        { id: 'ol-1-15', code: '1.15', title: 'Time', description: 'Seconds, minutes, hours, days. 24-hour and 12-hour clock. Timetables, time zones.', locked: true, questionIds: [] },
+        { id: 'ol-1-16', code: '1.16', title: 'Money', description: 'Calculate with money. Convert between currencies.', locked: true, questionIds: [] },
+        { id: 'ol-1-17', code: '1.17', title: 'Exponential Growth and Decay', description: 'Depreciation, population change. Knowledge of e not required.', locked: true, questionIds: [] },
+        { id: 'ol-1-18', code: '1.18', title: 'Surds', description: 'Simplify surds. Rationalise the denominator.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 2,
-      title: 'Algebra',
+      title: 'Algebra and Graphs',
       subtopics: [
-        { id: 'ol-2-1', code: '2.1', title: 'Algebraic Expressions', description: 'Simplify, expand, factorise expressions.', locked: true, questionIds: [] },
-        { id: 'ol-2-2', code: '2.2', title: 'Equations', description: 'Linear equations, simultaneous equations, quadratic equations.', locked: true, questionIds: [] },
-        { id: 'ol-2-3', code: '2.3', title: 'Inequalities', description: 'Solve and represent inequalities on a number line.', locked: true, questionIds: [] },
-        { id: 'ol-2-4', code: '2.4', title: 'Sequences', description: 'nth term of linear and quadratic sequences.', locked: true, questionIds: [] },
-        { id: 'ol-2-5', code: '2.5', title: 'Formulae', description: 'Substitution, rearranging formulae.', locked: true, questionIds: [] },
-        { id: 'ol-2-6', code: '2.6', title: 'Functions', description: 'Function notation, composite and inverse functions.', locked: true, questionIds: [] },
+        { id: 'ol-2-1', code: '2.1', title: 'Introduction to Algebra', description: 'Letters represent generalised numbers. Substitute numbers into expressions and formulas.', locked: true, questionIds: [] },
+        { id: 'ol-2-2', code: '2.2', title: 'Algebraic Manipulation', description: 'Simplify, expand (including 3+ brackets), factorise (common factors, grouping, difference of squares, trinomials). Complete the square.', locked: true, questionIds: [] },
+        { id: 'ol-2-3', code: '2.3', title: 'Algebraic Fractions', description: 'Add, subtract, multiply, divide algebraic fractions. Factorise and simplify rational expressions.', locked: true, questionIds: [] },
+        { id: 'ol-2-4', code: '2.4', title: 'Indices II', description: 'Positive, zero, negative and fractional indices with algebraic expressions. Rules of indices.', locked: true, questionIds: [] },
+        { id: 'ol-2-5', code: '2.5', title: 'Equations', description: 'Construct and solve linear equations, fractional equations, simultaneous linear equations, quadratic equations (factorisation, completing the square, formula). Change subject of formulas.', locked: true, questionIds: [] },
+        { id: 'ol-2-6', code: '2.6', title: 'Inequalities', description: 'Represent/interpret on number line. Solve linear inequalities. Two-variable inequalities graphically.', locked: true, questionIds: [] },
+        { id: 'ol-2-7', code: '2.7', title: 'Sequences', description: 'Continue sequences. Term-to-term rules. nth term of linear, quadratic, cubic and exponential sequences.', locked: true, questionIds: [] },
+        { id: 'ol-2-8', code: '2.8', title: 'Proportion', description: 'Direct and inverse proportion in algebraic terms. Linear, square, square root, cube and cube root proportion.', locked: true, questionIds: [] },
+        { id: 'ol-2-9', code: '2.9', title: 'Graphs in Practical Situations', description: 'Travel graphs, conversion graphs. Rate of change, kinematics, distance–time and speed–time graphs, acceleration/deceleration. Area under speed–time graph.', locked: true, questionIds: [] },
+        { id: 'ol-2-10', code: '2.10', title: 'Graphs of Functions', description: 'Tables of values. Draw/interpret graphs of axⁿ and abˣ+c. Solve equations graphically. Exponential growth/decay graphs. Estimate gradients by drawing tangents.', locked: true, questionIds: [] },
+        { id: 'ol-2-11', code: '2.11', title: 'Sketching Curves', description: 'Sketch linear, quadratic, cubic, reciprocal, exponential graphs. Turning points, roots, symmetry, asymptotes.', locked: true, questionIds: [] },
+        { id: 'ol-2-12', code: '2.12', title: 'Functions', description: 'Function notation f(x), domain and range. Inverse functions f⁻¹(x). Composite functions gf(x).', locked: true, questionIds: [] },
       ]
     },
     {
       id: 3,
-      title: 'Graphs',
+      title: 'Coordinate Geometry',
       subtopics: [
-        { id: 'ol-3-1', code: '3.1', title: 'Coordinates and Linear Graphs', description: 'Plotting points, y = mx + c, gradient and intercept.', locked: true, questionIds: [] },
-        { id: 'ol-3-2', code: '3.2', title: 'Graphs of Functions', description: 'Quadratic, cubic, reciprocal graphs. Graphical solutions.', locked: true, questionIds: [] },
-        { id: 'ol-3-3', code: '3.3', title: 'Travel and Rate Graphs', description: 'Distance-time, speed-time graphs. Interpret gradient and area.', locked: true, questionIds: [] },
+        { id: 'ol-3-1', code: '3.1', title: 'Coordinates', description: 'Use and interpret Cartesian coordinates in two dimensions.', locked: true, questionIds: [] },
+        { id: 'ol-3-2', code: '3.2', title: 'Drawing Linear Graphs', description: 'Draw straight-line graphs for linear equations.', locked: true, questionIds: [] },
+        { id: 'ol-3-3', code: '3.3', title: 'Gradient of Linear Graphs', description: 'Find gradient of a straight line. Calculate gradient from coordinates of two points.', locked: true, questionIds: [] },
+        { id: 'ol-3-4', code: '3.4', title: 'Length and Midpoint', description: 'Calculate length of a line segment. Find coordinates of the midpoint.', locked: true, questionIds: [] },
+        { id: 'ol-3-5', code: '3.5', title: 'Equations of Linear Graphs', description: 'Interpret and obtain equation of a straight-line graph in forms ax + by = c and y = mx + c.', locked: true, questionIds: [] },
+        { id: 'ol-3-6', code: '3.6', title: 'Parallel Lines', description: 'Find gradient and equation of a line parallel to a given line.', locked: true, questionIds: [] },
+        { id: 'ol-3-7', code: '3.7', title: 'Perpendicular Lines', description: 'Find gradient and equation of a line perpendicular to a given line. Perpendicular bisector.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 4,
       title: 'Geometry',
       subtopics: [
-        { id: 'ol-4-1', code: '4.1', title: 'Angles', description: 'Angles at a point, on a line, in triangles, quadrilaterals, parallel lines, polygons.', locked: true, questionIds: [] },
-        { id: 'ol-4-2', code: '4.2', title: 'Properties of Shapes', description: 'Triangles, quadrilaterals, circles, 3D solids.', locked: true, questionIds: [] },
-        { id: 'ol-4-3', code: '4.3', title: 'Symmetry', description: 'Line and rotational symmetry.', locked: true, questionIds: [] },
-        { id: 'ol-4-4', code: '4.4', title: 'Similarity and Congruence', description: 'Similar shapes, congruent triangles.', locked: true, questionIds: [] },
-        { id: 'ol-4-5', code: '4.5', title: 'Constructions and Loci', description: 'Bisectors, constructions with compass and ruler, loci.', locked: true, questionIds: [] },
-        { id: 'ol-4-6', code: '4.6', title: 'Circle Theorems', description: 'Angle properties of circles.', locked: true, questionIds: [] },
+        { id: 'ol-4-1', code: '4.1', title: 'Geometrical Terms', description: 'Vocabulary of triangles, quadrilaterals, polygons, circles, solids (including frustum). Points, lines, planes, parallel, perpendicular, bearings.', locked: true, questionIds: [] },
+        { id: 'ol-4-2', code: '4.2', title: 'Geometrical Constructions', description: 'Measure/draw lines and angles. Construct triangles with ruler and compasses. Draw, use and interpret nets.', locked: true, questionIds: [] },
+        { id: 'ol-4-3', code: '4.3', title: 'Scale Drawings', description: 'Draw and interpret scale drawings. Three-figure bearings.', locked: true, questionIds: [] },
+        { id: 'ol-4-4', code: '4.4', title: 'Similarity', description: 'Calculate lengths of similar shapes. Relationships between lengths, areas and volumes of similar shapes/solids.', locked: true, questionIds: [] },
+        { id: 'ol-4-5', code: '4.5', title: 'Symmetry', description: 'Line symmetry and rotational symmetry in 2D. Symmetry properties of prisms, cylinders, pyramids and cones.', locked: true, questionIds: [] },
+        { id: 'ol-4-6', code: '4.6', title: 'Angles', description: 'Angles at a point, on a line, vertically opposite, in triangles/quadrilaterals. Parallel lines (corresponding, alternate, co-interior). Polygon angles.', locked: true, questionIds: [] },
+        { id: 'ol-4-7', code: '4.7', title: 'Circle Theorems I', description: 'Angle in semicircle, tangent-radius, angle at centre = 2× circumference, same segment, cyclic quadrilateral, alternate segment theorem.', locked: true, questionIds: [] },
+        { id: 'ol-4-8', code: '4.8', title: 'Circle Theorems II', description: 'Equal chords equidistant from centre. Perpendicular bisector of chord passes through centre. Tangents from external point equal.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 5,
       title: 'Mensuration',
       subtopics: [
-        { id: 'ol-5-1', code: '5.1', title: 'Perimeter and Area', description: 'Rectangles, triangles, parallelograms, trapeziums, circles, sectors.', locked: true, questionIds: [] },
-        { id: 'ol-5-2', code: '5.2', title: 'Surface Area and Volume', description: 'Cuboids, prisms, cylinders, cones, spheres, pyramids.', locked: true, questionIds: [] },
-        { id: 'ol-5-3', code: '5.3', title: 'Arc Length and Sector Area', description: 'Parts of circles.', locked: true, questionIds: [] },
+        { id: 'ol-5-1', code: '5.1', title: 'Units of Measure', description: 'Metric units of mass, length, area, volume, capacity. Convert between units including area and volume units.', locked: true, questionIds: [] },
+        { id: 'ol-5-2', code: '5.2', title: 'Area and Perimeter', description: 'Perimeter and area of rectangle, triangle, parallelogram and trapezium.', locked: true, questionIds: [] },
+        { id: 'ol-5-3', code: '5.3', title: 'Circles, Arcs and Sectors', description: 'Circumference and area of circle. Arc length and sector area as fractions. Minor and major sectors.', locked: true, questionIds: [] },
+        { id: 'ol-5-4', code: '5.4', title: 'Surface Area and Volume', description: 'Surface area and volume of cuboid, prism, cylinder, sphere, pyramid, cone.', locked: true, questionIds: [] },
+        { id: 'ol-5-5', code: '5.5', title: 'Compound Shapes and Parts of Shapes', description: 'Perimeters, areas, surface areas and volumes of compound shapes/solids and parts of shapes/solids (e.g. frustum).', locked: true, questionIds: [] },
       ]
     },
     {
       id: 6,
       title: 'Trigonometry',
       subtopics: [
-        { id: 'ol-6-1', code: '6.1', title: "Pythagoras' Theorem", description: "Use Pythagoras' theorem in 2D and 3D.", locked: true, questionIds: [] },
-        { id: 'ol-6-2', code: '6.2', title: 'Trigonometric Ratios', description: 'Sine, cosine, tangent. Angles of elevation and depression.', locked: true, questionIds: [] },
-        { id: 'ol-6-3', code: '6.3', title: 'Bearings', description: 'Three-figure bearings and related problems.', locked: true, questionIds: [] },
+        { id: 'ol-6-1', code: '6.1', title: "Pythagoras' Theorem", description: "Know and use Pythagoras' theorem.", locked: true, questionIds: [] },
+        { id: 'ol-6-2', code: '6.2', title: 'Right-Angled Triangles', description: 'Sine, cosine, tangent ratios. Problems in 2D. Perpendicular distance. Angles of elevation and depression.', locked: true, questionIds: [] },
+        { id: 'ol-6-3', code: '6.3', title: 'Non-Right-Angled Triangles', description: 'Sine rule, cosine rule (including obtuse angles and ambiguous case). Area = ½ab sin C.', locked: true, questionIds: [] },
+        { id: 'ol-6-4', code: '6.4', title: "Pythagoras' Theorem and Trigonometry in 3D", description: 'Calculations in three dimensions. Angle between a line and a plane.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 7,
       title: 'Transformations and Vectors',
       subtopics: [
-        { id: 'ol-7-1', code: '7.1', title: 'Transformations', description: 'Reflection, rotation, translation, enlargement.', locked: true, questionIds: [] },
-        { id: 'ol-7-2', code: '7.2', title: 'Vectors', description: 'Column vectors, addition, scalar multiplication, position vectors.', locked: true, questionIds: [] },
+        { id: 'ol-7-1', code: '7.1', title: 'Transformations', description: 'Reflection, rotation (multiples of 90°), enlargement (positive, fractional, negative scale factors), translation by vector.', locked: true, questionIds: [] },
+        { id: 'ol-7-2', code: '7.2', title: 'Vectors in Two Dimensions', description: 'Describe translations using vectors. Add, subtract vectors. Scalar multiplication.', locked: true, questionIds: [] },
+        { id: 'ol-7-3', code: '7.3', title: 'Magnitude of a Vector', description: 'Calculate magnitude as √(x² + y²).', locked: true, questionIds: [] },
+        { id: 'ol-7-4', code: '7.4', title: 'Vector Geometry', description: 'Directed line segments. Position vectors. Express vectors in terms of coplanar vectors. Solve geometric problems with vectors.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 8,
       title: 'Probability',
       subtopics: [
-        { id: 'ol-8-1', code: '8.1', title: 'Probability', description: 'Probability scale, single events, combined events, tree diagrams.', locked: true, questionIds: [] },
+        { id: 'ol-8-1', code: '8.1', title: 'Introduction to Probability', description: 'Probability scale 0–1. Probability notation P(A), P(A′). Single event probability. P(not A) = 1 − P(A).', locked: true, questionIds: [] },
+        { id: 'ol-8-2', code: '8.2', title: 'Relative and Expected Frequencies', description: 'Relative frequency as estimate of probability. Calculate expected frequencies. Fair, bias, random.', locked: true, questionIds: [] },
+        { id: 'ol-8-3', code: '8.3', title: 'Probability of Combined Events', description: 'Sample space diagrams, Venn diagrams (P(A∩B), P(A∪B)), tree diagrams.', locked: true, questionIds: [] },
       ]
     },
     {
       id: 9,
       title: 'Statistics',
       subtopics: [
-        { id: 'ol-9-1', code: '9.1', title: 'Data Collection and Display', description: 'Tally charts, frequency tables, bar charts, pie charts, pictograms.', locked: true, questionIds: [] },
-        { id: 'ol-9-2', code: '9.2', title: 'Averages and Spread', description: 'Mean, median, mode, range. Frequency distributions.', locked: true, questionIds: [] },
-        { id: 'ol-9-3', code: '9.3', title: 'Cumulative Frequency and Histograms', description: 'Cumulative frequency curves, histograms with unequal class intervals.', locked: true, questionIds: [] },
-      ]
-    },
-    {
-      id: 10,
-      title: 'Sets',
-      subtopics: [
-        { id: 'ol-10-1', code: '10.1', title: 'Set Notation and Venn Diagrams', description: 'Union, intersection, complement, subsets. Problem-solving with Venn diagrams.', locked: true, questionIds: [] },
-      ]
-    },
-    {
-      id: 11,
-      title: 'Matrices',
-      subtopics: [
-        { id: 'ol-11-1', code: '11.1', title: 'Matrix Operations', description: 'Addition, subtraction, scalar multiplication, matrix multiplication. Determinant and inverse of 2×2 matrices.', locked: true, questionIds: [] },
+        { id: 'ol-9-1', code: '9.1', title: 'Classifying Statistical Data', description: 'Classify and tabulate data. Tally tables, two-way tables.', locked: true, questionIds: [] },
+        { id: 'ol-9-2', code: '9.2', title: 'Interpreting Statistical Data', description: 'Read, interpret and draw inferences from tables and diagrams. Compare data sets. Restrictions on conclusions.', locked: true, questionIds: [] },
+        { id: 'ol-9-3', code: '9.3', title: 'Averages and Measures of Spread', description: 'Mean, median, mode, range for individual data. Estimated mean for grouped data. Modal class.', locked: true, questionIds: [] },
+        { id: 'ol-9-4', code: '9.4', title: 'Statistical Charts and Diagrams', description: 'Bar charts (composite, dual), pie charts, pictograms, frequency distributions.', locked: true, questionIds: [] },
+        { id: 'ol-9-5', code: '9.5', title: 'Scatter Diagrams', description: 'Draw/interpret scatter diagrams. Positive, negative, zero correlation. Line of best fit.', locked: true, questionIds: [] },
+        { id: 'ol-9-6', code: '9.6', title: 'Cumulative Frequency Diagrams', description: 'Cumulative frequency tables and curves. Median, percentiles, quartiles, interquartile range.', locked: true, questionIds: [] },
+        { id: 'ol-9-7', code: '9.7', title: 'Histograms', description: 'Draw/interpret histograms. Frequency density = frequency ÷ class width.', locked: true, questionIds: [] },
       ]
     }
   ]

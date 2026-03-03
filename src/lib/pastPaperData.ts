@@ -5,6 +5,10 @@ import { questions4024_12_2025, sections4024_12_2025 } from './pastPaper4024_12_
 import { questions4024_13_2025, sections4024_13_2025 } from './pastPaper4024_13_2025';
 import { questions4024_22_2025, sections4024_22_2025 } from './pastPaper4024_22_2025';
 import { questions4024_23_2025, sections4024_23_2025 } from './pastPaper4024_23_2025';
+import { questions4024_11_2025ON, sections4024_11_2025ON } from './pastPaper4024_11_2025ON';
+import { questions4024_12_2025ON, sections4024_12_2025ON } from './pastPaper4024_12_2025ON';
+import { questions4024_21_2025ON, sections4024_21_2025ON } from './pastPaper4024_21_2025ON';
+import { questions4024_22_2025ON, sections4024_22_2025ON } from './pastPaper4024_22_2025ON';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -59,6 +63,10 @@ export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
   ...questions4024_13_2025,
   ...questions4024_22_2025,
   ...questions4024_23_2025,
+  ...questions4024_11_2025ON,
+  ...questions4024_12_2025ON,
+  ...questions4024_21_2025ON,
+  ...questions4024_22_2025ON,
   // Question 1
   'pp_0580_s22_q1a': {
     id: 'pp_0580_s22_q1a',
@@ -837,6 +845,59 @@ export const pastPapers: PastPaper[] = [
     category: 'Paper 2',
     courseId: 'olevel-4024',
     sections: sections4024_23_2025,
+    locked: false
+  },
+  // ===== O Level 4024 Oct/Nov 2025 Papers =====
+  {
+    id: 'pp_4024_on25_11',
+    code: '4024/11',
+    session: 'Oct/Nov',
+    year: 2025,
+    title: '4024/11 Oct/Nov 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_11_2025ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on25_12',
+    code: '4024/12',
+    session: 'Oct/Nov',
+    year: 2025,
+    title: '4024/12 Oct/Nov 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 1',
+    courseId: 'olevel-4024',
+    sections: sections4024_12_2025ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on25_21',
+    code: '4024/21',
+    session: 'Oct/Nov',
+    year: 2025,
+    title: '4024/21 Oct/Nov 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_21_2025ON,
+    locked: false
+  },
+  {
+    id: 'pp_4024_on25_22',
+    code: '4024/22',
+    session: 'Oct/Nov',
+    year: 2025,
+    title: '4024/22 Oct/Nov 2025',
+    totalMarks: 100,
+    duration: '2 hours',
+    category: 'Paper 2',
+    courseId: 'olevel-4024',
+    sections: sections4024_22_2025ON,
     locked: false
   }
 ];

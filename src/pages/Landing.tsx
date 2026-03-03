@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   BookOpen, Brain, Target, Zap, CheckCircle,
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
-  GraduationCap, BarChart3, FileText, Menu, Loader2 } from 'lucide-react';
+  GraduationCap, BarChart3, FileText, Menu, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const mathSymbols = [
 { symbol: '∫', className: 'top-[15%] left-[8%] text-4xl animate-float-slow' },
@@ -42,6 +42,9 @@ export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Redirect authenticated users to dashboard
   if (!authLoading && user) {
@@ -466,11 +469,21 @@ export default function Landing() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Password</label>
-                  <Input type="password" placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} />
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} placeholder="Create a password" value={registerForm.password} onChange={(e) => setRegisterForm((f) => ({ ...f, password: e.target.value }))} autoComplete="new-password" />
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Confirm Password</label>
-                  <Input type="password" placeholder="Confirm your password" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} />
+                  <div className="relative">
+                    <Input type={showConfirmPassword ? "text" : "password"} placeholder="Confirm your password" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm((f) => ({ ...f, confirmPassword: e.target.value }))} autoComplete="new-password" />
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full shadow-glow mt-2" disabled={submitting}>
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
@@ -484,7 +497,12 @@ export default function Landing() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Password</label>
-                  <Input type="password" placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} />
+                  <div className="relative">
+                    <Input type={showLoginPassword ? "text" : "password"} placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowLoginPassword(!showLoginPassword)}>
+                      {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full shadow-glow mt-2" disabled={submitting}>
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}

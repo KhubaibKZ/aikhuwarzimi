@@ -31,9 +31,10 @@ function ProgressRing({ percentage, size = 40, strokeWidth = 3.5 }: { percentage
 
 interface ProgressSidebarProps {
   activeTab?: 'syllabus' | 'pastpapers';
+  courseId?: string;
 }
 
-export function ProgressSidebar({ activeTab = 'syllabus' }: ProgressSidebarProps) {
+export function ProgressSidebar({ activeTab = 'syllabus', courseId }: ProgressSidebarProps) {
   const { user } = useAuth();
   const { data, isLoading } = useStudentProgress();
   const { isCompleted } = useProgress();
@@ -54,7 +55,7 @@ export function ProgressSidebar({ activeTab = 'syllabus' }: ProgressSidebarProps
   });
 
   // Paper progress
-  const paperProgress = pastPapers.map(paper => {
+  const paperProgress = pastPapers.filter(p => !courseId || p.courseId === courseId).map(paper => {
     const result = data?.paperResults.find(r => r.paperId === paper.id);
     return {
       code: paper.code,

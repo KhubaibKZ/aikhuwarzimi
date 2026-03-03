@@ -60,18 +60,30 @@ export default function Landing() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginForm.email || !loginForm.password) {
+    const email = loginForm.email.trim().toLowerCase();
+    const password = loginForm.password;
+
+    if (!email || !password) {
       toast({ title: 'Missing fields', description: 'Please enter email and password.', variant: 'destructive' });
       return;
     }
+
     setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: loginForm.email,
-      password: loginForm.password
+      email,
+      password,
     });
     setSubmitting(false);
+
     if (error) {
-      toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
+      const isInvalidCredentials = error.message.toLowerCase().includes('invalid login credentials');
+      toast({
+        title: 'Login failed',
+        description: isInvalidCredentials
+          ? 'Incorrect password for this email. If this email already existed, use the original password or reset it.'
+          : error.message,
+        variant: 'destructive',
+      });
     } else {
       navigate('/dashboard');
     }
@@ -79,7 +91,9 @@ export default function Landing() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!registerForm.email || !registerForm.password) {
+    const email = registerForm.email.trim().toLowerCase();
+
+    if (!email || !registerForm.password) {
       toast({ title: 'Missing fields', description: 'Please fill in all fields.', variant: 'destructive' });
       return;
     }
@@ -91,20 +105,38 @@ export default function Landing() {
       toast({ title: 'Weak password', description: 'Password must be at least 6 characters.', variant: 'destructive' });
       return;
     }
+
     setSubmitting(true);
-    const { error } = await supabase.auth.signUp({
-      email: registerForm.email,
+    const { data, error } = await supabase.auth.signUp({
+      email,
       password: registerForm.password,
-      options: { emailRedirectTo: window.location.origin }
+      options: { emailRedirectTo: window.location.origin },
     });
     setSubmitting(false);
+
     if (error) {
       toast({ title: 'Registration failed', description: error.message, variant: 'destructive' });
-    } else {
-      setLoginForm({ email: registerForm.email, password: registerForm.password });
-      toast({ title: 'Check your email', description: 'We sent you a verification link. Please verify your email before logging in.' });
-      setAuthTab('login');
+      return;
     }
+
+    const isExistingUserSignup =
+      !!data.user &&
+      Array.isArray(data.user.identities) &&
+      data.user.identities.length === 0;
+
+    if (isExistingUserSignup) {
+      setLoginForm({ email, password: '' });
+      toast({
+        title: 'Account already exists',
+        description: 'This email is already registered. Please log in with your existing password.',
+      });
+      setAuthTab('login');
+      return;
+    }
+
+    setLoginForm({ email, password: registerForm.password });
+    toast({ title: 'Check your email', description: 'We sent you a verification link. Please verify your email before logging in.' });
+    setAuthTab('login');
   };
 
   const handleGoogleSignIn = async () => {

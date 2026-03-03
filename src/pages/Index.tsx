@@ -6,7 +6,8 @@ import { SubTopicContent } from '@/components/SubTopicContent';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { CourseSelection } from '@/components/CourseSelection';
 import { ProgressProvider } from '@/context/ProgressContext';
-import { igcseMathsSyllabus, SubTopic } from '@/lib/syllabusData';
+import { igcseMathsSyllabus, SubTopic, SyllabusData } from '@/lib/syllabusData';
+import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
 
 type ViewState = 
@@ -46,9 +47,15 @@ function Dashboard() {
     }
   };
 
+  const getSyllabusForCourse = (cId: string): SyllabusData => {
+    if (cId === 'olevel-4024') return olevelMathsSyllabus;
+    return igcseMathsSyllabus;
+  };
+
   const getCurrentSubTopic = () => {
     if (view.type !== 'subtopic') return null;
-    const topic = igcseMathsSyllabus.topics.find(t => t.id === view.topicId);
+    const syllabus = getSyllabusForCourse(view.courseId);
+    const topic = syllabus.topics.find(t => t.id === view.topicId);
     const subtopic = topic?.subtopics.find(s => s.id === view.subtopicId);
     return { topic, subtopic };
   };
@@ -76,6 +83,7 @@ function Dashboard() {
             <div>
               {view.type === 'toc' ? (
                 <TableOfContents 
+                  courseId={view.courseId}
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
                   onTabChange={setActiveTab}

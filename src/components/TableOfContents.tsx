@@ -1,4 +1,5 @@
-import { igcseMathsSyllabus, SubTopic, MainTopic } from '@/lib/syllabusData';
+import { igcseMathsSyllabus, SubTopic, MainTopic, SyllabusData } from '@/lib/syllabusData';
+import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
@@ -15,12 +16,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
 
 interface TableOfContentsProps {
+  courseId: string;
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
 }
 
-export function TableOfContents({ onSubTopicSelect, onPastPaperSelect, onTabChange }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
@@ -94,9 +96,12 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect, onTabChan
       </TabsList>
 
       <TabsContent value="syllabus" className="space-y-3">
-        <h2 className="mb-4 text-xl font-bold text-foreground">IGCSE Mathematics (0580)</h2>
-        
-        {igcseMathsSyllabus.topics.map((topic, index) => {
+        {(() => {
+          const syllabus = courseId === 'olevel-4024' ? olevelMathsSyllabus : igcseMathsSyllabus;
+          return (
+            <>
+              <h2 className="mb-4 text-xl font-bold text-foreground">{syllabus.courseName}</h2>
+              {syllabus.topics.map((topic, index) => {
           const topicProgress = getTopicProgress(topic);
           const hasUnlockedSubtopics = topic.subtopics.some(s => !s.locked);
           
@@ -250,14 +255,33 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect, onTabChan
             </div>
           );
         })}
+            </>
+          );
+        })()}
       </TabsContent>
 
       <TabsContent value="pastpapers" className="space-y-5">
         <h2 className="mb-4 text-xl font-bold text-foreground">Past Papers</h2>
         
-        {(['Paper 01 (CORE)', 'Paper 02 (EXTENDED)', 'Paper 03 (CORE)', 'Paper 04 (EXTENDED)'] as PaperCategory[]).map((category) => {
-          const categoryPapers = pastPapers.filter(p => p.category === category);
-          if (categoryPapers.length === 0) return null;
+        {(() => {
+          const categories: PaperCategory[] = courseId === 'olevel-4024'
+            ? ['Paper 1', 'Paper 2']
+            : ['Paper 01 (CORE)', 'Paper 02 (EXTENDED)', 'Paper 03 (CORE)', 'Paper 04 (EXTENDED)'];
+          const coursePapers = pastPapers.filter(p => p.courseId === courseId);
+          
+          if (coursePapers.length === 0) {
+            return (
+              <div className="text-center py-12 text-muted-foreground">
+                <ClipboardList className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                <p className="font-medium">No papers added yet</p>
+                <p className="text-sm mt-1">Papers will appear here once they are uploaded and processed.</p>
+              </div>
+            );
+          }
+          
+          return categories.map((category) => {
+            const categoryPapers = coursePapers.filter(p => p.category === category);
+            if (categoryPapers.length === 0) return null;
           
           return (
             <div key={category} className="space-y-2">
@@ -375,7 +399,8 @@ export function TableOfContents({ onSubTopicSelect, onPastPaperSelect, onTabChan
               ))}
             </div>
           );
-        })}
+        });
+        })()}
       </TabsContent>
     </Tabs>
   );

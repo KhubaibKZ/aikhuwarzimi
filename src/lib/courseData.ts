@@ -19,7 +19,7 @@ export const courses: Course[] = [
     code: '4024',
     title: 'O Level Mathematics',
     description: 'Cambridge O Level Mathematics (4024)',
-    locked: true
+    locked: false
   }
 ];
 

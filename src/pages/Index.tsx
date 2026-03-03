@@ -101,7 +101,7 @@ function Dashboard() {
             {/* Sidebar */}
             <div className="hidden lg:block">
               <div className="sticky top-24">
-                <ProgressSidebar activeTab={activeTab} />
+                <ProgressSidebar activeTab={activeTab} courseId={currentCourseId} />
               </div>
             </div>
           </div>

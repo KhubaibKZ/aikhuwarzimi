@@ -29,6 +29,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [expandedYear, setExpandedYear] = useState<string | null>(null);
   const [resettingPaper, setResettingPaper] = useState<string | null>(null);
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const { isCompleted } = useProgress();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -351,13 +352,22 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                           <div className="ml-5 pl-3 border-l-2 border-border space-y-1 mt-1 mb-2">
                             {sessions.map((session) => {
                               const sessionPapers = yearPapers.filter(p => p.session === session);
+                              const sessionKey = `${yearKey}-${session}`;
+                              const isSessionExpanded = expandedSession === sessionKey;
 
                               return (
                                 <div key={session}>
-                                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 py-1.5">
-                                    {session}
-                                  </p>
-                                  {sessionPapers.map((paper) => (
+                                  <button
+                                    onClick={() => setExpandedSession(isSessionExpanded ? null : sessionKey)}
+                                    className="flex w-full items-center justify-between p-2 text-left transition-colors hover:bg-card rounded-lg"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      {isSessionExpanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{session}</span>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground">{sessionPapers.length} paper{sessionPapers.length !== 1 ? 's' : ''}</span>
+                                  </button>
+                                  {isSessionExpanded && sessionPapers.map((paper) => (
                                     <div key={paper.id} className={cn("rounded-lg overflow-hidden", paper.locked && "opacity-60")}>
                                       {/* Level 3: Individual Paper */}
                                       <button

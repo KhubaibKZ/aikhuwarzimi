@@ -45,43 +45,38 @@ interface PaperProgressItem {
   scorePercentage: number;
 }
 
-function YearFolder({ year, papers }: { year: number; papers: PaperProgressItem[] }) {
+function SessionFolder({ session, papers }: { session: string; papers: PaperProgressItem[] }) {
   const [open, setOpen] = useState(false);
   const totalQ = papers.reduce((s, p) => s + p.totalQuestions, 0);
   const solvedQ = papers.reduce((s, p) => s + p.solvedQuestions, 0);
-  const yearPct = totalQ > 0 ? Math.round((solvedQ / totalQ) * 100) : 0;
 
   return (
-    <div className="rounded-lg border border-border/50 overflow-hidden">
+    <div>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition-colors text-left rounded"
       >
-        {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
-        <span className="text-sm font-semibold text-foreground flex-1">{year}</span>
-        <span className="text-[10px] text-muted-foreground">{solvedQ}/{totalQ} solved</span>
-        <ProgressRing percentage={yearPct} size={32} strokeWidth={3} />
+        {open ? <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />}
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex-1">{session}</span>
+        <span className="text-[10px] text-muted-foreground">{solvedQ}/{totalQ}</span>
       </button>
       {open && (
-        <div className="border-t border-border/50 divide-y divide-border/30">
+        <div className="ml-3 border-l border-border/40 space-y-0.5 pl-2 pb-1">
           {papers.map(p => {
-            // Extract variant from code e.g. "4024/12" -> "12"
             const variant = p.code.split('/')[1] || '';
             const paperNum = variant.startsWith('1') ? 'P1' : variant.startsWith('2') ? 'P2' : `P${variant}`;
             const scoreColor = p.scorePercentage > 80 ? 'text-green-400' : p.scorePercentage >= 50 ? 'text-yellow-400' : 'text-destructive';
 
             return (
-              <div key={p.paperId} className="flex items-center gap-2.5 px-3 py-2 bg-card/50">
-                <ProgressRing percentage={p.completionPercentage} size={34} strokeWidth={3} />
+              <div key={p.paperId} className="flex items-center gap-2.5 px-2 py-1.5 rounded bg-card/50">
+                <ProgressRing percentage={p.completionPercentage} size={32} strokeWidth={3} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-semibold text-foreground">{p.code}</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium">{paperNum}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] text-muted-foreground">{p.session}</span>
-                    <span className="text-[10px] text-muted-foreground">•</span>
-                    <span className="text-[10px] text-muted-foreground">{p.solvedQuestions}/{p.totalQuestions}</span>
+                    <span className="text-[10px] text-muted-foreground">{p.solvedQuestions}/{p.totalQuestions} Qs</span>
                     {p.solvedQuestions > 0 && (
                       <>
                         <span className="text-[10px] text-muted-foreground">•</span>
@@ -95,6 +90,43 @@ function YearFolder({ year, papers }: { year: number; papers: PaperProgressItem[
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function YearFolder({ year, papers }: { year: number; papers: PaperProgressItem[] }) {
+  const [open, setOpen] = useState(false);
+  const totalQ = papers.reduce((s, p) => s + p.totalQuestions, 0);
+  const solvedQ = papers.reduce((s, p) => s + p.solvedQuestions, 0);
+  const yearPct = totalQ > 0 ? Math.round((solvedQ / totalQ) * 100) : 0;
+
+  // Group by session
+  const sessionMap = new Map<string, PaperProgressItem[]>();
+  papers.forEach(p => {
+    const arr = sessionMap.get(p.session) || [];
+    arr.push(p);
+    sessionMap.set(p.session, arr);
+  });
+  const sessions = Array.from(sessionMap.keys());
+
+  return (
+    <div className="rounded-lg border border-border/50 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-muted/50 transition-colors text-left"
+      >
+        {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+        <span className="text-sm font-semibold text-foreground flex-1">{year}</span>
+        <span className="text-[10px] text-muted-foreground">{solvedQ}/{totalQ}</span>
+        <ProgressRing percentage={yearPct} size={32} strokeWidth={3} />
+      </button>
+      {open && (
+        <div className="border-t border-border/50 px-1 py-1 space-y-0.5">
+          {sessions.map(session => (
+            <SessionFolder key={session} session={session} papers={sessionMap.get(session)!} />
+          ))}
         </div>
       )}
     </div>

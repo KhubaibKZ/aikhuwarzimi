@@ -337,9 +337,6 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                             </div>
                             <div>
                               <span className="text-sm font-semibold text-foreground">{year}</span>
-                              <p className="text-xs text-muted-foreground">
-                                {sessions.join(' & ')} • {yearPapers.length} variant{yearPapers.length !== 1 ? 's' : ''}
-                              </p>
                             </div>
                           </div>
                           {isYearExpanded 

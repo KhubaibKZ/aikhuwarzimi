@@ -1,37 +1,29 @@
 
 
-## Audit Summary: Past Paper Question Features
+## Plan: Add O Level 4024 Question-to-Syllabus Mapping
 
-After thoroughly reviewing the codebase, here is what **already works** and what **needs fixing**:
+### What needs to happen
+Every O Level 4024 past paper question needs a `SyllabusRef` entry in `src/lib/questionTopicMap.ts`, mapping it to the correct topic/subtopic from `src/lib/olevelSyllabusData.ts`. This enables the syllabus badge (e.g. "1.1 Types of Number • Number") to appear in the question workspace header, and powers the topic mastery analytics.
 
-### Already Working (All Questions)
-1. **Scaffolding steps with StepWorkspace** — All question types (`short`, `calculation`, `multi-part`, `angle-steps`, `formula-fraction`, `prime-factor`, `lcm-ladder`) route through `StepWorkspace` or equivalent specialized components with numbered step fields.
-2. **Check Work per step** — Every step has a `BookOpen` button that calls `handleCheckWorkForPart()`, sending the student's answer to the AI tutor for targeted feedback.
-3. **General Hint button** — Every question has a global "Hint" button that uses the `hints[]` array from the question data.
-4. **Keyboard** — All questions get a keyboard via `getKeyboardConfig()`, but O Level questions fall back to generic `arithmetic`.
+### Scope
+16 paper files with ~300+ total questions across:
+- **Paper 1**: 4024/11 and /12 (May/June 2024, Oct/Nov 2024, 2025 sessions)
+- **Paper 2**: 4024/21 and /22 (same sessions)
+- **Paper 13, /23** (May/June 2025)
 
-### Gaps Found
+### Changes
 
-**Gap 1: No custom keyboards for O Level 4024 questions (~400+ questions across 20 files)**
-All O Level questions fall back to the generic `arithmetic` keyboard (`0-9, +, −, ×, ÷, =, ., (, ), ⌫, Clear`). This means geometry questions don't get `°`, algebra questions don't get `x, y`, fraction questions don't get `/`, etc.
+**File: `src/lib/questionTopicMap.ts`**
 
-**Gap 2: No interactive diagrams for O Level 4024 questions**
-IGCSE 0580 questions have ~30+ interactive SVG diagrams (coordinate grids, Venn diagrams, cuboids, etc.) mapped in `PastPaperWorkspace.tsx`. O Level questions have zero diagram mappings, even for geometry, graph, and shape questions.
+Add ~300 new entries mapping each `pp_4024_*` question ID to its O Level syllabus reference. Each entry uses the O Level topic structure (topics 1–9 from `olevelSyllabusData.ts`), for example:
 
-### Implementation Plan
+```ts
+'pp_4024_s24_11_q1': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
+'pp_4024_s24_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
+```
 
-#### Phase 1: Add keyboard configs for O Level questions by topic category
-Rather than 400+ individual keyboard entries, add **topic-based keyboard presets** and a smarter fallback system in `keyboardConfigs.ts`:
+Topic assignment is determined by analyzing each question's title and content against the 4024 syllabus subtopics.
 
-- Add new generic presets: `'fraction'`, `'indices'`, `'trigonometry'`, `'standardForm'`, `'inequality'`, `'ratio'`, `'bearings'`, `'vectors'`, `'probability'`, `'speed-distance-time'`
-- Update `getKeyboardConfig()` to detect question content (title/type) and auto-select the right keyboard when no exact match exists
-- This covers all O Level questions without needing 400 individual entries
-
-#### Phase 2: Add diagram mappings for O Level geometry questions
-Scan O Level question data for geometry/graph questions and add diagram rendering blocks in `PastPaperWorkspace.tsx` using existing diagram components (trapezium, Venn diagram, coordinate grid, etc.) where the question text describes a geometric figure.
-
-### Scope Note
-Phase 1 (smart keyboard selection) can be done in one implementation pass. Phase 2 (diagrams) requires identifying which specific O Level questions need diagrams — this is best done paper-by-paper during your Q/A review.
-
-Shall I proceed with Phase 1 first — the smart keyboard auto-detection system?
+### No other file changes needed
+The existing rendering in `PastPaperWorkspace.tsx` and analytics in `useStudentProgress.ts` already consume `questionTopicMap` generically — once entries are added, the badges and topic mastery will work automatically for O Level papers.
 

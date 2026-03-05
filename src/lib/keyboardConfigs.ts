@@ -361,15 +361,128 @@ export const KEYBOARD_CONFIGS = {
     ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     ['$', '+', '−', '×', '÷', '=', '.', '(', ')', '⌫'],
   ],
+
+  // Fraction keyboard
+  'fraction': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['/', '+', '−', '×', '÷', '=', '.', '(', ')', '⌫'],
+  ],
+
+  // Indices / powers keyboard
+  'indices': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['²', '³', '⁴', '⁻¹', '×', '÷', '=', '.', '⌫', 'Clear'],
+  ],
+
+  // Trigonometry keyboard
+  'trigonometry': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['sin', 'cos', 'tan', '°', '+', '−', '×', '÷', '=', '⌫'],
+    ['√', '²', '/', '.', 'Clear'],
+  ],
+
+  // Standard form keyboard
+  'standardForm': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['×', '10', '⁻', '+', '−', '=', '.', '(', ')', '⌫'],
+  ],
+
+  // Inequality keyboard
+  'inequality': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['x', '<', '≤', '>', '≥', '+', '−', '×', '=', '⌫'],
+  ],
+
+  // Ratio keyboard
+  'ratio': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    [':', '+', '−', '×', '÷', '=', '/', '.', '⌫', 'Clear'],
+  ],
+
+  // Bearings keyboard
+  'bearings': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['°', '+', '−', '×', '÷', '=', '.', '⌫', 'Clear'],
+  ],
+
+  // Vectors keyboard
+  'vectors': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['a', 'b', 'p', 'q', '+', '−', '×', '=', '⌫', 'Clear'],
+    ['(', ')', '/', '.', 'Clear'],
+  ],
+
+  // Probability keyboard
+  'probability': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['/', '+', '−', '×', '=', '.', '(', ')', '⌫', 'Clear'],
+  ],
+
+  // Speed, distance, time keyboard
+  'speedDistanceTime': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['+', '−', '×', '÷', '=', '/', '.', 'hr', 'min', '⌫'],
+  ],
+
+  // Sets / Venn diagram keyboard
+  'sets': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['∪', '∩', "'", 'ξ', '+', '−', '=', '(', ')', '⌫'],
+  ],
+
+  // Matrix keyboard
+  'matrix': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['+', '−', '×', '=', '/', '.', '(', ')', '⌫', 'Clear'],
+  ],
+
+  // Mensuration (area/volume) keyboard
+  'mensuration': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['π', '²', '³', '+', '−', '×', '÷', '=', '.', '⌫'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;
 
-// Get keyboard config for a question, with smart fallback based on question type
-export function getKeyboardConfig(questionId: string, questionType?: string): string[][] {
+// Keyword-to-preset mapping for smart detection from question titles
+const TITLE_KEYWORD_MAP: Array<{ keywords: RegExp; preset: KeyboardConfigKey }> = [
+  { keywords: /trigonometr|sine|cosine|tangent|sin\b|cos\b|tan\b/i, preset: 'trigonometry' },
+  { keywords: /bearing/i, preset: 'bearings' },
+  { keywords: /vector/i, preset: 'vectors' },
+  { keywords: /inequalit|number line.*inequalit/i, preset: 'inequality' },
+  { keywords: /standard form|scientific notation/i, preset: 'standardForm' },
+  { keywords: /indic|power|index notation/i, preset: 'indices' },
+  { keywords: /venn|set notation|sets\b|union|intersection/i, preset: 'sets' },
+  { keywords: /matri/i, preset: 'matrix' },
+  { keywords: /probabil|tree diagram|combined event/i, preset: 'probability' },
+  { keywords: /speed|distance.*time|time.*distance|velocity|rate/i, preset: 'speedDistanceTime' },
+  { keywords: /ratio|proportion|share/i, preset: 'ratio' },
+  { keywords: /percent|increase.*%|decrease.*%|simple interest|compound interest|profit|loss|discount/i, preset: 'percentage' },
+  { keywords: /fraction|mixed number|improper/i, preset: 'fraction' },
+  { keywords: /volume|surface area|prism|cylinder|cone|sphere|cuboid|cube|mensuration|capacity/i, preset: 'mensuration' },
+  { keywords: /angle|polygon|triangle|quadrilateral|pentagon|hexagon|parallel.*line|symmetry|rotation|reflection|transformation|congruent|similar/i, preset: 'geometry' },
+  { keywords: /coordinate|midpoint|gradient|equation.*line|y\s*=\s*mx|graph|plot|scatter|histogram|bar chart|pie chart|frequency/i, preset: 'coordinates' },
+  { keywords: /simplif|expan|factoris|solve.*equation|simultaneous|quadratic|expression|formula|substitut|sequence|nth term|algebraic/i, preset: 'algebra' },
+  { keywords: /money|cost|price|wage|salary|currency|exchange rate|\$/i, preset: 'money' },
+];
+
+// Get keyboard config for a question, with smart fallback based on question type and title
+export function getKeyboardConfig(questionId: string, questionType?: string, questionTitle?: string): string[][] {
+  const clone = (key: KeyboardConfigKey) => KEYBOARD_CONFIGS[key].map(row => [...row]);
+
   // Check for exact question match first
   if (questionId in KEYBOARD_CONFIGS) {
-    return KEYBOARD_CONFIGS[questionId as KeyboardConfigKey].map(row => [...row]);
+    return clone(questionId as KeyboardConfigKey);
+  }
+
+  // Smart detection from question title
+  if (questionTitle) {
+    for (const { keywords, preset } of TITLE_KEYWORD_MAP) {
+      if (keywords.test(questionTitle)) {
+        return clone(preset);
+      }
+    }
   }
   
   // Fallback based on question type
@@ -377,22 +490,20 @@ export function getKeyboardConfig(questionId: string, questionType?: string): st
     switch (questionType) {
       case 'angle-steps':
       case 'formula-fraction':
-        return KEYBOARD_CONFIGS.geometry.map(row => [...row]);
+        return clone('geometry');
       case 'prime-factor':
-        return KEYBOARD_CONFIGS.primeFactors.map(row => [...row]);
+        return clone('primeFactors');
       case 'lcm-ladder':
-        return KEYBOARD_CONFIGS.lcmHcf.map(row => [...row]);
+        return clone('lcmHcf');
       case 'calculation':
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
       case 'multi-part':
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
       default:
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
+        return clone('arithmetic');
     }
   }
   
   // Default to arithmetic keyboard
-  return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
+  return clone('arithmetic');
 }
 
 // Get rough work placeholder based on question type

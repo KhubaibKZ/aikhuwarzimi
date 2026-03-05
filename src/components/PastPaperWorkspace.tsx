@@ -1103,7 +1103,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'calculation' && question.parts ? (
               /* Calculation questions - use StepWorkspace */
@@ -1126,7 +1126,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
               /* Multi-part questions - use StepWorkspace */
@@ -1148,7 +1148,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
@@ -1163,7 +1163,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'prime-factor' && question.targetNumber ? (
               /* Prime Factorization Ladder */
@@ -1274,7 +1274,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                 />
             )}
           </div>

@@ -19,13 +19,11 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: 2 × (−4) =', key: 'a_s1', marks: 0 },
-      { label: '(a) 6 − (−8) =', key: 'a', marks: 1 },
-      { label: '(b) 4 × 4 =', key: 'b', marks: 1 },
-      { label: '(c) Step: Reciprocal of 5/6 =', key: 'c_s1', marks: 0 },
-      { label: '(c) 2/9 × 6/5 =', key: 'c', marks: 2 }
+      { label: '(a) 6 − 2 × (−4)', key: 'a', marks: 1 },
+      { label: '(b) 4²', key: 'b', marks: 1 },
+      { label: '(c) 2/9 ÷ 5/6', key: 'c', marks: 2 }
     ],
-    answer: { a_s1: '-8', a: '14', b: '16', c_s1: '6/5', c: '4/15' }
+    answer: { a: '14', b: '16', c: '4/15' }
   },
 
   // ========== Question 2 ==========
@@ -43,12 +41,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) P(yellow) = yellow/total =', key: 'a', marks: 1 },
-      { label: '(b) Step: Number of green balls =', key: 'b_s1', marks: 0 },
-      { label: '(b) Step: Not blue = yellow + green =', key: 'b_s2', marks: 0 },
-      { label: '(b) P(not blue) =', key: 'b', marks: 1 }
+      { label: '(a) P(yellow)', key: 'a', marks: 1 },
+      { label: '(b) P(not blue)', key: 'b', marks: 1 }
     ],
-    answer: { a: '4/11', b_s1: '2', b_s2: '6', b: '6/11' }
+    answer: { a: '4/11', b: '6/11' }
   },
 
   // ========== Question 3 ==========
@@ -64,13 +60,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'A cube net has 6 connected squares, each 3 cm × 3 cm',
       'Draw a cross-shaped net or T-shaped net'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Side length = √9 =', key: 'side', marks: 0 },
-      { label: 'Step: Number of faces on a cube =', key: 'faces', marks: 0 },
-      { label: 'Net drawn (6 squares of 3×3)', key: 'net', marks: 3 }
-    ],
-    answer: { side: '3', faces: '6', net: 'done' }
+    type: 'short',
+    answer: 'Net of cube with edge length 3 cm'
   },
 
   // ========== Question 4 ==========
@@ -87,14 +78,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Angle BEC = 180° − 110° = 70° (angles on a straight line)',
       'In triangle ABE: x + 48 + angle BEA = 180°'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Angle EDC = (isosceles, ED=EC)', key: 's1', marks: 0 },
-      { label: 'Step: Angle DEC = 180° − 35° − 35° =', key: 's2', marks: 0 },
-      { label: 'Step: Angle BEC = 180° − 110° =', key: 's3', marks: 0 },
-      { label: 'x = 180° − 48° − 70° − ... =', key: 'x', marks: 3 }
-    ],
-    answer: { s1: '35', s2: '110', s3: '70', x: '22' }
+    type: 'short',
+    answer: '22'
   },
 
   // ========== Question 5 ==========
@@ -109,13 +94,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Subtract 20 from both sides: −5x = 15',
       'Divide by −5: x = −3'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Expand 5(4 − x) =', key: 's1', marks: 0 },
-      { label: 'Step: Rearrange −5x =', key: 's2', marks: 0 },
-      { label: 'x =', key: 'x', marks: 2 }
-    ],
-    answer: { s1: '20 − 5x', s2: '15', x: '-3' }
+    type: 'short',
+    answer: '-3'
   },
 
   // ========== Question 6 ==========
@@ -134,11 +114,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: AB on map (cm) =', key: 'a_s1', marks: 0 },
-      { label: '(a) Actual distance = map × 5 =', key: 'a', marks: 2 },
+      { label: '(a) Distance (km)', key: 'a', marks: 2 },
       { label: '(b) Position of C marked', key: 'b', marks: 2 }
     ],
-    answer: { a_s1: '6', a: '30', b: 'C marked correctly' }
+    answer: { a: '30', b: 'C marked correctly' }
   },
 
   // ========== Question 7 ==========
@@ -156,11 +135,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) ∛125 =', key: 'a', marks: 1 },
-      { label: '(b) Step: 4² =', key: 'b_s1', marks: 0 },
-      { label: '(b) 4⁻² = 1/4² =', key: 'b', marks: 2 }
+      { label: '(a) ∛125', key: 'a', marks: 1 },
+      { label: '(b) 4⁻²', key: 'b', marks: 2 }
     ],
-    answer: { a: '5', b_s1: '16', b: '1/16' }
+    answer: { a: '5', b: '1/16' }
   },
 
   // ========== Question 8 ==========
@@ -197,13 +175,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       '23.6 rounded to 1 s.f. = 20',
       'Estimated area = 90 × 20 = 1800 mm²'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: 87.1 to 1 s.f. =', key: 's1', marks: 0 },
-      { label: 'Step: 23.6 to 1 s.f. =', key: 's2', marks: 0 },
-      { label: 'Estimated area = ... × ... =', key: 'area', marks: 2 }
-    ],
-    answer: { s1: '90', s2: '20', area: '1800' }
+    type: 'short',
+    answer: '1800'
   },
 
   // ========== Question 10 ==========
@@ -221,14 +194,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: 228 ÷ 2 =', key: 'a_s1', marks: 0 },
-      { label: '(a) Step: 114 ÷ 2 =', key: 'a_s2', marks: 0 },
-      { label: '(a) Step: 57 ÷ 3 =', key: 'a_s3', marks: 0 },
-      { label: '(a) 228 as product of primes =', key: 'a', marks: 2 },
-      { label: '(b) Step: Square each prime factor', key: 'b_s1', marks: 0 },
-      { label: '(b) 51984 as product of primes =', key: 'b', marks: 1 }
+      { label: '(a) 228 as product of primes', key: 'a', marks: 2 },
+      { label: '(b) 51 984 as product of primes', key: 'b', marks: 1 }
     ],
-    answer: { a_s1: '114', a_s2: '57', a_s3: '19', a: '2² × 3 × 19', b_s1: '2⁴ × 3² × 19²', b: '2⁴ × 3² × 19²' }
+    answer: { a: '2² × 3 × 19', b: '2⁴ × 3² × 19²' }
   },
 
   // ========== Question 11 ==========
@@ -247,16 +216,12 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: Write equation: 4x + 6y =', key: 'a_s1', marks: 0 },
-      { label: '(a) Divide by 2: 2x + 3y =', key: 'a', marks: 1 },
-      { label: '(b) Second equation: 6x + y =', key: 'b', marks: 1 },
-      { label: '(c) Step: Rearrange for y = 13 − ...', key: 'c_s1', marks: 0 },
-      { label: '(c) Step: Substitute: 2x + 3(13−6x) =', key: 'c_s2', marks: 0 },
-      { label: '(c) Step: Simplify: −16x =', key: 'c_s3', marks: 0 },
-      { label: '(c) x (small box mass) =', key: 'small', marks: 2 },
-      { label: '(c) y (large box mass) =', key: 'large', marks: 1 }
+      { label: '(a) Show 2x + 3y = 15', key: 'a', marks: 1 },
+      { label: '(b) Second equation', key: 'b', marks: 1 },
+      { label: '(c) Small box mass (kg)', key: 'small', marks: 2 },
+      { label: '(c) Large box mass (kg)', key: 'large', marks: 1 }
     ],
-    answer: { a_s1: '30', a: '15', b: '13', c_s1: '6x', c_s2: '15', c_s3: '-24', small: '1.5', large: '4' }
+    answer: { a: '4x + 6y = 30 → 2x + 3y = 15', b: '6x + y = 13', small: '1.5', large: '4' }
   },
 
   // ========== Question 12 ==========
@@ -279,16 +244,14 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       { label: '(a) Angle and direction', key: 'angle', marks: 1 },
       { label: '(a) Centre of rotation', key: 'centre', marks: 1 },
       { label: '(b) Reflected triangle vertices', key: 'reflect', marks: 2 },
-      { label: '(c)(i) Step: Original vertex corresponding to (12,3) =', key: 'k_s1', marks: 0 },
-      { label: '(c)(i) k = 12 ÷ original x =', key: 'k', marks: 1 },
-      { label: '(c)(ii) Other vertices (multiply each by k)', key: 'vertices', marks: 2 }
+      { label: '(c)(i) Value of k', key: 'k', marks: 1 },
+      { label: '(c)(ii) Other vertices', key: 'vertices', marks: 2 }
     ],
     answer: {
       type: 'Rotation',
       angle: '90° clockwise',
       centre: '(-2, 1)',
       reflect: '(-6,1), (-3,1), (-5,2)',
-      k_s1: '(4, 1)',
       k: '3',
       vertices: '(3,3) and (9,6)'
     }
@@ -309,12 +272,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: 100% − 20% =', key: 'a_s1', marks: 0 },
-      { label: '(a) Sale price = 80% × $85 =', key: 'a', marks: 2 },
-      { label: '(b) Step: $40 represents what % of original?', key: 'b_s1', marks: 0 },
-      { label: '(b) Original price = $40 ÷ 0.80 =', key: 'b', marks: 2 }
+      { label: '(a) Sale price of coat ($)', key: 'a', marks: 2 },
+      { label: '(b) Original price of shirt ($)', key: 'b', marks: 2 }
     ],
-    answer: { a_s1: '80', a: '68', b_s1: '80', b: '50' }
+    answer: { a: '68', b: '50' }
   },
 
   // ========== Question 14 ==========
@@ -332,16 +293,12 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: B − A = (6−(−4), 1−5) =', key: 'ab_s1', marks: 0 },
-      { label: '(a) AB =', key: 'ab', marks: 2 },
-      { label: '(b) Step: C = B + BC = (6+(−3), 1+(−4)) =', key: 'c_s1', marks: 0 },
-      { label: '(b) C =', key: 'c', marks: 2 },
-      { label: '(c)(i) Step: DC = ½AB =', key: 'd_s1', marks: 0 },
-      { label: '(c)(i) D = C − DC =', key: 'd', marks: 2 },
-      { label: '(c)(ii) Step: (xD−xA)² + (yD−yA)² =', key: 'ad_s1', marks: 0 },
-      { label: '(c)(ii) AD =', key: 'ad', marks: 3 }
+      { label: '(a) AB column vector', key: 'ab', marks: 2 },
+      { label: '(b) Coordinates of C', key: 'c', marks: 2 },
+      { label: '(c)(i) Coordinates of D', key: 'd', marks: 2 },
+      { label: '(c)(ii) Length AD (surd form)', key: 'ad', marks: 3 }
     ],
-    answer: { ab_s1: '(10, -4)', ab: '(10, -4)', c_s1: '(3, -3)', c: '(3, -3)', d_s1: '(5, -2)', d: '(-2, -1)', ad_s1: '4 + 36', ad: '2√10' }
+    answer: { ab: '(10, -4)', c: '(3, -3)', d: '(-2, -1)', ad: '2√10' }
   },
 
   // ========== Question 15 ==========
@@ -359,13 +316,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: √175 = √(25×7) =', key: 'a_s1', marks: 0 },
-      { label: '(a) Step: √28 = √(4×7) =', key: 'a_s2', marks: 0 },
-      { label: '(a) √175 − √28 =', key: 'a', marks: 2 },
-      { label: '(b) Step: Multiply by √5/√5', key: 'b_s1', marks: 0 },
-      { label: '(b) 1/√5 =', key: 'b', marks: 1 }
+      { label: '(a) √175 − √28', key: 'a', marks: 2 },
+      { label: '(b) Rationalise 1/√5', key: 'b', marks: 1 }
     ],
-    answer: { a_s1: '5√7', a_s2: '2√7', a: '3√7', b_s1: '√5/5', b: '√5/5' }
+    answer: { a: '3√7', b: '√5/5' }
   },
 
   // ========== Question 16 ==========
@@ -383,16 +337,12 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a)(i) Step: Read CF at n/2 = 40 →', key: 'median_s1', marks: 0 },
       { label: '(a)(i) Median (minutes)', key: 'median', marks: 1 },
-      { label: '(a)(ii) Step: Q1 at CF=20 =', key: 'q1', marks: 0 },
-      { label: '(a)(ii) Step: Q3 at CF=60 =', key: 'q3', marks: 0 },
-      { label: '(a)(ii) IQR = Q3 − Q1 =', key: 'iqr', marks: 2 },
-      { label: '(a)(iii) Step: CF at 40 min =', key: 'count_s1', marks: 0 },
-      { label: '(a)(iii) Number ≥ 40 min = 80 − CF =', key: 'count', marks: 2 },
+      { label: '(a)(ii) IQR (minutes)', key: 'iqr', marks: 2 },
+      { label: '(a)(iii) Number with ≥40 min', key: 'count', marks: 2 },
       { label: '(b) Is Jay correct? Explain', key: 'explain', marks: 1 }
     ],
-    answer: { median_s1: '32', median: '32', q1: '27', q3: '37', iqr: '10', count_s1: '72', count: '8', explain: 'Yes, IQR is lower for home to work' }
+    answer: { median: '32', iqr: '10', count: '8', explain: 'Yes, IQR is lower for home to work' }
   },
 
   // ========== Question 17 ==========
@@ -410,14 +360,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: 5y = 10 − 3x', key: 'a_s1', marks: 0 },
-      { label: '(a) y =', key: 'a', marks: 2 },
-      { label: '(b) Step: Gradient of L =', key: 'b_s1', marks: 0 },
-      { label: '(b) Step: Perpendicular gradient =', key: 'b_s2', marks: 0 },
-      { label: '(b) Step: y − 7 = m(x − 6)', key: 'b_s3', marks: 0 },
+      { label: '(a) y = ...', key: 'a', marks: 2 },
       { label: '(b) Equation of line P', key: 'b', marks: 3 }
     ],
-    answer: { a_s1: '10 − 3x', a: '2 − 3x/5', b_s1: '-3/5', b_s2: '5/3', b_s3: 'y − 7 = 5/3(x − 6)', b: 'y = 5x/3 − 3' }
+    answer: { a: 'y = 2 − 3x/5', b: 'y = 5x/3 − 3' }
   },
 
   // ========== Question 18 ==========
@@ -436,13 +382,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     parts: [
       { label: '(a) Motion description', key: 'a', marks: 1 },
-      { label: '(b) Step: v = acceleration × time =', key: 'b_s1', marks: 0 },
-      { label: '(b) v =', key: 'b', marks: 1 },
-      { label: '(c) Step: 1.4 km = ... m', key: 'c_s1', marks: 0 },
-      { label: '(c) Step: Area under graph formula', key: 'c_s2', marks: 0 },
-      { label: '(c) T =', key: 'c', marks: 3 }
+      { label: '(b) Show v = 10', key: 'b', marks: 1 },
+      { label: '(c) Value of T', key: 'c', marks: 3 }
     ],
-    answer: { a: 'Constant speed', b_s1: '0.25 × 40', b: '10', c_s1: '1400', c_s2: '½ × 10 × (T + 60)', c: '220' }
+    answer: { a: 'Constant speed', b: '0.25 × 40 = 10', c: '220' }
   },
 
   // ========== Question 19 ==========
@@ -458,14 +401,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Cancel common factor (x + 2)',
       'Answer = 3(x − 2) / (2x + 7)'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Factorise numerator: 3x²−12 = 3(...) =', key: 's1', marks: 0 },
-      { label: 'Step: Factorise denominator: 2x²+11x+14 =', key: 's2', marks: 0 },
-      { label: 'Step: Common factor to cancel =', key: 's3', marks: 0 },
-      { label: 'Simplified fraction =', key: 'ans', marks: 4 }
-    ],
-    answer: { s1: '3(x+2)(x−2)', s2: '(2x+7)(x+2)', s3: '(x+2)', ans: '3(x−2)/(2x+7)' }
+    type: 'short',
+    answer: '3(x − 2)/(2x + 7)'
   },
 
   // ========== Question 20 ==========
@@ -481,16 +418,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       '5/9 = 55/99',
       '17/99 + 55/99 = 72/99 = 8/11'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Let x = 0.17̄, then 100x =', key: 's1', marks: 0 },
-      { label: 'Step: 100x − x = 99x =', key: 's2', marks: 0 },
-      { label: 'Step: 0.17̄ as fraction =', key: 's3', marks: 0 },
-      { label: 'Step: 5/9 with denominator 99 =', key: 's4', marks: 0 },
-      { label: 'Step: 17/99 + 55/99 =', key: 's5', marks: 0 },
-      { label: 'Answer (simplest form) =', key: 'ans', marks: 4 }
-    ],
-    answer: { s1: '17.1717...', s2: '17', s3: '17/99', s4: '55/99', s5: '72/99', ans: '8/11' }
+    type: 'short',
+    answer: '8/11'
   },
 
   // ========== Question 21 ==========
@@ -508,13 +437,10 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: AB = OB − OA =', key: 'a_s1', marks: 0 },
-      { label: '(a) AX = 3/5 × AB =', key: 'a', marks: 2 },
-      { label: '(b) Step: OX = OA + AX =', key: 'b_s1', marks: 0 },
-      { label: '(b) Step: AC = kb (parallel to OB), find k', key: 'b_s2', marks: 0 },
+      { label: '(a) AX =', key: 'a', marks: 2 },
       { label: '(b) XC =', key: 'b', marks: 3 }
     ],
-    answer: { a_s1: 'b − a', a: '3(b − a)/5', b_s1: 'a + 3(b−a)/5', b_s2: '3b/2', b: '3a/5 + 9b/10' }
+    answer: { a: '3(b − a)/5', b: '3a/5 + 9b/10' }
   },
 
   // ========== Question 22 ==========
@@ -532,16 +458,13 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
-      { label: '(a) Step: Half of 4 =', key: 'a_s1', marks: 0 },
-      { label: '(a) Step: (x+2)² = x² + 4x + ...', key: 'a_s2', marks: 0 },
-      { label: '(a) (x+a)² + b =', key: 'a', marks: 2 },
-      { label: '(b) Turning point =', key: 'b', marks: 1 },
-      { label: '(c) Step: (x+2)² = 16 → x+2 = ±', key: 'c_s1', marks: 0 },
+      { label: '(a) Completed square form', key: 'a', marks: 2 },
+      { label: '(b) Turning point coordinates', key: 'b', marks: 1 },
       { label: '(c) x-intercepts', key: 'xint', marks: 2 },
       { label: '(c) y-intercept', key: 'yint', marks: 1 },
       { label: '(c) U-shape curve', key: 'curve', marks: 1 }
     ],
-    answer: { a_s1: '2', a_s2: '4', a: '(x + 2)² − 16', b: '(-2, -16)', c_s1: '4', xint: '-6 and 2', yint: '-12', curve: 'done' }
+    answer: { a: '(x + 2)² − 16', b: '(-2, -16)', xint: '-6 and 2', yint: '-12', curve: 'done' }
   },
 
   // ========== Question 23 ==========
@@ -557,14 +480,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Major sector angle of OCD = 360° − 100° = 260°',
       'Area = (260/360) × π × 6² = 26π'
     ],
-    type: 'multi-part',
-    parts: [
-      { label: 'Step: Arc AB = (θ/360) × 2π × 9 = 5π → θ =', key: 's1', marks: 0 },
-      { label: 'Step: Major angle = 360° − θ =', key: 's2', marks: 0 },
-      { label: 'Step: Area = (major angle/360) × π × 6² =', key: 's3', marks: 0 },
-      { label: 'Area of major sector OCD =', key: 'ans', marks: 5 }
-    ],
-    answer: { s1: '100', s2: '260', s3: '26π', ans: '26π' }
+    type: 'short',
+    answer: '26π'
   }
 };
 

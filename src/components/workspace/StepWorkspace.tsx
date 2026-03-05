@@ -98,7 +98,9 @@ export function StepWorkspace({
               </span>
               <span className="font-medium">{step.label}</span>
             </span>
-            <span className="text-xs text-muted-foreground">[{step.marks} mark{step.marks > 1 ? 's' : ''}]</span>
+            {step.marks > 0 && (
+              <span className="text-xs text-muted-foreground">[{step.marks} mark{step.marks > 1 ? 's' : ''}]</span>
+            )}
           </label>
           
           <div className="flex gap-2 ml-7">

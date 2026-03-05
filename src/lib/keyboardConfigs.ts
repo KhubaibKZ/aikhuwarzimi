@@ -445,11 +445,44 @@ export const KEYBOARD_CONFIGS = {
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;
 
-// Get keyboard config for a question, with smart fallback based on question type
-export function getKeyboardConfig(questionId: string, questionType?: string): string[][] {
+// Keyword-to-preset mapping for smart detection from question titles
+const TITLE_KEYWORD_MAP: Array<{ keywords: RegExp; preset: KeyboardConfigKey }> = [
+  { keywords: /trigonometr|sine|cosine|tangent|sin\b|cos\b|tan\b/i, preset: 'trigonometry' },
+  { keywords: /bearing/i, preset: 'bearings' },
+  { keywords: /vector/i, preset: 'vectors' },
+  { keywords: /inequalit|number line.*inequalit/i, preset: 'inequality' },
+  { keywords: /standard form|scientific notation/i, preset: 'standardForm' },
+  { keywords: /indic|power|index notation/i, preset: 'indices' },
+  { keywords: /venn|set notation|sets\b|union|intersection/i, preset: 'sets' },
+  { keywords: /matri/i, preset: 'matrix' },
+  { keywords: /probabil|tree diagram|combined event/i, preset: 'probability' },
+  { keywords: /speed|distance.*time|time.*distance|velocity|rate/i, preset: 'speedDistanceTime' },
+  { keywords: /ratio|proportion|share/i, preset: 'ratio' },
+  { keywords: /percent|increase.*%|decrease.*%|simple interest|compound interest|profit|loss|discount/i, preset: 'percentage' },
+  { keywords: /fraction|mixed number|improper/i, preset: 'fraction' },
+  { keywords: /volume|surface area|prism|cylinder|cone|sphere|cuboid|cube|mensuration|capacity/i, preset: 'mensuration' },
+  { keywords: /angle|polygon|triangle|quadrilateral|pentagon|hexagon|parallel.*line|symmetry|rotation|reflection|transformation|congruent|similar/i, preset: 'geometry' },
+  { keywords: /coordinate|midpoint|gradient|equation.*line|y\s*=\s*mx|graph|plot|scatter|histogram|bar chart|pie chart|frequency/i, preset: 'coordinates' },
+  { keywords: /simplif|expan|factoris|solve.*equation|simultaneous|quadratic|expression|formula|substitut|sequence|nth term|algebraic/i, preset: 'algebra' },
+  { keywords: /money|cost|price|wage|salary|currency|exchange rate|\$/i, preset: 'money' },
+];
+
+// Get keyboard config for a question, with smart fallback based on question type and title
+export function getKeyboardConfig(questionId: string, questionType?: string, questionTitle?: string): string[][] {
+  const clone = (key: KeyboardConfigKey) => KEYBOARD_CONFIGS[key].map(row => [...row]);
+
   // Check for exact question match first
   if (questionId in KEYBOARD_CONFIGS) {
-    return KEYBOARD_CONFIGS[questionId as KeyboardConfigKey].map(row => [...row]);
+    return clone(questionId as KeyboardConfigKey);
+  }
+
+  // Smart detection from question title
+  if (questionTitle) {
+    for (const { keywords, preset } of TITLE_KEYWORD_MAP) {
+      if (keywords.test(questionTitle)) {
+        return clone(preset);
+      }
+    }
   }
   
   // Fallback based on question type
@@ -457,22 +490,20 @@ export function getKeyboardConfig(questionId: string, questionType?: string): st
     switch (questionType) {
       case 'angle-steps':
       case 'formula-fraction':
-        return KEYBOARD_CONFIGS.geometry.map(row => [...row]);
+        return clone('geometry');
       case 'prime-factor':
-        return KEYBOARD_CONFIGS.primeFactors.map(row => [...row]);
+        return clone('primeFactors');
       case 'lcm-ladder':
-        return KEYBOARD_CONFIGS.lcmHcf.map(row => [...row]);
+        return clone('lcmHcf');
       case 'calculation':
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
       case 'multi-part':
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
       default:
-        return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
+        return clone('arithmetic');
     }
   }
   
   // Default to arithmetic keyboard
-  return KEYBOARD_CONFIGS.arithmetic.map(row => [...row]);
+  return clone('arithmetic');
 }
 
 // Get rough work placeholder based on question type

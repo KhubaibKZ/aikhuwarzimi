@@ -1126,7 +1126,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
               /* Multi-part questions - use StepWorkspace */

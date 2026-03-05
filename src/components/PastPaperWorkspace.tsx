@@ -1274,7 +1274,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
                 aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type)}
+                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                 />
             )}
           </div>

@@ -93,10 +93,13 @@ export function StepWorkspace({
         <div key={step.key} className="space-y-2">
           <label className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-2">
-              <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary text-xs font-bold">
+              <span className={cn(
+                "flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold",
+                step.marks === 0 ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+              )}>
                 {index + 1}
               </span>
-              <span className="font-medium">{step.label}</span>
+              <span className={cn("font-medium", step.marks === 0 && "text-muted-foreground italic")}>{step.label}</span>
             </span>
             {step.marks > 0 && (
               <span className="text-xs text-muted-foreground">[{step.marks} mark{step.marks > 1 ? 's' : ''}]</span>

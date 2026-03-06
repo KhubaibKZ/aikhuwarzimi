@@ -1052,11 +1052,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {question.id === 'pp_4024_s25_12_q6' && (
               <div className="mt-4">
                 <BearingDiagram
-                  pointA={{ x: 100, y: 260 }}
-                  pointB={{ x: 280, y: 260 }}
+                  pointA={{ x: 120, y: 240 }}
+                  pointB={{ x: 300, y: 240 }}
                   scaleLabel="1 cm : 5 km"
-                  bearingFromA={60}
-                  bearingFromB={320}
+                  correctBearingA={60}
+                  correctBearingB={320}
                 />
               </div>
             )}

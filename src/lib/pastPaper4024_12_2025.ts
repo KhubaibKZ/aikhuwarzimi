@@ -149,12 +149,13 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Where the two lines cross is village C'
     ],
     type: 'multi-part',
+    diagramParts: ['b'],
     parts: [
       { label: 'Map distance AB (cm)', key: 'map_dist', marks: 0 },
       { label: '(a) Actual distance (km)', key: 'a', marks: 2 },
-      { label: '(b) Position of C marked', key: 'b', marks: 2 }
+      { label: '(b) Position of C marked on diagram', key: 'b', marks: 2 }
     ],
-    answer: { map_dist: '6', a: '30', b: 'C marked correctly' }
+    answer: { map_dist: '6', a: '30', b: 'diagram' }
   },
 
   // ========== Question 7 ==========

@@ -112,6 +112,17 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Expand', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b' }, { type: 'text', value: 'x = 35' }
+      ]},
+      { label: 'Rearrange', stepKey: 's2', elements: [
+        { type: 'text', value: '−' }, { type: 'box', key: 's2_a' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's2_b' }
+      ]},
+      { label: 'Solve', stepKey: 's3', elements: [
+        { type: 'text', value: 'x =' }, { type: 'box', key: 's3', width: 'w-14' }
+      ]}
+    ],
     parts: [
       { label: 'x =', key: 'answer', marks: 2 }
     ],

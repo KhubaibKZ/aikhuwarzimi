@@ -25,9 +25,8 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     fractionDivisionParts: ['c'],
     answer: { a: '14', b: '16', c: '4/15',
-      c_s1_n1: '2', c_s1_d1: '9', c_s1_n2: '6', c_s1_d2: '5',
-      c_s2_n1: '2', c_s2_n2: '6', c_s2_d1: '9', c_s2_d2: '5', c_s2_rn: '12', c_s2_rd: '45',
-      c_s3_n1: '12', c_s3_gcd: '3', c_s3_d1: '45', c_s3_gcd2: '3', c_s3_fn: '4', c_s3_fd: '15'
+      c_s1_n1: '2', c_s1_n2: '6', c_s1_d1: '9', c_s1_d2: '5', c_s1_rn: '12', c_s1_rd: '45',
+      c_s2_n1: '12', c_s2_gcd: '3', c_s2_d1: '45', c_s2_gcd2: '3', c_s2_fn: '4', c_s2_fd: '15'
     }
   },
 

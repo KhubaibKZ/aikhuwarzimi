@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
-import { StepWorkspace } from '@/components/workspace';
+import { StepWorkspace, FractionDivisionWorkspace } from '@/components/workspace';
 import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 

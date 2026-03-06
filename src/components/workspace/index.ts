@@ -6,3 +6,4 @@ export { RoughWorkArea } from './RoughWorkArea';
 export { FinalAnswerField } from './FinalAnswerField';
 export { SmartKeyboard } from './SmartKeyboard';
 export { HorizontalKeyboard } from './HorizontalKeyboard';
+export { FractionDivisionWorkspace } from './FractionDivisionWorkspace';

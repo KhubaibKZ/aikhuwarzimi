@@ -111,12 +111,16 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Divide by −5: x = −3'
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
     parts: [
-      { label: 'Expand: constant term', key: 's1_const', marks: 0 },
-      { label: 'Expand: coefficient of x', key: 's1_coeff', marks: 0 },
       { label: 'x =', key: 'answer', marks: 2 }
     ],
-    answer: { s1_const: '20', s1_coeff: '-5', answer: '-3' }
+    answer: { 
+      answer: '-3',
+      answer_s1_a: '20', answer_s1_b: '5',
+      answer_s2_a: '5', answer_s2_b: '15',
+      answer_s3: '-3'
+    }
   },
 
   // ========== Question 6 ==========

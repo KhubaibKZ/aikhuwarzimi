@@ -305,6 +305,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         setLoadingPartKey(null);
       }
       return;
+      } // end else (has sub-keys)
     }
 
     // Standard single-value check

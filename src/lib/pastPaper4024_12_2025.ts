@@ -474,14 +474,27 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     equationSolveParts: ['a_solve', 'b_solve'],
-    equationStages: [
-      { label: 'Rearrange', stepKey: 's1', elements: [
-        { type: 'text', value: '5y =' }, { type: 'box', key: 's1_a', width: 'w-20' }
-      ]},
-      { label: 'Divide', stepKey: 's2', elements: [
-        { type: 'text', value: 'y =' }, { type: 'box', key: 's2_a', width: 'w-24' }
-      ]}
-    ],
+    equationStagesMap: {
+      'a_solve': [
+        { label: 'Rearrange', stepKey: 's1', elements: [
+          { type: 'text', value: '5y =' }, { type: 'box', key: 's1_a', width: 'w-20' }
+        ]},
+        { label: 'Divide', stepKey: 's2', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's2_a', width: 'w-24' }
+        ]}
+      ],
+      'b_solve': [
+        { label: 'Gradient of L', stepKey: 's1', elements: [
+          { type: 'text', value: 'm_L =' }, { type: 'box', key: 's1_a', width: 'w-14' }
+        ]},
+        { label: 'Perp gradient', stepKey: 's2', elements: [
+          { type: 'text', value: 'm_P =' }, { type: 'box', key: 's2_a', width: 'w-14' }
+        ]},
+        { label: 'Equation', stepKey: 's3', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's3_a', width: 'w-28' }
+        ]}
+      ]
+    },
     parts: [
       { label: '(a) y = ...', key: 'a_solve', marks: 2 },
       { label: '(b) Equation of line P', key: 'b_solve', marks: 3 }
@@ -490,7 +503,7 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       a_solve: 'y = 2 − 3x/5',
       a_solve_s1_a: '10 − 3x', a_solve_s2_a: '2 − 3x/5',
       b_solve: 'y = 5x/3 − 3',
-      b_solve_s1_a: '5/3', b_solve_s2_a: 'y = 5x/3 − 3'
+      b_solve_s1_a: '-3/5', b_solve_s2_a: '5/3', b_solve_s3_a: '5x/3 − 3'
     }
   },
 

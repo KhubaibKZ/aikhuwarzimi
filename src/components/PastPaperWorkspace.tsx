@@ -1048,6 +1048,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               </div>
             )}
             
+            {/* Q6 - Scale drawing and bearings (4024/12 2025) */}
+            {question.id === 'pp_4024_s25_12_q6' && (
+              <div className="mt-4">
+                <BearingDiagram
+                  pointA={{ x: 100, y: 260 }}
+                  pointB={{ x: 280, y: 260 }}
+                  scaleLabel="1 cm : 5 km"
+                  bearingFromA={60}
+                  bearingFromB={320}
+                />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
              !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9',

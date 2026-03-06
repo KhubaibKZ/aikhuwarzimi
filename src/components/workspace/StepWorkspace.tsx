@@ -86,6 +86,9 @@ export function StepWorkspace({
     inputRefs.current[key] = el;
   }, []);
 
+  // Don't render anything if there are no steps
+  if (steps.length === 0) return null;
+
   return (
     <div className="space-y-4">
       {/* Step-by-step answer fields */}

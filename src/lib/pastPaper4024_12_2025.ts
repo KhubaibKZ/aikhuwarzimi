@@ -112,6 +112,17 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Expand', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b' }, { type: 'text', value: 'x = 35' }
+      ]},
+      { label: 'Rearrange', stepKey: 's2', elements: [
+        { type: 'text', value: '−' }, { type: 'box', key: 's2_a' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's2_b' }
+      ]},
+      { label: 'Solve', stepKey: 's3', elements: [
+        { type: 'text', value: 'x =' }, { type: 'box', key: 's3', width: 'w-14' }
+      ]}
+    ],
     parts: [
       { label: 'x =', key: 'answer', marks: 2 }
     ],
@@ -203,12 +214,23 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Estimated area = 90 × 20 = 1800 mm²'
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Round', stepKey: 's1', elements: [
+        { type: 'text', value: '87.1 ≈' }, { type: 'box', key: 's1_a' }, { type: 'text', value: ',' }, { type: 'text', value: '23.6 ≈' }, { type: 'box', key: 's1_b' }
+      ]},
+      { label: 'Area', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a' }, { type: 'text', value: '×' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-16' }, { type: 'text', value: 'mm²' }
+      ]}
+    ],
     parts: [
-      { label: '87.1 to 1 s.f.', key: 'round1', marks: 0 },
-      { label: '23.6 to 1 s.f.', key: 'round2', marks: 0 },
       { label: 'Estimated area (mm²)', key: 'answer', marks: 2 }
     ],
-    answer: { round1: '90', round2: '20', answer: '1800' }
+    answer: { 
+      answer: '1800',
+      answer_s1_a: '90', answer_s1_b: '20',
+      answer_s2_a: '90', answer_s2_b: '20', answer_s2_c: '1800'
+    }
   },
 
   // ========== Question 10 ==========
@@ -247,15 +269,39 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Solve: 2x + 39 − 18x = 15 → −16x = −24 → x = 1.5'
     ],
     type: 'multi-part',
+    equationSolveParts: ['solve'],
+    equationStages: [
+      { label: 'Substitute', stepKey: 's1', elements: [
+        { type: 'text', value: '2x + 3(' }, { type: 'box', key: 's1_a', width: 'w-20' }, { type: 'text', value: ') = 15' }
+      ]},
+      { label: 'Expand', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a' }, { type: 'text', value: '+' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_c' }, { type: 'text', value: 'x = 15' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'text', value: '−' }, { type: 'box', key: 's3_a' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's3_b' }
+      ]},
+      { label: 'Solve x', stepKey: 's4', elements: [
+        { type: 'text', value: 'x =' }, { type: 'box', key: 's4', width: 'w-14' }
+      ]},
+      { label: 'Solve y', stepKey: 's5', elements: [
+        { type: 'text', value: 'y =' }, { type: 'box', key: 's5', width: 'w-14' }
+      ]}
+    ],
     parts: [
       { label: '(a) Equation before simplifying', key: 'a_eq', marks: 0 },
       { label: '(a) Simplified equation', key: 'a', marks: 1 },
       { label: '(b) Second equation', key: 'b', marks: 1 },
-      { label: '(c) y in terms of x', key: 'c_y_sub', marks: 0 },
-      { label: '(c) x =', key: 'small', marks: 2 },
-      { label: '(c) y =', key: 'large', marks: 1 }
+      { label: '(c) Solve simultaneous equations', key: 'solve', marks: 3 }
     ],
-    answer: { a_eq: '4x + 6y = 30', a: '2x + 3y = 15', b: '6x + y = 13', c_y_sub: '13 − 6x', small: '1.5', large: '4' }
+    answer: { 
+      a_eq: '4x + 6y = 30', a: '2x + 3y = 15', b: '6x + y = 13',
+      solve: '1.5 and 4',
+      solve_s1_a: '13 − 6x',
+      solve_s2_a: '2x', solve_s2_b: '39', solve_s2_c: '18',
+      solve_s3_a: '16', solve_s3_b: '-24',
+      solve_s4: '1.5',
+      solve_s5: '4'
+    }
   },
 
   // ========== Question 12 ==========
@@ -305,13 +351,34 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Original = 40 ÷ 0.80 = 50'
     ],
     type: 'multi-part',
+    equationSolveParts: ['a_calc', 'b_calc'],
+    equationStagesMap: {
+      'a_calc': [
+        { label: '% remaining', stepKey: 's1', elements: [
+          { type: 'text', value: '100 − 20 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '%' }
+        ]},
+        { label: 'Multiply', stepKey: 's2', elements: [
+          { type: 'box', key: 's2_a' }, { type: 'text', value: '× $85 = $' }, { type: 'box', key: 's2_b', width: 'w-14' }
+        ]}
+      ],
+      'b_calc': [
+        { label: '$40 is what %', stepKey: 's1', elements: [
+          { type: 'text', value: '$40 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '% of original' }
+        ]},
+        { label: 'Divide', stepKey: 's2', elements: [
+          { type: 'text', value: '$40 ÷' }, { type: 'box', key: 's2_a' }, { type: 'text', value: '= $' }, { type: 'box', key: 's2_b', width: 'w-14' }
+        ]}
+      ]
+    },
     parts: [
-      { label: '(a) % remaining after discount', key: 'a_pct', marks: 0 },
-      { label: '(a) Sale price of coat ($)', key: 'a', marks: 2 },
-      { label: '(b) $40 represents what %?', key: 'b_pct', marks: 0 },
-      { label: '(b) Original price of shirt ($)', key: 'b', marks: 2 }
+      { label: '(a) Sale price of coat', key: 'a_calc', marks: 2 },
+      { label: '(b) Original price of shirt', key: 'b_calc', marks: 2 }
     ],
-    answer: { a_pct: '80', a: '68', b_pct: '80', b: '50' }
+    answer: { 
+      a_calc: '68', b_calc: '50',
+      a_calc_s1_a: '80', a_calc_s2_a: '0.80', a_calc_s2_b: '68',
+      b_calc_s1_a: '80', b_calc_s2_a: '0.80', b_calc_s2_b: '50'
+    }
   },
 
   // ========== Question 14 ==========
@@ -406,13 +473,38 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Use y − 7 = 5/3(x − 6)'
     ],
     type: 'multi-part',
+    equationSolveParts: ['a_solve', 'b_solve'],
+    equationStagesMap: {
+      'a_solve': [
+        { label: 'Rearrange', stepKey: 's1', elements: [
+          { type: 'text', value: '5y =' }, { type: 'box', key: 's1_a', width: 'w-20' }
+        ]},
+        { label: 'Divide', stepKey: 's2', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's2_a', width: 'w-24' }
+        ]}
+      ],
+      'b_solve': [
+        { label: 'Gradient of L', stepKey: 's1', elements: [
+          { type: 'text', value: 'm_L =' }, { type: 'box', key: 's1_a', width: 'w-14' }
+        ]},
+        { label: 'Perp gradient', stepKey: 's2', elements: [
+          { type: 'text', value: 'm_P =' }, { type: 'box', key: 's2_a', width: 'w-14' }
+        ]},
+        { label: 'Equation', stepKey: 's3', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's3_a', width: 'w-28' }
+        ]}
+      ]
+    },
     parts: [
-      { label: '(a) y = ...', key: 'a', marks: 2 },
-      { label: '(b) Gradient of L', key: 'b_grad_l', marks: 0 },
-      { label: '(b) Perpendicular gradient', key: 'b_grad_p', marks: 0 },
-      { label: '(b) Equation of line P', key: 'b', marks: 3 }
+      { label: '(a) y = ...', key: 'a_solve', marks: 2 },
+      { label: '(b) Equation of line P', key: 'b_solve', marks: 3 }
     ],
-    answer: { a: 'y = 2 − 3x/5', b_grad_l: '-3/5', b_grad_p: '5/3', b: 'y = 5x/3 − 3' }
+    answer: { 
+      a_solve: 'y = 2 − 3x/5',
+      a_solve_s1_a: '10 − 3x', a_solve_s2_a: '2 − 3x/5',
+      b_solve: 'y = 5x/3 − 3',
+      b_solve_s1_a: '-3/5', b_solve_s2_a: '5/3', b_solve_s3_a: '5x/3 − 3'
+    }
   },
 
   // ========== Question 18 ==========
@@ -522,16 +614,32 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'y-intercept: when x = 0, y = −12'
     ],
     type: 'multi-part',
+    equationSolveParts: ['a_complete'],
+    equationStages: [
+      { label: 'Half coeff', stepKey: 's1', elements: [
+        { type: 'text', value: '4 ÷ 2 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '→ a =' }, { type: 'box', key: 's1_b' }
+      ]},
+      { label: 'Square', stepKey: 's2', elements: [
+        { type: 'text', value: '(x +' }, { type: 'box', key: 's2_a' }, { type: 'text', value: ')² −' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '− 12' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'text', value: '(x +' }, { type: 'box', key: 's3_a' }, { type: 'text', value: ')² +' }, { type: 'box', key: 's3_b', width: 'w-14' }
+      ]}
+    ],
     parts: [
-      { label: '(a) Value of a', key: 'a_val', marks: 0 },
-      { label: '(a) Value of b', key: 'b_val', marks: 0 },
-      { label: '(a) Completed square form', key: 'a', marks: 2 },
+      { label: '(a) Completed square form', key: 'a_complete', marks: 2 },
       { label: '(b) Turning point', key: 'b', marks: 1 },
       { label: '(c) x-intercepts', key: 'xint', marks: 2 },
       { label: '(c) y-intercept', key: 'yint', marks: 1 },
       { label: '(c) U-shape curve', key: 'curve', marks: 1 }
     ],
-    answer: { a_val: '2', b_val: '-16', a: '(x + 2)² − 16', b: '(-2, -16)', xint: '-6 and 2', yint: '-12', curve: 'done' }
+    answer: { 
+      a_complete: '(x + 2)² − 16',
+      a_complete_s1_a: '2', a_complete_s1_b: '2',
+      a_complete_s2_a: '2', a_complete_s2_b: '4',
+      a_complete_s3_a: '2', a_complete_s3_b: '-16',
+      b: '(-2, -16)', xint: '-6 and 2', yint: '-12', curve: 'done' 
+    }
   },
 
   // ========== Question 23 ==========
@@ -548,12 +656,31 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Area = (260/360) × π × 6² = 26π'
     ],
     type: 'multi-part',
-    parts: [
-      { label: 'Angle of sector OAB (°)', key: 'theta', marks: 0 },
-      { label: 'Major sector angle OCD (°)', key: 'major_angle', marks: 0 },
-      { label: 'Area of major sector OCD', key: 'answer', marks: 5 }
+    equationSolveParts: ['solve'],
+    equationStages: [
+      { label: 'Arc formula', stepKey: 's1', elements: [
+        { type: 'text', value: '5π = (θ/360) × 2π ×' }, { type: 'box', key: 's1_a' }
+      ]},
+      { label: 'θ =', stepKey: 's2', elements: [
+        { type: 'text', value: 'θ =' }, { type: 'box', key: 's2_a' }, { type: 'text', value: '°' }
+      ]},
+      { label: 'Major angle', stepKey: 's3', elements: [
+        { type: 'text', value: '360 −' }, { type: 'box', key: 's3_a' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_b' }, { type: 'text', value: '°' }
+      ]},
+      { label: 'Area', stepKey: 's4', elements: [
+        { type: 'text', value: '(' }, { type: 'box', key: 's4_a' }, { type: 'text', value: '/360) × π ×' }, { type: 'box', key: 's4_b' }, { type: 'text', value: '² =' }, { type: 'box', key: 's4_c', width: 'w-14' }
+      ]}
     ],
-    answer: { theta: '100', major_angle: '260', answer: '26π' }
+    parts: [
+      { label: 'Area of major sector OCD', key: 'solve', marks: 5 }
+    ],
+    answer: { 
+      solve: '26π',
+      solve_s1_a: '9',
+      solve_s2_a: '100',
+      solve_s3_a: '100', solve_s3_b: '260',
+      solve_s4_a: '260', solve_s4_b: '6', solve_s4_c: '26π'
+    }
   }
 };
 

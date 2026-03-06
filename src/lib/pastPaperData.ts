@@ -48,6 +48,19 @@ export interface FormulaTemplate {
   resultLabel: string;
 }
 
+export interface EquationStageElement {
+  type: 'text' | 'box';
+  value?: string; // for text elements
+  key?: string; // for box elements — suffix after questionKey_
+  width?: string; // for box elements, e.g. 'w-14'
+}
+
+export interface EquationStage {
+  label: string;
+  stepKey: string; // e.g. 's1' — used for grouped check
+  elements: EquationStageElement[];
+}
+
 export interface PastPaperQuestion {
   id: string;
   questionNumber: string;
@@ -64,6 +77,8 @@ export interface PastPaperQuestion {
   formulaTemplate?: FormulaTemplate; // For formula-fraction type
   fractionDivisionParts?: string[]; // Keys of parts that use fraction division workspace
   equationSolveParts?: string[]; // Keys of parts that use equation solve workspace
+  equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
+  equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
 }
 
 export interface PastPaperSection {

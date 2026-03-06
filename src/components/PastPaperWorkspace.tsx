@@ -1263,7 +1263,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 })}
                 {(question as any).equationSolveParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);
-                  const stages = (question as any).equationStages;
+                  const stagesMap = (question as any).equationStagesMap;
+                  const stages = stagesMap?.[partKey] || (question as any).equationStages;
                   return part && stages ? (
                     <div key={partKey} className="space-y-2">
                       <label className="flex items-center justify-between text-sm">

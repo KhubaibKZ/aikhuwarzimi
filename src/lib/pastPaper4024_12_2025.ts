@@ -214,12 +214,23 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Estimated area = 90 × 20 = 1800 mm²'
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Round', stepKey: 's1', elements: [
+        { type: 'text', value: '87.1 ≈' }, { type: 'box', key: 's1_a' }, { type: 'text', value: ',' }, { type: 'text', value: '23.6 ≈' }, { type: 'box', key: 's1_b' }
+      ]},
+      { label: 'Area', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a' }, { type: 'text', value: '×' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-16' }, { type: 'text', value: 'mm²' }
+      ]}
+    ],
     parts: [
-      { label: '87.1 to 1 s.f.', key: 'round1', marks: 0 },
-      { label: '23.6 to 1 s.f.', key: 'round2', marks: 0 },
       { label: 'Estimated area (mm²)', key: 'answer', marks: 2 }
     ],
-    answer: { round1: '90', round2: '20', answer: '1800' }
+    answer: { 
+      answer: '1800',
+      answer_s1_a: '90', answer_s1_b: '20',
+      answer_s2_a: '90', answer_s2_b: '20', answer_s2_c: '1800'
+    }
   },
 
   // ========== Question 10 ==========

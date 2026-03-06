@@ -79,6 +79,7 @@ export interface PastPaperQuestion {
   equationSolveParts?: string[]; // Keys of parts that use equation solve workspace
   equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
+  diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
 }
 
 export interface PastPaperSection {

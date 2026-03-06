@@ -1052,11 +1052,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             {question.id === 'pp_4024_s25_12_q6' && (
               <div className="mt-4">
                 <BearingDiagram
-                  pointA={{ x: 120, y: 240 }}
-                  pointB={{ x: 300, y: 240 }}
+                  pointA={{ x: 80, y: 120 }}
+                  pointB={{ x: 340, y: 300 }}
                   scaleLabel="1 cm : 5 km"
                   correctBearingA={60}
                   correctBearingB={320}
+                  onMarkC={(correct) => {
+                    handleAnswerChange('b', correct ? 'diagram' : 'incorrect');
+                  }}
                 />
               </div>
             )}
@@ -1306,7 +1309,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
               <StepWorkspace
-                steps={question.parts.map(p => ({ ...p }))}
+                steps={question.parts.filter(p => !(question.diagramParts || []).includes(p.key)).map(p => ({ ...p }))}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}

@@ -352,17 +352,27 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc'],
-    equationStages: [
-      { label: '% remaining', stepKey: 's1', elements: [
-        { type: 'text', value: '100 − 20 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '%' }
-      ]},
-      { label: 'Sale price', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a' }, { type: 'text', value: '× $85 = $' }, { type: 'box', key: 's2_b', width: 'w-14' }
-      ]}
-    ],
+    equationStagesMap: {
+      'a_calc': [
+        { label: '% remaining', stepKey: 's1', elements: [
+          { type: 'text', value: '100 − 20 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '%' }
+        ]},
+        { label: 'Multiply', stepKey: 's2', elements: [
+          { type: 'box', key: 's2_a' }, { type: 'text', value: '× $85 = $' }, { type: 'box', key: 's2_b', width: 'w-14' }
+        ]}
+      ],
+      'b_calc': [
+        { label: '$40 is what %', stepKey: 's1', elements: [
+          { type: 'text', value: '$40 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '% of original' }
+        ]},
+        { label: 'Divide', stepKey: 's2', elements: [
+          { type: 'text', value: '$40 ÷' }, { type: 'box', key: 's2_a' }, { type: 'text', value: '= $' }, { type: 'box', key: 's2_b', width: 'w-14' }
+        ]}
+      ]
+    },
     parts: [
-      { label: '(a) Calculation', key: 'a_calc', marks: 2 },
-      { label: '(b) Reverse calculation', key: 'b_calc', marks: 2 }
+      { label: '(a) Sale price of coat', key: 'a_calc', marks: 2 },
+      { label: '(b) Original price of shirt', key: 'b_calc', marks: 2 }
     ],
     answer: { 
       a_calc: '68', b_calc: '50',

@@ -226,7 +226,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
     const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
     
-    if (isFractionStep && typeof question.answer === 'object') {
+    if (isStructuredStep && typeof question.answer === 'object') {
       // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)
       const subKeys = Object.keys(question.answer).filter(k => k.startsWith(partKey + '_'));
       const userSubAnswers: Record<string, string> = {};

@@ -633,12 +633,31 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Area = (260/360) × π × 6² = 26π'
     ],
     type: 'multi-part',
-    parts: [
-      { label: 'Angle of sector OAB (°)', key: 'theta', marks: 0 },
-      { label: 'Major sector angle OCD (°)', key: 'major_angle', marks: 0 },
-      { label: 'Area of major sector OCD', key: 'answer', marks: 5 }
+    equationSolveParts: ['solve'],
+    equationStages: [
+      { label: 'Arc formula', stepKey: 's1', elements: [
+        { type: 'text', value: '5π = (θ/360) × 2π ×' }, { type: 'box', key: 's1_a' }
+      ]},
+      { label: 'θ =', stepKey: 's2', elements: [
+        { type: 'text', value: 'θ =' }, { type: 'box', key: 's2_a' }, { type: 'text', value: '°' }
+      ]},
+      { label: 'Major angle', stepKey: 's3', elements: [
+        { type: 'text', value: '360 −' }, { type: 'box', key: 's3_a' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_b' }, { type: 'text', value: '°' }
+      ]},
+      { label: 'Area', stepKey: 's4', elements: [
+        { type: 'text', value: '(' }, { type: 'box', key: 's4_a' }, { type: 'text', value: '/360) × π ×' }, { type: 'box', key: 's4_b' }, { type: 'text', value: '² =' }, { type: 'box', key: 's4_c', width: 'w-14' }
+      ]}
     ],
-    answer: { theta: '100', major_angle: '260', answer: '26π' }
+    parts: [
+      { label: 'Area of major sector OCD', key: 'solve', marks: 5 }
+    ],
+    answer: { 
+      solve: '26π',
+      solve_s1_a: '9',
+      solve_s2_a: '100',
+      solve_s3_a: '100', solve_s3_b: '260',
+      solve_s4_a: '260', solve_s4_b: '6', solve_s4_c: '26π'
+    }
   }
 };
 

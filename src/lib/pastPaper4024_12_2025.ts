@@ -351,13 +351,24 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Original = 40 ÷ 0.80 = 50'
     ],
     type: 'multi-part',
-    parts: [
-      { label: '(a) % remaining after discount', key: 'a_pct', marks: 0 },
-      { label: '(a) Sale price of coat ($)', key: 'a', marks: 2 },
-      { label: '(b) $40 represents what %?', key: 'b_pct', marks: 0 },
-      { label: '(b) Original price of shirt ($)', key: 'b', marks: 2 }
+    equationSolveParts: ['a_calc', 'b_calc'],
+    equationStages: [
+      { label: '% remaining', stepKey: 's1', elements: [
+        { type: 'text', value: '100 − 20 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '%' }
+      ]},
+      { label: 'Sale price', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a' }, { type: 'text', value: '× $85 = $' }, { type: 'box', key: 's2_b', width: 'w-14' }
+      ]}
     ],
-    answer: { a_pct: '80', a: '68', b_pct: '80', b: '50' }
+    parts: [
+      { label: '(a) Calculation', key: 'a_calc', marks: 2 },
+      { label: '(b) Reverse calculation', key: 'b_calc', marks: 2 }
+    ],
+    answer: { 
+      a_calc: '68', b_calc: '50',
+      a_calc_s1_a: '80', a_calc_s2_a: '0.80', a_calc_s2_b: '68',
+      b_calc_s1_a: '80', b_calc_s2_a: '0.80', b_calc_s2_b: '50'
+    }
   },
 
   // ========== Question 14 ==========

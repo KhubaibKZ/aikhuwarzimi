@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
+import { EquationStage } from '@/lib/pastPaperData';
 
 interface EquationSolveWorkspaceProps {
   questionKey: string;
+  stages: EquationStage[];
   answers: Record<string, string>;
   feedback: Record<string, 'correct' | 'incorrect' | null>;
   onAnswerChange: (key: string, value: string) => void;
@@ -21,6 +23,7 @@ interface EquationSolveWorkspaceProps {
 
 export function EquationSolveWorkspace({
   questionKey,
+  stages,
   answers,
   feedback,
   onAnswerChange,
@@ -125,67 +128,48 @@ export function EquationSolveWorkspace({
     );
   };
 
-  // Keys for this equation: 5(4 − x) = 35
-  // Step 1 (Expand): □ − □x = 35
-  const s1_a = k('s1_a');   // 20
-  const s1_b = k('s1_b');   // 5
-  // Step 2 (Rearrange): −□x = □
-  const s2_a = k('s2_a');   // 5
-  const s2_b = k('s2_b');   // 15
-  // Step 3 (Solve): x = □
-  const s3 = k('s3');       // -3
-
   return (
     <div className="space-y-5">
-      {/* Step 1: Expand */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-muted-foreground font-medium mr-1">Expand</span>
-          {box(s1_a)}
-          <span className="font-mono text-base">−</span>
-          {box(s1_b)}
-          <span className="font-mono text-base italic">x</span>
-          <span className="font-mono text-base">=</span>
-          <span className="font-mono text-base">35</span>
-          {checkBtn(k('s1'), 'Expand the brackets')}
-          {stepFeedbackIcon(k('s1'))}
-        </div>
-        {renderAiResponse(k('s1'))}
-      </div>
-
-      {/* Step 2: Rearrange */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-muted-foreground font-medium mr-1">Rearrange</span>
-          <span className="font-mono text-base">−</span>
-          {box(s2_a)}
-          <span className="font-mono text-base italic">x</span>
-          <span className="font-mono text-base">=</span>
-          {box(s2_b)}
-          {checkBtn(k('s2'), 'Rearrange the equation')}
-          {stepFeedbackIcon(k('s2'))}
-        </div>
-        {renderAiResponse(k('s2'))}
-      </div>
-
-      {/* Step 3: Solve */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-muted-foreground font-medium mr-1">Solve</span>
-          <span className="font-mono text-base italic">x</span>
-          <span className="font-mono text-base">=</span>
-          {box(s3, 'w-14')}
-          {checkBtn(k('s3'), 'Solve for x')}
-          {stepFeedbackIcon(k('s3'))}
-        </div>
-        {renderAiResponse(k('s3'))}
-      </div>
+      {stages.map((stage) => {
+        const fullStepKey = k(stage.stepKey);
+        return (
+          <div key={stage.stepKey} className="space-y-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-muted-foreground font-medium mr-1">{stage.label}</span>
+              {stage.elements.map((el, i) => {
+                if (el.type === 'text') {
+                  return <span key={i} className="font-mono text-base">{el.value}</span>;
+                }
+                if (el.type === 'box' && el.key) {
+                  return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
+                }
+                return null;
+              })}
+              {checkBtn(fullStepKey, stage.label)}
+              {stepFeedbackIcon(fullStepKey)}
+            </div>
+            {renderAiResponse(fullStepKey)}
+          </div>
+        );
+      })}
 
       {/* Show correct answer after submission */}
       {isSubmitted && correctAnswers && (
-        <p className="text-sm text-green-600 font-medium">
-          Correct: x = {correctAnswers[questionKey] || '-3'}
-        </p>
+        <div className="text-sm text-green-600 font-medium space-y-0.5">
+          {stages.map(stage => {
+            const fullStepKey = k(stage.stepKey);
+            if (feedback[fullStepKey] === 'incorrect') {
+              // Show correct values for each box in this stage
+              const boxElements = stage.elements.filter(el => el.type === 'box' && el.key);
+              return (
+                <p key={stage.stepKey}>
+                  {stage.label}: {boxElements.map(el => correctAnswers[k(el.key!)] || '').join(', ')}
+                </p>
+              );
+            }
+            return null;
+          })}
+        </div>
       )}
 
       {/* Keyboard */}

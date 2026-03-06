@@ -45,7 +45,8 @@ import {
   CylinderDiagram,
   VectorTriangleDiagram,
   QuadrilateralDiagram,
-  HistogramDiagram
+  HistogramDiagram,
+  BearingDiagram
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {

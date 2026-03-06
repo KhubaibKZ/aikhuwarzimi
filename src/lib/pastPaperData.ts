@@ -63,6 +63,7 @@ export interface PastPaperQuestion {
   image?: string; // Optional image for the question
   formulaTemplate?: FormulaTemplate; // For formula-fraction type
   fractionDivisionParts?: string[]; // Keys of parts that use fraction division workspace
+  equationSolveParts?: string[]; // Keys of parts that use equation solve workspace
 }
 
 export interface PastPaperSection {

@@ -62,6 +62,7 @@ export interface PastPaperQuestion {
   lcmNumbers?: [number, number]; // For LCM ladder questions
   image?: string; // Optional image for the question
   formulaTemplate?: FormulaTemplate; // For formula-fraction type
+  fractionDivisionParts?: string[]; // Keys of parts that use fraction division workspace
 }
 
 export interface PastPaperSection {

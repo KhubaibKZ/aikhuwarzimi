@@ -463,13 +463,25 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Use y − 7 = 5/3(x − 6)'
     ],
     type: 'multi-part',
-    parts: [
-      { label: '(a) y = ...', key: 'a', marks: 2 },
-      { label: '(b) Gradient of L', key: 'b_grad_l', marks: 0 },
-      { label: '(b) Perpendicular gradient', key: 'b_grad_p', marks: 0 },
-      { label: '(b) Equation of line P', key: 'b', marks: 3 }
+    equationSolveParts: ['a_solve', 'b_solve'],
+    equationStages: [
+      { label: 'Rearrange', stepKey: 's1', elements: [
+        { type: 'text', value: '5y =' }, { type: 'box', key: 's1_a', width: 'w-20' }
+      ]},
+      { label: 'Divide', stepKey: 's2', elements: [
+        { type: 'text', value: 'y =' }, { type: 'box', key: 's2_a', width: 'w-24' }
+      ]}
     ],
-    answer: { a: 'y = 2 − 3x/5', b_grad_l: '-3/5', b_grad_p: '5/3', b: 'y = 5x/3 − 3' }
+    parts: [
+      { label: '(a) y = ...', key: 'a_solve', marks: 2 },
+      { label: '(b) Equation of line P', key: 'b_solve', marks: 3 }
+    ],
+    answer: { 
+      a_solve: 'y = 2 − 3x/5',
+      a_solve_s1_a: '10 − 3x', a_solve_s2_a: '2 − 3x/5',
+      b_solve: 'y = 5x/3 − 3',
+      b_solve_s1_a: '5/3', b_solve_s2_a: 'y = 5x/3 − 3'
+    }
   },
 
   // ========== Question 18 ==========

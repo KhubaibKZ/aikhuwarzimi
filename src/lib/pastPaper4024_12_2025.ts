@@ -65,8 +65,13 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'A cube net has 6 connected squares, each 3 cm × 3 cm',
       'Draw a cross-shaped net or T-shaped net'
     ],
-    type: 'short',
-    answer: 'Net of cube with edge length 3 cm'
+    type: 'multi-part',
+    parts: [
+      { label: 'Side length (cm)', key: 'side', marks: 0 },
+      { label: 'Number of faces in a net', key: 'faces', marks: 0 },
+      { label: 'Net drawn correctly', key: 'answer', marks: 3 }
+    ],
+    answer: { side: '3', faces: '6', answer: 'done' }
   },
 
   // ========== Question 4 ==========

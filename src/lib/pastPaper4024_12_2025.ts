@@ -269,15 +269,39 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Solve: 2x + 39 − 18x = 15 → −16x = −24 → x = 1.5'
     ],
     type: 'multi-part',
+    equationSolveParts: ['solve'],
+    equationStages: [
+      { label: 'Substitute', stepKey: 's1', elements: [
+        { type: 'text', value: '2x + 3(' }, { type: 'box', key: 's1_a', width: 'w-20' }, { type: 'text', value: ') = 15' }
+      ]},
+      { label: 'Expand', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a' }, { type: 'text', value: '+' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_c' }, { type: 'text', value: 'x = 15' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'text', value: '−' }, { type: 'box', key: 's3_a' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's3_b' }
+      ]},
+      { label: 'Solve x', stepKey: 's4', elements: [
+        { type: 'text', value: 'x =' }, { type: 'box', key: 's4', width: 'w-14' }
+      ]},
+      { label: 'Solve y', stepKey: 's5', elements: [
+        { type: 'text', value: 'y =' }, { type: 'box', key: 's5', width: 'w-14' }
+      ]}
+    ],
     parts: [
       { label: '(a) Equation before simplifying', key: 'a_eq', marks: 0 },
       { label: '(a) Simplified equation', key: 'a', marks: 1 },
       { label: '(b) Second equation', key: 'b', marks: 1 },
-      { label: '(c) y in terms of x', key: 'c_y_sub', marks: 0 },
-      { label: '(c) x =', key: 'small', marks: 2 },
-      { label: '(c) y =', key: 'large', marks: 1 }
+      { label: '(c) Solve simultaneous equations', key: 'solve', marks: 3 }
     ],
-    answer: { a_eq: '4x + 6y = 30', a: '2x + 3y = 15', b: '6x + y = 13', c_y_sub: '13 − 6x', small: '1.5', large: '4' }
+    answer: { 
+      a_eq: '4x + 6y = 30', a: '2x + 3y = 15', b: '6x + y = 13',
+      solve: '1.5 and 4',
+      solve_s1_a: '13 − 6x',
+      solve_s2_a: '2x', solve_s2_b: '39', solve_s2_c: '18',
+      solve_s3_a: '16', solve_s3_b: '-24',
+      solve_s4: '1.5',
+      solve_s5: '4'
+    }
   },
 
   // ========== Question 12 ==========

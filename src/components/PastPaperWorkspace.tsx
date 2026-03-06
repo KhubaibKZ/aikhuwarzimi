@@ -223,8 +223,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
   const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
-    // Detect fraction step keys (e.g. c_s1, c_s2) — collect all sub-field answers
-    const isFractionStep = /^[a-z]_s\d+$/.test(partKey);
+    // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
+    const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
     
     if (isFractionStep && typeof question.answer === 'object') {
       // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)

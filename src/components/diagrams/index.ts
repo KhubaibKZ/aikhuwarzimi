@@ -25,3 +25,4 @@ export { CylinderDiagram } from './CylinderDiagram';
 export { VectorTriangleDiagram } from './VectorTriangleDiagram';
 export { QuadrilateralDiagram } from './QuadrilateralDiagram';
 export { HistogramDiagram } from './HistogramDiagram';
+export { BearingDiagram } from './BearingDiagram';

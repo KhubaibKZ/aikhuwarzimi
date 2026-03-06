@@ -591,16 +591,32 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'y-intercept: when x = 0, y = −12'
     ],
     type: 'multi-part',
+    equationSolveParts: ['a_complete'],
+    equationStages: [
+      { label: 'Half coeff', stepKey: 's1', elements: [
+        { type: 'text', value: '4 ÷ 2 =' }, { type: 'box', key: 's1_a' }, { type: 'text', value: '→ a =' }, { type: 'box', key: 's1_b' }
+      ]},
+      { label: 'Square', stepKey: 's2', elements: [
+        { type: 'text', value: '(x +' }, { type: 'box', key: 's2_a' }, { type: 'text', value: ')² −' }, { type: 'box', key: 's2_b' }, { type: 'text', value: '− 12' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'text', value: '(x +' }, { type: 'box', key: 's3_a' }, { type: 'text', value: ')² +' }, { type: 'box', key: 's3_b', width: 'w-14' }
+      ]}
+    ],
     parts: [
-      { label: '(a) Value of a', key: 'a_val', marks: 0 },
-      { label: '(a) Value of b', key: 'b_val', marks: 0 },
-      { label: '(a) Completed square form', key: 'a', marks: 2 },
+      { label: '(a) Completed square form', key: 'a_complete', marks: 2 },
       { label: '(b) Turning point', key: 'b', marks: 1 },
       { label: '(c) x-intercepts', key: 'xint', marks: 2 },
       { label: '(c) y-intercept', key: 'yint', marks: 1 },
       { label: '(c) U-shape curve', key: 'curve', marks: 1 }
     ],
-    answer: { a_val: '2', b_val: '-16', a: '(x + 2)² − 16', b: '(-2, -16)', xint: '-6 and 2', yint: '-12', curve: 'done' }
+    answer: { 
+      a_complete: '(x + 2)² − 16',
+      a_complete_s1_a: '2', a_complete_s1_b: '2',
+      a_complete_s2_a: '2', a_complete_s2_b: '4',
+      a_complete_s3_a: '2', a_complete_s3_b: '-16',
+      b: '(-2, -16)', xint: '-6 and 2', yint: '-12', curve: 'done' 
+    }
   },
 
   // ========== Question 23 ==========

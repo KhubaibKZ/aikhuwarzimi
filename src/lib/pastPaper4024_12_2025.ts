@@ -45,10 +45,11 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
     ],
     type: 'multi-part',
     parts: [
+      { label: 'Number of green balls', key: 'green', marks: 0 },
       { label: '(a) P(yellow)', key: 'a', marks: 1 },
       { label: '(b) P(not blue)', key: 'b', marks: 1 }
     ],
-    answer: { a: '4/11', b: '6/11' }
+    answer: { green: '2', a: '4/11', b: '6/11' }
   },
 
   // ========== Question 3 ==========

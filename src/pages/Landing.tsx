@@ -48,8 +48,7 @@ export default function Landing() {
 
   // Redirect authenticated users to dashboard
   if (!authLoading && user) {
-    navigate('/dashboard', { replace: true });
-    return null;
+    return <Navigate to="/dashboard" replace />;
   }
 
 

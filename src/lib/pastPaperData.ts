@@ -77,7 +77,8 @@ export interface PastPaperQuestion {
   formulaTemplate?: FormulaTemplate; // For formula-fraction type
   fractionDivisionParts?: string[]; // Keys of parts that use fraction division workspace
   equationSolveParts?: string[]; // Keys of parts that use equation solve workspace
-  equationStages?: EquationStage[]; // Configurable visual equation-box stages
+  equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
+  equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
 }
 
 export interface PastPaperSection {

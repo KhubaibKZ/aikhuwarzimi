@@ -1212,7 +1212,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               /* Multi-part questions - use StepWorkspace + optional fraction division */
               <div className="space-y-4">
                 <StepWorkspace
-                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key)).map(p => ({
+                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key)).map(p => ({
                       ...p,
                       suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
                               p.label.includes('hour') ? ' hr' :

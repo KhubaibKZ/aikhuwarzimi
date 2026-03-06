@@ -229,6 +229,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     if (isStructuredStep && typeof question.answer === 'object') {
       // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)
       const subKeys = Object.keys(question.answer).filter(k => k.startsWith(partKey + '_'));
+      
+      // If no sub-keys, this step key is itself a direct answer — fall through to standard check
+      if (subKeys.length === 0) {
+        // Fall through to standard single-value check below
+      } else {
       const userSubAnswers: Record<string, string> = {};
       const correctSubAnswers: Record<string, string> = {};
       let hasEmpty = false;

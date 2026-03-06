@@ -1129,27 +1129,53 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                 keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
-              /* Multi-part questions - use StepWorkspace */
-              <StepWorkspace
-                steps={question.parts.map(p => ({
-                    ...p,
-                    suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
-                            p.label.includes('hour') ? ' hr' :
-                            p.label.includes('minute') ? ' min' :
-                            p.label.includes('%') ? '%' : ''
-                  }))
-                }
-                answers={answers}
-                feedback={feedback}
-                onAnswerChange={handleAnswerChange}
-                onCheckWork={handleCheckWorkForPart}
-                isLoading={isLoading}
-                loadingStepKey={loadingPartKey}
-                isSubmitted={isSubmitted}
-                correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
-                aiResponse={aiResponse}
-                keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
-              />
+              /* Multi-part questions - use StepWorkspace + optional fraction division */
+              <div className="space-y-4">
+                <StepWorkspace
+                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key)).map(p => ({
+                      ...p,
+                      suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
+                              p.label.includes('hour') ? ' hr' :
+                              p.label.includes('minute') ? ' min' :
+                              p.label.includes('%') ? '%' : ''
+                    }))
+                  }
+                  answers={answers}
+                  feedback={feedback}
+                  onAnswerChange={handleAnswerChange}
+                  onCheckWork={handleCheckWorkForPart}
+                  isLoading={isLoading}
+                  loadingStepKey={loadingPartKey}
+                  isSubmitted={isSubmitted}
+                  correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                  aiResponse={aiResponse}
+                  keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                />
+                {(question as any).fractionDivisionParts?.map((partKey: string) => {
+                  const part = question.parts?.find(p => p.key === partKey);
+                  return part ? (
+                    <div key={partKey} className="space-y-2">
+                      <label className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{part.label}</span>
+                        <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
+                      </label>
+                      <FractionDivisionWorkspace
+                        questionKey={partKey}
+                        answers={answers}
+                        feedback={feedback}
+                        onAnswerChange={handleAnswerChange}
+                        onCheckWork={handleCheckWorkForPart}
+                        isLoading={isLoading}
+                        loadingStepKey={loadingPartKey}
+                        isSubmitted={isSubmitted}
+                        correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                        aiResponse={aiResponse}
+                        keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                      />
+                    </div>
+                  ) : null;
+                })}
+              </div>
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
               <StepWorkspace

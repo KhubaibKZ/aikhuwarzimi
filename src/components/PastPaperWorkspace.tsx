@@ -223,6 +223,86 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
   const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
+    // Detect fraction step keys (e.g. c_s1, c_s2) — collect all sub-field answers
+    const isFractionStep = /^[a-z]_s\d+$/.test(partKey);
+    
+    if (isFractionStep && typeof question.answer === 'object') {
+      // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)
+      const subKeys = Object.keys(question.answer).filter(k => k.startsWith(partKey + '_'));
+      const userSubAnswers: Record<string, string> = {};
+      const correctSubAnswers: Record<string, string> = {};
+      let hasEmpty = false;
+      let allCorrect = true;
+
+      for (const sk of subKeys) {
+        const uVal = normalizeAnswer(answers[sk] || '');
+        const cVal = normalizeAnswer(question.answer[sk] || '');
+        userSubAnswers[sk] = answers[sk] || '';
+        correctSubAnswers[sk] = question.answer[sk] || '';
+        if (!uVal) hasEmpty = true;
+        if (uVal !== cVal) allCorrect = false;
+      }
+
+      if (hasEmpty) {
+        setAiResponse({
+          type: 'guidance',
+          content: `Fill in all the boxes for this step before checking.`,
+          partKey
+        });
+        return;
+      }
+
+      // Set feedback per sub-key and overall step
+      const newFeedback = { ...feedback };
+      for (const sk of subKeys) {
+        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(question.answer[sk] || '');
+        newFeedback[sk] = correct ? 'correct' : 'incorrect';
+      }
+      newFeedback[partKey] = allCorrect ? 'correct' : 'incorrect';
+      setFeedback(newFeedback);
+      setIsChecked(true);
+      setAttemptCount(prev => ({ ...prev, [partKey]: (prev[partKey] || 0) + 1 }));
+
+      if (allCorrect) {
+        setAiResponse({ type: 'guidance', content: `Excellent work on this step! All values are correct.`, partKey });
+        return;
+      }
+
+      // Get AI guidance for incorrect fraction step
+      setIsLoading(true);
+      setLoadingType('check');
+      setLoadingPartKey(partKey);
+      aiUsageRef.current += 1;
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-tutor', {
+          body: {
+            question: question.question,
+            actionType: 'checkWork',
+            userAnswers: userSubAnswers,
+            correctAnswers: correctSubAnswers,
+            topic: question.title,
+            hints: question.hints,
+            attemptCount: (attemptCount[partKey] || 0) + 1,
+            hasMissing: false,
+            hasWrong: true,
+            specificPart: partLabel,
+            workingContent: ''
+          }
+        });
+        if (error) throw error;
+        setAiResponse({ type: 'guidance', content: data.hint, partKey });
+      } catch (error) {
+        console.error('Check work error:', error);
+        setAiResponse({ type: 'guidance', content: `Review your values for ${partLabel}. Check each number carefully.`, partKey });
+      } finally {
+        setIsLoading(false);
+        setLoadingType(null);
+        setLoadingPartKey(null);
+      }
+      return;
+    }
+
+    // Standard single-value check
     const rawAnswer = directAnswer !== undefined ? directAnswer : (answers[partKey] || '');
     const userAnswer = normalizeAnswer(rawAnswer);
     const correctAnswer = normalizeAnswer(
@@ -273,7 +353,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
           hasMissing: false,
           hasWrong: true,
           specificPart: partLabel,
-          workingContent: answers['working'] || '' // Include working space content for AI review
+          workingContent: answers['working'] || ''
         }
       });
 

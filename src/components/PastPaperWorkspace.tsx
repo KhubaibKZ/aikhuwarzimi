@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
-import { StepWorkspace, FractionDivisionWorkspace } from '@/components/workspace';
+import { StepWorkspace, FractionDivisionWorkspace, EquationSolveWorkspace } from '@/components/workspace';
 import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
@@ -223,12 +223,17 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
   const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
-    // Detect fraction step keys (e.g. c_s1, c_s2) — collect all sub-field answers
-    const isFractionStep = /^[a-z]_s\d+$/.test(partKey);
+    // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
+    const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
     
-    if (isFractionStep && typeof question.answer === 'object') {
+    if (isStructuredStep && typeof question.answer === 'object') {
       // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)
       const subKeys = Object.keys(question.answer).filter(k => k.startsWith(partKey + '_'));
+      
+      // If no sub-keys, this step key is itself a direct answer — fall through to standard check
+      if (subKeys.length === 0) {
+        // Fall through to standard single-value check below
+      } else {
       const userSubAnswers: Record<string, string> = {};
       const correctSubAnswers: Record<string, string> = {};
       let hasEmpty = false;
@@ -300,6 +305,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         setLoadingPartKey(null);
       }
       return;
+      } // end else (has sub-keys)
     }
 
     // Standard single-value check
@@ -1212,7 +1218,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               /* Multi-part questions - use StepWorkspace + optional fraction division */
               <div className="space-y-4">
                 <StepWorkspace
-                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key)).map(p => ({
+                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key)).map(p => ({
                       ...p,
                       suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
                               p.label.includes('hour') ? ' hr' :
@@ -1240,6 +1246,30 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                         <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
                       </label>
                       <FractionDivisionWorkspace
+                        questionKey={partKey}
+                        answers={answers}
+                        feedback={feedback}
+                        onAnswerChange={handleAnswerChange}
+                        onCheckWork={handleCheckWorkForPart}
+                        isLoading={isLoading}
+                        loadingStepKey={loadingPartKey}
+                        isSubmitted={isSubmitted}
+                        correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                        aiResponse={aiResponse}
+                        keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                      />
+                    </div>
+                  ) : null;
+                })}
+                {(question as any).equationSolveParts?.map((partKey: string) => {
+                  const part = question.parts?.find(p => p.key === partKey);
+                  return part ? (
+                    <div key={partKey} className="space-y-2">
+                      <label className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{part.label}</span>
+                        <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
+                      </label>
+                      <EquationSolveWorkspace
                         questionKey={partKey}
                         answers={answers}
                         feedback={feedback}

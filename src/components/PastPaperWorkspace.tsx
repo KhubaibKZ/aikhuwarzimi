@@ -1255,6 +1255,30 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                     </div>
                   ) : null;
                 })}
+                {(question as any).equationSolveParts?.map((partKey: string) => {
+                  const part = question.parts?.find(p => p.key === partKey);
+                  return part ? (
+                    <div key={partKey} className="space-y-2">
+                      <label className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{part.label}</span>
+                        <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
+                      </label>
+                      <EquationSolveWorkspace
+                        questionKey={partKey}
+                        answers={answers}
+                        feedback={feedback}
+                        onAnswerChange={handleAnswerChange}
+                        onCheckWork={handleCheckWorkForPart}
+                        isLoading={isLoading}
+                        loadingStepKey={loadingPartKey}
+                        isSubmitted={isSubmitted}
+                        correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                        aiResponse={aiResponse}
+                        keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                      />
+                    </div>
+                  ) : null;
+                })}
               </div>
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */

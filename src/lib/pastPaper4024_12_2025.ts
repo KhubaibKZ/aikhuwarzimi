@@ -88,8 +88,14 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Angle BEC = 180° − 110° = 70° (angles on a straight line)',
       'In triangle ABE: x + 48 + angle BEA = 180°'
     ],
-    type: 'short',
-    answer: '22'
+    type: 'multi-part',
+    parts: [
+      { label: 'Angle EDC (isosceles)', key: 'edc', marks: 0 },
+      { label: 'Angle DEC (triangle sum)', key: 'dec', marks: 0 },
+      { label: 'Angle BEC (straight line)', key: 'bec', marks: 0 },
+      { label: 'x =', key: 'x', marks: 3 }
+    ],
+    answer: { edc: '35', dec: '110', bec: '70', x: '22' }
   },
 
   // ========== Question 5 ==========
@@ -104,8 +110,13 @@ export const questions4024_12_2025: Record<string, PastPaperQuestion> = {
       'Subtract 20 from both sides: −5x = 15',
       'Divide by −5: x = −3'
     ],
-    type: 'short',
-    answer: '-3'
+    type: 'multi-part',
+    parts: [
+      { label: 'Expand: constant term', key: 's1_const', marks: 0 },
+      { label: 'Expand: coefficient of x', key: 's1_coeff', marks: 0 },
+      { label: 'x =', key: 'answer', marks: 2 }
+    ],
+    answer: { s1_const: '20', s1_coeff: '-5', answer: '-3' }
   },
 
   // ========== Question 6 ==========

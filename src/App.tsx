@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
+import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const AppRoutes = () => (
       <Route path="/dashboard" element={<Index />} />
       <Route path="/analytics" element={<StudentAnalytics />} />
       <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/student" element={<StudentDashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>

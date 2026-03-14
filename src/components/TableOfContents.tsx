@@ -26,7 +26,7 @@ interface TableOfContentsProps {
   studentMode?: boolean;
 }
 
-export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);

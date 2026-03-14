@@ -6,9 +6,10 @@ import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface CourseSelectionProps {
   onSelectCourse: (courseId: string) => void;
+  enforceAssignments?: boolean;
 }
 
-export function CourseSelection({ onSelectCourse }: CourseSelectionProps) {
+export function CourseSelection({ onSelectCourse, enforceAssignments = false }: CourseSelectionProps) {
   const { isCourseAssigned, loading } = useStudentAssignments();
   const { isAdmin } = useAdminRole();
 

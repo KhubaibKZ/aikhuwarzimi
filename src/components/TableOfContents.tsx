@@ -110,7 +110,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
               <h2 className="mb-4 text-xl font-bold text-foreground">{syllabus.courseName}</h2>
               {syllabus.topics.map((topic, index) => {
           const topicProgress = getTopicProgress(topic);
-          const hasUnlockedSubtopics = topic.subtopics.some(s => !s.locked);
+          const chapterAssigned = isAdmin || isChapterAssigned(courseId, String(topic.id));
+          const hasUnlockedSubtopics = chapterAssigned && topic.subtopics.some(s => !s.locked);
           
           return (
             <div

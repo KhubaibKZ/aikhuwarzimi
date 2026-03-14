@@ -197,9 +197,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
 
   // Hint: Show concept related to the question
   const handleHint = async () => {
+    // Check quota
+    if (paperQuota && paperQuota.hints <= 0) {
+      toast({ title: 'No hints remaining', description: 'You have used all your hint quota for this paper.', variant: 'destructive' });
+      return;
+    }
+
     setIsLoading(true);
     setLoadingType('hint');
     aiUsageRef.current += 1;
+
+    // Decrement hint in DB if quota exists
+    if (user && matchedPaper && paperQuota) {
+      await supabase.rpc('decrement_hint', { p_student_id: user.id, p_paper_id: matchedPaper.id });
+      refetchAssignments();
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -215,7 +228,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       setAiResponse({ type: 'hint', content: data.hint });
     } catch (error) {
       console.error('Hint error:', error);
-      // Fallback to static hints
       if (question.hints.length > 0) {
         const totalAttempts = Object.values(attemptCount).reduce((sum, count) => sum + count, 0);
         const hintIndex = Math.min(totalAttempts, question.hints.length - 1);

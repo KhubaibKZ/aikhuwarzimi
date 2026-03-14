@@ -133,6 +133,7 @@ export type Database = {
           time_spent_seconds: number | null
           total_steps: number | null
           user_id: string
+          workspace_mode: Database["public"]["Enums"]["workspace_mode"]
         }
         Insert: {
           accuracy_score?: number | null
@@ -150,6 +151,7 @@ export type Database = {
           time_spent_seconds?: number | null
           total_steps?: number | null
           user_id: string
+          workspace_mode?: Database["public"]["Enums"]["workspace_mode"]
         }
         Update: {
           accuracy_score?: number | null
@@ -167,6 +169,7 @@ export type Database = {
           time_spent_seconds?: number | null
           total_steps?: number | null
           user_id?: string
+          workspace_mode?: Database["public"]["Enums"]["workspace_mode"]
         }
         Relationships: []
       }
@@ -211,6 +214,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "student"
+      workspace_mode: "general" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -339,6 +343,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "student"],
+      workspace_mode: ["general", "student"],
     },
   },
 } as const

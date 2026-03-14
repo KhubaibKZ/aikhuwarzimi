@@ -29,6 +29,7 @@ const mathSymbols = [
 export default function Landing() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useAdminRole();
   const { toast } = useToast();
   const [isDark, setIsDark] = useState(() => {
     if (!document.documentElement.classList.contains('dark')) {
@@ -47,9 +48,12 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Redirect authenticated users to dashboard
-  if (!authLoading && user) {
-    return <Navigate to="/dashboard" replace />;
+  // Redirect authenticated users based on role
+  if (!authLoading && !roleLoading && user) {
+    if (isAdmin) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    return <Navigate to="/student" replace />;
   }
 
   const toggleTheme = () => {

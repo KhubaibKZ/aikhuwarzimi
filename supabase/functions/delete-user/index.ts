@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,38 +11,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
-    // Verify caller is admin
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const { data: { user: caller } } = await supabaseAdmin.auth.getUser(
-      authHeader.replace("Bearer ", "")
-    );
-    if (!caller) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Check admin role
-    const { data: isAdmin } = await supabaseAdmin.rpc("has_role", {
-      _user_id: caller.id,
-      _role: "admin",
-    });
-    if (!isAdmin) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -55,6 +27,39 @@ Deno.serve(async (req) => {
       });
     }
 
+    // User-context client to validate caller identity
+    const userClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user: caller }, error: callerError } = await userClient.auth.getUser();
+    if (callerError || !caller) {
+      return new Response(JSON.stringify({ error: "Invalid or expired token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Service-role client for admin operations
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Check admin role
+    const { data: isAdmin } = await adminClient.rpc("has_role", {
+      _user_id: caller.id,
+      _role: "admin",
+    });
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Don't allow deleting yourself
     if (user_id === caller.id) {
       return new Response(JSON.stringify({ error: "Cannot delete your own account" }), {
@@ -63,8 +68,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Delete the user (cascades to profiles, assignments, etc.)
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(user_id);
+    // Delete the user
+    const { error } = await adminClient.auth.admin.deleteUser(user_id);
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,

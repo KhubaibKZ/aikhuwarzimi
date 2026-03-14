@@ -79,7 +79,7 @@ function StudentDashboardContent() {
 
       <main className="container px-4 py-8 md:px-6">
         {view.type === 'courses' ? (
-          <CourseSelection onSelectCourse={handleCourseSelect} />
+          <CourseSelection onSelectCourse={handleCourseSelect} enforceAssignments={true} />
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div>

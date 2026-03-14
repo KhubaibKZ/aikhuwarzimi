@@ -6,9 +6,10 @@ import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface CourseSelectionProps {
   onSelectCourse: (courseId: string) => void;
+  enforceAssignments?: boolean;
 }
 
-export function CourseSelection({ onSelectCourse }: CourseSelectionProps) {
+export function CourseSelection({ onSelectCourse, enforceAssignments = false }: CourseSelectionProps) {
   const { isCourseAssigned, loading } = useStudentAssignments();
   const { isAdmin } = useAdminRole();
 
@@ -21,7 +22,7 @@ export function CourseSelection({ onSelectCourse }: CourseSelectionProps) {
 
       <div className="grid gap-4 md:grid-cols-2">
         {courses.map((course, index) => {
-          const isAssigned = isAdmin || isCourseAssigned(course.id);
+          const isAssigned = !enforceAssignments || isAdmin || isCourseAssigned(course.id);
           const isLocked = course.locked || (!isAssigned && !loading);
 
           return (

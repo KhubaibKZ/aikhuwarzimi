@@ -3,6 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import alKhwarizmiSilhouette from '@/assets/al-khwarizmi-silhouette.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,7 @@ const mathSymbols = [
 export default function Landing() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useAdminRole();
   const { toast } = useToast();
   const [isDark, setIsDark] = useState(() => {
     if (!document.documentElement.classList.contains('dark')) {
@@ -46,9 +48,12 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Redirect authenticated users to dashboard
-  if (!authLoading && user) {
-    return <Navigate to="/dashboard" replace />;
+  // Redirect authenticated users based on role
+  if (!authLoading && !roleLoading && user) {
+    if (isAdmin) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    return <Navigate to="/student" replace />;
   }
 
   const toggleTheme = () => {
@@ -83,7 +88,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      navigate('/dashboard');
+      // Redirect handled by auth state change + role-based Navigate above
     }
   };
 

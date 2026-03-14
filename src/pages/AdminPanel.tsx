@@ -15,7 +15,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Profile {
@@ -182,6 +183,29 @@ export default function AdminPanel() {
     setIsDark(!isDark);
   };
 
+  const deleteStudent = async (studentId: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast({ title: 'Error', description: 'You must be logged in as admin to delete accounts', variant: 'destructive' });
+        return;
+      }
+      const res = await supabase.functions.invoke('delete-user', {
+        body: { user_id: studentId },
+      });
+      if (res.error || res.data?.error) {
+        toast({ title: 'Error', description: res.data?.error || res.error?.message || 'Failed to delete', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Deleted', description: 'Student account removed.' });
+      setStudents(prev => prev.filter(s => s.id !== studentId));
+      if (selectedStudent?.id === studentId) setSelectedStudent(null);
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to delete account', variant: 'destructive' });
+    }
+  };
+
   if (authLoading || roleLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
@@ -266,9 +290,32 @@ export default function AdminPanel() {
                       {new Date(student.created_at).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="outline" onClick={() => openStudentModal(student)}>
-                        Manage
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button size="sm" variant="outline" onClick={() => openStudentModal(student)}>
+                          Manage
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="destructive" className="h-8 w-8 p-0">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Student Account</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete <strong>{student.full_name || student.email}</strong>'s account and all their data. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteStudent(student.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

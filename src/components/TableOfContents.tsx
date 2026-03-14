@@ -3,7 +3,7 @@ import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw, Calendar } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw, Calendar, Lightbulb, CheckSquare } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +14,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
+import { useStudentAssignments } from '@/hooks/useStudentAssignments';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface TableOfContentsProps {
   courseId: string;

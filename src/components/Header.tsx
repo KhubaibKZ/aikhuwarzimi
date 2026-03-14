@@ -1,9 +1,10 @@
-import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut } from 'lucide-react';
+import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCourse } from '@/lib/courseData';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface HeaderProps {
   currentCourseId?: string;
@@ -13,6 +14,7 @@ interface HeaderProps {
 export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminRole();
   const [isDark, setIsDark] = useState(false);
   const currentCourse = currentCourseId ? getCourse(currentCourseId) : null;
 
@@ -73,6 +75,13 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
             <TrendingUp className="h-4 w-4" />
             Your Progress
           </Button>
+
+          {isAdmin && (
+            <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
+              <Shield className="h-4 w-4" />
+              Admin
+            </Button>
+          )}
 
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">
             {user?.email?.charAt(0).toUpperCase() || '?'}

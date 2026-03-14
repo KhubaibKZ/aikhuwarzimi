@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
+import { useStudentAssignments } from '@/hooks/useStudentAssignments';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
@@ -69,10 +70,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { getPaperQuota, refetch: refetchAssignments } = useStudentAssignments();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
+
+  // Find paper for this question to get quota
+  const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
+  const paperQuota = matchedPaper ? getPaperQuota(matchedPaper.id) : null;
 
   // Live timer
   useEffect(() => {
@@ -191,9 +197,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
 
   // Hint: Show concept related to the question
   const handleHint = async () => {
+    // Check quota
+    if (paperQuota && paperQuota.hints <= 0) {
+      toast({ title: 'No hints remaining', description: 'You have used all your hint quota for this paper.', variant: 'destructive' });
+      return;
+    }
+
     setIsLoading(true);
     setLoadingType('hint');
     aiUsageRef.current += 1;
+
+    // Decrement hint in DB if quota exists
+    if (user && matchedPaper && paperQuota) {
+      await supabase.rpc('decrement_hint', { p_student_id: user.id, p_paper_id: matchedPaper.id });
+      refetchAssignments();
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -209,7 +228,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       setAiResponse({ type: 'hint', content: data.hint });
     } catch (error) {
       console.error('Hint error:', error);
-      // Fallback to static hints
       if (question.hints.length > 0) {
         const totalAttempts = Object.values(attemptCount).reduce((sum, count) => sum + count, 0);
         const hintIndex = Math.min(totalAttempts, question.hints.length - 1);
@@ -224,6 +242,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
   const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
+    // Check checkwork quota
+    if (paperQuota && paperQuota.checkwork <= 0) {
+      toast({ title: 'No check work remaining', description: 'You have used all your check work quota for this paper.', variant: 'destructive' });
+      return;
+    }
     // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
     const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
     
@@ -279,6 +302,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       setLoadingType('check');
       setLoadingPartKey(partKey);
       aiUsageRef.current += 1;
+      if (user && matchedPaper && paperQuota) {
+        await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
+        refetchAssignments();
+      }
       try {
         const { data, error } = await supabase.functions.invoke('ai-tutor', {
           body: {
@@ -347,6 +374,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
     setLoadingType('check');
     setLoadingPartKey(partKey);
     aiUsageRef.current += 1;
+    if (user && matchedPaper && paperQuota) {
+      await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
+      refetchAssignments();
+    }
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -494,6 +525,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               <Badge variant="outline">
                 {question.marks} mark{question.marks > 1 ? 's' : ''}
               </Badge>
+              {paperQuota && (
+                <>
+                  <Badge variant="secondary" className="text-xs">
+                    <Lightbulb className="h-3 w-3 mr-1" />
+                    {paperQuota.hints}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    {paperQuota.checkwork}
+                  </Badge>
+                </>
+              )}
             </div>
           </div>
           <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
@@ -1486,7 +1529,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             <Button
               variant="outline"
               onClick={handleHint}
-              disabled={isLoading || isSubmitted}
+              disabled={isLoading || isSubmitted || (paperQuota !== null && paperQuota.hints <= 0)}
               className="flex items-center gap-2"
             >
               {loadingType === 'hint' && !loadingPartKey ? (
@@ -1494,7 +1537,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               ) : (
                 <HelpCircle className="h-4 w-4" />
               )}
-              Hint
+              Hint{paperQuota !== null ? ` (${paperQuota.hints})` : ''}
             </Button>
             <Button
               onClick={handleSubmit}

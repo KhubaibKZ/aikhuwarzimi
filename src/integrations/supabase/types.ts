@@ -14,6 +14,108 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      student_assignments: {
+        Row: {
+          assigned_by: string | null
+          course_id: string
+          created_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: []
+      }
+      student_chapter_assign: {
+        Row: {
+          assigned_by: string | null
+          chapter_id: string
+          course_id: string
+          created_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          chapter_id: string
+          course_id: string
+          created_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          chapter_id?: string
+          course_id?: string
+          created_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: []
+      }
+      student_paper_assignments: {
+        Row: {
+          assigned_by: string | null
+          checkwork_count: number
+          created_at: string
+          hint_count: number
+          id: string
+          paper_id: string
+          student_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          checkwork_count?: number
+          created_at?: string
+          hint_count?: number
+          id?: string
+          paper_id: string
+          student_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          checkwork_count?: number
+          created_at?: string
+          hint_count?: number
+          id?: string
+          paper_id?: string
+          student_id?: string
+        }
+        Relationships: []
+      }
       student_paper_progress: {
         Row: {
           accuracy_score: number | null
@@ -68,15 +170,47 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrement_checkwork: {
+        Args: { p_paper_id: string; p_student_id: string }
+        Returns: number
+      }
+      decrement_hint: {
+        Args: { p_paper_id: string; p_student_id: string }
+        Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -203,6 +337,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "student"],
+    },
   },
 } as const

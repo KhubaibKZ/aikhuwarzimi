@@ -3,7 +3,7 @@ import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw, Calendar } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw, Calendar, Lightbulb, CheckSquare } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +14,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
+import { useStudentAssignments } from '@/hooks/useStudentAssignments';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface TableOfContentsProps {
   courseId: string;
@@ -32,6 +34,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const { isCompleted } = useProgress();
   const { user } = useAuth();
+  const { isAdmin } = useAdminRole();
+  const { isChapterAssigned, isPaperAssigned, getPaperQuota } = useStudentAssignments();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
@@ -106,7 +110,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
               <h2 className="mb-4 text-xl font-bold text-foreground">{syllabus.courseName}</h2>
               {syllabus.topics.map((topic, index) => {
           const topicProgress = getTopicProgress(topic);
-          const hasUnlockedSubtopics = topic.subtopics.some(s => !s.locked);
+          const chapterAssigned = isAdmin || isChapterAssigned(courseId, String(topic.id));
+          const hasUnlockedSubtopics = chapterAssigned && topic.subtopics.some(s => !s.locked);
           
           return (
             <div
@@ -118,8 +123,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
             >
               {/* Main Topic Header */}
               <button
-                onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
-                className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+                onClick={() => chapterAssigned && setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
+                className={cn("flex w-full items-center justify-between p-4 text-left transition-colors", chapterAssigned ? "hover:bg-muted/50" : "opacity-60 cursor-not-allowed")}
               >
                 <div className="flex items-center gap-3">
                   <div className={cn(
@@ -364,37 +369,51 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                     </div>
                                     <span className="text-[10px] text-muted-foreground">{sessionPapers.length} paper{sessionPapers.length !== 1 ? 's' : ''}</span>
                                   </button>
-                                  {isSessionExpanded && sessionPapers.map((paper) => (
-                                    <div key={paper.id} className={cn("rounded-lg overflow-hidden", paper.locked && "opacity-60")}>
+                                  {isSessionExpanded && sessionPapers.map((paper) => {
+                                    const paperAssigned = isAdmin || isPaperAssigned(paper.id);
+                                    const paperLocked = paper.locked || !paperAssigned;
+                                    const quota = getPaperQuota(paper.id);
+                                    return (
+                                    <div key={paper.id} className={cn("rounded-lg overflow-hidden", paperLocked && "opacity-60")}>
                                       {/* Level 3: Individual Paper */}
                                       <button
-                                        onClick={() => !paper.locked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
+                                        onClick={() => !paperLocked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
                                         className={cn(
                                           "flex w-full items-center justify-between p-3 text-left transition-colors rounded-lg",
-                                          paper.locked ? "cursor-not-allowed" : "hover:bg-card hover:shadow-sm"
+                                          paperLocked ? "cursor-not-allowed" : "hover:bg-card hover:shadow-sm"
                                         )}
-                                        disabled={paper.locked}
+                                        disabled={paperLocked}
                                       >
                                         <div className="flex items-center gap-3">
                                           <div className={cn(
                                             "flex h-8 w-8 items-center justify-center rounded-lg",
-                                            paper.locked ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+                                            paperLocked ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
                                           )}>
-                                            {paper.locked ? <Lock className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
+                                            {paperLocked ? <Lock className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
                                           </div>
                                           <div>
                                             <span className={cn(
                                               "text-sm font-medium",
-                                              paper.locked ? "text-muted-foreground" : "text-foreground"
+                                              paperLocked ? "text-muted-foreground" : "text-foreground"
                                             )}>{paper.code}</span>
                                             <p className="text-xs text-muted-foreground">
                                               {paper.totalMarks} marks • {paper.duration}
                                             </p>
+                                            {quota && !paperLocked && (
+                                              <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                                  <Lightbulb className="h-2.5 w-2.5" /> {quota.hints} hints
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                                  <CheckSquare className="h-2.5 w-2.5" /> {quota.checkwork} checks
+                                                </span>
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                          {paper.locked ? (
-                                            <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">Coming Soon</span>
+                                          {paperLocked ? (
+                                            <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">{paper.locked ? 'Coming Soon' : 'Not Assigned'}</span>
                                           ) : (
                                             <>
                                               <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
@@ -409,8 +428,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                         </div>
                                       </button>
 
-                                      {/* Questions list (existing behavior) */}
-                                      {!paper.locked && expandedPaper === paper.id && (
+                                      {/* Questions list */}
+                                      {!paperLocked && expandedPaper === paper.id && (
                                         <div className="ml-5 pl-3 border-l-2 border-border space-y-1 mt-1 mb-2">
                                           {paper.sections.map((section) => {
                                             const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
@@ -455,7 +474,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                         </div>
                                       )}
                                     </div>
-                                  ))}
+                                  )})}
                                 </div>
                               );
                             })}

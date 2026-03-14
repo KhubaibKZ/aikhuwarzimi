@@ -11,6 +11,7 @@ interface HeaderProps {
   onBackToCourses?: () => void;
   hideAdmin?: boolean;
   publicMode?: boolean;
+  studentMode?: boolean;
 }
 
 export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, publicMode = false }: HeaderProps) {

@@ -54,9 +54,10 @@ interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
   isOpen: boolean;
   onClose: () => void;
+  workspaceMode?: 'general' | 'student';
 }
 
-export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorkspaceProps) {
+export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general' }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -104,6 +105,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         .select('id, submitted_answers, submitted_feedback, time_spent_seconds')
         .eq('user_id', user.id)
         .eq('question_id', question.id)
+        .eq('workspace_mode', workspaceMode)
         .maybeSingle();
       if (data) {
         // Restore submitted state — read-only until paper reset
@@ -132,7 +134,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
       }
     };
     checkExistingSubmission();
-  }, [isOpen, user, question.id]);
+  }, [isOpen, user, question.id, workspaceMode]);
 
   const handleAnswerChange = (key: string, value: string) => {
     if (isSubmitted) return; // Don't allow changes once submitted
@@ -457,6 +459,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         user_id: user.id,
         paper_id: paperId,
         question_id: question.id,
+        workspace_mode: workspaceMode,
         is_correct: allCorrect,
         accuracy_score: accuracyScore,
         speed_score: speedScore,
@@ -467,7 +470,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
         submitted_at: new Date().toISOString(),
         submitted_answers: answers,
         submitted_feedback: newFeedback,
-      }, { onConflict: 'user_id,paper_id,question_id' });
+      }, { onConflict: 'user_id,paper_id,question_id,workspace_mode' });
 
       // Invalidate progress queries
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });

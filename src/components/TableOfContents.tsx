@@ -23,9 +23,10 @@ interface TableOfContentsProps {
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
   enforceAssignments?: boolean;
+  studentMode?: boolean;
 }
 
-export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
@@ -41,7 +42,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const { toast } = useToast();
   
   // Use DB-backed progress data for submitted question tracking
-  const { data: progressData } = useStudentProgress();
+  const { data: progressData } = useStudentProgress({ studentMode });
   const submittedQuestionIds = new Set(
     (progressData?.rows || []).map((r: any) => r.question_id)
   );
@@ -55,11 +56,13 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
     }
     setResettingPaper(paperId);
     try {
+      const workspaceMode = studentMode ? 'student' : 'general';
       await supabase
         .from('student_paper_progress')
         .delete()
         .eq('user_id', user.id)
-        .eq('paper_id', paperId);
+        .eq('paper_id', paperId)
+        .eq('workspace_mode', workspaceMode);
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
       toast({ title: "Paper Reset", description: "All progress for this paper has been cleared." });
     } catch (err) {

@@ -88,6 +88,7 @@ function Dashboard() {
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
                   onTabChange={setActiveTab}
+                  studentMode={false}
                 />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent
@@ -102,7 +103,7 @@ function Dashboard() {
             {/* Sidebar */}
             <div className="hidden lg:block">
               <div className="sticky top-24">
-                <ProgressSidebar activeTab={activeTab} courseId={currentCourseId} />
+                <ProgressSidebar activeTab={activeTab} courseId={currentCourseId} studentMode={false} />
               </div>
             </div>
           </div>
@@ -115,6 +116,7 @@ function Dashboard() {
           question={currentPastPaperQuestion}
           isOpen={pastPaperModal.isOpen}
           onClose={() => setPastPaperModal({ isOpen: false, questionId: null })}
+          workspaceMode="general"
         />
       )}
     </div>

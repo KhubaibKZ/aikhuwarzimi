@@ -537,7 +537,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
                   </Badge>
                 </>
               )}
-          </div>
+            </div>
           <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
           {(() => {
             const syllabusRef = getQuestionSyllabusRef(question.id);

@@ -9,9 +9,10 @@ import { useAdminRole } from '@/hooks/useAdminRole';
 interface HeaderProps {
   currentCourseId?: string;
   onBackToCourses?: () => void;
+  hideAdmin?: boolean;
 }
 
-export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
+export function Header({ currentCourseId, onBackToCourses, hideAdmin = false }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();
@@ -76,7 +77,7 @@ export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
             Your Progress
           </Button>
 
-          {isAdmin && (
+          {!hideAdmin && isAdmin && (
             <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
               <Shield className="h-4 w-4" />
               Admin

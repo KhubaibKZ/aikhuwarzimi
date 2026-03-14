@@ -22,9 +22,10 @@ interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
+  enforceAssignments?: boolean;
 }
 
-export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
@@ -110,7 +111,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
               <h2 className="mb-4 text-xl font-bold text-foreground">{syllabus.courseName}</h2>
               {syllabus.topics.map((topic, index) => {
           const topicProgress = getTopicProgress(topic);
-          const chapterAssigned = isAdmin || isChapterAssigned(courseId, String(topic.id));
+          const chapterAssigned = !enforceAssignments || isChapterAssigned(courseId, String(topic.id));
           const hasUnlockedSubtopics = chapterAssigned && topic.subtopics.some(s => !s.locked);
           
           return (
@@ -370,7 +371,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                     <span className="text-[10px] text-muted-foreground">{sessionPapers.length} paper{sessionPapers.length !== 1 ? 's' : ''}</span>
                                   </button>
                                   {isSessionExpanded && sessionPapers.map((paper) => {
-                                    const paperAssigned = isAdmin || isPaperAssigned(paper.id);
+                                    const paperAssigned = !enforceAssignments || isPaperAssigned(paper.id);
                                     const paperLocked = paper.locked || !paperAssigned;
                                     const quota = getPaperQuota(paper.id);
                                     return (

@@ -22,7 +22,7 @@ export function CourseSelection({ onSelectCourse, enforceAssignments = false }: 
 
       <div className="grid gap-4 md:grid-cols-2">
         {courses.map((course, index) => {
-          const isAssigned = !enforceAssignments || isAdmin || isCourseAssigned(course.id);
+          const isAssigned = !enforceAssignments || isCourseAssigned(course.id);
           const isLocked = course.locked || (!isAssigned && !loading);
 
           return (

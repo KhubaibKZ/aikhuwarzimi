@@ -206,7 +206,7 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
 }
 
 // ─── Main Page ───
-export default function StudentAnalytics() {
+export default function StudentAnalytics({ studentMode = false }: { studentMode?: boolean }) {
   const navigate = useNavigate();
   const { data, isLoading } = useStudentProgress();
 

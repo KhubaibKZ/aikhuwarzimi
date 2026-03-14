@@ -92,7 +92,6 @@ function StudentDashboardContent() {
                   onTabChange={setActiveTab}
                   enforceAssignments={true}
                 />
-                />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent
                   topicId={currentData.topic.id}

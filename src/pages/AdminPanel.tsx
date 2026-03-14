@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2, Lock, Eye, EyeOff, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Profile {

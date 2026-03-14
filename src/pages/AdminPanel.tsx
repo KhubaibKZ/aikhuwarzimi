@@ -40,11 +40,17 @@ interface StudentPaperAssignment {
 }
 
 export default function AdminPanel() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { isAdmin, loading: roleLoading } = useAdminRole();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [students, setStudents] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

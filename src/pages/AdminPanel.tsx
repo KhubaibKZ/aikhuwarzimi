@@ -71,7 +71,8 @@ export default function AdminPanel() {
   const loadStudents = async () => {
     setLoadingStudents(true);
     const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-    setStudents(data || []);
+    // Filter out the current admin user from the list
+    setStudents((data || []).filter(p => p.id !== user?.id));
     setLoadingStudents(false);
   };
 

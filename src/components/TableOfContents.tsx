@@ -474,7 +474,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                         </div>
                                       )}
                                     </div>
-                                  ))}
+                                  )})}
                                 </div>
                               );
                             })}

@@ -5,6 +5,10 @@ import { pastPapers, pastPaperQuestions } from '@/lib/pastPaperData';
 import { questionTopicMap } from '@/lib/questionTopicMap';
 import type { TopicMastery, PastPaperResult, PaperScore } from '@/lib/analyticsData';
 
+interface UseStudentProgressOptions {
+  studentMode?: boolean;
+}
+
 interface ProgressRow {
   id: string;
   paper_id: string;

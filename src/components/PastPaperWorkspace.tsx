@@ -70,10 +70,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { getPaperQuota, refetch: refetchAssignments } = useStudentAssignments();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
+
+  // Find paper for this question to get quota
+  const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
+  const paperQuota = matchedPaper ? getPaperQuota(matchedPaper.id) : null;
 
   // Live timer
   useEffect(() => {

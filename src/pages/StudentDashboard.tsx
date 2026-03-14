@@ -106,7 +106,7 @@ function StudentDashboardContent() {
 
             <div className="hidden lg:block">
               <div className="sticky top-24">
-                <ProgressSidebar activeTab={activeTab} courseId={currentCourseId} />
+                <ProgressSidebar activeTab={activeTab} courseId={currentCourseId} studentMode={true} />
               </div>
             </div>
           </div>

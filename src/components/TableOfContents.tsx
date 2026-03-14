@@ -56,11 +56,13 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
     }
     setResettingPaper(paperId);
     try {
+      const workspaceMode = studentMode ? 'student' : 'general';
       await supabase
         .from('student_paper_progress')
         .delete()
         .eq('user_id', user.id)
-        .eq('paper_id', paperId);
+        .eq('paper_id', paperId)
+        .eq('workspace_mode', workspaceMode);
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
       toast({ title: "Paper Reset", description: "All progress for this paper has been cleared." });
     } catch (err) {

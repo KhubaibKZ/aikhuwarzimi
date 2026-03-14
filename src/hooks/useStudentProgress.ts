@@ -37,6 +37,8 @@ export function useStudentProgress(options: UseStudentProgressOptions = {}) {
     queryFn: async () => {
       if (!user) return { topicMastery: [], paperResults: [], rows: [] };
 
+      const workspaceMode = studentMode ? 'student' : 'general';
+
       // If studentMode, first fetch assigned paper IDs
       let assignedPaperIds: string[] | null = null;
       if (studentMode) {
@@ -45,12 +47,18 @@ export function useStudentProgress(options: UseStudentProgressOptions = {}) {
           .select('paper_id')
           .eq('student_id', user.id);
         assignedPaperIds = (assignments || []).map(a => a.paper_id);
+
+        // No assigned papers means no student analytics rows by definition
+        if (assignedPaperIds.length === 0) {
+          return { topicMastery: [], paperResults: [], rows: [] };
+        }
       }
 
       const { data, error } = await supabase
         .from('student_paper_progress')
         .select('*')
         .eq('user_id', user.id)
+        .eq('workspace_mode', workspaceMode)
         .order('submitted_at', { ascending: true });
 
       if (error) throw error;
@@ -58,7 +66,8 @@ export function useStudentProgress(options: UseStudentProgressOptions = {}) {
 
       // Filter to only assigned papers in student mode
       if (assignedPaperIds !== null) {
-        rows = rows.filter(r => assignedPaperIds!.includes(r.paper_id));
+        const assignedSet = new Set(assignedPaperIds);
+        rows = rows.filter(r => assignedSet.has(r.paper_id));
       }
 
       // ── Paper results ──

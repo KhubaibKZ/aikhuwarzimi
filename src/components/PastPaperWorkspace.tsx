@@ -459,6 +459,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         user_id: user.id,
         paper_id: paperId,
         question_id: question.id,
+        workspace_mode: workspaceMode,
         is_correct: allCorrect,
         accuracy_score: accuracyScore,
         speed_score: speedScore,
@@ -469,7 +470,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         submitted_at: new Date().toISOString(),
         submitted_answers: answers,
         submitted_feedback: newFeedback,
-      }, { onConflict: 'user_id,paper_id,question_id' });
+      }, { onConflict: 'user_id,paper_id,question_id,workspace_mode' });
 
       // Invalidate progress queries
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });

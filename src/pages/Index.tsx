@@ -116,6 +116,7 @@ function Dashboard() {
           question={currentPastPaperQuestion}
           isOpen={pastPaperModal.isOpen}
           onClose={() => setPastPaperModal({ isOpen: false, questionId: null })}
+          workspaceMode="general"
         />
       )}
     </div>

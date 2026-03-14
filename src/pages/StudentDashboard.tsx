@@ -118,6 +118,7 @@ function StudentDashboardContent() {
           question={currentPastPaperQuestion}
           isOpen={pastPaperModal.isOpen}
           onClose={() => setPastPaperModal({ isOpen: false, questionId: null })}
+          workspaceMode="student"
         />
       )}
     </div>

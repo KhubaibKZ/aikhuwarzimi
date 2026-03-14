@@ -136,11 +136,12 @@ function YearFolder({ year, papers }: { year: number; papers: PaperProgressItem[
 interface ProgressSidebarProps {
   activeTab?: 'syllabus' | 'pastpapers';
   courseId?: string;
+  studentMode?: boolean;
 }
 
-export function ProgressSidebar({ activeTab = 'syllabus', courseId }: ProgressSidebarProps) {
+export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode = false }: ProgressSidebarProps) {
   const { user } = useAuth();
-  const { data, isLoading } = useStudentProgress();
+  const { data, isLoading } = useStudentProgress({ studentMode });
   const { isCompleted } = useProgress();
 
   const showTopics = activeTab === 'syllabus';

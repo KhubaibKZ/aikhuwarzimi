@@ -42,7 +42,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const { toast } = useToast();
   
   // Use DB-backed progress data for submitted question tracking
-  const { data: progressData } = useStudentProgress();
+  const { data: progressData } = useStudentProgress({ studentMode });
   const submittedQuestionIds = new Set(
     (progressData?.rows || []).map((r: any) => r.question_id)
   );

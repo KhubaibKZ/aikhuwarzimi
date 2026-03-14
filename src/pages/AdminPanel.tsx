@@ -185,13 +185,9 @@ export default function AdminPanel() {
   };
 
   const deleteStudent = async (studentId: string) => {
+    if (deletingId) return;
+    setDeletingId(studentId);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) {
-        toast({ title: 'Error', description: 'You must be logged in as admin to delete accounts', variant: 'destructive' });
-        return;
-      }
       const res = await supabase.functions.invoke('delete-user', {
         body: { user_id: studentId },
       });
@@ -204,6 +200,8 @@ export default function AdminPanel() {
       if (selectedStudent?.id === studentId) setSelectedStudent(null);
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to delete account', variant: 'destructive' });
+    } finally {
+      setDeletingId(null);
     }
   };
 

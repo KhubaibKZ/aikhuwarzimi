@@ -27,13 +27,24 @@ function calcOverall(a: number, r: number, s: number) {
   return Math.round(a * 0.4 + r * 0.3 + s * 0.3);
 }
 
-export function useStudentProgress() {
+export function useStudentProgress(options: UseStudentProgressOptions = {}) {
+  const { studentMode = false } = options;
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['student-progress', user?.id],
+    queryKey: ['student-progress', user?.id, studentMode ? 'student' : 'general'],
     queryFn: async () => {
       if (!user) return { topicMastery: [], paperResults: [], rows: [] };
+
+      // If studentMode, first fetch assigned paper IDs
+      let assignedPaperIds: string[] | null = null;
+      if (studentMode) {
+        const { data: assignments } = await supabase
+          .from('student_paper_assignments')
+          .select('paper_id')
+          .eq('student_id', user.id);
+        assignedPaperIds = (assignments || []).map(a => a.paper_id);
+      }
 
       const { data, error } = await supabase
         .from('student_paper_progress')
@@ -42,7 +53,12 @@ export function useStudentProgress() {
         .order('submitted_at', { ascending: true });
 
       if (error) throw error;
-      const rows = (data || []) as ProgressRow[];
+      let rows = (data || []) as ProgressRow[];
+
+      // Filter to only assigned papers in student mode
+      if (assignedPaperIds !== null) {
+        rows = rows.filter(r => assignedPaperIds!.includes(r.paper_id));
+      }
 
       // ── Paper results ──
       const paperGroups = new Map<string, ProgressRow[]>();

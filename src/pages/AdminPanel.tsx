@@ -49,6 +49,7 @@ export default function AdminPanel() {
   const [students, setStudents] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingStudents, setLoadingStudents] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Student management modal
   const [selectedStudent, setSelectedStudent] = useState<Profile | null>(null);

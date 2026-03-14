@@ -71,7 +71,8 @@ function Dashboard() {
     <div className="min-h-screen bg-background">
       <Header 
         currentCourseId={currentCourseId} 
-        onBackToCourses={view.type !== 'courses' ? handleBackToCourses : undefined} 
+        onBackToCourses={view.type !== 'courses' ? handleBackToCourses : undefined}
+        publicMode={true}
       />
       
       <main className="container px-4 py-8 md:px-6">

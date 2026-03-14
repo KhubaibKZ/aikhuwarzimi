@@ -10,9 +10,10 @@ interface HeaderProps {
   currentCourseId?: string;
   onBackToCourses?: () => void;
   hideAdmin?: boolean;
+  publicMode?: boolean;
 }
 
-export function Header({ currentCourseId, onBackToCourses, hideAdmin = false }: HeaderProps) {
+export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, publicMode = false }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();

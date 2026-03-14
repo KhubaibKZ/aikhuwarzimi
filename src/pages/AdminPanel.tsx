@@ -183,6 +183,29 @@ export default function AdminPanel() {
     setIsDark(!isDark);
   };
 
+  const deleteStudent = async (studentId: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast({ title: 'Error', description: 'You must be logged in as admin to delete accounts', variant: 'destructive' });
+        return;
+      }
+      const res = await supabase.functions.invoke('delete-user', {
+        body: { user_id: studentId },
+      });
+      if (res.error || res.data?.error) {
+        toast({ title: 'Error', description: res.data?.error || res.error?.message || 'Failed to delete', variant: 'destructive' });
+        return;
+      }
+      toast({ title: 'Deleted', description: 'Student account removed.' });
+      setStudents(prev => prev.filter(s => s.id !== studentId));
+      if (selectedStudent?.id === studentId) setSelectedStudent(null);
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to delete account', variant: 'destructive' });
+    }
+  };
+
   if (authLoading || roleLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }

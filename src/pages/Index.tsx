@@ -88,6 +88,7 @@ function Dashboard() {
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
                   onTabChange={setActiveTab}
+                  studentMode={false}
                 />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent

@@ -21,6 +21,7 @@ interface ProgressRow {
   total_steps: number;
   completed_steps: number;
   submitted_at: string;
+  workspace_mode?: 'general' | 'student';
 }
 
 function calcOverall(a: number, r: number, s: number) {

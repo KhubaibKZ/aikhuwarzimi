@@ -54,9 +54,10 @@ interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
   isOpen: boolean;
   onClose: () => void;
+  workspaceMode?: 'general' | 'student';
 }
 
-export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorkspaceProps) {
+export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general' }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);

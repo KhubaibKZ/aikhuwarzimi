@@ -23,6 +23,7 @@ interface TableOfContentsProps {
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
   enforceAssignments?: boolean;
+  studentMode?: boolean;
 }
 
 export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false }: TableOfContentsProps) {

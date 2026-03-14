@@ -92,6 +92,7 @@ function StudentDashboardContent() {
                   onPastPaperSelect={handlePastPaperSelect}
                   onTabChange={setActiveTab}
                   enforceAssignments={true}
+                  studentMode={true}
                 />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent

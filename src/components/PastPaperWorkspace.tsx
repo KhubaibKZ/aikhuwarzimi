@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
+import { useStudentAssignments } from '@/hooks/useStudentAssignments';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';

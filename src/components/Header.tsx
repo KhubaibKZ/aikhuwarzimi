@@ -14,6 +14,7 @@ interface HeaderProps {
 export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdminRole();
   const [isDark, setIsDark] = useState(false);
   const currentCourse = currentCourseId ? getCourse(currentCourseId) : null;
 

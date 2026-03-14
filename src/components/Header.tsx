@@ -9,6 +9,7 @@ import { useAdminRole } from '@/hooks/useAdminRole';
 interface HeaderProps {
   currentCourseId?: string;
   onBackToCourses?: () => void;
+  hideAdmin?: boolean;
 }
 
 export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {

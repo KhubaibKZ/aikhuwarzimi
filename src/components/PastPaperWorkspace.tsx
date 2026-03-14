@@ -525,7 +525,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               <Badge variant="outline">
                 {question.marks} mark{question.marks > 1 ? 's' : ''}
               </Badge>
-            </div>
+              {paperQuota && (
+                <>
+                  <Badge variant="secondary" className="text-xs">
+                    <Lightbulb className="h-3 w-3 mr-1" />
+                    {paperQuota.hints}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    {paperQuota.checkwork}
+                  </Badge>
+                </>
+              )}
           </div>
           <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
           {(() => {

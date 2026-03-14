@@ -123,8 +123,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
             >
               {/* Main Topic Header */}
               <button
-                onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
-                className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+                onClick={() => chapterAssigned && setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
+                className={cn("flex w-full items-center justify-between p-4 text-left transition-colors", chapterAssigned ? "hover:bg-muted/50" : "opacity-60 cursor-not-allowed")}
               >
                 <div className="flex items-center gap-3">
                   <div className={cn(

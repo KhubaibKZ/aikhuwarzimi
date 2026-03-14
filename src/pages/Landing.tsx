@@ -88,7 +88,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      navigate('/dashboard');
+      // Redirect handled by auth state change + role-based Navigate above
     }
   };
 

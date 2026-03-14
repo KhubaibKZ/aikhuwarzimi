@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2, Lock, Eye, EyeOff, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Profile {
@@ -40,11 +40,17 @@ interface StudentPaperAssignment {
 }
 
 export default function AdminPanel() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { isAdmin, loading: roleLoading } = useAdminRole();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [students, setStudents] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -206,8 +212,90 @@ export default function AdminPanel() {
     }
   };
 
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = loginEmail.trim().toLowerCase();
+    if (!email || !loginPassword) {
+      toast({ title: 'Missing fields', description: 'Please enter email and password.', variant: 'destructive' });
+      return;
+    }
+    setLoggingIn(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: loginPassword });
+    setLoggingIn(false);
+    if (error) {
+      toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
+    }
+  };
+
   if (authLoading || roleLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="text-center space-y-2">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
+              <Lock className="h-7 w-7" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
+            <p className="text-sm text-muted-foreground">Sign in with your admin credentials</p>
+          </div>
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <Input
+                type="email"
+                placeholder="admin@example.com"
+                value={loginEmail}
+                onChange={e => setLoginEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Password</label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            <Button type="submit" className="w-full" disabled={loggingIn}>
+              {loggingIn ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Sign In
+            </Button>
+          </form>
+          <Button variant="ghost" className="w-full" onClick={() => navigate('/')}>
+            ← Back to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Lock className="h-12 w-12 text-muted-foreground mx-auto" />
+          <h2 className="text-xl font-bold text-foreground">Unauthorized</h2>
+          <p className="text-sm text-muted-foreground">This account does not have admin access.</p>
+          <Button variant="outline" onClick={async () => { await signOut(); }}>Sign Out</Button>
+        </div>
+      </div>
+    );
   }
 
   const filteredStudents = students.filter(s =>
@@ -246,6 +334,9 @@ export default function AdminPanel() {
               <Users className="h-3 w-3 mr-1" />
               {students.length} students
             </Badge>
+            <Button variant="ghost" size="icon" onClick={async () => { await signOut(); }} className="h-9 w-9 rounded-lg">
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

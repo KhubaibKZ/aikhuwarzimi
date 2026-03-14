@@ -242,6 +242,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
   const handleCheckWorkForPart = async (partKey: string, partLabel: string, directAnswer?: string) => {
+    // Check checkwork quota
+    if (paperQuota && paperQuota.checkwork <= 0) {
+      toast({ title: 'No check work remaining', description: 'You have used all your check work quota for this paper.', variant: 'destructive' });
+      return;
+    }
     // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
     const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
     

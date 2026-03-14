@@ -73,25 +73,29 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
 
-          <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/analytics')}>
-            <TrendingUp className="h-4 w-4" />
-            Your Progress
-          </Button>
+          {!publicMode && (
+            <>
+              <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/analytics')}>
+                <TrendingUp className="h-4 w-4" />
+                Your Progress
+              </Button>
 
-          {!hideAdmin && isAdmin && (
-            <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
-              <Shield className="h-4 w-4" />
-              Admin
-            </Button>
+              {!hideAdmin && isAdmin && (
+                <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </Button>
+              )}
+
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">
+                {user?.email?.charAt(0).toUpperCase() || '?'}
+              </div>
+
+              <Button variant="ghost" size="icon" onClick={async () => { await signOut(); navigate('/'); }} className="h-9 w-9 rounded-lg">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
           )}
-
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">
-            {user?.email?.charAt(0).toUpperCase() || '?'}
-          </div>
-
-          <Button variant="ghost" size="icon" onClick={async () => { await signOut(); navigate('/'); }} className="h-9 w-9 rounded-lg">
-            <LogOut className="h-4 w-4" />
-          </Button>
         </div>
       </div>
     </header>

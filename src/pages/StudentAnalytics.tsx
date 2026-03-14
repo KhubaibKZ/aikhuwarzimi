@@ -208,7 +208,7 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
 // ─── Main Page ───
 export default function StudentAnalytics({ studentMode = false }: { studentMode?: boolean }) {
   const navigate = useNavigate();
-  const { data, isLoading } = useStudentProgress();
+  const { data, isLoading } = useStudentProgress({ studentMode });
 
   const topicMastery = data?.topicMastery || [];
   const paperResults = data?.paperResults || [];

@@ -75,6 +75,7 @@ function StudentDashboardContent() {
       <Header
         currentCourseId={currentCourseId}
         onBackToCourses={view.type !== 'courses' ? handleBackToCourses : undefined}
+        hideAdmin={true}
       />
 
       <main className="container px-4 py-8 md:px-6">

@@ -77,7 +77,7 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false }: 
             Your Progress
           </Button>
 
-          {isAdmin && (
+          {!hideAdmin && isAdmin && (
             <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
               <Shield className="h-4 w-4" />
               Admin

@@ -23,9 +23,9 @@ const AppRoutes = () => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-      <Route path="/analytics" element={<ProtectedRoute><StudentAnalytics /></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<Index />} />
+      <Route path="/analytics" element={<StudentAnalytics />} />
+      <Route path="/admin" element={<AdminPanel />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>

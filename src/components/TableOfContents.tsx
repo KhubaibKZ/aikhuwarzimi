@@ -369,37 +369,51 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                     </div>
                                     <span className="text-[10px] text-muted-foreground">{sessionPapers.length} paper{sessionPapers.length !== 1 ? 's' : ''}</span>
                                   </button>
-                                  {isSessionExpanded && sessionPapers.map((paper) => (
-                                    <div key={paper.id} className={cn("rounded-lg overflow-hidden", paper.locked && "opacity-60")}>
+                                  {isSessionExpanded && sessionPapers.map((paper) => {
+                                    const paperAssigned = isAdmin || isPaperAssigned(paper.id);
+                                    const paperLocked = paper.locked || !paperAssigned;
+                                    const quota = getPaperQuota(paper.id);
+                                    return (
+                                    <div key={paper.id} className={cn("rounded-lg overflow-hidden", paperLocked && "opacity-60")}>
                                       {/* Level 3: Individual Paper */}
                                       <button
-                                        onClick={() => !paper.locked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
+                                        onClick={() => !paperLocked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
                                         className={cn(
                                           "flex w-full items-center justify-between p-3 text-left transition-colors rounded-lg",
-                                          paper.locked ? "cursor-not-allowed" : "hover:bg-card hover:shadow-sm"
+                                          paperLocked ? "cursor-not-allowed" : "hover:bg-card hover:shadow-sm"
                                         )}
-                                        disabled={paper.locked}
+                                        disabled={paperLocked}
                                       >
                                         <div className="flex items-center gap-3">
                                           <div className={cn(
                                             "flex h-8 w-8 items-center justify-center rounded-lg",
-                                            paper.locked ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
+                                            paperLocked ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
                                           )}>
-                                            {paper.locked ? <Lock className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
+                                            {paperLocked ? <Lock className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
                                           </div>
                                           <div>
                                             <span className={cn(
                                               "text-sm font-medium",
-                                              paper.locked ? "text-muted-foreground" : "text-foreground"
+                                              paperLocked ? "text-muted-foreground" : "text-foreground"
                                             )}>{paper.code}</span>
                                             <p className="text-xs text-muted-foreground">
                                               {paper.totalMarks} marks • {paper.duration}
                                             </p>
+                                            {quota && !paperLocked && (
+                                              <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                                  <Lightbulb className="h-2.5 w-2.5" /> {quota.hints} hints
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                                  <CheckSquare className="h-2.5 w-2.5" /> {quota.checkwork} checks
+                                                </span>
+                                              </div>
+                                            )}
                                           </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                          {paper.locked ? (
-                                            <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">Coming Soon</span>
+                                          {paperLocked ? (
+                                            <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">{paper.locked ? 'Coming Soon' : 'Not Assigned'}</span>
                                           ) : (
                                             <>
                                               <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary font-medium">
@@ -414,8 +428,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                         </div>
                                       </button>
 
-                                      {/* Questions list (existing behavior) */}
-                                      {!paper.locked && expandedPaper === paper.id && (
+                                      {/* Questions list */}
+                                      {!paperLocked && expandedPaper === paper.id && (
                                         <div className="ml-5 pl-3 border-l-2 border-border space-y-1 mt-1 mb-2">
                                           {paper.sections.map((section) => {
                                             const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);

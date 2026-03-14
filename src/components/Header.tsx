@@ -12,7 +12,7 @@ interface HeaderProps {
   hideAdmin?: boolean;
 }
 
-export function Header({ currentCourseId, onBackToCourses }: HeaderProps) {
+export function Header({ currentCourseId, onBackToCourses, hideAdmin = false }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();

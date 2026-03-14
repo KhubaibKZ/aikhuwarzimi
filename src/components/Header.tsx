@@ -14,7 +14,7 @@ interface HeaderProps {
   studentMode?: boolean;
 }
 
-export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, publicMode = false }: HeaderProps) {
+export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, publicMode = false, studentMode = false }: HeaderProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isAdmin } = useAdminRole();

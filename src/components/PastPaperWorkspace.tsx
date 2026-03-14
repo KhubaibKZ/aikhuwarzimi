@@ -105,6 +105,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         .select('id, submitted_answers, submitted_feedback, time_spent_seconds')
         .eq('user_id', user.id)
         .eq('question_id', question.id)
+        .eq('workspace_mode', workspaceMode)
         .maybeSingle();
       if (data) {
         // Restore submitted state — read-only until paper reset

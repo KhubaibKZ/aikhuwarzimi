@@ -1,9 +1,10 @@
-import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut } from 'lucide-react';
+import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCourse } from '@/lib/courseData';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 interface HeaderProps {
   currentCourseId?: string;

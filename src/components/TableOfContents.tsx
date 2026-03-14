@@ -34,6 +34,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const { isCompleted } = useProgress();
   const { user } = useAuth();
+  const { isAdmin } = useAdminRole();
+  const { isChapterAssigned, isPaperAssigned, getPaperQuota } = useStudentAssignments();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   

@@ -22,9 +22,10 @@ interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
+  enforceAssignments?: boolean;
 }
 
-export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);

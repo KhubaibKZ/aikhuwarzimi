@@ -1529,7 +1529,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
             <Button
               variant="outline"
               onClick={handleHint}
-              disabled={isLoading || isSubmitted}
+              disabled={isLoading || isSubmitted || (paperQuota !== null && paperQuota.hints <= 0)}
               className="flex items-center gap-2"
             >
               {loadingType === 'hint' && !loadingPartKey ? (
@@ -1537,7 +1537,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose }: PastPaperWorks
               ) : (
                 <HelpCircle className="h-4 w-4" />
               )}
-              Hint
+              Hint{paperQuota !== null ? ` (${paperQuota.hints})` : ''}
             </Button>
             <Button
               onClick={handleSubmit}

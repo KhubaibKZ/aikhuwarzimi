@@ -206,7 +206,7 @@ function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
 }
 
 // ─── Main Page ───
-export default function StudentAnalytics() {
+export default function StudentAnalytics({ studentMode = false }: { studentMode?: boolean }) {
   const navigate = useNavigate();
   const { data, isLoading } = useStudentProgress();
 
@@ -225,10 +225,10 @@ export default function StudentAnalytics() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header hideAdmin={studentMode} studentMode={studentMode} />
 
       <main className="container px-4 py-6 md:px-6 max-w-5xl">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="mb-4 gap-2">
+        <Button variant="ghost" size="sm" onClick={() => navigate(studentMode ? '/student' : '/dashboard')} className="mb-4 gap-2">
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Button>
 

@@ -19,6 +19,7 @@ const AppRoutes = () => (
       <Route path="/" element={<Landing />} />
       <Route path="/dashboard" element={<Index />} />
       <Route path="/analytics" element={<StudentAnalytics />} />
+      <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
       <Route path="/student" element={<StudentDashboard />} />
       <Route path="*" element={<NotFound />} />

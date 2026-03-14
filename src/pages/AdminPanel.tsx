@@ -334,6 +334,9 @@ export default function AdminPanel() {
               <Users className="h-3 w-3 mr-1" />
               {students.length} students
             </Badge>
+            <Button variant="ghost" size="icon" onClick={async () => { await signOut(); }} className="h-9 w-9 rounded-lg">
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

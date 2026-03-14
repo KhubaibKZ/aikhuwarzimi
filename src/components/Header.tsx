@@ -76,7 +76,7 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
 
           {!publicMode && (
             <>
-              <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/analytics')}>
+              <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate(studentMode ? '/student/analytics' : '/analytics')}>
                 <TrendingUp className="h-4 w-4" />
                 Your Progress
               </Button>

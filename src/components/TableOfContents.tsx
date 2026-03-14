@@ -371,7 +371,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                     <span className="text-[10px] text-muted-foreground">{sessionPapers.length} paper{sessionPapers.length !== 1 ? 's' : ''}</span>
                                   </button>
                                   {isSessionExpanded && sessionPapers.map((paper) => {
-                                    const paperAssigned = isPaperAssigned(paper.id);
+                                    const paperAssigned = !enforceAssignments || isPaperAssigned(paper.id);
                                     const paperLocked = paper.locked || !paperAssigned;
                                     const quota = getPaperQuota(paper.id);
                                     return (

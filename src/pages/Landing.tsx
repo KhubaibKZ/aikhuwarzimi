@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,10 +46,6 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Redirect authenticated users to dashboard
-  if (!authLoading && user) {
-    return <Navigate to="/dashboard" replace />;
-  }
 
 
   const toggleTheme = () => {

@@ -134,7 +134,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       }
     };
     checkExistingSubmission();
-  }, [isOpen, user, question.id]);
+  }, [isOpen, user, question.id, workspaceMode]);
 
   const handleAnswerChange = (key: string, value: string) => {
     if (isSubmitted) return; // Don't allow changes once submitted

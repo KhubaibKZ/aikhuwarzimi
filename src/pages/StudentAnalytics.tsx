@@ -225,7 +225,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header hideAdmin={studentMode} studentMode={studentMode} />
 
       <main className="container px-4 py-6 md:px-6 max-w-5xl">
         <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="mb-4 gap-2">

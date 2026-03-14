@@ -46,7 +46,10 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-
+  // Redirect authenticated users to dashboard
+  if (!authLoading && user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

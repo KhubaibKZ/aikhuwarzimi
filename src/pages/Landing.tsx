@@ -86,7 +86,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      setDidLogin(true);
+      // Redirect handled by auth state change + Navigate above
     }
   };
 

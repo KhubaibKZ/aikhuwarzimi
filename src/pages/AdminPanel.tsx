@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { courses } from '@/lib/courseData';
 import { pastPapers } from '@/lib/pastPaperData';
 import { igcseMathsSyllabus } from '@/lib/syllabusData';
@@ -207,6 +207,14 @@ export default function AdminPanel() {
 
   if (authLoading || roleLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/student" replace />;
   }
 
   const filteredStudents = students.filter(s =>

@@ -48,15 +48,8 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // After a fresh login (modal was open), redirect based on role
-  const [didLogin, setDidLogin] = useState(false);
-  
-  // Detect fresh login: user appears while login modal is open
-  if (user && showLogin && !didLogin) {
-    setDidLogin(true);
-  }
-  
-  if (didLogin && !authLoading && !roleLoading && user) {
+  // Always redirect authenticated users to their appropriate dashboard
+  if (!authLoading && !roleLoading && user) {
     const target = isAdmin ? '/dashboard' : '/student';
     return <Navigate to={target} replace />;
   }
@@ -93,7 +86,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      setDidLogin(true);
+      // Redirect handled by auth state change + Navigate above
     }
   };
 
@@ -156,7 +149,7 @@ export default function Landing() {
     if (error) {
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
     } else {
-      setDidLogin(true);
+      // Redirect handled by auth state change + Navigate above
     }
   };
 

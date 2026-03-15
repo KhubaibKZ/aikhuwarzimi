@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { useAdminRole } from '@/hooks/useAdminRole';
 import { useNavigate } from 'react-router-dom';
 import { courses } from '@/lib/courseData';
 import { pastPapers } from '@/lib/pastPaperData';
@@ -16,8 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2, LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -26,22 +23,16 @@ interface Profile {
   created_at: string;
 }
 
-interface StudentAssignment {
-  course_id: string;
-}
-interface StudentChapterAssignment {
-  course_id: string;
-  chapter_id: string;
-}
-interface StudentPaperAssignment {
-  paper_id: string;
-  hint_count: number;
-  checkwork_count: number;
+// Helper to call the admin-api edge function
+async function adminApi(action: string, params: Record<string, unknown> = {}) {
+  const { data, error } = await supabase.functions.invoke('admin-api', {
+    body: { action, ...params },
+  });
+  if (error) throw error;
+  return data;
 }
 
 export default function AdminPanel() {
-  const { user, loading: authLoading, signOut } = useAuth();
-  const { isAdmin, loading: roleLoading } = useAdminRole();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
@@ -51,42 +42,44 @@ export default function AdminPanel() {
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Student management modal
   const [selectedStudent, setSelectedStudent] = useState<Profile | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Assignments state for selected student
   const [assignedCourses, setAssignedCourses] = useState<Set<string>>(new Set());
   const [assignedChapters, setAssignedChapters] = useState<Set<string>>(new Set());
   const [assignedPapers, setAssignedPapers] = useState<Map<string, { hints: number; checkwork: number }>>(new Map());
 
-  // Default quota values for new paper assignments
   const [defaultHints, setDefaultHints] = useState(3);
   const [defaultCheckwork, setDefaultCheckwork] = useState(3);
 
   useEffect(() => {
-    if (isAdmin) loadStudents();
-  }, [isAdmin]);
+    loadStudents();
+  }, []);
 
   const loadStudents = async () => {
     setLoadingStudents(true);
-    const { data } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-    setStudents(data || []);
-    setLoadingStudents(false);
+    try {
+      const res = await adminApi('list_students');
+      setStudents(res.data || []);
+    } catch (err) {
+      console.error('Failed to load students:', err);
+      toast({ title: 'Error', description: 'Failed to load students', variant: 'destructive' });
+    } finally {
+      setLoadingStudents(false);
+    }
   };
 
   const loadStudentAssignments = async (studentId: string) => {
-    const [courseRes, chapterRes, paperRes] = await Promise.all([
-      supabase.from('student_assignments').select('course_id').eq('student_id', studentId),
-      supabase.from('student_chapter_assign').select('course_id, chapter_id').eq('student_id', studentId),
-      supabase.from('student_paper_assignments').select('paper_id, hint_count, checkwork_count').eq('student_id', studentId),
-    ]);
-
-    setAssignedCourses(new Set((courseRes.data || []).map(r => r.course_id)));
-    setAssignedChapters(new Set((chapterRes.data || []).map(r => `${r.course_id}::${r.chapter_id}`)));
-    const paperMap = new Map<string, { hints: number; checkwork: number }>();
-    (paperRes.data || []).forEach(r => paperMap.set(r.paper_id, { hints: r.hint_count, checkwork: r.checkwork_count }));
-    setAssignedPapers(paperMap);
+    try {
+      const res = await adminApi('get_assignments', { student_id: studentId });
+      setAssignedCourses(new Set((res.courses || []).map((r: any) => r.course_id)));
+      setAssignedChapters(new Set((res.chapters || []).map((r: any) => `${r.course_id}::${r.chapter_id}`)));
+      const paperMap = new Map<string, { hints: number; checkwork: number }>();
+      (res.papers || []).forEach((r: any) => paperMap.set(r.paper_id, { hints: r.hint_count, checkwork: r.checkwork_count }));
+      setAssignedPapers(paperMap);
+    } catch (err) {
+      console.error('Failed to load assignments:', err);
+    }
   };
 
   const openStudentModal = async (student: Profile) => {
@@ -132,45 +125,22 @@ export default function AdminPanel() {
   };
 
   const saveAssignments = async () => {
-    if (!selectedStudent || !user) return;
+    if (!selectedStudent) return;
     setSaving(true);
-
     try {
-      const studentId = selectedStudent.id;
-
-      // Delete existing and re-insert courses
-      await supabase.from('student_assignments').delete().eq('student_id', studentId);
-      if (assignedCourses.size > 0) {
-        await supabase.from('student_assignments').insert(
-          [...assignedCourses].map(course_id => ({ student_id: studentId, course_id, assigned_by: user.id }))
-        );
-      }
-
-      // Delete existing and re-insert chapters
-      await supabase.from('student_chapter_assign').delete().eq('student_id', studentId);
-      if (assignedChapters.size > 0) {
-        await supabase.from('student_chapter_assign').insert(
-          [...assignedChapters].map(key => {
-            const [course_id, chapter_id] = key.split('::');
-            return { student_id: studentId, course_id, chapter_id, assigned_by: user.id };
-          })
-        );
-      }
-
-      // Delete existing and re-insert papers
-      await supabase.from('student_paper_assignments').delete().eq('student_id', studentId);
-      if (assignedPapers.size > 0) {
-        await supabase.from('student_paper_assignments').insert(
-          [...assignedPapers.entries()].map(([paper_id, quota]) => ({
-            student_id: studentId,
-            paper_id,
-            hint_count: quota.hints,
-            checkwork_count: quota.checkwork,
-            assigned_by: user.id,
-          }))
-        );
-      }
-
+      await adminApi('save_assignments', {
+        student_id: selectedStudent.id,
+        courses: [...assignedCourses],
+        chapters: [...assignedChapters].map(key => {
+          const [course_id, chapter_id] = key.split('::');
+          return { course_id, chapter_id };
+        }),
+        papers: [...assignedPapers.entries()].map(([paper_id, quota]) => ({
+          paper_id,
+          hint_count: quota.hints,
+          checkwork_count: quota.checkwork,
+        })),
+      });
       toast({ title: 'Saved', description: `Assignments updated for ${selectedStudent.email}` });
     } catch (err) {
       toast({ title: 'Error', description: 'Failed to save assignments', variant: 'destructive' });
@@ -188,13 +158,7 @@ export default function AdminPanel() {
     if (deletingId) return;
     setDeletingId(studentId);
     try {
-      const res = await supabase.functions.invoke('delete-user', {
-        body: { user_id: studentId },
-      });
-      if (res.error || res.data?.error) {
-        toast({ title: 'Error', description: res.data?.error || res.error?.message || 'Failed to delete', variant: 'destructive' });
-        return;
-      }
+      await adminApi('delete_student', { user_id: studentId });
       toast({ title: 'Deleted', description: 'Student account removed.' });
       setStudents(prev => prev.filter(s => s.id !== studentId));
       if (selectedStudent?.id === studentId) setSelectedStudent(null);
@@ -204,17 +168,6 @@ export default function AdminPanel() {
       setDeletingId(null);
     }
   };
-
-  useEffect(() => {
-    if (!authLoading && !roleLoading) {
-      if (!user) navigate('/', { replace: true });
-      else if (!isAdmin) navigate('/student', { replace: true });
-    }
-  }, [user, isAdmin, authLoading, roleLoading, navigate]);
-
-  if (authLoading || roleLoading || !user || !isAdmin) {
-    return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  }
 
   const filteredStudents = students.filter(s =>
     s.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -233,7 +186,7 @@ export default function AdminPanel() {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="h-9 w-9 rounded-lg">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="h-9 w-9 rounded-lg">
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
@@ -252,9 +205,6 @@ export default function AdminPanel() {
               <Users className="h-3 w-3 mr-1" />
               {students.length} students
             </Badge>
-            <Button variant="ghost" size="icon" onClick={async () => { await signOut(); }} className="h-9 w-9 rounded-lg">
-              <LogOut className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </header>
@@ -313,7 +263,7 @@ export default function AdminPanel() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Student Account</AlertDialogTitle>
                               <AlertDialogDescription>
-                                This will permanently delete <strong>{student.full_name || student.email}</strong>'s account and all their data. This action cannot be undone.
+                                This will permanently delete <strong>{student.full_name || student.email}</strong>'s account and all their data.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

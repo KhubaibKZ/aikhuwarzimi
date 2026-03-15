@@ -338,7 +338,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       // Set feedback per sub-key and overall step
       const newFeedback = { ...feedback };
       for (const sk of subKeys) {
-        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(question.answer[sk] || '');
+        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(effectiveCorrect[sk] || '');
         newFeedback[sk] = correct ? 'correct' : 'incorrect';
       }
       newFeedback[partKey] = allCorrect ? 'correct' : 'incorrect';

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { courses } from '@/lib/courseData';
 import { pastPapers } from '@/lib/pastPaperData';
 import { igcseMathsSyllabus } from '@/lib/syllabusData';

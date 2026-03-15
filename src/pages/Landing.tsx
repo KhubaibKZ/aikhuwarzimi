@@ -48,9 +48,15 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // After login, redirect based on role
-  const shouldRedirect = !authLoading && !roleLoading && user && showLogin;
-  if (shouldRedirect) {
+  // After a fresh login (modal was open), redirect based on role
+  const [didLogin, setDidLogin] = useState(false);
+  
+  // Detect fresh login: user appears while login modal is open
+  if (user && showLogin && !didLogin) {
+    setDidLogin(true);
+  }
+  
+  if (didLogin && !authLoading && !roleLoading && user) {
     const target = isAdmin ? '/dashboard' : '/student';
     return <Navigate to={target} replace />;
   }

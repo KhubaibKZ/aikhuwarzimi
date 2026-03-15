@@ -209,6 +209,14 @@ export default function AdminPanel() {
     return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/student" replace />;
+  }
+
   const filteredStudents = students.filter(s =>
     s.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     s.full_name?.toLowerCase().includes(searchQuery.toLowerCase())

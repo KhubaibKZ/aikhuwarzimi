@@ -127,6 +127,14 @@ function Dashboard() {
 }
 
 const Index = () => {
+  const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useAdminRole();
+
+  // Redirect authenticated non-admin users to the student portal
+  if (!authLoading && !roleLoading && user && !isAdmin) {
+    return <Navigate to="/student" replace />;
+  }
+
   return (
     <ProgressProvider>
       <Dashboard />

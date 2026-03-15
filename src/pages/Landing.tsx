@@ -155,6 +155,8 @@ export default function Landing() {
     setSubmitting(false);
     if (error) {
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
+    } else {
+      setDidLogin(true);
     }
   };
 

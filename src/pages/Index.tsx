@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
@@ -9,6 +10,8 @@ import { ProgressProvider } from '@/context/ProgressContext';
 import { igcseMathsSyllabus, SubTopic, SyllabusData } from '@/lib/syllabusData';
 import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
+import { useAuth } from '@/hooks/useAuth';
+import { useAdminRole } from '@/hooks/useAdminRole';
 
 type ViewState = 
   | { type: 'courses' }
@@ -124,6 +127,14 @@ function Dashboard() {
 }
 
 const Index = () => {
+  const { user, loading: authLoading } = useAuth();
+  const { isAdmin, loading: roleLoading } = useAdminRole();
+
+  // Redirect authenticated non-admin users to the student portal
+  if (!authLoading && !roleLoading && user && !isAdmin) {
+    return <Navigate to="/student" replace />;
+  }
+
   return (
     <ProgressProvider>
       <Dashboard />

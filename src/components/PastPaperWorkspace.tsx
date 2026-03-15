@@ -265,11 +265,63 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       let hasEmpty = false;
       let allCorrect = true;
 
+      // Detect commutative multiplication pairs from stage elements
+      // Find the stage matching this partKey to check for × operators
+      const allStages = question.equationStages || 
+        (question.equationStagesMap ? Object.values(question.equationStagesMap).flat() : []);
+      const matchingStage = allStages.find((s: any) => {
+        const prefix = partKey.split('_s')[0];
+        const stepNum = partKey.split('_s')[1];
+        return s.stepKey === `s${stepNum}` || s.stepKey === partKey.replace(`${prefix}_`, '');
+      });
+      
+      // Build list of commutative box pairs (boxes on either side of ×)
+      const commutativePairs: [string, string][] = [];
+      if (matchingStage?.elements) {
+        const els = matchingStage.elements;
+        for (let i = 0; i < els.length - 2; i++) {
+          if (els[i].type === 'box' && els[i+1].type === 'text' && els[i+1].value === '×' && els[i+2].type === 'box') {
+            const prefix = partKey + '_';
+            const keyA = prefix + els[i].key?.split('_').pop();
+            const keyB = prefix + els[i+2].key?.split('_').pop();
+            // Only if both keys are in subKeys
+            if (subKeys.includes(keyA) && subKeys.includes(keyB)) {
+              commutativePairs.push([keyA, keyB]);
+            }
+            // Also try with full key format
+            const fullKeyA = partKey.replace(/^([a-z]+)_s(\d+)$/, '$1_') + els[i].key;
+            const fullKeyB = partKey.replace(/^([a-z]+)_s(\d+)$/, '$1_') + els[i+2].key;
+            if (fullKeyA !== keyA && subKeys.includes(fullKeyA) && subKeys.includes(fullKeyB)) {
+              commutativePairs.push([fullKeyA, fullKeyB]);
+            }
+          }
+        }
+      }
+
+      // Build effective correct answers allowing commutative swaps
+      const effectiveCorrect: Record<string, string> = {};
+      for (const sk of subKeys) {
+        effectiveCorrect[sk] = question.answer[sk] || '';
+      }
+      
+      // For each commutative pair, if swapping makes both match, apply the swap
+      for (const [keyA, keyB] of commutativePairs) {
+        const uA = normalizeAnswer(answers[keyA] || '');
+        const uB = normalizeAnswer(answers[keyB] || '');
+        const cA = normalizeAnswer(effectiveCorrect[keyA] || '');
+        const cB = normalizeAnswer(effectiveCorrect[keyB] || '');
+        // If direct match fails but swapped match works, swap the expected values
+        if ((uA !== cA || uB !== cB) && uA === cB && uB === cA) {
+          effectiveCorrect[keyA] = question.answer[keyB] || '';
+          effectiveCorrect[keyB] = question.answer[keyA] || '';
+        }
+      }
+
       for (const sk of subKeys) {
         const uVal = normalizeAnswer(answers[sk] || '');
-        const cVal = normalizeAnswer(question.answer[sk] || '');
+        const cVal = normalizeAnswer(effectiveCorrect[sk] || '');
         userSubAnswers[sk] = answers[sk] || '';
-        correctSubAnswers[sk] = question.answer[sk] || '';
+        correctSubAnswers[sk] = effectiveCorrect[sk] || '';
         if (!uVal) hasEmpty = true;
         if (uVal !== cVal) allCorrect = false;
       }
@@ -286,7 +338,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       // Set feedback per sub-key and overall step
       const newFeedback = { ...feedback };
       for (const sk of subKeys) {
-        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(question.answer[sk] || '');
+        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(effectiveCorrect[sk] || '');
         newFeedback[sk] = correct ? 'correct' : 'incorrect';
       }
       newFeedback[partKey] = allCorrect ? 'correct' : 'incorrect';

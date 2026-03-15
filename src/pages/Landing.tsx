@@ -48,7 +48,12 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // No auto-redirect — landing page is always accessible regardless of auth state
+  // After login, redirect based on role
+  const shouldRedirect = !authLoading && !roleLoading && user && showLogin;
+  if (shouldRedirect) {
+    const target = isAdmin ? '/dashboard' : '/student';
+    return <Navigate to={target} replace />;
+  }
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

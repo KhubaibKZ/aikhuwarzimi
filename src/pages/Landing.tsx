@@ -93,7 +93,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      // Redirect handled by auth state change + role-based Navigate above
+      setDidLogin(true);
     }
   };
 

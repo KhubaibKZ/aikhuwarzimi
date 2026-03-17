@@ -329,12 +329,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       }
 
       for (const sk of subKeys) {
-        const uVal = normalizeAnswer(answers[sk] || '');
-        const cVal = normalizeAnswer(effectiveCorrect[sk] || '');
         userSubAnswers[sk] = answers[sk] || '';
         correctSubAnswers[sk] = effectiveCorrect[sk] || '';
-        if (!uVal) hasEmpty = true;
-        if (uVal !== cVal) allCorrect = false;
+        if (!normalizeAnswer(answers[sk] || '')) hasEmpty = true;
+        if (!answersMatch(answers[sk] || '', effectiveCorrect[sk] || '')) allCorrect = false;
       }
 
       if (hasEmpty) {

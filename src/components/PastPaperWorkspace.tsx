@@ -157,6 +157,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .trim();
   };
 
+  const isNumericallyEqual = (a: string, b: string): boolean => {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return Math.abs(numA - numB) < 1e-9;
+    }
+    return false;
+  };
+
+  const answersMatch = (userRaw: string, correctRaw: string): boolean => {
+    const u = normalizeAnswer(userRaw);
+    const c = normalizeAnswer(correctRaw);
+    if (u === c) return true;
+    return isNumericallyEqual(u, c);
+  };
+
   const checkAnswersInternal = () => {
     if (!question.answer) return { allCorrect: false, newFeedback: {} };
     

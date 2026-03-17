@@ -195,12 +195,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       });
     } else {
-      const userAnswer = normalizeAnswer(answers['answer'] || '');
-      const correctAnswer = normalizeAnswer(
-        typeof question.answer === 'string' ? question.answer : ''
-      );
+      const userAnswer = answers['answer'] || '';
+      const correctAnswer = typeof question.answer === 'string' ? question.answer : '';
       
-      if (userAnswer === correctAnswer) {
+      if (answersMatch(userAnswer, correctAnswer)) {
         newFeedback['answer'] = 'correct';
       } else if (userAnswer) {
         newFeedback['answer'] = 'incorrect';

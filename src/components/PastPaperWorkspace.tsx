@@ -181,12 +181,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     if (question.parts) {
       question.parts.forEach(part => {
-        const userAnswer = normalizeAnswer(answers[part.key] || '');
-        const correctAnswer = normalizeAnswer(
-          typeof question.answer === 'object' ? question.answer[part.key] || '' : ''
-        );
+        const userAnswer = answers[part.key] || '';
+        const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
         
-        if (userAnswer === correctAnswer) {
+        if (answersMatch(userAnswer, correctAnswer)) {
           newFeedback[part.key] = 'correct';
         } else if (userAnswer) {
           newFeedback[part.key] = 'incorrect';

@@ -406,6 +406,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     
     const isCorrect = answersMatch(rawAnswer, correctRaw);
     
+    const userAnswer = normalizeAnswer(rawAnswer);
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = { ...feedback, [partKey]: userAnswer ? (isCorrect ? 'correct' : 'incorrect') : null };
     setFeedback(newFeedback);
     setIsChecked(true);

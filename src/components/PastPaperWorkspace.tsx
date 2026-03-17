@@ -157,6 +157,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .trim();
   };
 
+  const isNumericallyEqual = (a: string, b: string): boolean => {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return Math.abs(numA - numB) < 1e-9;
+    }
+    return false;
+  };
+
+  const answersMatch = (userRaw: string, correctRaw: string): boolean => {
+    const u = normalizeAnswer(userRaw);
+    const c = normalizeAnswer(correctRaw);
+    if (u === c) return true;
+    return isNumericallyEqual(u, c);
+  };
+
   const checkAnswersInternal = () => {
     if (!question.answer) return { allCorrect: false, newFeedback: {} };
     
@@ -165,12 +181,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     if (question.parts) {
       question.parts.forEach(part => {
-        const userAnswer = normalizeAnswer(answers[part.key] || '');
-        const correctAnswer = normalizeAnswer(
-          typeof question.answer === 'object' ? question.answer[part.key] || '' : ''
-        );
+        const userAnswer = answers[part.key] || '';
+        const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
         
-        if (userAnswer === correctAnswer) {
+        if (answersMatch(userAnswer, correctAnswer)) {
           newFeedback[part.key] = 'correct';
         } else if (userAnswer) {
           newFeedback[part.key] = 'incorrect';
@@ -181,12 +195,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       });
     } else {
-      const userAnswer = normalizeAnswer(answers['answer'] || '');
-      const correctAnswer = normalizeAnswer(
-        typeof question.answer === 'string' ? question.answer : ''
-      );
+      const userAnswer = answers['answer'] || '';
+      const correctAnswer = typeof question.answer === 'string' ? question.answer : '';
       
-      if (userAnswer === correctAnswer) {
+      if (answersMatch(userAnswer, correctAnswer)) {
         newFeedback['answer'] = 'correct';
       } else if (userAnswer) {
         newFeedback['answer'] = 'incorrect';
@@ -310,20 +322,17 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         const uB = normalizeAnswer(answers[keyB] || '');
         const cA = normalizeAnswer(effectiveCorrect[keyA] || '');
         const cB = normalizeAnswer(effectiveCorrect[keyB] || '');
-        // If direct match fails but swapped match works, swap the expected values
-        if ((uA !== cA || uB !== cB) && uA === cB && uB === cA) {
+        if ((!answersMatch(answers[keyA] || '', effectiveCorrect[keyA] || '') || !answersMatch(answers[keyB] || '', effectiveCorrect[keyB] || '')) && answersMatch(answers[keyA] || '', effectiveCorrect[keyB] || '') && answersMatch(answers[keyB] || '', effectiveCorrect[keyA] || '')) {
           effectiveCorrect[keyA] = question.answer[keyB] || '';
           effectiveCorrect[keyB] = question.answer[keyA] || '';
         }
       }
 
       for (const sk of subKeys) {
-        const uVal = normalizeAnswer(answers[sk] || '');
-        const cVal = normalizeAnswer(effectiveCorrect[sk] || '');
         userSubAnswers[sk] = answers[sk] || '';
         correctSubAnswers[sk] = effectiveCorrect[sk] || '';
-        if (!uVal) hasEmpty = true;
-        if (uVal !== cVal) allCorrect = false;
+        if (!normalizeAnswer(answers[sk] || '')) hasEmpty = true;
+        if (!answersMatch(answers[sk] || '', effectiveCorrect[sk] || '')) allCorrect = false;
       }
 
       if (hasEmpty) {
@@ -338,7 +347,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       // Set feedback per sub-key and overall step
       const newFeedback = { ...feedback };
       for (const sk of subKeys) {
-        const correct = normalizeAnswer(answers[sk] || '') === normalizeAnswer(effectiveCorrect[sk] || '');
+        const correct = answersMatch(answers[sk] || '', effectiveCorrect[sk] || '');
         newFeedback[sk] = correct ? 'correct' : 'incorrect';
       }
       newFeedback[partKey] = allCorrect ? 'correct' : 'incorrect';
@@ -392,14 +401,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     // Standard single-value check
     const rawAnswer = directAnswer !== undefined ? directAnswer : (answers[partKey] || '');
+    const correctRaw = typeof question.answer === 'object' ? question.answer[partKey] || '' : 
+      typeof question.answer === 'string' ? question.answer : '';
+    
+    const isCorrect = answersMatch(rawAnswer, correctRaw);
+    
     const userAnswer = normalizeAnswer(rawAnswer);
-    const correctAnswer = normalizeAnswer(
-      typeof question.answer === 'object' ? question.answer[partKey] || '' : 
-      typeof question.answer === 'string' ? question.answer : ''
-    );
-    
-    const isCorrect = userAnswer === correctAnswer;
-    
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = { ...feedback, [partKey]: userAnswer ? (isCorrect ? 'correct' : 'incorrect') : null };
     setFeedback(newFeedback);
     setIsChecked(true);

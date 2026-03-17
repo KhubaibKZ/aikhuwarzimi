@@ -322,8 +322,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         const uB = normalizeAnswer(answers[keyB] || '');
         const cA = normalizeAnswer(effectiveCorrect[keyA] || '');
         const cB = normalizeAnswer(effectiveCorrect[keyB] || '');
-        // If direct match fails but swapped match works, swap the expected values
-        if ((uA !== cA || uB !== cB) && uA === cB && uB === cA) {
+        if ((!answersMatch(answers[keyA] || '', effectiveCorrect[keyA] || '') || !answersMatch(answers[keyB] || '', effectiveCorrect[keyB] || '')) && answersMatch(answers[keyA] || '', effectiveCorrect[keyB] || '') && answersMatch(answers[keyB] || '', effectiveCorrect[keyA] || '')) {
           effectiveCorrect[keyA] = question.answer[keyB] || '';
           effectiveCorrect[keyB] = question.answer[keyA] || '';
         }

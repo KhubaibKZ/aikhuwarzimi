@@ -401,13 +401,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     // Standard single-value check
     const rawAnswer = directAnswer !== undefined ? directAnswer : (answers[partKey] || '');
-    const userAnswer = normalizeAnswer(rawAnswer);
-    const correctAnswer = normalizeAnswer(
-      typeof question.answer === 'object' ? question.answer[partKey] || '' : 
-      typeof question.answer === 'string' ? question.answer : ''
-    );
+    const correctRaw = typeof question.answer === 'object' ? question.answer[partKey] || '' : 
+      typeof question.answer === 'string' ? question.answer : '';
     
-    const isCorrect = userAnswer === correctAnswer;
+    const isCorrect = answersMatch(rawAnswer, correctRaw);
     
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = { ...feedback, [partKey]: userAnswer ? (isCorrect ? 'correct' : 'incorrect') : null };
     setFeedback(newFeedback);

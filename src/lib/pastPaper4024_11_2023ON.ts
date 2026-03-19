@@ -712,18 +712,18 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 24 ==========
   'pp_4024_on23_11_q24': {
     id: 'pp_4024_on23_11_q24', questionNumber: '24', title: 'Algebraic fractions equation',
-    question: 'Solve (3x−2)/(x+1) − 3/(x−1) = 3.',
+    question: 'Solve 3x/(x+1) − 2/(x−1) = 3.',
     marks: 4,
-    hints: ['Multiply through by (x+1)(x−1)', 'Expand numerators', 'Simplify and solve'],
+    hints: ['Multiply through by (x+1)(x−1)', 'Expand: 3x(x−1) − 2(x+1) = 3(x+1)(x−1)', 'Simplify and solve'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
       { label: 'Multiply out', stepKey: 's1', elements: [
-        { type: 'text', value: '(3x−2)(x−1) − 3(x+1) = 3(x+1)(x−1)' }
+        { type: 'text', value: '3x(x−1) − 2(x+1) = 3(x+1)(x−1)' }
       ]},
       { label: 'Expand LHS', stepKey: 's2', elements: [
         { type: 'box', key: 's2_a', width: 'w-20' }, { type: 'text', value: '−' },
-        { type: 'box', key: 's2_b', width: 'w-16' }, { type: 'text', value: '− 3x − 3' }
+        { type: 'box', key: 's2_b', width: 'w-16' }
       ]},
       { label: 'Expand RHS', stepKey: 's3', elements: [
         { type: 'text', value: '= 3(' }, { type: 'box', key: 's3_a', width: 'w-16' }, { type: 'text', value: ')' },
@@ -740,9 +740,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
     answer: {
       answer: '1/5',
-      answer_s2_a: '3x²-5x+2', answer_s2_b: '3x+3',
+      answer_s2_a: '3x²-3x', answer_s2_b: '2x+2',
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
-      answer_s4_a: '3x²-5x+2-3x-3', answer_s4_b: '3x²-3',
+      answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
     }
   },

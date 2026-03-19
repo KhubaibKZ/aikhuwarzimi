@@ -17,7 +17,23 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
 
   // ========== Question 2 ==========
   'pp_4024_on23_11_q2': {
-    id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Temperature calculations',
+    id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Ordering fractions and percentages',
+    question: 'Write these numbers in order of size, starting with the smallest: 1/5, 3/25, 13%, 0.1.',
+    marks: 2,
+    hints: ['Convert to decimals: 1/5 = 0.2, 3/25 = 0.12, 13% = 0.13, 0.1', 'Order: 0.1, 3/25, 13%, 1/5'],
+    type: 'multi-part',
+    parts: [
+      { label: '1st (smallest)', key: 'p1', marks: 0 },
+      { label: '2nd', key: 'p2', marks: 0 },
+      { label: '3rd', key: 'p3', marks: 0 },
+      { label: '4th (largest)', key: 'p4', marks: 2 }
+    ],
+    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' }
+  },
+
+  // ========== Question 3 ==========
+  'pp_4024_on23_11_q3': {
+    id: 'pp_4024_on23_11_q3', questionNumber: '3', title: 'Temperature calculations',
     question: '(a) Work out the temperature that is 20 degrees higher than −12 °C.\n(b) Work out the difference between −4 °C and 10 °C.',
     marks: 2,
     hints: ['(a) −12 + 20 = 8', '(b) 10 − (−4) = 14'],
@@ -26,9 +42,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: { a: '8', b: '14' }
   },
 
-  // ========== Question 3 ==========
-  'pp_4024_on23_11_q3': {
-    id: 'pp_4024_on23_11_q3', questionNumber: '3', title: 'Money calculation',
+  // ========== Question 4 ==========
+  'pp_4024_on23_11_q4': {
+    id: 'pp_4024_on23_11_q4', questionNumber: '4', title: 'Money calculation',
     question: 'Kasia buys 12 apples. Each apple costs 65 cents. Work out how much Kasia pays. Give your answer in dollars.',
     marks: 2,
     hints: ['12 × 65 = 780 cents', '780 cents = $7.80'],
@@ -50,22 +66,6 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     }
   },
 
-  // ========== Question 4 ==========
-  'pp_4024_on23_11_q4': {
-    id: 'pp_4024_on23_11_q4', questionNumber: '4', title: 'Ordering fractions and percentages',
-    question: 'Write these numbers in order of size, starting with the smallest: 1/3, 13%, 0.1, 1/5, 2/5.',
-    marks: 2,
-    hints: ['Convert to decimals: 1/3 ≈ 0.333, 13% = 0.13, 0.1, 1/5 = 0.2, 2/5 = 0.4', 'Order: 0.1, 13%, 1/5, 1/3, 2/5'],
-    type: 'multi-part',
-    parts: [
-      { label: '1st (smallest)', key: 'p1', marks: 0 },
-      { label: '2nd', key: 'p2', marks: 0 },
-      { label: '3rd', key: 'p3', marks: 0 },
-      { label: '4th', key: 'p4', marks: 0 },
-      { label: '5th (largest)', key: 'p5', marks: 2 }
-    ],
-    answer: { p1: '0.1', p2: '13%', p3: '1/5', p4: '1/3', p5: '2/5' }
-  },
 
   // ========== Question 5 ==========
   'pp_4024_on23_11_q5': {
@@ -393,9 +393,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 16 ==========
   'pp_4024_on23_11_q16': {
     id: 'pp_4024_on23_11_q16', questionNumber: '16', title: 'Region defined by inequalities',
-    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≤ x + 1. Find and label region R.',
+    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ x/2 + 1. Find and label region R.',
     marks: 4,
-    hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x + 1 and shade below'],
+    hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
     type: 'short', answer: 'Region R correctly identified'
   },
 
@@ -495,17 +495,17 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 20 ==========
   'pp_4024_on23_11_q20': {
     id: 'pp_4024_on23_11_q20', questionNumber: '20', title: 'Matrix operations',
-    question: 'A = (3, 4; 1, −2).\n(a) Find A⁻¹.\n(b) Find AB where B = (−1; 1).',
+    question: 'A = (−2, 1; 4, 3), B = (3, 2; −1, 1).\n(a) Find A⁻¹.\n(b) Find AB.',
     marks: 4,
-    hints: ['(a) det = 3(−2) − 4(1) = −6−4 = −10', '(a) A⁻¹ = (1/−10)(−2,−4;−1,3)', '(b) AB: multiply row by column'],
+    hints: ['(a) det = (−2)(3) − (1)(4) = −6−4 = −10', '(a) A⁻¹ = (1/−10)(3,−1;−4,−2)', '(b) AB: multiply row by column'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
         { label: '|A|', stepKey: 's1', elements: [
           { type: 'text', value: '|A| =' },
-          { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '×(' },
-          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ') −' },
+          { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '×' },
+          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '−' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '×' },
           { type: 'box', key: 's1_d', width: 'w-10' }
         ]},
@@ -528,7 +528,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ') + (' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: ')(' },
           { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: ') =' },
-          { type: 'box', key: 's1_e', width: 'w-10' }
+          { type: 'box', key: 's1_e', width: 'w-10' },
+          { type: 'text', value: ', (' },
+          { type: 'box', key: 's1_f', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's1_g', width: 'w-10' }, { type: 'text', value: ') + (' },
+          { type: 'box', key: 's1_h', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's1_i', width: 'w-10' }, { type: 'text', value: ') =' },
+          { type: 'box', key: 's1_j', width: 'w-10' }
         ]},
         { label: 'Row 2', stepKey: 's2', elements: [
           { type: 'text', value: '(' },
@@ -536,18 +542,26 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: ') + (' },
           { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: ')(' },
           { type: 'box', key: 's2_d', width: 'w-10' }, { type: 'text', value: ') =' },
-          { type: 'box', key: 's2_e', width: 'w-10' }
+          { type: 'box', key: 's2_e', width: 'w-10' },
+          { type: 'text', value: ', (' },
+          { type: 'box', key: 's2_f', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's2_g', width: 'w-10' }, { type: 'text', value: ') + (' },
+          { type: 'box', key: 's2_h', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's2_i', width: 'w-10' }, { type: 'text', value: ') =' },
+          { type: 'box', key: 's2_j', width: 'w-10' }
         ]}
       ]
     },
     parts: [{ label: '(a) A⁻¹', key: 'a', marks: 2 }, { label: '(b) AB', key: 'b', marks: 2 }],
     answer: {
-      a: '(-1/10)(-2,-4;-1,3)', b: '(1; -3)',
-      a_s1_a: '3', a_s1_b: '-2', a_s1_c: '4', a_s1_d: '1',
+      a: '(-1/10)(3,-1;-4,-2)', b: '(-7,-3;9,11)',
+      a_s1_a: '-2', a_s1_b: '3', a_s1_c: '1', a_s1_d: '4',
       a_s2_a: '-6', a_s2_b: '4', a_s2_c: '-10',
-      a_s3_a: '-2', a_s3_b: '-4', a_s3_c: '-1', a_s3_d: '3',
-      b_s1_a: '3', b_s1_b: '-1', b_s1_c: '4', b_s1_d: '1', b_s1_e: '1',
-      b_s2_a: '1', b_s2_b: '-1', b_s2_c: '-2', b_s2_d: '1', b_s2_e: '-3'
+      a_s3_a: '3', a_s3_b: '-1', a_s3_c: '-4', a_s3_d: '-2',
+      b_s1_a: '-2', b_s1_b: '3', b_s1_c: '1', b_s1_d: '-1', b_s1_e: '-7',
+      b_s1_f: '-2', b_s1_g: '2', b_s1_h: '1', b_s1_i: '1', b_s1_j: '-3',
+      b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
+      b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
     }
   },
 
@@ -591,15 +605,15 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 22 ==========
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
-    question: 'f(x) = (x+3)/4, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
+    question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
     marks: 6,
-    hints: ['(a) f(−8) = (−8+3)/4 = −5/4... from MS: f(-8) is on the original paper differently', '(b) y = (x+3)/4, x = 4y−3, f⁻¹(x) = 4x−3', '(c) (p+3)/4 = 2(p+5−1) = 2(p+4)'],
+    hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
     equationStagesMap: {
       'a_calc': [
         { label: 'Substitute', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(−8) = (−8+3)/4' }
+          { type: 'text', value: 'f(−8) = −8/4 + 3' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 's2', width: 'w-14' }
@@ -607,7 +621,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'b_calc': [
         { label: 'Let y = f(x)', stepKey: 's1', elements: [
-          { type: 'text', value: 'y = (x+3)/4 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
+          { type: 'text', value: 'y = x/4 + 3 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
         ]},
         { label: 'f⁻¹(x)', stepKey: 's2', elements: [
           { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 's2', width: 'w-20' }
@@ -615,17 +629,16 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'c_calc': [
         { label: 'f(p)', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(p) = (p+3)/4' }
+          { type: 'text', value: 'f(p) = p/4 + 3' }
         ]},
         { label: 'g(p+5)', stepKey: 's2', elements: [
           { type: 'text', value: 'g(p+5) = 2(p+5−1) = 2(p+' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Equation', stepKey: 's3', elements: [
-          { type: 'text', value: 'p + 3 =' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '(p +' },
-          { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: ')' }
+          { type: 'text', value: 'p/4 + 3 = 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
-        { label: 'Expand', stepKey: 's4', elements: [
-          { type: 'text', value: 'p + 3 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
+        { label: 'Multiply by 4', stepKey: 's4', elements: [
+          { type: 'text', value: 'p + 12 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
         ]},
         { label: 'Solve', stepKey: 's5', elements: [
           { type: 'box', key: 's5_a', width: 'w-10' }, { type: 'text', value: 'p =' }, { type: 'box', key: 's5_b', width: 'w-10' }
@@ -641,11 +654,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(c) Value of p', key: 'c_calc', marks: 3 }
     ],
     answer: {
-      a_calc: '-5/4', b_calc: '4x-3', c_calc: '-20/7',
-      a_calc_s2: '-5/4',
-      b_calc_s1: '4y-3', b_calc_s2: '4x-3',
+      a_calc: '1', b_calc: '4x-12', c_calc: '-20/7',
+      a_calc_s2: '1',
+      b_calc_s1: '4(y-3)', b_calc_s2: '4x-12',
       c_calc_s2_a: '4',
-      c_calc_s3_a: '8', c_calc_s3_b: '4',
+      c_calc_s3_a: '4',
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'
@@ -699,18 +712,18 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 24 ==========
   'pp_4024_on23_11_q24': {
     id: 'pp_4024_on23_11_q24', questionNumber: '24', title: 'Algebraic fractions equation',
-    question: 'Solve (3x−2)/(x+1) − 3/(x−1) = 3.',
+    question: 'Solve 3x/(x+1) − 2/(x−1) = 3.',
     marks: 4,
-    hints: ['Multiply through by (x+1)(x−1)', 'Expand numerators', 'Simplify and solve'],
+    hints: ['Multiply through by (x+1)(x−1)', 'Expand: 3x(x−1) − 2(x+1) = 3(x+1)(x−1)', 'Simplify and solve'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
       { label: 'Multiply out', stepKey: 's1', elements: [
-        { type: 'text', value: '(3x−2)(x−1) − 3(x+1) = 3(x+1)(x−1)' }
+        { type: 'text', value: '3x(x−1) − 2(x+1) = 3(x+1)(x−1)' }
       ]},
       { label: 'Expand LHS', stepKey: 's2', elements: [
         { type: 'box', key: 's2_a', width: 'w-20' }, { type: 'text', value: '−' },
-        { type: 'box', key: 's2_b', width: 'w-16' }, { type: 'text', value: '− 3x − 3' }
+        { type: 'box', key: 's2_b', width: 'w-16' }
       ]},
       { label: 'Expand RHS', stepKey: 's3', elements: [
         { type: 'text', value: '= 3(' }, { type: 'box', key: 's3_a', width: 'w-16' }, { type: 'text', value: ')' },
@@ -727,9 +740,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
     answer: {
       answer: '1/5',
-      answer_s2_a: '3x²-5x+2', answer_s2_b: '3x+3',
+      answer_s2_a: '3x²-3x', answer_s2_b: '2x+2',
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
-      answer_s4_a: '3x²-5x+2-3x-3', answer_s4_b: '3x²-3',
+      answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
     }
   },
@@ -737,9 +750,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
 
 export const sections4024_11_2023ON: PastPaperSection[] = [
   { id: 's_4024_on23_11_q1', title: 'Q1 – Order of operations', questionId: 'pp_4024_on23_11_q1' },
-  { id: 's_4024_on23_11_q2', title: 'Q2 – Temperature', questionId: 'pp_4024_on23_11_q2' },
-  { id: 's_4024_on23_11_q3', title: 'Q3 – Money calculation', questionId: 'pp_4024_on23_11_q3' },
-  { id: 's_4024_on23_11_q4', title: 'Q4 – Ordering numbers', questionId: 'pp_4024_on23_11_q4' },
+  { id: 's_4024_on23_11_q2', title: 'Q2 – Ordering numbers', questionId: 'pp_4024_on23_11_q2' },
+  { id: 's_4024_on23_11_q3', title: 'Q3 – Temperature', questionId: 'pp_4024_on23_11_q3' },
+  { id: 's_4024_on23_11_q4', title: 'Q4 – Money calculation', questionId: 'pp_4024_on23_11_q4' },
   { id: 's_4024_on23_11_q5', title: 'Q5 – Bar chart', questionId: 'pp_4024_on23_11_q5' },
   { id: 's_4024_on23_11_q6', title: 'Q6 – Parallel lines', questionId: 'pp_4024_on23_11_q6' },
   { id: 's_4024_on23_11_q7', title: 'Q7 – Estimation', questionId: 'pp_4024_on23_11_q7' },

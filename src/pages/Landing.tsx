@@ -155,7 +155,7 @@ export default function Landing() {
     if (error) {
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
     } else {
-      // Redirect handled by auth state change + Navigate above
+      // OAuth redirects back; auth state change will handle session
     }
   };
 

@@ -750,9 +750,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
 
 export const sections4024_11_2023ON: PastPaperSection[] = [
   { id: 's_4024_on23_11_q1', title: 'Q1 – Order of operations', questionId: 'pp_4024_on23_11_q1' },
-  { id: 's_4024_on23_11_q2', title: 'Q2 – Temperature', questionId: 'pp_4024_on23_11_q2' },
-  { id: 's_4024_on23_11_q3', title: 'Q3 – Money calculation', questionId: 'pp_4024_on23_11_q3' },
-  { id: 's_4024_on23_11_q4', title: 'Q4 – Ordering numbers', questionId: 'pp_4024_on23_11_q4' },
+  { id: 's_4024_on23_11_q2', title: 'Q2 – Ordering numbers', questionId: 'pp_4024_on23_11_q2' },
+  { id: 's_4024_on23_11_q3', title: 'Q3 – Temperature', questionId: 'pp_4024_on23_11_q3' },
+  { id: 's_4024_on23_11_q4', title: 'Q4 – Money calculation', questionId: 'pp_4024_on23_11_q4' },
   { id: 's_4024_on23_11_q5', title: 'Q5 – Bar chart', questionId: 'pp_4024_on23_11_q5' },
   { id: 's_4024_on23_11_q6', title: 'Q6 – Parallel lines', questionId: 'pp_4024_on23_11_q6' },
   { id: 's_4024_on23_11_q7', title: 'Q7 – Estimation', questionId: 'pp_4024_on23_11_q7' },

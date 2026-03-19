@@ -48,11 +48,16 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Always redirect authenticated users to their appropriate dashboard
-  if (!authLoading && !roleLoading && user) {
-    const target = isAdmin ? '/dashboard' : '/student';
-    return <Navigate to={target} replace />;
-  }
+  // After a fresh login/register, redirect to the appropriate dashboard
+  const [hasRedirected, setHasRedirected] = useState(false);
+  
+  const redirectAfterAuth = () => {
+    if (!hasRedirected && user) {
+      setHasRedirected(true);
+      const target = isAdmin ? '/dashboard' : '/student';
+      navigate(target, { replace: true });
+    }
+  };
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
@@ -86,7 +91,8 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      // Redirect handled by auth state change + Navigate above
+      // Wait briefly for role check, then redirect
+      setTimeout(() => redirectAfterAuth(), 500);
     }
   };
 
@@ -149,7 +155,7 @@ export default function Landing() {
     if (error) {
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
     } else {
-      // Redirect handled by auth state change + Navigate above
+      // OAuth redirects back; auth state change will handle session
     }
   };
 

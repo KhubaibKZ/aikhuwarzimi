@@ -605,15 +605,15 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 22 ==========
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
-    question: 'f(x) = (x+3)/4, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
+    question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
     marks: 6,
-    hints: ['(a) f(−8) = (−8+3)/4 = −5/4... from MS: f(-8) is on the original paper differently', '(b) y = (x+3)/4, x = 4y−3, f⁻¹(x) = 4x−3', '(c) (p+3)/4 = 2(p+5−1) = 2(p+4)'],
+    hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
     equationStagesMap: {
       'a_calc': [
         { label: 'Substitute', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(−8) = (−8+3)/4' }
+          { type: 'text', value: 'f(−8) = −8/4 + 3' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 's2', width: 'w-14' }
@@ -621,7 +621,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'b_calc': [
         { label: 'Let y = f(x)', stepKey: 's1', elements: [
-          { type: 'text', value: 'y = (x+3)/4 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
+          { type: 'text', value: 'y = x/4 + 3 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
         ]},
         { label: 'f⁻¹(x)', stepKey: 's2', elements: [
           { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 's2', width: 'w-20' }
@@ -629,17 +629,16 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'c_calc': [
         { label: 'f(p)', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(p) = (p+3)/4' }
+          { type: 'text', value: 'f(p) = p/4 + 3' }
         ]},
         { label: 'g(p+5)', stepKey: 's2', elements: [
           { type: 'text', value: 'g(p+5) = 2(p+5−1) = 2(p+' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Equation', stepKey: 's3', elements: [
-          { type: 'text', value: 'p + 3 =' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '(p +' },
-          { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: ')' }
+          { type: 'text', value: 'p/4 + 3 = 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
-        { label: 'Expand', stepKey: 's4', elements: [
-          { type: 'text', value: 'p + 3 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
+        { label: 'Multiply by 4', stepKey: 's4', elements: [
+          { type: 'text', value: 'p + 12 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
         ]},
         { label: 'Solve', stepKey: 's5', elements: [
           { type: 'box', key: 's5_a', width: 'w-10' }, { type: 'text', value: 'p =' }, { type: 'box', key: 's5_b', width: 'w-10' }
@@ -655,11 +654,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(c) Value of p', key: 'c_calc', marks: 3 }
     ],
     answer: {
-      a_calc: '-5/4', b_calc: '4x-3', c_calc: '-20/7',
-      a_calc_s2: '-5/4',
-      b_calc_s1: '4y-3', b_calc_s2: '4x-3',
+      a_calc: '1', b_calc: '4x-12', c_calc: '-20/7',
+      a_calc_s2: '1',
+      b_calc_s1: '4(y-3)', b_calc_s2: '4x-12',
       c_calc_s2_a: '4',
-      c_calc_s3_a: '8', c_calc_s3_b: '4',
+      c_calc_s3_a: '4',
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'

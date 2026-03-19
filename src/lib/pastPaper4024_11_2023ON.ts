@@ -495,17 +495,17 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 20 ==========
   'pp_4024_on23_11_q20': {
     id: 'pp_4024_on23_11_q20', questionNumber: '20', title: 'Matrix operations',
-    question: 'A = (3, 4; 1, −2).\n(a) Find A⁻¹.\n(b) Find AB where B = (−1; 1).',
+    question: 'A = (−2, 1; 4, 3), B = (3, 2; −1, 1).\n(a) Find A⁻¹.\n(b) Find AB.',
     marks: 4,
-    hints: ['(a) det = 3(−2) − 4(1) = −6−4 = −10', '(a) A⁻¹ = (1/−10)(−2,−4;−1,3)', '(b) AB: multiply row by column'],
+    hints: ['(a) det = (−2)(3) − (1)(4) = −6−4 = −10', '(a) A⁻¹ = (1/−10)(3,−1;−4,−2)', '(b) AB: multiply row by column'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
         { label: '|A|', stepKey: 's1', elements: [
           { type: 'text', value: '|A| =' },
-          { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '×(' },
-          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ') −' },
+          { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '×' },
+          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '−' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '×' },
           { type: 'box', key: 's1_d', width: 'w-10' }
         ]},
@@ -528,7 +528,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ') + (' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: ')(' },
           { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: ') =' },
-          { type: 'box', key: 's1_e', width: 'w-10' }
+          { type: 'box', key: 's1_e', width: 'w-10' },
+          { type: 'text', value: ', (' },
+          { type: 'box', key: 's1_f', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's1_g', width: 'w-10' }, { type: 'text', value: ') + (' },
+          { type: 'box', key: 's1_h', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's1_i', width: 'w-10' }, { type: 'text', value: ') =' },
+          { type: 'box', key: 's1_j', width: 'w-10' }
         ]},
         { label: 'Row 2', stepKey: 's2', elements: [
           { type: 'text', value: '(' },
@@ -536,18 +542,26 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: ') + (' },
           { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: ')(' },
           { type: 'box', key: 's2_d', width: 'w-10' }, { type: 'text', value: ') =' },
-          { type: 'box', key: 's2_e', width: 'w-10' }
+          { type: 'box', key: 's2_e', width: 'w-10' },
+          { type: 'text', value: ', (' },
+          { type: 'box', key: 's2_f', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's2_g', width: 'w-10' }, { type: 'text', value: ') + (' },
+          { type: 'box', key: 's2_h', width: 'w-10' }, { type: 'text', value: ')(' },
+          { type: 'box', key: 's2_i', width: 'w-10' }, { type: 'text', value: ') =' },
+          { type: 'box', key: 's2_j', width: 'w-10' }
         ]}
       ]
     },
     parts: [{ label: '(a) A⁻¹', key: 'a', marks: 2 }, { label: '(b) AB', key: 'b', marks: 2 }],
     answer: {
-      a: '(-1/10)(-2,-4;-1,3)', b: '(1; -3)',
-      a_s1_a: '3', a_s1_b: '-2', a_s1_c: '4', a_s1_d: '1',
+      a: '(-1/10)(3,-1;-4,-2)', b: '(-7,-3;9,11)',
+      a_s1_a: '-2', a_s1_b: '3', a_s1_c: '1', a_s1_d: '4',
       a_s2_a: '-6', a_s2_b: '4', a_s2_c: '-10',
-      a_s3_a: '-2', a_s3_b: '-4', a_s3_c: '-1', a_s3_d: '3',
-      b_s1_a: '3', b_s1_b: '-1', b_s1_c: '4', b_s1_d: '1', b_s1_e: '1',
-      b_s2_a: '1', b_s2_b: '-1', b_s2_c: '-2', b_s2_d: '1', b_s2_e: '-3'
+      a_s3_a: '3', a_s3_b: '-1', a_s3_c: '-4', a_s3_d: '-2',
+      b_s1_a: '-2', b_s1_b: '3', b_s1_c: '1', b_s1_d: '-1', b_s1_e: '-7',
+      b_s1_f: '-2', b_s1_g: '2', b_s1_h: '1', b_s1_i: '1', b_s1_j: '-3',
+      b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
+      b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
     }
   },
 

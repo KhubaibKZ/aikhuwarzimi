@@ -91,7 +91,8 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      // Redirect handled by auth state change + Navigate above
+      // Wait briefly for role check, then redirect
+      setTimeout(() => redirectAfterAuth(), 500);
     }
   };
 

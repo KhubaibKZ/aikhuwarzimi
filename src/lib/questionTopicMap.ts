@@ -636,7 +636,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // =============================================
   'pp_4024_on23_11_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
   'pp_4024_on23_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.5', subtopicTitle: 'Ordering' },
-  'pp_4024_on23_11_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
+  'pp_4024_on23_11_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.3', subtopicTitle: 'Directed Numbers' },
   'pp_4024_on23_11_q4': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.16', subtopicTitle: 'Money' },
   'pp_4024_on23_11_q5': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.4', subtopicTitle: 'Statistical Charts and Diagrams' },
   'pp_4024_on23_11_q6': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },

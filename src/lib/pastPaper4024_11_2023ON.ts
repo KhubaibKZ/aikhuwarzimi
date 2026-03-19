@@ -17,7 +17,23 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
 
   // ========== Question 2 ==========
   'pp_4024_on23_11_q2': {
-    id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Temperature calculations',
+    id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Ordering fractions and percentages',
+    question: 'Write these numbers in order of size, starting with the smallest: 1/5, 3/25, 13%, 0.1.',
+    marks: 2,
+    hints: ['Convert to decimals: 1/5 = 0.2, 3/25 = 0.12, 13% = 0.13, 0.1', 'Order: 0.1, 3/25, 13%, 1/5'],
+    type: 'multi-part',
+    parts: [
+      { label: '1st (smallest)', key: 'p1', marks: 0 },
+      { label: '2nd', key: 'p2', marks: 0 },
+      { label: '3rd', key: 'p3', marks: 0 },
+      { label: '4th (largest)', key: 'p4', marks: 2 }
+    ],
+    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' }
+  },
+
+  // ========== Question 3 ==========
+  'pp_4024_on23_11_q3': {
+    id: 'pp_4024_on23_11_q3', questionNumber: '3', title: 'Temperature calculations',
     question: '(a) Work out the temperature that is 20 degrees higher than −12 °C.\n(b) Work out the difference between −4 °C and 10 °C.',
     marks: 2,
     hints: ['(a) −12 + 20 = 8', '(b) 10 − (−4) = 14'],
@@ -26,9 +42,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: { a: '8', b: '14' }
   },
 
-  // ========== Question 3 ==========
-  'pp_4024_on23_11_q3': {
-    id: 'pp_4024_on23_11_q3', questionNumber: '3', title: 'Money calculation',
+  // ========== Question 4 ==========
+  'pp_4024_on23_11_q4': {
+    id: 'pp_4024_on23_11_q4', questionNumber: '4', title: 'Money calculation',
     question: 'Kasia buys 12 apples. Each apple costs 65 cents. Work out how much Kasia pays. Give your answer in dollars.',
     marks: 2,
     hints: ['12 × 65 = 780 cents', '780 cents = $7.80'],
@@ -50,22 +66,6 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     }
   },
 
-  // ========== Question 4 ==========
-  'pp_4024_on23_11_q4': {
-    id: 'pp_4024_on23_11_q4', questionNumber: '4', title: 'Ordering fractions and percentages',
-    question: 'Write these numbers in order of size, starting with the smallest: 1/3, 13%, 0.1, 1/5, 2/5.',
-    marks: 2,
-    hints: ['Convert to decimals: 1/3 ≈ 0.333, 13% = 0.13, 0.1, 1/5 = 0.2, 2/5 = 0.4', 'Order: 0.1, 13%, 1/5, 1/3, 2/5'],
-    type: 'multi-part',
-    parts: [
-      { label: '1st (smallest)', key: 'p1', marks: 0 },
-      { label: '2nd', key: 'p2', marks: 0 },
-      { label: '3rd', key: 'p3', marks: 0 },
-      { label: '4th', key: 'p4', marks: 0 },
-      { label: '5th (largest)', key: 'p5', marks: 2 }
-    ],
-    answer: { p1: '0.1', p2: '13%', p3: '1/5', p4: '1/3', p5: '2/5' }
-  },
 
   // ========== Question 5 ==========
   'pp_4024_on23_11_q5': {

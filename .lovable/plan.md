@@ -1,29 +1,58 @@
 
 
-## Plan: Add O Level 4024 Question-to-Syllabus Mapping
+# Workflow Plan: Updating Past Papers from Uploaded Documents
 
-### What needs to happen
-Every O Level 4024 past paper question needs a `SyllabusRef` entry in `src/lib/questionTopicMap.ts`, mapping it to the correct topic/subtopic from `src/lib/olevelSyllabusData.ts`. This enables the syllabus badge (e.g. "1.1 Types of Number • Number") to appear in the question workspace header, and powers the topic mastery analytics.
+## What You're Asking
 
-### Scope
-16 paper files with ~300+ total questions across:
-- **Paper 1**: 4024/11 and /12 (May/June 2024, Oct/Nov 2024, 2025 sessions)
-- **Paper 2**: 4024/21 and /22 (same sessions)
-- **Paper 13, /23** (May/June 2025)
+You want to establish a systematic process where:
+1. You upload **question papers** + **marking schemes** + **solved versions with steps** for each year/session
+2. I update the workspace data files with accurate equationStages/box scaffolding matching the solved steps
+3. Marking scheme points are mapped to specific steps so students earn marks at the right places
+4. Interactive SVG diagrams are created for all geometric/visual questions in the papers
 
-### Changes
+## How This Will Work (Per Paper You Upload)
 
-**File: `src/lib/questionTopicMap.ts`**
+### Step 1 — Parse & Cross-Reference
+- Read the question paper to get exact question text, numbers, and diagram descriptions
+- Read the marking scheme to identify mark allocation per step (M1, A1, B1 etc.)
+- Read the solved version to extract the step-by-step working pattern
 
-Add ~300 new entries mapping each `pp_4024_*` question ID to its O Level syllabus reference. Each entry uses the O Level topic structure (topics 1–9 from `olevelSyllabusData.ts`), for example:
+### Step 2 — Update the Data File
+For each question in `src/lib/pastPaper4024_XX_YYYY.ts`:
+- **Question text**: Verify it matches the paper exactly
+- **equationStages**: Build box layouts that mirror the solved steps (one stage per logical working step)
+- **answer object**: Populate all intermediate values from the solved version
+- **marks on parts**: Align with the marking scheme (M1 for method steps, A1 for final answers)
+- **hints**: Derive from marking scheme guidance notes
 
-```ts
-'pp_4024_s24_11_q1': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
-'pp_4024_s24_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
-```
+### Step 3 — Create Interactive Diagrams
+For any question with a geometric figure, graph, or visual element:
+- Create a new SVG component in `src/components/diagrams/`
+- Export it from `src/components/diagrams/index.ts`
+- Import and render it in `PastPaperWorkspace.tsx` keyed to the question ID
+- Match dimensions, labels, and angles from the original paper diagram
 
-Topic assignment is determined by analyzing each question's title and content against the 4024 syllabus subtopics.
+### Step 4 — Update Topic Mapping
+- Update `src/lib/questionTopicMap.ts` with correct syllabus references for each question
 
-### No other file changes needed
-The existing rendering in `PastPaperWorkspace.tsx` and analytics in `useStudentProgress.ts` already consume `questionTopicMap` generically — once entries are added, the badges and topic mastery will work automatically for O Level papers.
+## What I Need From You
+
+For each paper, upload these three documents:
+1. **Question Paper** (the actual exam PDF)
+2. **Marking Scheme** (official mark scheme PDF)
+3. **Solved Version** (handwritten or typed step-by-step solutions)
+
+You can upload them together or one at a time — I'll process each set and update the corresponding data file with full scaffolding, correct answers, and diagrams.
+
+## Technical Details
+
+- Each paper file follows the naming pattern: `src/lib/pastPaper4024_XX_YYYY[ON].ts`
+- Box scaffolding uses `equationStages` (single-part) or `equationStagesMap` (multi-part) with `EquationStageElement[]`
+- Diagrams go in `src/components/diagrams/` as standalone SVG components
+- Mark allocation from the scheme maps to `parts[].marks` and stage-level validation
+- The AI tutor feedback (edge function) already handles concise error-first guidance per step
+
+## Ready When You Are
+
+Go ahead and upload the first set of documents (question paper + marking scheme + solved version) for any paper, and I'll update it completely.
 

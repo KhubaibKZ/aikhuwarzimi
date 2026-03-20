@@ -157,17 +157,14 @@ export function EquationSolveWorkspace({
       {isSubmitted && correctAnswers && (
         <div className="text-sm text-green-600 font-medium space-y-0.5">
           {stages.map(stage => {
-            const fullStepKey = k(stage.stepKey);
-            if (feedback[fullStepKey] === 'incorrect') {
-              // Show correct values for each box in this stage
-              const boxElements = stage.elements.filter(el => el.type === 'box' && el.key);
-              return (
-                <p key={stage.stepKey}>
-                  {stage.label}: {boxElements.map(el => correctAnswers[k(el.key!)] || '').join(', ')}
-                </p>
-              );
-            }
-            return null;
+            const boxElements = stage.elements.filter(el => el.type === 'box' && el.key);
+            const hasIncorrect = boxElements.some(el => feedback[k(el.key!)] === 'incorrect');
+            if (!hasIncorrect) return null;
+            return (
+              <p key={stage.stepKey}>
+                {stage.label}: {boxElements.map(el => correctAnswers[k(el.key!)] || '').join(', ')}
+              </p>
+            );
           })}
         </div>
       )}

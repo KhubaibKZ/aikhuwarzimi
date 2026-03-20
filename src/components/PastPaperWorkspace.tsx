@@ -62,6 +62,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
+  const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);

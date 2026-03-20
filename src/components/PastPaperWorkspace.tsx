@@ -63,6 +63,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
   const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
+  const [storedMarkingNotes, setStoredMarkingNotes] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
@@ -110,12 +111,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         .maybeSingle();
       if (data) {
         // Restore submitted state — read-only until paper reset
+        const restoredAnswers = data.submitted_answers && typeof data.submitted_answers === 'object'
+          ? data.submitted_answers as Record<string, string>
+          : {};
+
         if (data.submitted_answers && typeof data.submitted_answers === 'object') {
-          setAnswers(data.submitted_answers as Record<string, string>);
+          setAnswers(restoredAnswers);
         }
-        if (data.submitted_feedback && typeof data.submitted_feedback === 'object') {
-          setFeedback(data.submitted_feedback as Record<string, 'correct' | 'incorrect' | null>);
-        }
+
+        const evaluation = checkAnswersInternal(restoredAnswers);
+        setFeedback(evaluation.newFeedback);
+        setStoredMarksEarned(evaluation.marksEarned);
+        setStoredMarkingNotes(evaluation.markingNotes);
+
         if (data.time_spent_seconds != null) {
           setFinalTime(data.time_spent_seconds as number);
         }
@@ -127,6 +135,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         setIsChecked(false);
         setAnswers({});
         setFeedback({});
+        setStoredMarksEarned({});
+        setStoredMarkingNotes({});
         setAiResponse(null);
         setAttemptCount({});
         setFinalTime(null);
@@ -227,79 +237,158 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return null;
   };
 
-  const checkAnswersInternal = () => {
-    if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {} };
-    
-    const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
-    const marksEarned: Record<string, number> = {};
-    let allCorrect = true;
+  const getStructuredStageGroups = (partKey: string): string[][] => {
     const eqParts = (question as any).equationSolveParts as string[] | undefined;
     const stagesMap = (question as any).equationStagesMap;
     const eqStages = (question as any).equationStages;
 
+    if (eqParts?.includes(partKey)) {
+      const stages = stagesMap?.[partKey] || eqStages;
+      if (stages?.length) {
+        return stages
+          .map((stage: any) => stage.elements
+            .filter((el: any) => el.type === 'box' && el.key)
+            .map((el: any) => `${partKey}_${el.key}`))
+          .filter((keys: string[]) => keys.length > 0);
+      }
+    }
+
+    if (typeof question.answer !== 'object') return [];
+
+    const grouped = new Map<string, string[]>();
+    Object.keys(question.answer)
+      .filter((key) => key.startsWith(`${partKey}_`))
+      .forEach((key) => {
+        const stageMatch = key.match(new RegExp(`^${partKey}_(s\\d+)`));
+        const stageKey = stageMatch?.[1] ?? 's1';
+        grouped.set(stageKey, [...(grouped.get(stageKey) ?? []), key]);
+      });
+
+    return Array.from(grouped.entries())
+      .sort((a, b) => Number(a[0].slice(1)) - Number(b[0].slice(1)))
+      .map(([, keys]) => keys);
+  };
+
+  const getQ4PartialScore = (partKey: string, currentAnswers: Record<string, string>) => {
+    if (question.id !== 'pp_4024_on23_11_q4' || partKey !== 'answer') return null;
+
+    const finalValue = currentAnswers[`${partKey}_s2_c`] || currentAnswers[partKey] || '';
+    const digitsOnly = finalValue.replace(/[^\d]/g, '');
+    const finalIsCorrect = answersMatch(finalValue, '7.80');
+
+    const usedCentsMethod =
+      answersMatch(currentAnswers[`${partKey}_s1_a`] || '', '12') &&
+      answersMatch(currentAnswers[`${partKey}_s1_b`] || '', '65') &&
+      answersMatch(currentAnswers[`${partKey}_s1_c`] || '', '780');
+
+    const usedDecimalMethod = (
+      (answersMatch(currentAnswers[`${partKey}_s1_a`] || '', '12') && answersMatch(currentAnswers[`${partKey}_s1_b`] || '', '0.65')) ||
+      (answersMatch(currentAnswers[`${partKey}_s1_a`] || '', '0.65') && answersMatch(currentAnswers[`${partKey}_s1_b`] || '', '12'))
+    );
+
+    const convertA = parseFloat(currentAnswers[`${partKey}_s2_a`] || '');
+    const convertB = parseFloat(currentAnswers[`${partKey}_s2_b`] || '');
+    const convertC = parseFloat(currentAnswers[`${partKey}_s2_c`] || '');
+    const convertedOwnAnswerToDollars =
+      !Number.isNaN(convertA) &&
+      !Number.isNaN(convertB) &&
+      !Number.isNaN(convertC) &&
+      Math.abs(convertB - 100) < 1e-9 &&
+      Math.abs((convertA / convertB) - convertC) < 1e-9;
+
+    const hasDigits78 = digitsOnly === '78' || digitsOnly === '780';
+    const methodEarned = usedCentsMethod || usedDecimalMethod || convertedOwnAnswerToDollars || hasDigits78;
+
+    if (finalIsCorrect) {
+      return {
+        marks: 2,
+        note: methodEarned
+          ? 'M1 earned for correct working/conversion and A1 for the final dollar answer.'
+          : 'A1 awarded with the correct final dollar answer.'
+      };
+    }
+
+    if (methodEarned) {
+      return {
+        marks: 1,
+        note: hasDigits78
+          ? 'B1 awarded because the digits 78 were seen, matching the specimen partial-mark rule.'
+          : 'M1 awarded for valid method/conversion, even though the final dollar answer is not yet correct.'
+      };
+    }
+
+    return {
+      marks: 0,
+      note: 'No specimen method mark was seen yet for this part.'
+    };
+  };
+
+  const checkAnswersInternal = (currentAnswers: Record<string, string> = answers) => {
+    if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {}, markingNotes: {} };
+    
+    const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
+    const marksEarned: Record<string, number> = {};
+    const markingNotes: Record<string, string> = {};
+    let allCorrect = true;
+    const eqParts = (question as any).equationSolveParts as string[] | undefined;
+    const fractionParts = (question as any).fractionDivisionParts as string[] | undefined;
+
     if (question.parts) {
       question.parts.forEach(part => {
-        // For equation-solve parts, check all box keys
-        if (eqParts?.includes(part.key)) {
-          const stages = stagesMap?.[part.key] || eqStages;
-          if (stages && stages.length > 0) {
-            // Collect all box keys from stages
-            const allBoxKeys: string[] = [];
-            stages.forEach((stage: any) => {
-              stage.elements.forEach((el: any) => {
-                if (el.type === 'box' && el.key) {
-                  allBoxKeys.push(`${part.key}_${el.key}`);
-                }
-              });
-            });
+        const isStructuredPart = eqParts?.includes(part.key) || fractionParts?.includes(part.key);
 
-            // Check each box and set per-box feedback
-            let correctBoxes = 0;
-            let totalBoxes = allBoxKeys.length;
-            allBoxKeys.forEach(boxKey => {
-              const userVal = answers[boxKey] || '';
+        if (isStructuredPart) {
+          const stageGroups = getStructuredStageGroups(part.key);
+
+          if (stageGroups.length > 0) {
+            const allBoxKeys = stageGroups.flat();
+            const correctBoxes = allBoxKeys.reduce((count, boxKey) => {
+              const userVal = currentAnswers[boxKey] || '';
               const correctVal = typeof question.answer === 'object' ? question.answer[boxKey] || '' : '';
+
               if (correctVal && answersMatch(userVal, correctVal)) {
                 newFeedback[boxKey] = 'correct';
-                correctBoxes++;
-              } else if (userVal) {
-                newFeedback[boxKey] = 'incorrect';
-              } else {
-                newFeedback[boxKey] = null;
+                return count + 1;
               }
-            });
 
-            // Determine part-level feedback from the LAST box (final answer)
-            const lastBoxKey = allBoxKeys[allBoxKeys.length - 1];
-            const lastCorrect = newFeedback[lastBoxKey] === 'correct';
-            
-            // Calculate partial marks based on marking criteria
-            const totalMarks = part.marks;
-            if (correctBoxes === totalBoxes) {
-              // All boxes correct — full marks
-              marksEarned[part.key] = totalMarks;
-              newFeedback[part.key] = 'correct';
+              newFeedback[boxKey] = userVal ? 'incorrect' : null;
+              return count;
+            }, 0);
+
+            const lastGroup = stageGroups[stageGroups.length - 1] || [];
+            const lastBoxKey = lastGroup[lastGroup.length - 1] || allBoxKeys[allBoxKeys.length - 1];
+            const lastCorrect = lastBoxKey ? newFeedback[lastBoxKey] === 'correct' : false;
+            const correctStageCount = stageGroups.filter((group) => group.length > 0 && group.every((key) => newFeedback[key] === 'correct')).length;
+            const nonFinalGroups = stageGroups.slice(0, -1);
+            const hasAnyCorrectNonFinalBox = nonFinalGroups.some((group) => group.some((key) => newFeedback[key] === 'correct'));
+            const partCriteria = question.markingCriteria?.[part.key] || '';
+            const specialScore = getQ4PartialScore(part.key, currentAnswers);
+            const hasAnyMethodOrBMark = /\bM1\b|\bB1\b/i.test(partCriteria);
+
+            if (specialScore) {
+              marksEarned[part.key] = Math.min(part.marks, specialScore.marks);
+              if (specialScore.note) markingNotes[part.key] = specialScore.note;
             } else if (lastCorrect) {
-              // Final answer correct — full marks (method implied)
-              marksEarned[part.key] = totalMarks;
-              newFeedback[part.key] = 'correct';
-            } else if (correctBoxes > 0 && totalMarks > 1) {
-              // Partial credit: some intermediate steps correct
-              // M1 for method (intermediate boxes) + A1 for final answer
-              // If method boxes are correct but final answer wrong → earn method marks
-              const methodBoxes = allBoxKeys.slice(0, -1);
-              const methodCorrect = methodBoxes.every(k => newFeedback[k] === 'correct');
-              if (methodCorrect && methodBoxes.length > 0) {
-                marksEarned[part.key] = totalMarks - 1; // M marks without A mark
+              marksEarned[part.key] = part.marks;
+            } else if (part.marks > 1) {
+              const stageBasedPartial = Math.min(part.marks - 1, correctStageCount);
+              if (stageBasedPartial > 0) {
+                marksEarned[part.key] = stageBasedPartial;
+              } else if (hasAnyMethodOrBMark && (hasAnyCorrectNonFinalBox || correctBoxes > 0)) {
+                marksEarned[part.key] = 1;
               } else {
-                // Some steps correct — give 1 mark for partial working
-                marksEarned[part.key] = Math.min(totalMarks - 1, Math.max(1, Math.floor(correctBoxes / totalBoxes * totalMarks)));
+                marksEarned[part.key] = 0;
               }
-              newFeedback[part.key] = 'incorrect';
-              allCorrect = false;
             } else {
               marksEarned[part.key] = 0;
-              newFeedback[part.key] = 'incorrect';
+            }
+
+            if (!markingNotes[part.key] && marksEarned[part.key] > 0 && marksEarned[part.key] < part.marks) {
+              markingNotes[part.key] = `Partial marks awarded using the specimen rule: ${partCriteria}`;
+            }
+
+            newFeedback[part.key] = marksEarned[part.key] === part.marks ? 'correct' : 'incorrect';
+            if (marksEarned[part.key] < part.marks) {
               allCorrect = false;
             }
             return;
@@ -308,7 +397,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
         // Skip helper parts (marks = 0) — they'll be evaluated as part of composite scoring below
         if (part.marks === 0) {
-          const userAnswer = answers[part.key] || '';
+          const userAnswer = currentAnswers[part.key] || '';
           const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
           if (correctAnswer && answersMatch(userAnswer, correctAnswer)) {
             newFeedback[part.key] = 'correct';
@@ -322,7 +411,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
 
         // Standard part check
-        const userAnswer = answers[part.key] || '';
+        const userAnswer = currentAnswers[part.key] || '';
         const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
         
         // Check for range-based acceptance in markingCriteria (e.g., "accept 0.15 to 0.19")
@@ -380,7 +469,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             const answerVals = typeof question.answer === 'object'
               ? orderKeys.map(k => question.answer[k] || '')
               : [];
-            const userVals = orderKeys.map(k => answers[k] || '');
+            const userVals = orderKeys.map(k => currentAnswers[k] || '');
             const partialReason = getOrderingPartialReason(userVals, answerVals);
             
             if (correctCount === totalParts) {
@@ -390,11 +479,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               // Correct order but reversed — B1
               marksEarned[scoredPart.key] = 1;
               newFeedback[scoredPart.key] = 'incorrect';
+              markingNotes[scoredPart.key] = 'B1 awarded because the full order is correct but reversed.';
               allCorrect = false;
             } else if (partialReason === 'three-correct' && totalMarks >= 2) {
               // Three values in the correct relative order — B1
               marksEarned[scoredPart.key] = 1;
               newFeedback[scoredPart.key] = 'incorrect';
+              markingNotes[scoredPart.key] = 'B1 awarded because three values are in the correct order.';
               allCorrect = false;
             } else {
               marksEarned[scoredPart.key] = 0;
@@ -416,6 +507,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 const earnedFromHelpers = Math.min(sp.marks, Math.floor(correctHelpers / helperParts.length * sp.marks));
                 if (earnedFromHelpers > marksEarned[sp.key]) {
                   marksEarned[sp.key] = earnedFromHelpers;
+                  if (earnedFromHelpers > 0 && earnedFromHelpers < sp.marks) {
+                    markingNotes[sp.key] = `Partial marks awarded using the specimen rule: ${criteria}`;
+                  }
                 }
                 if (marksEarned[sp.key] < sp.marks) {
                   allCorrect = false;
@@ -429,7 +523,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
     } else {
-      const userAnswer = answers['answer'] || '';
+      const userAnswer = currentAnswers['answer'] || '';
       const correctAnswer = typeof question.answer === 'string' ? question.answer : '';
       
       if (answersMatch(userAnswer, correctAnswer)) {
@@ -442,7 +536,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       }
     }
 
-    return { allCorrect, newFeedback, marksEarned };
+    return { allCorrect, newFeedback, marksEarned, markingNotes };
   };
 
   // Hint: Show concept related to the question
@@ -755,6 +849,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     const { allCorrect, newFeedback, marksEarned } = checkAnswersInternal();
     setFeedback(newFeedback);
     setStoredMarksEarned(marksEarned);
+    setStoredMarkingNotes(checkAnswersInternal().markingNotes);
     setIsChecked(true);
     setIsSubmitted(true);
     const timeSpentNow = Math.round((Date.now() - startTimeRef.current) / 1000);
@@ -813,6 +908,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setAnswers({});
     setFeedback({});
     setStoredMarksEarned({});
+    setStoredMarkingNotes({});
     setIsChecked(false);
     setIsSubmitted(false);
     setAiResponse(null);
@@ -1938,19 +2034,26 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       const isPartCorrect = earned === part.marks;
                       const isPartial = earned > 0 && earned < part.marks;
                       return (
-                        <div key={part.key} className="flex items-center justify-between text-sm">
-                          <span className="flex items-center gap-1.5">
-                            {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
-                             isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
-                             <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                            {part.label}
-                          </span>
-                          <span className={cn(
-                            "font-mono font-semibold text-xs",
-                            isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
-                          )}>
-                            {earned}/{part.marks}
-                          </span>
+                        <div key={part.key} className="space-y-1">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="flex items-center gap-1.5">
+                              {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                               isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                               <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                              {part.label}
+                            </span>
+                            <span className={cn(
+                              "font-mono font-semibold text-xs",
+                              isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                            )}>
+                              {earned}/{part.marks}
+                            </span>
+                          </div>
+                          {storedMarkingNotes[part.key] && (
+                            <p className="ml-5 text-xs text-muted-foreground">
+                              {storedMarkingNotes[part.key]}
+                            </p>
+                          )}
                         </div>
                       );
                     });

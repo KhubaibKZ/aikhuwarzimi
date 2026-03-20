@@ -12,7 +12,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Division before addition: 4 ÷ 2 = 2, then 6 + 2 = 8', '(b) 40 × 0.3 = 12'],
     type: 'multi-part',
     parts: [{ label: '(a) 6 + 4 ÷ 2', key: 'a', marks: 1 }, { label: '(b) 40 × 0.3', key: 'b', marks: 1 }],
-    answer: { a: '8', b: '12' }
+    answer: { a: '8', b: '12' },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 2 ==========
@@ -28,7 +29,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '3rd', key: 'p3', marks: 0 },
       { label: '4th (largest)', key: 'p4', marks: 2 }
     ],
-    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' }
+    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' },
+    markingCriteria: { _question: 'B2 for all four correct in order. B1 for three correct (when one is covered up) OR for correct order but reversed.' }
   },
 
   // ========== Question 3 ==========
@@ -39,7 +41,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) −12 + 20 = 8', '(b) 10 − (−4) = 14'],
     type: 'multi-part',
     parts: [{ label: '(a) Temperature (°C)', key: 'a', marks: 1 }, { label: '(b) Difference (°C)', key: 'b', marks: 1 }],
-    answer: { a: '8', b: '14' }
+    answer: { a: '8', b: '14' },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 4 ==========
@@ -63,7 +66,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer: '7.80',
       answer_s1_a: '12', answer_s1_b: '65', answer_s1_c: '780',
       answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 12 × 65 or 780 seen. A1 for $7.80 (must have dollars or $ sign implied). Accept 7.8 only if working shows cents conversion.' }
   },
 
 
@@ -75,7 +79,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Range = highest − lowest number of pets', '(b) Count people with 3 pets, divide by 20'],
     type: 'multi-part',
     parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction', key: 'b', marks: 1 }],
-    answer: { a: '4', b: '1/4' }
+    answer: { a: '4', b: '1/4' },
+    markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }
   },
 
   // ========== Question 6 ==========

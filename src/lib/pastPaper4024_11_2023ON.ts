@@ -114,7 +114,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: '70', b: '110',
       a_s1_a: '180', a_s1_b: '110', a_s2: '70',
       b_s1_a: '180', b_s1_b: '70', b_s2: '110'
-    }
+    },
+    markingCriteria: { a: 'B1 for 70', b: 'B1 for 110' }
   },
 
   // ========== Question 7 ==========
@@ -148,7 +149,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '50', answer_s1_b: '3', answer_s1_c: '7',
       answer_s2_a: '50', answer_s2_b: '3', answer_s2_c: '7', answer_s2_d: '50', answer_s2_e: '10',
       answer_s3: '5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for correctly rounding all three values to 1 s.f. (50, 3, 7). A1 for 5.' }
   },
 
   // ========== Question 8 ==========
@@ -180,7 +182,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '78', a_s1_b: '10', a_s1_c: '7.8',
       b_s1_a: '100',
       b_s2_a: '3', b_s2_b: '10000', b_s2_c: '30000'
-    }
+    },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 9 ==========
@@ -191,7 +194,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Look at the trend of the points', '(b) Draw a line through the data and read off at age 50'],
     type: 'multi-part',
     parts: [{ label: '(a) Correlation type', key: 'a', marks: 1 }, { label: '(b) Time (minutes)', key: 'b', marks: 2 }],
-    answer: { a: 'Positive', b: '0.17' }
+    answer: { a: 'Positive', b: '0.17' },
+    markingCriteria: { a: 'B1 for Positive', b: 'B1 for correct line of best fit drawn. B1 ft for reading at age 50 from their line (accept 0.15 to 0.19).' }
   },
 
   // ========== Question 10 ==========
@@ -230,7 +234,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s2_a: '330', a_s2_b: '30',
       b_s1_a: '10', b_s1_b: '10',
       b_s2_a: '8', b_s2_b: '10', b_s2_c: '144'
-    }
+    },
+    markingCriteria: { a: 'M1 for 360 − (150 + 100 + 45 + 35) or 360 − 330. A1 for 30.', b: 'M1 for 180(10−2)/10 or 180×8/10. A1 for 144.' }
   },
 
   // ========== Question 11 ==========
@@ -264,7 +269,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: '19', b: '25',
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
       b_s1_a: '-1', b_s1_b: '3', b_s2_a: '²', b_s2_b: '25'
-    }
+    },
+    markingCriteria: { a: 'B1', b: 'M1 for 5^(−1+3) or 5². A1 for 25.' }
   },
 
   // ========== Question 12 ==========
@@ -280,7 +286,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(b) Construction', key: 'b', marks: 2 },
       { label: '(c) Position of S', key: 'c', marks: 1 }
     ],
-    answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' }
+    answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' },
+    markingCriteria: { a: 'M1 for measurement ×20000 or ÷100000 seen. A1 for 1.8 km.', b: 'B1 for correct perpendicular bisector with arcs. B1 for line extending full width.', c: 'B1 for S at intersection of bisector and 105° bearing.' }
   },
 
   // ========== Question 13 ==========
@@ -298,7 +305,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_rn: '24', answer_s1_rd: '25',
       answer_s2_n1: '24', answer_s2_gcd: '1', answer_s2_d1: '25', answer_s2_gcd2: '1',
       answer_s2_fn: '24', answer_s2_fd: '25'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 8/5 × 3/5 or 8/5 ÷ 5/3 seen. A1 for 24/25.' }
   },
 
   // ========== Question 14 ==========
@@ -347,7 +355,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s3: '144',
       b_s4_a: '2', b_s4_b: '24',
       b_s5_a: '2', b_s5_b: '24', b_s5_c: '11:54'
-    }
+    },
+    markingCriteria: { a: 'B1 for 2 × 2 × 3 × 3 or any correct factor tree. B1 for 2² × 3² in index form.', b: 'M1 for attempt at LCM using prime factors. A1 for 144. A1 for 11:54.' }
   },
 
   // ========== Question 15 ==========

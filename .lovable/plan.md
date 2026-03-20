@@ -1,58 +1,65 @@
 
 
-# Workflow Plan: Updating Past Papers from Uploaded Documents
+# Fix Submit Feedback for Equation-Solve Questions + Partial Marking
 
-## What You're Asking
+## Problem
 
-You want to establish a systematic process where:
-1. You upload **question papers** + **marking schemes** + **solved versions with steps** for each year/session
-2. I update the workspace data files with accurate equationStages/box scaffolding matching the solved steps
-3. Marking scheme points are mapped to specific steps so students earn marks at the right places
-4. Interactive SVG diagrams are created for all geometric/visual questions in the papers
+When submitting Q4 (and any question using `equationSolveParts`), `checkAnswersInternal` checks `answers['answer']` — but students fill equation boxes like `answer_s2_c`. Since `answers['answer']` is never populated, feedback is `null` and no correct/incorrect status is shown.
 
-## How This Will Work (Per Paper You Upload)
+Additionally, the marking system currently only tracks correct/incorrect per part, with no partial mark scoring based on the marking scheme criteria.
 
-### Step 1 — Parse & Cross-Reference
-- Read the question paper to get exact question text, numbers, and diagram descriptions
-- Read the marking scheme to identify mark allocation per step (M1, A1, B1 etc.)
-- Read the solved version to extract the step-by-step working pattern
+## Plan
 
-### Step 2 — Update the Data File
-For each question in `src/lib/pastPaper4024_XX_YYYY.ts`:
-- **Question text**: Verify it matches the paper exactly
-- **equationStages**: Build box layouts that mirror the solved steps (one stage per logical working step)
-- **answer object**: Populate all intermediate values from the solved version
-- **marks on parts**: Align with the marking scheme (M1 for method steps, A1 for final answers)
-- **hints**: Derive from marking scheme guidance notes
+### 1. Fix `checkAnswersInternal` for equation-solve parts
+In `src/components/PastPaperWorkspace.tsx`, update `checkAnswersInternal` so that when a part is in `equationSolveParts`:
+- Get the stages from `equationStagesMap[partKey]` or `equationStages`
+- Extract all box keys and check each against `question.answer` (prefixed with `partKey_`)
+- The final box determines correct/incorrect for the part
+- Intermediate boxes determine partial marks
 
-### Step 3 — Create Interactive Diagrams
-For any question with a geometric figure, graph, or visual element:
-- Create a new SVG component in `src/components/diagrams/`
-- Export it from `src/components/diagrams/index.ts`
-- Import and render it in `PastPaperWorkspace.tsx` keyed to the question ID
-- Match dimensions, labels, and angles from the original paper diagram
+### 2. Add marks scoring logic
+Create a scoring function that:
+- For each part, counts how many stage boxes match the correct answer
+- Maps this against `markingCriteria` rules (M1, A1, B1)
+- Calculates earned marks vs total marks
+- Shows a summary like "2/3 marks" after submission
 
-### Step 4 — Update Topic Mapping
-- Update `src/lib/questionTopicMap.ts` with correct syllabus references for each question
+### 3. Update post-submission display
+After submission, show per-part:
+- Marks earned (e.g., "1/2 marks")
+- Which steps were correct (green) and incorrect (red)
+- Marking criteria explanation for partial marks
+- Correct answers for wrong boxes
 
-## What I Need From You
+### 4. Apply across all 2023 ON paper questions
+Ensure the logic works for all question types in `pastPaper4024_11_2023ON.ts`:
+- Standard `multi-part` with direct answer fields
+- `equationSolveParts` with box scaffolding
+- `fractionDivisionParts`
+- Prime factor and LCM ladders
 
-For each paper, upload these three documents:
-1. **Question Paper** (the actual exam PDF)
-2. **Marking Scheme** (official mark scheme PDF)
-3. **Solved Version** (handwritten or typed step-by-step solutions)
+### Technical Details
 
-You can upload them together or one at a time — I'll process each set and update the corresponding data file with full scaffolding, correct answers, and diagrams.
+**`checkAnswersInternal` changes:**
+```
+// For equation-solve parts, check the last box of last stage
+if (eqParts?.includes(part.key)) {
+  const stages = stagesMap?.[part.key] || equationStages;
+  const lastStage = stages[stages.length - 1];
+  const lastBox = lastStage.elements.filter(el => el.type === 'box').pop();
+  const answerKey = `${part.key}_${lastBox.key}`;
+  const userAnswer = answers[answerKey];
+  const correctAnswer = question.answer[answerKey];
+  // Check match and also count intermediate correct boxes for partial marks
+}
+```
 
-## Technical Details
+**Marks display in post-submission summary:**
+- Add a marks counter that sums earned marks per part
+- Show "X/Y marks" in the submission summary card
+- For partial marks, show which criteria were met (e.g., "M1 earned for method")
 
-- Each paper file follows the naming pattern: `src/lib/pastPaper4024_XX_YYYY[ON].ts`
-- Box scaffolding uses `equationStages` (single-part) or `equationStagesMap` (multi-part) with `EquationStageElement[]`
-- Diagrams go in `src/components/diagrams/` as standalone SVG components
-- Mark allocation from the scheme maps to `parts[].marks` and stage-level validation
-- The AI tutor feedback (edge function) already handles concise error-first guidance per step
-
-## Ready When You Are
-
-Go ahead and upload the first set of documents (question paper + marking scheme + solved version) for any paper, and I'll update it completely.
+### Files to modify
+- `src/components/PastPaperWorkspace.tsx` — fix `checkAnswersInternal`, update submission display, add marks scoring
+- `src/components/workspace/EquationSolveWorkspace.tsx` — ensure post-submit shows per-box correct/incorrect highlighting
 

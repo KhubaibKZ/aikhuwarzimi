@@ -234,7 +234,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           actionType: 'hint',
           topic: question.title,
           hints: question.hints,
-          attemptCount
+          attemptCount,
+          markingCriteria: question.markingCriteria
         }
       });
 

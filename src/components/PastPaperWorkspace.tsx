@@ -846,10 +846,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       return;
     }
 
-    const { allCorrect, newFeedback, marksEarned } = checkAnswersInternal();
+    const { allCorrect, newFeedback, marksEarned, markingNotes } = checkAnswersInternal();
     setFeedback(newFeedback);
     setStoredMarksEarned(marksEarned);
-    setStoredMarkingNotes(checkAnswersInternal().markingNotes);
+    setStoredMarkingNotes(markingNotes);
     setIsChecked(true);
     setIsSubmitted(true);
     const timeSpentNow = Math.round((Date.now() - startTimeRef.current) / 1000);

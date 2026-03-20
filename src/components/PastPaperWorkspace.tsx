@@ -158,6 +158,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   };
 
   const isNumericallyEqual = (a: string, b: string): boolean => {
+    // Try direct float comparison
     const numA = parseFloat(a);
     const numB = parseFloat(b);
     if (!isNaN(numA) && !isNaN(numB)) {
@@ -166,11 +167,29 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return false;
   };
 
+  const evaluateFraction = (s: string): number | null => {
+    const match = s.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+    if (match) {
+      const num = parseFloat(match[1]);
+      const den = parseFloat(match[2]);
+      if (den !== 0) return num / den;
+    }
+    return null;
+  };
+
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {
     const u = normalizeAnswer(userRaw);
     const c = normalizeAnswer(correctRaw);
     if (u === c) return true;
-    return isNumericallyEqual(u, c);
+    if (isNumericallyEqual(u, c)) return true;
+    // Fraction equivalence: 5/20 = 1/4
+    const uFrac = evaluateFraction(u);
+    const cFrac = evaluateFraction(c);
+    if (uFrac !== null && cFrac !== null && Math.abs(uFrac - cFrac) < 1e-9) return true;
+    // Mixed: one is fraction, other is decimal
+    if (uFrac !== null && !isNaN(parseFloat(c)) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
+    if (cFrac !== null && !isNaN(parseFloat(u)) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
+    return false;
   };
 
   const checkAnswersInternal = () => {
@@ -252,13 +271,45 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           }
         }
 
+        // Skip helper parts (marks = 0) — they'll be evaluated as part of composite scoring below
+        if (part.marks === 0) {
+          const userAnswer = answers[part.key] || '';
+          const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
+          if (correctAnswer && answersMatch(userAnswer, correctAnswer)) {
+            newFeedback[part.key] = 'correct';
+          } else if (userAnswer) {
+            newFeedback[part.key] = 'incorrect';
+          } else {
+            newFeedback[part.key] = null;
+          }
+          marksEarned[part.key] = 0;
+          return;
+        }
+
         // Standard part check
         const userAnswer = answers[part.key] || '';
         const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
         
+        // Check for range-based acceptance in markingCriteria (e.g., "accept 0.15 to 0.19")
+        const partCriteria = question.markingCriteria?.[part.key] || '';
+        const rangeMatch = partCriteria.match(/accept\s+([\d.]+)\s+to\s+([\d.]+)/i);
+        
         if (answersMatch(userAnswer, correctAnswer)) {
           newFeedback[part.key] = 'correct';
           marksEarned[part.key] = part.marks;
+        } else if (rangeMatch && userAnswer) {
+          // Range acceptance — check if answer falls within accepted range
+          const rangeMin = parseFloat(rangeMatch[1]);
+          const rangeMax = parseFloat(rangeMatch[2]);
+          const userNum = parseFloat(normalizeAnswer(userAnswer));
+          if (!isNaN(userNum) && userNum >= rangeMin && userNum <= rangeMax) {
+            newFeedback[part.key] = 'correct';
+            marksEarned[part.key] = part.marks;
+          } else {
+            newFeedback[part.key] = 'incorrect';
+            marksEarned[part.key] = 0;
+            allCorrect = false;
+          }
         } else if (userAnswer) {
           newFeedback[part.key] = 'incorrect';
           marksEarned[part.key] = 0;
@@ -269,6 +320,82 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           allCorrect = false;
         }
       });
+
+      // === Post-pass: Composite scoring for ordering/grouped questions ===
+      // For questions with helper parts (marks=0) that feed into a scored part,
+      // count how many helpers are correct and award partial marks on the scored part
+      if (question.parts) {
+        const helperParts = question.parts.filter(p => p.marks === 0);
+        const scoredParts = question.parts.filter(p => p.marks > 0 && !eqParts?.includes(p.key));
+        
+        if (helperParts.length > 0 && scoredParts.length > 0) {
+          // Check if this is an ordering question (all helpers feed into one scored part)
+          const questionCriteria = question.markingCriteria?.['_question'] || '';
+          const isOrderingQuestion = questionCriteria.includes('correct in order') || questionCriteria.includes('correct order');
+          
+          if (isOrderingQuestion && helperParts.length >= 2) {
+            // Count all ordering parts correct (helpers + scored)
+            const allOrderParts = [...helperParts, ...scoredParts.filter(p => !eqParts?.includes(p.key))];
+            const orderKeys = allOrderParts.map(p => p.key);
+            const correctCount = orderKeys.filter(k => newFeedback[k] === 'correct').length;
+            const totalParts = orderKeys.length;
+            const scoredPart = scoredParts[scoredParts.length - 1]; // Last scored part gets the marks
+            const totalMarks = scoredPart.marks;
+            
+            // Check for reversed order
+            let isReversed = false;
+            if (typeof question.answer === 'object') {
+              const answerVals = orderKeys.map(k => question.answer[k] || '');
+              const userVals = orderKeys.map(k => answers[k] || '');
+              const reversedCorrect = answerVals.slice().reverse();
+              isReversed = reversedCorrect.every((v, i) => answersMatch(userVals[i], v));
+            }
+            
+            if (correctCount === totalParts) {
+              marksEarned[scoredPart.key] = totalMarks;
+              newFeedback[scoredPart.key] = 'correct';
+            } else if (isReversed) {
+              // Correct order but reversed — B1
+              marksEarned[scoredPart.key] = 1;
+              newFeedback[scoredPart.key] = 'incorrect';
+              allCorrect = false;
+            } else if (correctCount >= totalParts - 1 && totalMarks >= 2) {
+              // Three correct when one is covered up — B1
+              marksEarned[scoredPart.key] = 1;
+              newFeedback[scoredPart.key] = 'incorrect';
+              allCorrect = false;
+            } else {
+              marksEarned[scoredPart.key] = 0;
+              newFeedback[scoredPart.key] = 'incorrect';
+              allCorrect = false;
+            }
+          } else if (helperParts.length > 0) {
+            // Generic composite: Venn diagram style — count correct helpers for partial marks
+            // Find the scored part that groups the helpers
+            scoredParts.forEach(sp => {
+              if (eqParts?.includes(sp.key)) return;
+              const criteria = question.markingCriteria?.[sp.key] || '';
+              if (!criteria) return;
+              
+              // Count B1 marks in criteria to determine per-helper mark value
+              const b1Count = (criteria.match(/B1/g) || []).length;
+              if (b1Count > 0 && sp.marks > 1) {
+                const correctHelpers = helperParts.filter(h => newFeedback[h.key] === 'correct').length;
+                const earnedFromHelpers = Math.min(sp.marks, Math.floor(correctHelpers / helperParts.length * sp.marks));
+                if (earnedFromHelpers > marksEarned[sp.key]) {
+                  marksEarned[sp.key] = earnedFromHelpers;
+                }
+                if (marksEarned[sp.key] < sp.marks) {
+                  allCorrect = false;
+                  if (marksEarned[sp.key] === 0) {
+                    newFeedback[sp.key] = 'incorrect';
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
     } else {
       const userAnswer = answers['answer'] || '';
       const correctAnswer = typeof question.answer === 'string' ? question.answer : '';

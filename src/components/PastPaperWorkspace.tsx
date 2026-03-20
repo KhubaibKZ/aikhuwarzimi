@@ -1820,30 +1820,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               {question.parts && question.parts.filter(p => p.marks > 0).length > 0 && (
                 <div className="border-t pt-2 space-y-1">
                   {question.parts.filter(p => p.marks > 0).map(part => {
-                    const earned = (() => {
-                      // Recalculate from feedback for display
-                      const eqParts = (question as any).equationSolveParts as string[] | undefined;
-                      if (eqParts?.includes(part.key)) {
-                        const stMap = (question as any).equationStagesMap;
-                        const stgs = stMap?.[part.key] || (question as any).equationStages;
-                        if (stgs) {
-                          const boxKeys: string[] = [];
-                          stgs.forEach((s: any) => s.elements.forEach((el: any) => {
-                            if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
-                          }));
-                          const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
-                          const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
-                          if (correctCount === boxKeys.length || lastCorrect) return part.marks;
-                          if (correctCount > 0 && part.marks > 1) {
-                            const methodKeys = boxKeys.slice(0, -1);
-                            if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return part.marks - 1;
-                            return Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
-                          }
-                          return 0;
-                        }
-                      }
-                      return feedback[part.key] === 'correct' ? part.marks : 0;
-                    })();
+                    const earned = storedMarksEarned[part.key] ?? 0;
                     const isPartCorrect = earned === part.marks;
                     const isPartial = earned > 0 && earned < part.marks;
                     return (
@@ -1866,29 +1843,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   <div className="flex items-center justify-between text-sm font-semibold border-t pt-1">
                     <span>Total</span>
                     <span className="font-mono">
-                      {question.parts.filter(p => p.marks > 0).reduce((sum, part) => {
-                        const eqParts = (question as any).equationSolveParts as string[] | undefined;
-                        if (eqParts?.includes(part.key)) {
-                          const stMap = (question as any).equationStagesMap;
-                          const stgs = stMap?.[part.key] || (question as any).equationStages;
-                          if (stgs) {
-                            const boxKeys: string[] = [];
-                            stgs.forEach((s: any) => s.elements.forEach((el: any) => {
-                              if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
-                            }));
-                            const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
-                            const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
-                            if (correctCount === boxKeys.length || lastCorrect) return sum + part.marks;
-                            if (correctCount > 0 && part.marks > 1) {
-                              const methodKeys = boxKeys.slice(0, -1);
-                              if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return sum + part.marks - 1;
-                              return sum + Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
-                            }
-                            return sum;
-                          }
-                        }
-                        return sum + (feedback[part.key] === 'correct' ? part.marks : 0);
-                      }, 0)}/{question.parts.filter(p => p.marks > 0).reduce((s, p) => s + p.marks, 0)}
+                      {question.parts.filter(p => p.marks > 0).reduce((sum, part) => sum + (storedMarksEarned[part.key] ?? 0), 0)}/{question.parts.filter(p => p.marks > 0).reduce((s, p) => s + p.marks, 0)}
                     </span>
                   </div>
                 </div>

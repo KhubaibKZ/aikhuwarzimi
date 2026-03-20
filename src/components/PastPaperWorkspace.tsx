@@ -475,10 +475,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     }
   };
 
-  // Check if all parts have answers
+  // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
   const areAllPartsCompleted = (): boolean => {
     if (question.parts) {
-      return question.parts.every(part => answers[part.key]?.trim());
+      return question.parts
+        .filter(part => part.marks > 0)
+        .every(part => answers[part.key]?.trim());
     }
     return !!answers['answer']?.trim();
   };

@@ -62,6 +62,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
+  const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
@@ -722,6 +723,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     const { allCorrect, newFeedback, marksEarned } = checkAnswersInternal();
     setFeedback(newFeedback);
+    setStoredMarksEarned(marksEarned);
     setIsChecked(true);
     setIsSubmitted(true);
     const timeSpentNow = Math.round((Date.now() - startTimeRef.current) / 1000);
@@ -779,6 +781,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const resetWorkspace = () => {
     setAnswers({});
     setFeedback({});
+    setStoredMarksEarned({});
     setIsChecked(false);
     setIsSubmitted(false);
     setAiResponse(null);
@@ -1816,76 +1819,85 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               {/* Per-part marks breakdown */}
               {question.parts && question.parts.filter(p => p.marks > 0).length > 0 && (
                 <div className="border-t pt-2 space-y-1">
-                  {question.parts.filter(p => p.marks > 0).map(part => {
-                    const earned = (() => {
-                      // Recalculate from feedback for display
-                      const eqParts = (question as any).equationSolveParts as string[] | undefined;
-                      if (eqParts?.includes(part.key)) {
-                        const stMap = (question as any).equationStagesMap;
-                        const stgs = stMap?.[part.key] || (question as any).equationStages;
-                        if (stgs) {
-                          const boxKeys: string[] = [];
-                          stgs.forEach((s: any) => s.elements.forEach((el: any) => {
-                            if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
-                          }));
-                          const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
-                          const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
-                          if (correctCount === boxKeys.length || lastCorrect) return part.marks;
-                          if (correctCount > 0 && part.marks > 1) {
-                            const methodKeys = boxKeys.slice(0, -1);
-                            if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return part.marks - 1;
-                            return Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
-                          }
-                          return 0;
-                        }
-                      }
-                      return feedback[part.key] === 'correct' ? part.marks : 0;
-                    })();
-                    const isPartCorrect = earned === part.marks;
-                    const isPartial = earned > 0 && earned < part.marks;
-                    return (
-                      <div key={part.key} className="flex items-center justify-between text-sm">
-                        <span className="flex items-center gap-1.5">
-                          {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
-                           isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
-                           <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                          {part.label}
-                        </span>
-                        <span className={cn(
-                          "font-mono font-semibold text-xs",
-                          isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
-                        )}>
-                          {earned}/{part.marks}
-                        </span>
-                      </div>
-                    );
-                  })}
+                  {(() => {
+                    // Detect ordering questions: helper parts (marks=0) + single scored part
+                    const questionCriteria = question.markingCriteria?.['_question'] || '';
+                    const isOrderingQ = questionCriteria.includes('correct in order') || questionCriteria.includes('correct order');
+                    const helperParts = question.parts!.filter(p => p.marks === 0);
+                    const scoredParts = question.parts!.filter(p => p.marks > 0);
+                    
+                    if (isOrderingQ && helperParts.length >= 2 && scoredParts.length === 1) {
+                      // Show as single "Ordering" row with composite marks
+                      const sp = scoredParts[0];
+                      const earned = storedMarksEarned[sp.key] ?? 0;
+                      const isPartCorrect = earned === sp.marks;
+                      const isPartial = earned > 0 && earned < sp.marks;
+                      
+                      // Build detail: show which positions were correct/incorrect
+                      const allParts = [...helperParts, sp];
+                      return (
+                        <>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="flex items-center gap-1.5">
+                              {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                               isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                               <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                              Ordering
+                            </span>
+                            <span className={cn(
+                              "font-mono font-semibold text-xs",
+                              isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                            )}>
+                              {earned}/{sp.marks}
+                            </span>
+                          </div>
+                          {!isPartCorrect && (
+                            <div className="ml-6 space-y-0.5">
+                              {allParts.map(p => {
+                                const correct = feedback[p.key] === 'correct';
+                                const correctVal = typeof question.answer === 'object' ? question.answer[p.key] : '';
+                                return (
+                                  <div key={p.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    {correct ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-destructive" />}
+                                    <span>{p.label}: {answers[p.key] || '—'}</span>
+                                    {!correct && correctVal && <span className="text-green-600 ml-1">(correct: {correctVal})</span>}
+                                  </div>
+                                );
+                              })}
+                              {isPartial && <p className="text-xs text-amber-600 mt-1">B1 awarded for partial correct ordering</p>}
+                            </div>
+                          )}
+                        </>
+                      );
+                    }
+                    
+                    // Standard per-part display
+                    return scoredParts.map(part => {
+                      const earned = storedMarksEarned[part.key] ?? 0;
+                      const isPartCorrect = earned === part.marks;
+                      const isPartial = earned > 0 && earned < part.marks;
+                      return (
+                        <div key={part.key} className="flex items-center justify-between text-sm">
+                          <span className="flex items-center gap-1.5">
+                            {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                             isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                             <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                            {part.label}
+                          </span>
+                          <span className={cn(
+                            "font-mono font-semibold text-xs",
+                            isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                          )}>
+                            {earned}/{part.marks}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
                   <div className="flex items-center justify-between text-sm font-semibold border-t pt-1">
                     <span>Total</span>
                     <span className="font-mono">
-                      {question.parts.filter(p => p.marks > 0).reduce((sum, part) => {
-                        const eqParts = (question as any).equationSolveParts as string[] | undefined;
-                        if (eqParts?.includes(part.key)) {
-                          const stMap = (question as any).equationStagesMap;
-                          const stgs = stMap?.[part.key] || (question as any).equationStages;
-                          if (stgs) {
-                            const boxKeys: string[] = [];
-                            stgs.forEach((s: any) => s.elements.forEach((el: any) => {
-                              if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
-                            }));
-                            const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
-                            const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
-                            if (correctCount === boxKeys.length || lastCorrect) return sum + part.marks;
-                            if (correctCount > 0 && part.marks > 1) {
-                              const methodKeys = boxKeys.slice(0, -1);
-                              if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return sum + part.marks - 1;
-                              return sum + Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
-                            }
-                            return sum;
-                          }
-                        }
-                        return sum + (feedback[part.key] === 'correct' ? part.marks : 0);
-                      }, 0)}/{question.parts.filter(p => p.marks > 0).reduce((s, p) => s + p.marks, 0)}
+                      {question.parts.filter(p => p.marks > 0).reduce((sum, part) => sum + (storedMarksEarned[part.key] ?? 0), 0)}/{question.parts.filter(p => p.marks > 0).reduce((s, p) => s + p.marks, 0)}
                     </span>
                   </div>
                 </div>

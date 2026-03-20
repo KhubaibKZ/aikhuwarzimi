@@ -158,6 +158,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   };
 
   const isNumericallyEqual = (a: string, b: string): boolean => {
+    // Try direct float comparison
     const numA = parseFloat(a);
     const numB = parseFloat(b);
     if (!isNaN(numA) && !isNaN(numB)) {
@@ -166,11 +167,29 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return false;
   };
 
+  const evaluateFraction = (s: string): number | null => {
+    const match = s.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+    if (match) {
+      const num = parseFloat(match[1]);
+      const den = parseFloat(match[2]);
+      if (den !== 0) return num / den;
+    }
+    return null;
+  };
+
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {
     const u = normalizeAnswer(userRaw);
     const c = normalizeAnswer(correctRaw);
     if (u === c) return true;
-    return isNumericallyEqual(u, c);
+    if (isNumericallyEqual(u, c)) return true;
+    // Fraction equivalence: 5/20 = 1/4
+    const uFrac = evaluateFraction(u);
+    const cFrac = evaluateFraction(c);
+    if (uFrac !== null && cFrac !== null && Math.abs(uFrac - cFrac) < 1e-9) return true;
+    // Mixed: one is fraction, other is decimal
+    if (uFrac !== null && !isNaN(parseFloat(c)) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
+    if (cFrac !== null && !isNaN(parseFloat(u)) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
+    return false;
   };
 
   const checkAnswersInternal = () => {

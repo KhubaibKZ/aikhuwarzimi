@@ -401,7 +401,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '38', a_s1_b: '19', a_s2_a: '90', a_s2_b: '19', a_s2_c: '71',
       b_s1_a: '38', b_s1_b: '90', b_s1_c: '90', b_s2: '142',
       c_s1_a: '142', c_s1_b: '71'
-    }
+    },
+    markingCriteria: { a: 'B1 for 71', b: 'M1 for 360 − 38 − 90 − 90 or equivalent. A1 for 142.', c: 'B1 ft for half their (b).' }
   },
 
   // ========== Question 16 ==========
@@ -410,7 +411,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ x/2 + 1. Find and label region R.',
     marks: 4,
     hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
-    type: 'short', answer: 'Region R correctly identified'
+    type: 'short', answer: 'Region R correctly identified',
+    markingCriteria: { _question: 'B1 for x = 1. B1 for x = 3. B1 for y = 2 and y = 3. B1 for y = x/2 + 1 and R correctly labelled.' }
   },
 
   // ========== Question 17 ==========
@@ -440,7 +442,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '2', answer_s1_b: '16',
       answer_s2_a: '2', answer_s2_b: '4', answer_s2_c: '0.5',
       answer_s3_a: '0.5', answer_s3_b: '25', answer_s3_c: '2.5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for y = k√x and k = ½ or 0.5 seen. A1 for 2.5.' }
   },
 
   // ========== Question 18 ==========
@@ -458,7 +461,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" }
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
+    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for (E ∩ F) ∩ G' or equivalent correct set notation." }
   },
 
   // ========== Question 19 ==========
@@ -503,7 +507,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '700', b_s1_b: '10', b_s1_c: '20', b_s1_d: '20', b_s1_e: '10',
       b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
       b_s3: '40'
-    }
+    },
+    markingCriteria: { a: 'B1 for 2', b: 'M1 for area of triangle (½ × 10 × 20 = 100). M1 for 700 = 100 + 20(T − 10) or equivalent area equation. A1 for 40.' }
   },
 
   // ========== Question 20 ==========
@@ -576,7 +581,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_f: '-2', b_s1_g: '2', b_s1_h: '1', b_s1_i: '1', b_s1_j: '-3',
       b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
       b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
-    }
+    },
+    markingCriteria: { a: 'M1 for |A| = −10 or correct adjugate matrix. A1 for correct inverse (1/−10)(3,−1;−4,−2).', b: 'M1 for at least one correct element from multiplication. A1 for all four elements correct (−7,−3;9,11).' }
   },
 
   // ========== Question 21 ==========
@@ -613,7 +619,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_s1_a: '2c', c_s1_b: 'c-4',
       c_s2_a: '2c+3', c_s2_b: 'c-4',
       c_s3_a: '2c', c_s3_b: '2c+3'
-    }
+    },
+    markingCriteria: { a: 'B1 for 3(2a − 3)', b: 'B1 for (2b + 5)(2b − 5)', c: 'B1 for numerator correctly factorised as 2c(c − 4). B1 for denominator correctly factorised as (2c + 3)(c − 4). B1 for simplified 2c/(2c + 3).' }
   },
 
   // ========== Question 22 ==========
@@ -676,7 +683,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'
-    }
+    },
+    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'M1 for correct rearrangement x = 4(y − 3). A1 for 4x − 12.', c_calc: 'M1 for setting f(p) = g(p + 5). M1 for correct expansion and collection. A1 for −20/7.' }
   },
 
   // ========== Question 23 ==========
@@ -720,7 +728,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: 'c-a', b_calc: '½a+½c', c_calc: '-½a-⅙c',
       b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
       c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
-    }
+    },
+    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for OA + ½AC or a + ½(c − a). A1 for ½a + ½c.', c_calc: 'M1 for finding OY = a + ⅔c and attempting YX = OX − OY. A1 for −½a − ⅙c.' }
   },
 
   // ========== Question 24 ==========
@@ -758,7 +767,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for multiplying through by (x+1)(x−1). M1 for correct expansion of LHS: 3x²−3x−2x−2. M1 for simplifying to −5x = −1 or equivalent. A1 for x = 1/5 or 0.2.' }
   },
 };
 

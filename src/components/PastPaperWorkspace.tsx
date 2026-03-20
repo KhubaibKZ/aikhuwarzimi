@@ -476,11 +476,30 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   };
 
   // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
+  // For equationSolveParts, check the last box of the last stage instead of the part key
   const areAllPartsCompleted = (): boolean => {
     if (question.parts) {
+      const eqParts = (question as any).equationSolveParts as string[] | undefined;
       return question.parts
         .filter(part => part.marks > 0)
-        .every(part => answers[part.key]?.trim());
+        .every(part => {
+          // If this part is rendered as an equation-solve workspace, check its stage boxes
+          if (eqParts?.includes(part.key)) {
+            const stagesMap = (question as any).equationStagesMap;
+            const stages = stagesMap?.[part.key] || (question as any).equationStages;
+            if (stages && stages.length > 0) {
+              // Find the last box element in the last stage
+              const lastStage = stages[stages.length - 1];
+              const boxElements = lastStage.elements.filter((el: any) => el.type === 'box' && el.key);
+              if (boxElements.length > 0) {
+                const lastBoxKey = `${part.key}_${boxElements[boxElements.length - 1].key}`;
+                return !!answers[lastBoxKey]?.trim();
+              }
+            }
+            return true; // No stages means nothing to check
+          }
+          return !!answers[part.key]?.trim();
+        });
     }
     return !!answers['answer']?.trim();
   };

@@ -193,6 +193,40 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return false;
   };
 
+  const getLongestOrderedMatchCount = (userValues: string[], expectedValues: string[]): number => {
+    const dp = Array.from({ length: userValues.length + 1 }, () => Array(expectedValues.length + 1).fill(0));
+
+    for (let i = 1; i <= userValues.length; i++) {
+      for (let j = 1; j <= expectedValues.length; j++) {
+        if (userValues[i - 1] && expectedValues[j - 1] && answersMatch(userValues[i - 1], expectedValues[j - 1])) {
+          dp[i][j] = dp[i - 1][j - 1] + 1;
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+    }
+
+    return dp[userValues.length][expectedValues.length];
+  };
+
+  const getOrderingPartialReason = (userValues: string[], expectedValues: string[]) => {
+    const isFullyReversed =
+      userValues.length === expectedValues.length &&
+      expectedValues.length > 0 &&
+      expectedValues.every((value, index) => answersMatch(userValues[index] || '', expectedValues[expectedValues.length - 1 - index] || ''));
+
+    if (isFullyReversed) {
+      return 'reversed' as const;
+    }
+
+    const orderedMatchCount = getLongestOrderedMatchCount(userValues, expectedValues);
+    if (orderedMatchCount >= Math.max(1, expectedValues.length - 1)) {
+      return 'three-correct' as const;
+    }
+
+    return null;
+  };
+
   const checkAnswersInternal = () => {
     if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {} };
     
@@ -342,26 +376,23 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             const totalParts = orderKeys.length;
             const scoredPart = scoredParts[scoredParts.length - 1]; // Last scored part gets the marks
             const totalMarks = scoredPart.marks;
-            
-            // Check for reversed order
-            let isReversed = false;
-            if (typeof question.answer === 'object') {
-              const answerVals = orderKeys.map(k => question.answer[k] || '');
-              const userVals = orderKeys.map(k => answers[k] || '');
-              const reversedCorrect = answerVals.slice().reverse();
-              isReversed = reversedCorrect.every((v, i) => answersMatch(userVals[i], v));
-            }
+
+            const answerVals = typeof question.answer === 'object'
+              ? orderKeys.map(k => question.answer[k] || '')
+              : [];
+            const userVals = orderKeys.map(k => answers[k] || '');
+            const partialReason = getOrderingPartialReason(userVals, answerVals);
             
             if (correctCount === totalParts) {
               marksEarned[scoredPart.key] = totalMarks;
               newFeedback[scoredPart.key] = 'correct';
-            } else if (isReversed) {
+            } else if (partialReason === 'reversed') {
               // Correct order but reversed — B1
               marksEarned[scoredPart.key] = 1;
               newFeedback[scoredPart.key] = 'incorrect';
               allCorrect = false;
-            } else if (correctCount >= totalParts - 1 && totalMarks >= 2) {
-              // Three correct when one is covered up — B1
+            } else if (partialReason === 'three-correct' && totalMarks >= 2) {
+              // Three values in the correct relative order — B1
               marksEarned[scoredPart.key] = 1;
               newFeedback[scoredPart.key] = 'incorrect';
               allCorrect = false;
@@ -1851,9 +1882,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       const earned = storedMarksEarned[sp.key] ?? 0;
                       const isPartCorrect = earned === sp.marks;
                       const isPartial = earned > 0 && earned < sp.marks;
+                      const allParts = [...helperParts, sp];
+                      const orderKeys = allParts.map(p => p.key);
+                      const answerVals = typeof question.answer === 'object'
+                        ? orderKeys.map(k => question.answer[k] || '')
+                        : [];
+                      const userVals = orderKeys.map(k => answers[k] || '');
+                      const partialReason = getOrderingPartialReason(userVals, answerVals);
                       
                       // Build detail: show which positions were correct/incorrect
-                      const allParts = [...helperParts, sp];
                       return (
                         <>
                           <div className="flex items-center justify-between text-sm">
@@ -1883,7 +1920,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                                   </div>
                                 );
                               })}
-                              {isPartial && <p className="text-xs text-amber-600 mt-1">B1 awarded for partial correct ordering</p>}
+                              {isPartial && partialReason === 'three-correct' && (
+                                <p className="text-xs text-amber-600 mt-1">B1 awarded because 3 values are in the correct order, matching the specimen rule.</p>
+                              )}
+                              {isPartial && partialReason === 'reversed' && (
+                                <p className="text-xs text-amber-600 mt-1">B1 awarded because the full order is correct but reversed.</p>
+                              )}
                             </div>
                           )}
                         </>

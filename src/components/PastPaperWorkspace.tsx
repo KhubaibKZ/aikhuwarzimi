@@ -593,7 +593,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       return;
     }
 
-    const { allCorrect, newFeedback } = checkAnswersInternal();
+    const { allCorrect, newFeedback, marksEarned } = checkAnswersInternal();
     setFeedback(newFeedback);
     setIsChecked(true);
     setIsSubmitted(true);
@@ -1671,19 +1671,98 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           {/* Post-submission summary */}
           {isSubmitted && (
             <div className={cn(
-              "rounded-lg border p-4 flex items-center gap-3",
+              "rounded-lg border p-4 space-y-3",
               allCorrect ? "border-green-500/50 bg-green-500/10" : "border-primary/30 bg-primary/5"
             )}>
-              {allCorrect ? <Award className="h-6 w-6 text-green-500" /> : <Clock className="h-6 w-6 text-primary" />}
-              <div className="flex-1">
-                <p className={cn("font-medium", allCorrect ? "text-green-600" : "text-foreground")}>
-                  {allCorrect ? 'Excellent work!' : 'Answer Submitted'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Time taken: <span className="font-mono font-semibold text-foreground">{formatTime(finalTime ?? 0)}</span>
-                  {allCorrect && ' • All correct!'}
-                </p>
+              <div className="flex items-center gap-3">
+                {allCorrect ? <Award className="h-6 w-6 text-green-500" /> : <Clock className="h-6 w-6 text-primary" />}
+                <div className="flex-1">
+                  <p className={cn("font-medium", allCorrect ? "text-green-600" : "text-foreground")}>
+                    {allCorrect ? 'Excellent work!' : 'Answer Submitted'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Time taken: <span className="font-mono font-semibold text-foreground">{formatTime(finalTime ?? 0)}</span>
+                    {allCorrect && ' • All correct!'}
+                  </p>
+                </div>
               </div>
+              {/* Per-part marks breakdown */}
+              {question.parts && question.parts.filter(p => p.marks > 0).length > 0 && (
+                <div className="border-t pt-2 space-y-1">
+                  {question.parts.filter(p => p.marks > 0).map(part => {
+                    const earned = (() => {
+                      // Recalculate from feedback for display
+                      const eqParts = (question as any).equationSolveParts as string[] | undefined;
+                      if (eqParts?.includes(part.key)) {
+                        const stMap = (question as any).equationStagesMap;
+                        const stgs = stMap?.[part.key] || (question as any).equationStages;
+                        if (stgs) {
+                          const boxKeys: string[] = [];
+                          stgs.forEach((s: any) => s.elements.forEach((el: any) => {
+                            if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
+                          }));
+                          const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
+                          const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
+                          if (correctCount === boxKeys.length || lastCorrect) return part.marks;
+                          if (correctCount > 0 && part.marks > 1) {
+                            const methodKeys = boxKeys.slice(0, -1);
+                            if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return part.marks - 1;
+                            return Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
+                          }
+                          return 0;
+                        }
+                      }
+                      return feedback[part.key] === 'correct' ? part.marks : 0;
+                    })();
+                    const isPartCorrect = earned === part.marks;
+                    const isPartial = earned > 0 && earned < part.marks;
+                    return (
+                      <div key={part.key} className="flex items-center justify-between text-sm">
+                        <span className="flex items-center gap-1.5">
+                          {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                           isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                           <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                          {part.label}
+                        </span>
+                        <span className={cn(
+                          "font-mono font-semibold text-xs",
+                          isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                        )}>
+                          {earned}/{part.marks}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="flex items-center justify-between text-sm font-semibold border-t pt-1">
+                    <span>Total</span>
+                    <span className="font-mono">
+                      {question.parts.filter(p => p.marks > 0).reduce((sum, part) => {
+                        const eqParts = (question as any).equationSolveParts as string[] | undefined;
+                        if (eqParts?.includes(part.key)) {
+                          const stMap = (question as any).equationStagesMap;
+                          const stgs = stMap?.[part.key] || (question as any).equationStages;
+                          if (stgs) {
+                            const boxKeys: string[] = [];
+                            stgs.forEach((s: any) => s.elements.forEach((el: any) => {
+                              if (el.type === 'box' && el.key) boxKeys.push(`${part.key}_${el.key}`);
+                            }));
+                            const correctCount = boxKeys.filter(k => feedback[k] === 'correct').length;
+                            const lastCorrect = feedback[boxKeys[boxKeys.length - 1]] === 'correct';
+                            if (correctCount === boxKeys.length || lastCorrect) return sum + part.marks;
+                            if (correctCount > 0 && part.marks > 1) {
+                              const methodKeys = boxKeys.slice(0, -1);
+                              if (methodKeys.every(k => feedback[k] === 'correct') && methodKeys.length > 0) return sum + part.marks - 1;
+                              return sum + Math.min(part.marks - 1, Math.max(1, Math.floor(correctCount / boxKeys.length * part.marks)));
+                            }
+                            return sum;
+                          }
+                        }
+                        return sum + (feedback[part.key] === 'correct' ? part.marks : 0);
+                      }, 0)}/{question.parts.filter(p => p.marks > 0).reduce((s, p) => s + p.marks, 0)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

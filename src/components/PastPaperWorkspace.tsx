@@ -790,6 +790,25 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setFinalTime(null);
     setElapsedSeconds(0);
     startTimeRef.current = Date.now();
+    aiUsageRef.current = 0;
+  };
+
+  // Reset individual question (dashboard/general mode only)
+  const handleResetQuestion = async () => {
+    if (!user || workspaceMode !== 'general') return;
+    try {
+      await supabase
+        .from('student_paper_progress')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('question_id', question.id)
+        .eq('workspace_mode', 'general');
+      resetWorkspace();
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      toast({ title: 'Question reset', description: 'You can now re-attempt this question.' });
+    } catch {
+      toast({ title: 'Reset failed', variant: 'destructive' });
+    }
   };
 
   const allCorrect = Object.values(feedback).length > 0 && 
@@ -1906,7 +1925,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           )}
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className={cn("grid gap-3", isSubmitted && workspaceMode === 'general' ? "grid-cols-3" : "grid-cols-2")}>
             <Button
               variant="outline"
               onClick={handleHint}
@@ -1937,6 +1956,16 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 </>
               )}
             </Button>
+            {isSubmitted && workspaceMode === 'general' && (
+              <Button
+                variant="outline"
+                onClick={handleResetQuestion}
+                className="flex items-center gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

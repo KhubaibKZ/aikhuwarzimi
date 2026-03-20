@@ -12,7 +12,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Division before addition: 4 ÷ 2 = 2, then 6 + 2 = 8', '(b) 40 × 0.3 = 12'],
     type: 'multi-part',
     parts: [{ label: '(a) 6 + 4 ÷ 2', key: 'a', marks: 1 }, { label: '(b) 40 × 0.3', key: 'b', marks: 1 }],
-    answer: { a: '8', b: '12' }
+    answer: { a: '8', b: '12' },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 2 ==========
@@ -28,7 +29,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '3rd', key: 'p3', marks: 0 },
       { label: '4th (largest)', key: 'p4', marks: 2 }
     ],
-    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' }
+    answer: { p1: '0.1', p2: '3/25', p3: '13%', p4: '1/5' },
+    markingCriteria: { _question: 'B2 for all four correct in order. B1 for three correct (when one is covered up) OR for correct order but reversed.' }
   },
 
   // ========== Question 3 ==========
@@ -39,7 +41,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) −12 + 20 = 8', '(b) 10 − (−4) = 14'],
     type: 'multi-part',
     parts: [{ label: '(a) Temperature (°C)', key: 'a', marks: 1 }, { label: '(b) Difference (°C)', key: 'b', marks: 1 }],
-    answer: { a: '8', b: '14' }
+    answer: { a: '8', b: '14' },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 4 ==========
@@ -63,7 +66,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer: '7.80',
       answer_s1_a: '12', answer_s1_b: '65', answer_s1_c: '780',
       answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 12 × 65 or 780 seen. A1 for $7.80 (must have dollars or $ sign implied). Accept 7.8 only if working shows cents conversion.' }
   },
 
 
@@ -75,7 +79,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Range = highest − lowest number of pets', '(b) Count people with 3 pets, divide by 20'],
     type: 'multi-part',
     parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction', key: 'b', marks: 1 }],
-    answer: { a: '4', b: '1/4' }
+    answer: { a: '4', b: '1/4' },
+    markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }
   },
 
   // ========== Question 6 ==========
@@ -109,7 +114,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: '70', b: '110',
       a_s1_a: '180', a_s1_b: '110', a_s2: '70',
       b_s1_a: '180', b_s1_b: '70', b_s2: '110'
-    }
+    },
+    markingCriteria: { a: 'B1 for 70', b: 'B1 for 110' }
   },
 
   // ========== Question 7 ==========
@@ -143,7 +149,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '50', answer_s1_b: '3', answer_s1_c: '7',
       answer_s2_a: '50', answer_s2_b: '3', answer_s2_c: '7', answer_s2_d: '50', answer_s2_e: '10',
       answer_s3: '5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for correctly rounding all three values to 1 s.f. (50, 3, 7). A1 for 5.' }
   },
 
   // ========== Question 8 ==========
@@ -175,7 +182,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '78', a_s1_b: '10', a_s1_c: '7.8',
       b_s1_a: '100',
       b_s2_a: '3', b_s2_b: '10000', b_s2_c: '30000'
-    }
+    },
+    markingCriteria: { a: 'B1', b: 'B1' }
   },
 
   // ========== Question 9 ==========
@@ -186,7 +194,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Look at the trend of the points', '(b) Draw a line through the data and read off at age 50'],
     type: 'multi-part',
     parts: [{ label: '(a) Correlation type', key: 'a', marks: 1 }, { label: '(b) Time (minutes)', key: 'b', marks: 2 }],
-    answer: { a: 'Positive', b: '0.17' }
+    answer: { a: 'Positive', b: '0.17' },
+    markingCriteria: { a: 'B1 for Positive', b: 'B1 for correct line of best fit drawn. B1 ft for reading at age 50 from their line (accept 0.15 to 0.19).' }
   },
 
   // ========== Question 10 ==========
@@ -225,7 +234,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s2_a: '330', a_s2_b: '30',
       b_s1_a: '10', b_s1_b: '10',
       b_s2_a: '8', b_s2_b: '10', b_s2_c: '144'
-    }
+    },
+    markingCriteria: { a: 'M1 for 360 − (150 + 100 + 45 + 35) or 360 − 330. A1 for 30.', b: 'M1 for 180(10−2)/10 or 180×8/10. A1 for 144.' }
   },
 
   // ========== Question 11 ==========
@@ -259,7 +269,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: '19', b: '25',
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
       b_s1_a: '-1', b_s1_b: '3', b_s2_a: '²', b_s2_b: '25'
-    }
+    },
+    markingCriteria: { a: 'B1', b: 'M1 for 5^(−1+3) or 5². A1 for 25.' }
   },
 
   // ========== Question 12 ==========
@@ -275,7 +286,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(b) Construction', key: 'b', marks: 2 },
       { label: '(c) Position of S', key: 'c', marks: 1 }
     ],
-    answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' }
+    answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' },
+    markingCriteria: { a: 'M1 for measurement ×20000 or ÷100000 seen. A1 for 1.8 km.', b: 'B1 for correct perpendicular bisector with arcs. B1 for line extending full width.', c: 'B1 for S at intersection of bisector and 105° bearing.' }
   },
 
   // ========== Question 13 ==========
@@ -293,7 +305,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_rn: '24', answer_s1_rd: '25',
       answer_s2_n1: '24', answer_s2_gcd: '1', answer_s2_d1: '25', answer_s2_gcd2: '1',
       answer_s2_fn: '24', answer_s2_fd: '25'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 8/5 × 3/5 or 8/5 ÷ 5/3 seen. A1 for 24/25.' }
   },
 
   // ========== Question 14 ==========
@@ -342,7 +355,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s3: '144',
       b_s4_a: '2', b_s4_b: '24',
       b_s5_a: '2', b_s5_b: '24', b_s5_c: '11:54'
-    }
+    },
+    markingCriteria: { a: 'B1 for 2 × 2 × 3 × 3 or any correct factor tree. B1 for 2² × 3² in index form.', b: 'M1 for attempt at LCM using prime factors. A1 for 144. A1 for 11:54.' }
   },
 
   // ========== Question 15 ==========
@@ -387,7 +401,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '38', a_s1_b: '19', a_s2_a: '90', a_s2_b: '19', a_s2_c: '71',
       b_s1_a: '38', b_s1_b: '90', b_s1_c: '90', b_s2: '142',
       c_s1_a: '142', c_s1_b: '71'
-    }
+    },
+    markingCriteria: { a: 'B1 for 71', b: 'M1 for 360 − 38 − 90 − 90 or equivalent. A1 for 142.', c: 'B1 ft for half their (b).' }
   },
 
   // ========== Question 16 ==========
@@ -396,7 +411,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ x/2 + 1. Find and label region R.',
     marks: 4,
     hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
-    type: 'short', answer: 'Region R correctly identified'
+    type: 'short', answer: 'Region R correctly identified',
+    markingCriteria: { _question: 'B1 for x = 1. B1 for x = 3. B1 for y = 2 and y = 3. B1 for y = x/2 + 1 and R correctly labelled.' }
   },
 
   // ========== Question 17 ==========
@@ -426,7 +442,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '2', answer_s1_b: '16',
       answer_s2_a: '2', answer_s2_b: '4', answer_s2_c: '0.5',
       answer_s3_a: '0.5', answer_s3_b: '25', answer_s3_c: '2.5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for y = k√x and k = ½ or 0.5 seen. A1 for 2.5.' }
   },
 
   // ========== Question 18 ==========
@@ -444,7 +461,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" }
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
+    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for (E ∩ F) ∩ G' or equivalent correct set notation." }
   },
 
   // ========== Question 19 ==========
@@ -489,7 +507,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '700', b_s1_b: '10', b_s1_c: '20', b_s1_d: '20', b_s1_e: '10',
       b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
       b_s3: '40'
-    }
+    },
+    markingCriteria: { a: 'B1 for 2', b: 'M1 for area of triangle (½ × 10 × 20 = 100). M1 for 700 = 100 + 20(T − 10) or equivalent area equation. A1 for 40.' }
   },
 
   // ========== Question 20 ==========
@@ -562,7 +581,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_f: '-2', b_s1_g: '2', b_s1_h: '1', b_s1_i: '1', b_s1_j: '-3',
       b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
       b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
-    }
+    },
+    markingCriteria: { a: 'M1 for |A| = −10 or correct adjugate matrix. A1 for correct inverse (1/−10)(3,−1;−4,−2).', b: 'M1 for at least one correct element from multiplication. A1 for all four elements correct (−7,−3;9,11).' }
   },
 
   // ========== Question 21 ==========
@@ -599,7 +619,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_s1_a: '2c', c_s1_b: 'c-4',
       c_s2_a: '2c+3', c_s2_b: 'c-4',
       c_s3_a: '2c', c_s3_b: '2c+3'
-    }
+    },
+    markingCriteria: { a: 'B1 for 3(2a − 3)', b: 'B1 for (2b + 5)(2b − 5)', c: 'B1 for numerator correctly factorised as 2c(c − 4). B1 for denominator correctly factorised as (2c + 3)(c − 4). B1 for simplified 2c/(2c + 3).' }
   },
 
   // ========== Question 22 ==========
@@ -662,7 +683,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'
-    }
+    },
+    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'M1 for correct rearrangement x = 4(y − 3). A1 for 4x − 12.', c_calc: 'M1 for setting f(p) = g(p + 5). M1 for correct expansion and collection. A1 for −20/7.' }
   },
 
   // ========== Question 23 ==========
@@ -706,7 +728,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: 'c-a', b_calc: '½a+½c', c_calc: '-½a-⅙c',
       b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
       c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
-    }
+    },
+    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for OA + ½AC or a + ½(c − a). A1 for ½a + ½c.', c_calc: 'M1 for finding OY = a + ⅔c and attempting YX = OX − OY. A1 for −½a − ⅙c.' }
   },
 
   // ========== Question 24 ==========
@@ -744,7 +767,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
-    }
+    },
+    markingCriteria: { answer: 'M1 for multiplying through by (x+1)(x−1). M1 for correct expansion of LHS: 3x²−3x−2x−2. M1 for simplifying to −5x = −1 or equivalent. A1 for x = 1/5 or 0.2.' }
   },
 };
 

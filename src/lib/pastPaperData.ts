@@ -80,6 +80,7 @@ export interface PastPaperQuestion {
   equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
   diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
+  markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")
 }
 
 export interface PastPaperSection {

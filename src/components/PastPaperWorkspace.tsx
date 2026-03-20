@@ -234,7 +234,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           actionType: 'hint',
           topic: question.title,
           hints: question.hints,
-          attemptCount
+          attemptCount,
+          markingCriteria: question.markingCriteria
         }
       });
 
@@ -382,7 +383,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             hasMissing: false,
             hasWrong: true,
             specificPart: partLabel,
-            workingContent: ''
+            workingContent: '',
+            markingCriteria: question.markingCriteria
           }
         });
         if (error) throw error;
@@ -452,7 +454,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           hasMissing: false,
           hasWrong: true,
           specificPart: partLabel,
-          workingContent: answers['working'] || ''
+          workingContent: answers['working'] || '',
+          markingCriteria: question.markingCriteria
         }
       });
 

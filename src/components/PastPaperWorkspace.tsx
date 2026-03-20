@@ -174,23 +174,98 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   };
 
   const checkAnswersInternal = () => {
-    if (!question.answer) return { allCorrect: false, newFeedback: {} };
+    if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {} };
     
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
+    const marksEarned: Record<string, number> = {};
     let allCorrect = true;
+    const eqParts = (question as any).equationSolveParts as string[] | undefined;
+    const stagesMap = (question as any).equationStagesMap;
+    const eqStages = (question as any).equationStages;
 
     if (question.parts) {
       question.parts.forEach(part => {
+        // For equation-solve parts, check all box keys
+        if (eqParts?.includes(part.key)) {
+          const stages = stagesMap?.[part.key] || eqStages;
+          if (stages && stages.length > 0) {
+            // Collect all box keys from stages
+            const allBoxKeys: string[] = [];
+            stages.forEach((stage: any) => {
+              stage.elements.forEach((el: any) => {
+                if (el.type === 'box' && el.key) {
+                  allBoxKeys.push(`${part.key}_${el.key}`);
+                }
+              });
+            });
+
+            // Check each box and set per-box feedback
+            let correctBoxes = 0;
+            let totalBoxes = allBoxKeys.length;
+            allBoxKeys.forEach(boxKey => {
+              const userVal = answers[boxKey] || '';
+              const correctVal = typeof question.answer === 'object' ? question.answer[boxKey] || '' : '';
+              if (correctVal && answersMatch(userVal, correctVal)) {
+                newFeedback[boxKey] = 'correct';
+                correctBoxes++;
+              } else if (userVal) {
+                newFeedback[boxKey] = 'incorrect';
+              } else {
+                newFeedback[boxKey] = null;
+              }
+            });
+
+            // Determine part-level feedback from the LAST box (final answer)
+            const lastBoxKey = allBoxKeys[allBoxKeys.length - 1];
+            const lastCorrect = newFeedback[lastBoxKey] === 'correct';
+            
+            // Calculate partial marks based on marking criteria
+            const totalMarks = part.marks;
+            if (correctBoxes === totalBoxes) {
+              // All boxes correct — full marks
+              marksEarned[part.key] = totalMarks;
+              newFeedback[part.key] = 'correct';
+            } else if (lastCorrect) {
+              // Final answer correct — full marks (method implied)
+              marksEarned[part.key] = totalMarks;
+              newFeedback[part.key] = 'correct';
+            } else if (correctBoxes > 0 && totalMarks > 1) {
+              // Partial credit: some intermediate steps correct
+              // M1 for method (intermediate boxes) + A1 for final answer
+              // If method boxes are correct but final answer wrong → earn method marks
+              const methodBoxes = allBoxKeys.slice(0, -1);
+              const methodCorrect = methodBoxes.every(k => newFeedback[k] === 'correct');
+              if (methodCorrect && methodBoxes.length > 0) {
+                marksEarned[part.key] = totalMarks - 1; // M marks without A mark
+              } else {
+                // Some steps correct — give 1 mark for partial working
+                marksEarned[part.key] = Math.min(totalMarks - 1, Math.max(1, Math.floor(correctBoxes / totalBoxes * totalMarks)));
+              }
+              newFeedback[part.key] = 'incorrect';
+              allCorrect = false;
+            } else {
+              marksEarned[part.key] = 0;
+              newFeedback[part.key] = 'incorrect';
+              allCorrect = false;
+            }
+            return;
+          }
+        }
+
+        // Standard part check
         const userAnswer = answers[part.key] || '';
         const correctAnswer = typeof question.answer === 'object' ? question.answer[part.key] || '' : '';
         
         if (answersMatch(userAnswer, correctAnswer)) {
           newFeedback[part.key] = 'correct';
+          marksEarned[part.key] = part.marks;
         } else if (userAnswer) {
           newFeedback[part.key] = 'incorrect';
+          marksEarned[part.key] = 0;
           allCorrect = false;
         } else {
           newFeedback[part.key] = null;
+          marksEarned[part.key] = 0;
           allCorrect = false;
         }
       });
@@ -200,13 +275,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       
       if (answersMatch(userAnswer, correctAnswer)) {
         newFeedback['answer'] = 'correct';
+        marksEarned['answer'] = question.marks;
       } else if (userAnswer) {
         newFeedback['answer'] = 'incorrect';
+        marksEarned['answer'] = 0;
         allCorrect = false;
       }
     }
 
-    return { allCorrect, newFeedback };
+    return { allCorrect, newFeedback, marksEarned };
   };
 
   // Hint: Show concept related to the question

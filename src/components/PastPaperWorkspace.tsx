@@ -1819,27 +1819,81 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               {/* Per-part marks breakdown */}
               {question.parts && question.parts.filter(p => p.marks > 0).length > 0 && (
                 <div className="border-t pt-2 space-y-1">
-                  {question.parts.filter(p => p.marks > 0).map(part => {
-                    const earned = storedMarksEarned[part.key] ?? 0;
-                    const isPartCorrect = earned === part.marks;
-                    const isPartial = earned > 0 && earned < part.marks;
-                    return (
-                      <div key={part.key} className="flex items-center justify-between text-sm">
-                        <span className="flex items-center gap-1.5">
-                          {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
-                           isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
-                           <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                          {part.label}
-                        </span>
-                        <span className={cn(
-                          "font-mono font-semibold text-xs",
-                          isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
-                        )}>
-                          {earned}/{part.marks}
-                        </span>
-                      </div>
-                    );
-                  })}
+                  {(() => {
+                    // Detect ordering questions: helper parts (marks=0) + single scored part
+                    const questionCriteria = question.markingCriteria?.['_question'] || '';
+                    const isOrderingQ = questionCriteria.includes('correct in order') || questionCriteria.includes('correct order');
+                    const helperParts = question.parts!.filter(p => p.marks === 0);
+                    const scoredParts = question.parts!.filter(p => p.marks > 0);
+                    
+                    if (isOrderingQ && helperParts.length >= 2 && scoredParts.length === 1) {
+                      // Show as single "Ordering" row with composite marks
+                      const sp = scoredParts[0];
+                      const earned = storedMarksEarned[sp.key] ?? 0;
+                      const isPartCorrect = earned === sp.marks;
+                      const isPartial = earned > 0 && earned < sp.marks;
+                      
+                      // Build detail: show which positions were correct/incorrect
+                      const allParts = [...helperParts, sp];
+                      return (
+                        <>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="flex items-center gap-1.5">
+                              {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                               isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                               <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                              Ordering
+                            </span>
+                            <span className={cn(
+                              "font-mono font-semibold text-xs",
+                              isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                            )}>
+                              {earned}/{sp.marks}
+                            </span>
+                          </div>
+                          {!isPartCorrect && (
+                            <div className="ml-6 space-y-0.5">
+                              {allParts.map(p => {
+                                const correct = feedback[p.key] === 'correct';
+                                const correctVal = typeof question.answer === 'object' ? question.answer[p.key] : '';
+                                return (
+                                  <div key={p.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    {correct ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-destructive" />}
+                                    <span>{p.label}: {answers[p.key] || '—'}</span>
+                                    {!correct && correctVal && <span className="text-green-600 ml-1">(correct: {correctVal})</span>}
+                                  </div>
+                                );
+                              })}
+                              {isPartial && <p className="text-xs text-amber-600 mt-1">B1 awarded for partial correct ordering</p>}
+                            </div>
+                          )}
+                        </>
+                      );
+                    }
+                    
+                    // Standard per-part display
+                    return scoredParts.map(part => {
+                      const earned = storedMarksEarned[part.key] ?? 0;
+                      const isPartCorrect = earned === part.marks;
+                      const isPartial = earned > 0 && earned < part.marks;
+                      return (
+                        <div key={part.key} className="flex items-center justify-between text-sm">
+                          <span className="flex items-center gap-1.5">
+                            {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
+                             isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                             <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                            {part.label}
+                          </span>
+                          <span className={cn(
+                            "font-mono font-semibold text-xs",
+                            isPartCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                          )}>
+                            {earned}/{part.marks}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
                   <div className="flex items-center justify-between text-sm font-semibold border-t pt-1">
                     <span>Total</span>
                     <span className="font-mono">

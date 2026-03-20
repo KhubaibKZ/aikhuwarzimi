@@ -723,6 +723,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     const { allCorrect, newFeedback, marksEarned } = checkAnswersInternal();
     setFeedback(newFeedback);
+    setStoredMarksEarned(marksEarned);
     setIsChecked(true);
     setIsSubmitted(true);
     const timeSpentNow = Math.round((Date.now() - startTimeRef.current) / 1000);
@@ -780,6 +781,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const resetWorkspace = () => {
     setAnswers({});
     setFeedback({});
+    setStoredMarksEarned({});
     setIsChecked(false);
     setIsSubmitted(false);
     setAiResponse(null);

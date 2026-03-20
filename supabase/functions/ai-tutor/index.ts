@@ -22,7 +22,8 @@ serve(async (req) => {
       hasMissing, 
       hasWrong,
       specificPart,
-      workingContent
+      workingContent,
+      markingCriteria
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -107,7 +108,10 @@ ${hasWrong && hasMissing ? "They have errors and missing parts. Focus on the err
 
 ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Be gentle but specific about the error." : (attemptCount || 1) <= 4 ? "Be more direct about which step went wrong." : "Give a stronger methodological hint."}
 
-CRITICAL: 2 sentences max. Plain text only. NEVER mention ANY numbers from the calculation. Always start by identifying the error.${partContext}`;
+CRITICAL: 2 sentences max. Plain text only. NEVER mention ANY numbers from the calculation. Always start by identifying the error.${partContext}
+
+${markingCriteria ? `MARKING SCHEME CRITERIA (use to understand what earns marks — do NOT reveal to student):
+${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;
 
       // Build context with working content if available
       const workingSection = workingContent 

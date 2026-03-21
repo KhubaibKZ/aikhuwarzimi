@@ -100,10 +100,6 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction', key: 'b', marks: 1 }],
     answer: { a: '4', b: '1/4' },
-    correctStageAnswers: {
-      'a_s1_a': '4', 'a_s1_b': '0', 'a_s1_ans': '4',
-      'b_s1_num': '5', 'b_s1_den': '20', 'b_s1_snum': '1', 'b_s1_sden': '4'
-    },
     markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }
   },
 

@@ -74,10 +74,30 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 5 ==========
   'pp_4024_on23_11_q5': {
     id: 'pp_4024_on23_11_q5', questionNumber: '5', title: 'Bar chart statistics',
-    question: 'Yasmin asks 20 people how many pets they own. The results are shown in a bar chart.\n(a) Find the range.\n(b) Find the fraction of the 20 people who own 3 pets.',
+    question: 'Yasmin asks 20 people how many pets they own. The results are shown in the bar chart.\n(a) Find the range.\n(b) Find the fraction of the 20 people who own 3 pets.\n     Give your answer in its simplest form.',
     marks: 2,
-    hints: ['(a) Range = highest − lowest number of pets', '(b) Count people with 3 pets, divide by 20'],
+    hints: ['(a) Range = highest value − lowest value of number of pets that have non-zero frequency', '(b) Read frequency for 3 pets from chart, write as fraction of 20 in simplest form'],
     type: 'multi-part',
+    equationSolveParts: ['a', 'b'],
+    equationStagesMap: {
+      'a': [
+        { label: 'Range', stepKey: 's1', elements: [
+          { type: 'text', value: 'Range =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_ans', width: 'w-12' }
+        ]}
+      ],
+      'b': [
+        { label: 'Fraction', stepKey: 's1', elements: [
+          { type: 'text', value: 'Fraction =' },
+          { type: 'box', key: 's1_num', width: 'w-10' },
+          { type: 'text', value: '/' },
+          { type: 'box', key: 's1_den', width: 'w-10' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_snum', width: 'w-10' },
+          { type: 'text', value: '/' },
+          { type: 'box', key: 's1_sden', width: 'w-10' }
+        ]}
+      ]
+    },
     parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction', key: 'b', marks: 1 }],
     answer: { a: '4', b: '1/4' },
     markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }

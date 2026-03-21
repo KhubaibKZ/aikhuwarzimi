@@ -47,7 +47,13 @@ import {
   VectorTriangleDiagram,
   QuadrilateralDiagram,
   HistogramDiagram,
-  BearingDiagram
+  BearingDiagram,
+  BarChart2023ON,
+  ParallelLines2023ON,
+  CircleTheorem2023ON,
+  SpeedTimeGraph2023ON,
+  VectorParallelogram2023ON,
+  VennDiagram3Set2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -1543,6 +1549,70 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     handleAnswerChange('b', correct ? 'diagram' : 'incorrect');
                   }}
                 />
+              </div>
+            )}
+            
+            {/* ========== 4024/11 Oct/Nov 2023 Diagrams ========== */}
+            
+            {/* Q5 - Bar chart */}
+            {question.id === 'pp_4024_on23_11_q5' && (
+              <div className="mt-4">
+                <BarChart2023ON />
+              </div>
+            )}
+            
+            {/* Q6 - Parallel lines */}
+            {question.id === 'pp_4024_on23_11_q6' && (
+              <div className="mt-4">
+                <ParallelLines2023ON />
+              </div>
+            )}
+            
+            {/* Q9 - Scatter diagram */}
+            {question.id === 'pp_4024_on23_11_q9' && (
+              <div className="mt-4">
+                <ScatterDiagram />
+              </div>
+            )}
+            
+            {/* Q15 - Circle theorems with tangents */}
+            {question.id === 'pp_4024_on23_11_q15' && (
+              <div className="mt-4">
+                <CircleTheorem2023ON />
+              </div>
+            )}
+            
+            {/* Q16 - Inequalities coordinate grid */}
+            {question.id === 'pp_4024_on23_11_q16' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={320}
+                  height={320}
+                  xRange={[-1, 5]}
+                  yRange={[-1, 5]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q18 - 3-set Venn diagram */}
+            {question.id === 'pp_4024_on23_11_q18' && (
+              <div className="mt-4">
+                <VennDiagram3Set2023ON />
+              </div>
+            )}
+            
+            {/* Q19 - Speed-time graph */}
+            {question.id === 'pp_4024_on23_11_q19' && (
+              <div className="mt-4">
+                <SpeedTimeGraph2023ON />
+              </div>
+            )}
+            
+            {/* Q23 - Vector parallelogram */}
+            {question.id === 'pp_4024_on23_11_q23' && (
+              <div className="mt-4">
+                <VectorParallelogram2023ON />
               </div>
             )}
             

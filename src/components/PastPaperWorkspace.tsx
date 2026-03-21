@@ -1551,6 +1551,75 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               </div>
             )}
             
+            {/* ========== 4024/11 Oct/Nov 2023 Diagrams ========== */}
+            
+            {/* Q5 - Bar chart */}
+            {question.id === 'pp_4024_on23_11_q5' && (
+              <div className="mt-4">
+                <BarChart2023ON />
+              </div>
+            )}
+            
+            {/* Q6 - Parallel lines */}
+            {question.id === 'pp_4024_on23_11_q6' && (
+              <div className="mt-4">
+                <ParallelLines2023ON />
+              </div>
+            )}
+            
+            {/* Q9 - Scatter diagram */}
+            {question.id === 'pp_4024_on23_11_q9' && (
+              <div className="mt-4">
+                <ScatterDiagram />
+              </div>
+            )}
+            
+            {/* Q15 - Circle theorems with tangents */}
+            {question.id === 'pp_4024_on23_11_q15' && (
+              <div className="mt-4">
+                <CircleTheorem2023ON />
+              </div>
+            )}
+            
+            {/* Q16 - Inequalities coordinate grid */}
+            {question.id === 'pp_4024_on23_11_q16' && (
+              <div className="mt-4">
+                <CoordinateGrid
+                  width={320}
+                  height={320}
+                  xRange={[-1, 5]}
+                  yRange={[-1, 5]}
+                  interactive={true}
+                />
+              </div>
+            )}
+            
+            {/* Q18 - 3-set Venn diagram */}
+            {question.id === 'pp_4024_on23_11_q18' && (
+              <div className="mt-4">
+                <VennDiagram
+                  leftLabel="R"
+                  rightLabel="C"
+                  thirdLabel="S"
+                  threeSet={true}
+                />
+              </div>
+            )}
+            
+            {/* Q19 - Speed-time graph */}
+            {question.id === 'pp_4024_on23_11_q19' && (
+              <div className="mt-4">
+                <SpeedTimeGraph2023ON />
+              </div>
+            )}
+            
+            {/* Q23 - Vector parallelogram */}
+            {question.id === 'pp_4024_on23_11_q23' && (
+              <div className="mt-4">
+                <VectorParallelogram2023ON />
+              </div>
+            )}
+            
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
              !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9',

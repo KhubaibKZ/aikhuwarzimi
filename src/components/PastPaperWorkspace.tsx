@@ -47,7 +47,12 @@ import {
   VectorTriangleDiagram,
   QuadrilateralDiagram,
   HistogramDiagram,
-  BearingDiagram
+  BearingDiagram,
+  BarChart2023ON,
+  ParallelLines2023ON,
+  CircleTheorem2023ON,
+  SpeedTimeGraph2023ON,
+  VectorParallelogram2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {

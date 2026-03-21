@@ -31,3 +31,4 @@ export { ParallelLines2023ON } from './ParallelLines2023ON';
 export { CircleTheorem2023ON } from './CircleTheorem2023ON';
 export { SpeedTimeGraph2023ON } from './SpeedTimeGraph2023ON';
 export { VectorParallelogram2023ON } from './VectorParallelogram2023ON';
+export { VennDiagram3Set2023ON } from './VennDiagram3Set2023ON';

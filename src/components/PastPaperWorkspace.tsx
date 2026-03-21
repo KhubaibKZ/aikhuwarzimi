@@ -52,7 +52,8 @@ import {
   ParallelLines2023ON,
   CircleTheorem2023ON,
   SpeedTimeGraph2023ON,
-  VectorParallelogram2023ON
+  VectorParallelogram2023ON,
+  VennDiagram3Set2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {

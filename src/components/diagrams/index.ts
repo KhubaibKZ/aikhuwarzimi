@@ -26,3 +26,8 @@ export { VectorTriangleDiagram } from './VectorTriangleDiagram';
 export { QuadrilateralDiagram } from './QuadrilateralDiagram';
 export { HistogramDiagram } from './HistogramDiagram';
 export { BearingDiagram } from './BearingDiagram';
+export { BarChart2023ON } from './BarChart2023ON';
+export { ParallelLines2023ON } from './ParallelLines2023ON';
+export { CircleTheorem2023ON } from './CircleTheorem2023ON';
+export { SpeedTimeGraph2023ON } from './SpeedTimeGraph2023ON';
+export { VectorParallelogram2023ON } from './VectorParallelogram2023ON';

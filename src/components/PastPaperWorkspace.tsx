@@ -175,20 +175,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .trim();
   };
 
-  const evaluateMathExpr = (s: string): number | null => {
-    // Evaluate simple power expressions like 5^3, 2^4
-    const powerMatch = s.match(/^(-?\d+(?:\.\d+)?)\^(\d+(?:\.\d+)?)$/);
-    if (powerMatch) {
-      return Math.pow(parseFloat(powerMatch[1]), parseFloat(powerMatch[2]));
-    }
-    const num = parseFloat(s);
-    return isNaN(num) ? null : num;
-  };
-
   const isNumericallyEqual = (a: string, b: string): boolean => {
-    const numA = evaluateMathExpr(a);
-    const numB = evaluateMathExpr(b);
-    if (numA !== null && numB !== null) {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
       return Math.abs(numA - numB) < 1e-9;
     }
     return false;
@@ -207,6 +197,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {
     const u = normalizeAnswer(userRaw);
     const c = normalizeAnswer(correctRaw);
+    // Support pipe-separated alternatives e.g. '125|5^3'
+    if (c.includes('|')) {
+      return c.split('|').some(alt => answersMatch(userRaw, alt.trim()));
+    }
     if (u === c) return true;
     if (isNumericallyEqual(u, c)) return true;
     // Fraction equivalence: 5/20 = 1/4

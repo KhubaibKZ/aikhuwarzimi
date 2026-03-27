@@ -467,7 +467,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 18 ==========
   'pp_4024_on23_11_q18': {
     id: 'pp_4024_on23_11_q18', questionNumber: '18', title: 'Venn diagram',
-    question: '(a) In a sports club of 40 members: 22 run (R), 24 cycle (C), 14 sail (S). 3 cycle and sail but not run, 9 run and cycle but not sail, 5 run and sail but not cycle, 6 run only. Complete the Venn diagram.\n(b) Use set notation to describe the shaded subset.',
+    question: '(a) In a sports club of 40 members: 22 run (R), 24 cycle (C), 14 sail (S). 3 cycle and sail but not run, 9 run and cycle but not sail, 5 run and sail but not cycle, 6 run only. Complete the Venn diagram.\n(b) Use set notation to describe the shaded subset in the Venn diagram below.\n[The Venn diagram for (b) shows three sets G, H and F.]',
     marks: 4,
     hints: ['(a) R∩C∩S = 22 − 6 − 9 − 5 = 2', 'C only = 24 − 9 − 2 − 3 = 10', 'S only = 14 − 5 − 2 − 3 = 4', 'Outside = 40 − (6+9+5+2+10+3+4) = 1'],
     type: 'multi-part',
@@ -479,8 +479,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "R ∩ C ∩ S'" },
-    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for R ∩ C ∩ S' or equivalent correct set notation." }
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
+    markingCriteria: { a: 'B2 for Venn diagram with 6 or 7 correct values or B1 for Venn diagram with 4 or 5 correct values or for answer 2 in intersection.', b: "B1 for G ∩ H ∩ F' oe." }
   },
 
   // ========== Question 19 ==========

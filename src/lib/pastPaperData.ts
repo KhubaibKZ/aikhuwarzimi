@@ -83,6 +83,7 @@ export interface PastPaperQuestion {
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
   diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")
+  questionFraction?: { numerator: string; denominator: string }; // Display question with a proper vertical fraction
 }
 
 export interface PastPaperSection {

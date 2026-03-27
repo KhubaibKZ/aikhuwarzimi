@@ -1030,7 +1030,17 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         <div className="space-y-6">
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
-            <p className="whitespace-pre-line text-foreground">{question.question}</p>
+            <p className="whitespace-pre-line text-foreground">
+              {question.question}
+              {question.questionFraction && (
+                <span className="inline-flex flex-col items-center mx-2 align-middle">
+                  <span className="font-mono text-base px-2">{question.questionFraction.numerator}</span>
+                  <span className="w-full border-t border-foreground" />
+                  <span className="font-mono text-base px-2">{question.questionFraction.denominator}</span>
+                </span>
+              )}
+              {question.questionFraction && '.'}
+            </p>
             
             {/* Interactive Diagrams based on question ID */}
             {question.id === 'pp_0580_s22_q2b' && (

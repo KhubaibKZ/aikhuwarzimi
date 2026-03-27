@@ -49,10 +49,12 @@ export interface FormulaTemplate {
 }
 
 export interface EquationStageElement {
-  type: 'text' | 'box';
+  type: 'text' | 'box' | 'fraction';
   value?: string; // for text elements
   key?: string; // for box elements — suffix after questionKey_
   width?: string; // for box elements, e.g. 'w-14'
+  numElements?: EquationStageElement[]; // numerator elements for fraction type
+  denElements?: EquationStageElement[]; // denominator elements for fraction type
 }
 
 export interface EquationStage {

@@ -137,23 +137,25 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 7 ==========
   'pp_4024_on23_11_q7': {
     id: 'pp_4024_on23_11_q7', questionNumber: '7', title: 'Estimation',
-    question: 'By writing each number correct to 1 significant figure, estimate the value of 53.7/(2.61 + 7.48).',
+    question: 'By writing each number correct to 1 significant figure, estimate the value of',
+    questionFraction: { numerator: '53.7', denominator: '2.61 + 7.48' },
     marks: 2,
     hints: ['53.7 ≈ 50, 2.61 ≈ 3, 7.48 ≈ 7', '50/(3 + 7) = 50/10 = 5'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
-      { label: 'Round', stepKey: 's1', elements: [
-        { type: 'text', value: '53.7 ≈' }, { type: 'box', key: 's1_a', width: 'w-10' },
-        { type: 'text', value: ', 2.61 ≈' }, { type: 'box', key: 's1_b', width: 'w-10' },
-        { type: 'text', value: ', 7.48 ≈' }, { type: 'box', key: 's1_c', width: 'w-10' }
+      { label: 'Round & Set up', stepKey: 's1', elements: [
+        { type: 'fraction', 
+          numElements: [{ type: 'box', key: 's1_a', width: 'w-12' }],
+          denElements: [{ type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ' + ' }, { type: 'box', key: 's1_c', width: 'w-10' }]
+        }
       ]},
-      { label: 'Calculate', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '/ (' },
-        { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '+' },
-        { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: ') =' },
-        { type: 'box', key: 's2_d', width: 'w-10' }, { type: 'text', value: '/' },
-        { type: 'box', key: 's2_e', width: 'w-10' }
+      { label: 'Simplify', stepKey: 's2', elements: [
+        { type: 'text', value: '=' },
+        { type: 'fraction',
+          numElements: [{ type: 'box', key: 's2_a', width: 'w-12' }],
+          denElements: [{ type: 'box', key: 's2_b', width: 'w-12' }]
+        }
       ]},
       { label: 'Answer', stepKey: 's3', elements: [
         { type: 'text', value: '=' }, { type: 'box', key: 's3', width: 'w-12' }
@@ -163,7 +165,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       answer: '5',
       answer_s1_a: '50', answer_s1_b: '3', answer_s1_c: '7',
-      answer_s2_a: '50', answer_s2_b: '3', answer_s2_c: '7', answer_s2_d: '50', answer_s2_e: '10',
+      answer_s2_a: '50', answer_s2_b: '10',
       answer_s3: '5'
     },
     markingCriteria: { answer: 'M1 for correctly rounding all three values to 1 s.f. (50, 3, 7). A1 for 5.' }

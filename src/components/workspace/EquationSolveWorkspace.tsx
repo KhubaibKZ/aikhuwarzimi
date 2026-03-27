@@ -143,6 +143,24 @@ export function EquationSolveWorkspace({
                 if (el.type === 'box' && el.key) {
                   return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
                 }
+                if (el.type === 'fraction') {
+                  const renderSubElements = (elements: typeof el.numElements) => (
+                    <div className="flex items-center gap-0.5">
+                      {elements?.map((subEl, j) => {
+                        if (subEl.type === 'text') return <span key={j} className="font-mono text-sm">{subEl.value}</span>;
+                        if (subEl.type === 'box' && subEl.key) return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
+                        return null;
+                      })}
+                    </div>
+                  );
+                  return (
+                    <span key={i} className="inline-flex flex-col items-center mx-1">
+                      {renderSubElements(el.numElements)}
+                      <div className="w-full border-t border-foreground my-0.5" />
+                      {renderSubElements(el.denElements)}
+                    </span>
+                  );
+                }
                 return null;
               })}
               {checkBtn(fullStepKey, stage.label)}

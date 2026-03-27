@@ -53,7 +53,8 @@ import {
   CircleTheorem2023ON,
   SpeedTimeGraph2023ON,
   VectorParallelogram2023ON,
-  VennDiagram3Set2023ON
+  VennDiagram3Set2023ON,
+  ScatterDiagram2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {

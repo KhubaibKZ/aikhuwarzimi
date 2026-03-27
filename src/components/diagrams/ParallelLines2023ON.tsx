@@ -8,7 +8,7 @@ export function ParallelLines2023ON() {
   return (
     <svg viewBox="0 0 502 324" className="w-full max-w-md mx-auto">
       {/* Reference image at 0 opacity for production (set to ~0.15 for debugging) */}
-      <image href={parallelLinesImg} x="0" y="0" width="502" height="324" opacity="0" />
+      <image href={parallelLinesImg} x="0" y="0" width="502" height="324" opacity="0.18" />
 
       {/* Upper parallel line — traced from image */}
       <line x1="16" y1="196" x2="370" y2="80" stroke="hsl(var(--foreground))" strokeWidth="2.5" />

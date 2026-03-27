@@ -251,10 +251,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     if (eqParts?.includes(partKey)) {
       const stages = stagesMap?.[partKey] || eqStages;
       if (stages?.length) {
+        const extractBoxKeys = (elements: any[]): string[] => {
+          const keys: string[] = [];
+          elements.forEach((el: any) => {
+            if (el.type === 'box' && el.key) keys.push(`${partKey}_${el.key}`);
+            if (el.type === 'fraction') {
+              if (el.numElements) keys.push(...extractBoxKeys(el.numElements));
+              if (el.denElements) keys.push(...extractBoxKeys(el.denElements));
+            }
+          });
+          return keys;
+        };
         return stages
-          .map((stage: any) => stage.elements
-            .filter((el: any) => el.type === 'box' && el.key)
-            .map((el: any) => `${partKey}_${el.key}`))
+          .map((stage: any) => extractBoxKeys(stage.elements))
           .filter((keys: string[]) => keys.length > 0);
       }
     }

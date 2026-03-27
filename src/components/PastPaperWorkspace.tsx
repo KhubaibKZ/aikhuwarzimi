@@ -85,9 +85,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 
-  // Find paper for this question to get quota
+  // Find paper for this question to get quota (only enforce in student mode)
   const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
-  const paperQuota = matchedPaper ? getPaperQuota(matchedPaper.id) : null;
+  const paperQuota = workspaceMode === 'student' && matchedPaper ? getPaperQuota(matchedPaper.id) : null;
 
   // Live timer
   useEffect(() => {

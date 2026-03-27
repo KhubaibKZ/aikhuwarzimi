@@ -88,9 +88,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       'b': [
         { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'Fraction =' },
-          { type: 'box', key: 's1_num', width: 'w-10' },
-          { type: 'text', value: '/' },
-          { type: 'box', key: 's1_den', width: 'w-10' }
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
+          }
         ]}
       ]
     },
@@ -397,7 +398,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a': [
         { label: 'Tangent property', stepKey: 's1', elements: [
-          { type: 'text', value: 'ABO = 90°, BAO =' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '/ 2 =' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'ABO = 90°, BAO =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-10' }],
+            denElements: [{ type: 'text', value: '2' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'ABC =' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-10' }
@@ -414,7 +420,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'c': [
         { label: 'Angle at circumference', stepKey: 's1', elements: [
-          { type: 'text', value: 'BDC =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '/ 2 =' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'BDC =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-12' }],
+            denElements: [{ type: 'text', value: '2' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
         ]}
       ]
     },
@@ -503,7 +514,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a': [
         { label: 'Formula', stepKey: 's1', elements: [
-          { type: 'text', value: 'a =' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '/' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'a =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_b', width: 'w-10' }]
+          }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'a =' }, { type: 'box', key: 's2', width: 'w-12' }, { type: 'text', value: 'm/s²' }
@@ -631,8 +646,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's2_b', width: 'w-14' }, { type: 'text', value: ')' }
         ]},
         { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: '=' }, { type: 'box', key: 's3_a', width: 'w-14' }, { type: 'text', value: '/' },
-          { type: 'text', value: '(' }, { type: 'box', key: 's3_b', width: 'w-14' }, { type: 'text', value: ')' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's3_a', width: 'w-14' }],
+            denElements: [{ type: 'box', key: 's3_b', width: 'w-14' }]
+          }
         ]}
       ]
     },

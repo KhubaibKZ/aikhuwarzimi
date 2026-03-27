@@ -93,8 +93,7 @@ export default function Landing() {
         variant: 'destructive',
       });
     } else {
-      // Wait briefly for role check, then redirect
-      setTimeout(() => redirectAfterAuth(), 500);
+      setPendingRedirect(true);
     }
   };
 

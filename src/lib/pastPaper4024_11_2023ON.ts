@@ -284,11 +284,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ],
       'b': [
-        { label: 'Index law', stepKey: 's1', elements: [
-          { type: 'text', value: '= 5^(' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: '', stepKey: 's1', elements: [
+          { type: 'text', value: '⇒' },
+          { type: 'fraction', numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }], denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }] },
+          { type: 'text', value: '×' }, { type: 'box', key: 's1_mul', width: 'w-10' }
         ]},
-        { label: 'Simplify', stepKey: 's2', elements: [
-          { type: 'text', value: '= 5' }, { type: 'box', key: 's2_a', width: 'w-8' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
+        { label: '', stepKey: 's2', elements: [
+          { type: 'text', value: '⇒' }, { type: 'box', key: 's2', width: 'w-12' }
         ]}
       ]
     },

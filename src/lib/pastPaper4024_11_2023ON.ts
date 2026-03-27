@@ -226,32 +226,41 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Sum given', stepKey: 's1', elements: [
-          { type: 'text', value: '360 − (' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '+' },
+        { label: 'Sum of exterior angles', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_sum', width: 'w-12' }, { type: 'text', value: '− (' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Calculate', stepKey: 's2', elements: [
-          { type: 'text', value: '= 360 −' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
+          { type: 'text', value: '=' }, { type: 'box', key: 's2_total', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
         ]}
       ],
       'b': [
         { label: 'Formula', stepKey: 's1', elements: [
-          { type: 'text', value: '180 × (' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '− 2) /' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: '(' }, { type: 'box', key: 's1_n', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_sub', width: 'w-8' }, { type: 'text', value: ') ×' }, { type: 'box', key: 's1_mult', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's1_d', width: 'w-10' }]
+          }
         ]},
         { label: 'Calculate', stepKey: 's2', elements: [
-          { type: 'text', value: '= 180 ×' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '/' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-12' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's2_num', width: 'w-10' }, { type: 'text', value: '×' }, { type: 'box', key: 's2_mult', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's2_den', width: 'w-10' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's2_ans', width: 'w-12' }
         ]}
       ]
     },
     parts: [{ label: '(a) Remaining exterior angle', key: 'a', marks: 2 }, { label: '(b) Interior angle of decagon', key: 'b', marks: 2 }],
     answer: {
       a: '30', b: '144',
-      a_s1_a: '150', a_s1_b: '100', a_s1_c: '45', a_s1_d: '35',
-      a_s2_a: '330', a_s2_b: '30',
-      b_s1_a: '10', b_s1_b: '10',
-      b_s2_a: '8', b_s2_b: '10', b_s2_c: '144'
+      a_s1_sum: '360', a_s1_a: '150', a_s1_b: '100', a_s1_c: '45', a_s1_d: '35',
+      a_s2_total: '360', a_s2_a: '330', a_s2_b: '30',
+      b_s1_n: '10', b_s1_sub: '2', b_s1_mult: '180', b_s1_d: '10',
+      b_s2_num: '8', b_s2_mult: '180', b_s2_den: '10', b_s2_ans: '144'
     },
     markingCriteria: { a: 'M1 for 360 − (150 + 100 + 45 + 35) or 360 − 330. A1 for 30.', b: 'M1 for 180(10−2)/10 or 180×8/10. A1 for 144.' }
   },

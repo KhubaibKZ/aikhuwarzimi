@@ -49,15 +49,17 @@ export default function Landing() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // After a fresh login/register, redirect to the appropriate dashboard
-  const [hasRedirected, setHasRedirected] = useState(false);
-  
-  const redirectAfterAuth = () => {
-    if (!hasRedirected && user) {
-      setHasRedirected(true);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+
+  // Reactively redirect once auth + role loading completes after login
+  if (pendingRedirect && user && !authLoading && !roleLoading) {
+    // Use queueMicrotask to avoid setState during render warning
+    queueMicrotask(() => {
+      setPendingRedirect(false);
       const target = isAdmin ? '/dashboard' : '/student';
       navigate(target, { replace: true });
-    }
-  };
+    });
+  }
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

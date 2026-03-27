@@ -14,6 +14,32 @@ import {
   GraduationCap, BarChart3, FileText, Menu, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const POST_AUTH_REDIRECT_KEY = 'post_auth_redirect';
+const POST_AUTH_REDIRECT_PARAM = 'post_auth';
+
+const setPostAuthRedirectIntent = () => {
+  sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
+  localStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
+};
+
+const clearPostAuthRedirectIntent = () => {
+  sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+  localStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+
+  const url = new URL(window.location.href);
+  if (url.searchParams.has(POST_AUTH_REDIRECT_PARAM)) {
+    url.searchParams.delete(POST_AUTH_REDIRECT_PARAM);
+    window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  }
+};
+
+const hasPostAuthRedirectIntent = () => {
+  const url = new URL(window.location.href);
+  return (
+    sessionStorage.getItem(POST_AUTH_REDIRECT_KEY) === '1' ||
+    localStorage.getItem(POST_AUTH_REDIRECT_KEY) === '1' ||
+    url.searchParams.get(POST_AUTH_REDIRECT_PARAM) === '1'
+  );
+};
 
 const mathSymbols = [
 { symbol: '∫', className: 'top-[15%] left-[8%] text-4xl animate-float-slow' },
@@ -52,9 +78,9 @@ export default function Landing() {
 
   useEffect(() => {
     if (authLoading || roleLoading || !user) return;
-    if (sessionStorage.getItem(POST_AUTH_REDIRECT_KEY) !== '1') return;
+    if (!hasPostAuthRedirectIntent()) return;
 
-    sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+    clearPostAuthRedirectIntent();
     const target = isAdmin ? '/dashboard' : '/student';
     navigate(target, { replace: true });
   }, [authLoading, roleLoading, user, isAdmin, navigate]);
@@ -74,7 +100,7 @@ export default function Landing() {
       return;
     }
 
-    sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
+    setPostAuthRedirectIntent();
     setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -83,7 +109,7 @@ export default function Landing() {
     setSubmitting(false);
 
     if (error) {
-      sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+      clearPostAuthRedirectIntent();
       const isInvalidCredentials = error.message.toLowerCase().includes('invalid login credentials');
       toast({
         title: 'Login failed',
@@ -146,14 +172,17 @@ export default function Landing() {
   };
 
   const handleGoogleSignIn = async () => {
-    sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
+    const redirectUrl = new URL(window.location.origin);
+    redirectUrl.searchParams.set(POST_AUTH_REDIRECT_PARAM, '1');
+
+    setPostAuthRedirectIntent();
     setSubmitting(true);
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin
+      redirect_uri: redirectUrl.toString(),
     });
     setSubmitting(false);
     if (error) {
-      sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+      clearPostAuthRedirectIntent();
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
     }
   };

@@ -67,7 +67,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '12', answer_s1_b: '65', answer_s1_c: '780',
       answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80'
     },
-    markingCriteria: { answer: 'M1 for 12 × 65 or 780 seen. A1 for $7.80 (must have dollars or $ sign implied). Accept 7.8 only if working shows cents conversion.' }
+    markingCriteria: { answer: 'B1 for digits 78 or M1 for their answer converted to dollars or for 12 × 0.65. A1 for 7.80 or $7.80.' }
   },
 
 
@@ -168,7 +168,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '50', answer_s2_b: '10',
       answer_s3: '5'
     },
-    markingCriteria: { answer: 'M1 for correctly rounding all three values to 1 s.f. (50, 3, 7). A1 for 5.' }
+    markingCriteria: { answer: 'Full marks for 50, 3 and 7 all seen and final answer 5. B1 for two of 50, 3, 7 seen.' }
   },
 
   // ========== Question 8 ==========
@@ -288,7 +288,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
       b_s1_a: '-1', b_s1_b: '3', b_s2_a: '2', b_s2_b: '25'
     },
-    markingCriteria: { a: 'B1', b: 'M1 for 5^(−1+3) or 5². A1 for 25.' }
+    markingCriteria: { a: 'B1', b: 'B1 for 5² leading to final answer or M1 for (1/5) × 5 × 5 × 5 oe or better. A1 for 25.' }
   },
 
   // ========== Question 12 ==========
@@ -374,7 +374,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s4_a: '2', b_s4_b: '24',
       b_s5_a: '2', b_s5_b: '24', b_s5_c: '11:54'
     },
-    markingCriteria: { a: 'B1 for 2 × 2 × 3 × 3 or any correct factor tree. B1 for 2² × 3² in index form.', b: 'M1 for attempt at LCM using prime factors. A1 for 144. A1 for 11:54.' }
+    markingCriteria: { a: 'B1 for 2, 2, 3, 3 not as product or M1 for any two stages correct in factor tree or ladder method. B1 for 2² × 3² in index form.', b: 'B2 for 144 or 2 h 24 m. M1 for 36 × 48 / 12 oe or for listing multiples of both to at least 144. A1 for 11:54.' }
   },
 
   // ========== Question 15 ==========
@@ -420,7 +420,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '38', b_s1_b: '90', b_s1_c: '90', b_s2: '142',
       c_s1_a: '142', c_s1_b: '71'
     },
-    markingCriteria: { a: 'B1 for 71', b: 'M1 for 360 − 38 − 90 − 90 or equivalent. A1 for 142.', c: 'B1 ft for half their (b).' }
+    markingCriteria: { a: 'B1 for 71', b: 'M1 for angle ABO = 90 or angle ACO = 90 soi. A1 for 142. SC1 if 0 scored for answer = 2 × their (a).', c: 'B1 ft for their (b) ÷ 2.' }
   },
 
   // ========== Question 16 ==========
@@ -702,7 +702,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'
     },
-    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'M1 for correct rearrangement x = 4(y − 3). A1 for 4x − 12.', c_calc: 'M1 for setting f(p) = g(p + 5). M1 for correct expansion and collection. A1 for −20/7.' }
+    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }
   },
 
   // ========== Question 23 ==========
@@ -786,7 +786,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
     },
-    markingCriteria: { answer: 'M1 for multiplying through by (x+1)(x−1). M1 for correct expansion of LHS: 3x²−3x−2x−2. M1 for simplifying to −5x = −1 or equivalent. A1 for x = 1/5 or 0.2.' }
+    markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },
 };
 

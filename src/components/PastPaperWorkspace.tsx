@@ -348,7 +348,35 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
           if (stageGroups.length > 0) {
             const allBoxKeys = stageGroups.flat();
+
+            // Check for fraction-pair boxes (num/den pattern) — evaluate as fraction equivalence
+            const fractionPairKeys = allBoxKeys.filter(k => k.match(/_(num|den|snum|sden)$/));
+            let fractionCorrect = false;
+            if (fractionPairKeys.length >= 2) {
+              // Find num/den pairs and check if user fraction equals expected fraction
+              const numKey = fractionPairKeys.find(k => k.endsWith('_num') || k.endsWith('_snum'));
+              const denKey = fractionPairKeys.find(k => k.endsWith('_den') || k.endsWith('_sden'));
+              if (numKey && denKey) {
+                const userNum = parseFloat(currentAnswers[numKey] || '');
+                const userDen = parseFloat(currentAnswers[denKey] || '');
+                const correctPartAnswer = typeof question.answer === 'object' ? question.answer[part.key] : '';
+                if (!isNaN(userNum) && !isNaN(userDen) && userDen !== 0 && correctPartAnswer) {
+                  const userFracVal = userNum / userDen;
+                  // Parse correct answer as fraction if it contains /
+                  const fracMatch = correctPartAnswer.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+                  if (fracMatch) {
+                    const correctFracVal = parseFloat(fracMatch[1]) / parseFloat(fracMatch[2]);
+                    if (Math.abs(userFracVal - correctFracVal) < 1e-9) {
+                      fractionCorrect = true;
+                      fractionPairKeys.forEach(k => { newFeedback[k] = 'correct'; });
+                    }
+                  }
+                }
+              }
+            }
+
             const correctBoxes = allBoxKeys.reduce((count, boxKey) => {
+              if (newFeedback[boxKey] === 'correct') return count + 1; // already set by fraction check
               const userVal = currentAnswers[boxKey] || '';
               const correctVal = typeof question.answer === 'object' ? question.answer[boxKey] || '' : '';
 
@@ -374,7 +402,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             if (specialScore) {
               marksEarned[part.key] = Math.min(part.marks, specialScore.marks);
               if (specialScore.note) markingNotes[part.key] = specialScore.note;
-            } else if (lastCorrect) {
+            } else if (fractionCorrect || lastCorrect) {
               marksEarned[part.key] = part.marks;
             } else if (part.marks > 1) {
               const stageBasedPartial = Math.min(part.marks - 1, correctStageCount);
@@ -386,7 +414,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 marksEarned[part.key] = 0;
               }
             } else {
-              marksEarned[part.key] = 0;
+              marksEarned[part.key] = fractionCorrect ? part.marks : 0;
             }
 
             if (!markingNotes[part.key] && marksEarned[part.key] > 0 && marksEarned[part.key] < part.marks) {

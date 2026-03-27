@@ -213,7 +213,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     parts: [{ label: '(a) Correlation type', key: 'a', marks: 1 }, { label: '(b) Time (minutes)', key: 'b', marks: 2 }],
     answer: { a: 'Positive', b: '0.17' },
-    markingCriteria: { a: 'B1 for Positive', b: 'B1 for correct line of best fit drawn. B1 ft for reading at age 50 from their line (accept 0.15 to 0.19).' }
+    markingCriteria: { a: 'B1 for Positive', b: 'B1 for ruled line of best fit. B1 dep for reading their straight line at age 50 (dependent on positive gradient).' }
   },
 
   // ========== Question 10 ==========
@@ -461,7 +461,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '2', answer_s2_b: '4', answer_s2_c: '0.5',
       answer_s3_a: '0.5', answer_s3_b: '25', answer_s3_c: '2.5'
     },
-    markingCriteria: { answer: 'M1 for y = k√x and k = ½ or 0.5 seen. A1 for 2.5.' }
+    markingCriteria: { answer: 'B1 for k = ½ if y = k√x used. Or M1 for 2 × √25 = y × √16 oe. A1 for 2.5.' }
   },
 
   // ========== Question 18 ==========

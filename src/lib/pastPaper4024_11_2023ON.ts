@@ -305,7 +305,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(c) Position of S', key: 'c', marks: 1 }
     ],
     answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' },
-    markingCriteria: { a: 'M1 for measurement ×20000 or ÷100000 seen. A1 for 1.8 km.', b: 'B1 for correct perpendicular bisector with arcs. B1 for line extending full width.', c: 'B1 for S at intersection of bisector and 105° bearing.' }
+    markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm and their answer is 0.2 × this value. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.', b: 'B1 for acceptable bisector with no/incorrect arcs. B1 for correct arcs.', c: 'B1 dep on their attempt at bisector crossing AB.' }
   },
 
   // ========== Question 13 ==========
@@ -526,7 +526,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
       b_s3: '40'
     },
-    markingCriteria: { a: 'B1 for 2', b: 'M1 for area of triangle (½ × 10 × 20 = 100). M1 for 700 = 100 + 20(T − 10) or equivalent area equation. A1 for 40.' }
+    markingCriteria: { a: 'B1 for 2', b: 'M2 for a correct equation in T, e.g. ½ × 10 × 20 + 20(T − 10) = 700. Or B2 for length of rectangle = 30 nfww. Or M1 for a correct method to find a relevant area under the graph e.g. ½ × 10 × 20. A1 for 40.' }
   },
 
   // ========== Question 20 ==========
@@ -600,7 +600,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
       b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
     },
-    markingCriteria: { a: 'M1 for |A| = −10 or correct adjugate matrix. A1 for correct inverse (1/−10)(3,−1;−4,−2).', b: 'M1 for at least one correct element from multiplication. A1 for all four elements correct (−7,−3;9,11).' }
+    markingCriteria: { a: 'B1 for k(3,-1;-4,-2) oe or for 1/(-10). M1+A1 implied for correct inverse.', b: 'B1 for two or three correct elements. A1 for all four correct (−7,−3;9,11).' }
   },
 
   // ========== Question 21 ==========
@@ -747,7 +747,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
       c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
     },
-    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for OA + ½AC or a + ½(c − a). A1 for ½a + ½c.', c_calc: 'M1 for finding OY = a + ⅔c and attempting YX = OX − OY. A1 for −½a − ⅙c.' }
+    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for YX along the lines of the diagram (can include correct OX). A1 for −½a − ⅙c oe simplified.' }
   },
 
   // ========== Question 24 ==========

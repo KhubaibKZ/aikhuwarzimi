@@ -81,25 +81,21 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Range', stepKey: 's1', elements: [
+        { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'Range =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_ans', width: 'w-12' }
         ]}
       ],
       'b': [
-        { label: 'Fraction', stepKey: 's1', elements: [
+        { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'Fraction =' },
           { type: 'box', key: 's1_num', width: 'w-10' },
           { type: 'text', value: '/' },
-          { type: 'box', key: 's1_den', width: 'w-10' },
-          { type: 'text', value: '=' },
-          { type: 'box', key: 's1_snum', width: 'w-10' },
-          { type: 'text', value: '/' },
-          { type: 'box', key: 's1_sden', width: 'w-10' }
+          { type: 'box', key: 's1_den', width: 'w-10' }
         ]}
       ]
     },
-    parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction', key: 'b', marks: 1 }],
-    answer: { a: '4', b: '1/4' },
+    parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction (simplest form)', key: 'b', marks: 1 }],
+    answer: { a: '4', b: '1/4', a_s1_a: '4', a_s1_b: '0', a_s1_ans: '4', b_s1_num: '1', b_s1_den: '4' },
     markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }
   },
 

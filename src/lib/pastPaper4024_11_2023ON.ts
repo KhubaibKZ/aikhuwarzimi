@@ -672,7 +672,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
     question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
-    questionFractions: [{ context: 'f(x) =', numerator: 'x', denominator: '4', suffix: '+ 3' }],
+    questionFraction: { numerator: 'x', denominator: '4', suffix: '+ 3' },
     marks: 6,
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
@@ -751,7 +751,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s3_a: '4',
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
-      c_calc_s6: '-20/7'
+      c_calc_s6_num: '-20', c_calc_s6_den: '7'
     },
     markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }
   },

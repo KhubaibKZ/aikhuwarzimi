@@ -826,7 +826,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         { type: 'box', key: 's4_b', width: 'w-20' }
       ]},
       { label: 'Solve', stepKey: 's5', elements: [
-        { type: 'text', value: 'x =' }, { type: 'box', key: 's5', width: 'w-14' }
+        { type: 'text', value: 'x =' },
+        { type: 'fraction',
+          numElements: [{ type: 'box', key: 's5_num', width: 'w-12' }],
+          denElements: [{ type: 'box', key: 's5_den', width: 'w-12' }]
+        }
       ]}
     ],
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
@@ -835,7 +839,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '3x²-3x', answer_s2_b: '2x+2',
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
-      answer_s5: '1/5'
+      answer_s5_num: '1', answer_s5_den: '5'
     },
     markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },

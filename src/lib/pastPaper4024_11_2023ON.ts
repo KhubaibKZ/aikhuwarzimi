@@ -88,9 +88,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       'b': [
         { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'Fraction =' },
-          { type: 'box', key: 's1_num', width: 'w-10' },
-          { type: 'text', value: '/' },
-          { type: 'box', key: 's1_den', width: 'w-10' }
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
+          }
         ]}
       ]
     },
@@ -226,32 +227,41 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Sum given', stepKey: 's1', elements: [
-          { type: 'text', value: '360 − (' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '+' },
+        { label: 'Sum of exterior angles', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_sum', width: 'w-12' }, { type: 'text', value: '− (' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '+' },
           { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Calculate', stepKey: 's2', elements: [
-          { type: 'text', value: '= 360 −' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
+          { type: 'text', value: '=' }, { type: 'box', key: 's2_total', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
         ]}
       ],
       'b': [
         { label: 'Formula', stepKey: 's1', elements: [
-          { type: 'text', value: '180 × (' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '− 2) /' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: '(' }, { type: 'box', key: 's1_n', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_sub', width: 'w-8' }, { type: 'text', value: ') ×' }, { type: 'box', key: 's1_mult', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's1_d', width: 'w-10' }]
+          }
         ]},
         { label: 'Calculate', stepKey: 's2', elements: [
-          { type: 'text', value: '= 180 ×' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '/' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-12' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's2_num', width: 'w-10' }, { type: 'text', value: '×' }, { type: 'box', key: 's2_mult', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's2_den', width: 'w-10' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's2_ans', width: 'w-12' }
         ]}
       ]
     },
     parts: [{ label: '(a) Remaining exterior angle', key: 'a', marks: 2 }, { label: '(b) Interior angle of decagon', key: 'b', marks: 2 }],
     answer: {
       a: '30', b: '144',
-      a_s1_a: '150', a_s1_b: '100', a_s1_c: '45', a_s1_d: '35',
-      a_s2_a: '330', a_s2_b: '30',
-      b_s1_a: '10', b_s1_b: '10',
-      b_s2_a: '8', b_s2_b: '10', b_s2_c: '144'
+      a_s1_sum: '360', a_s1_a: '150', a_s1_b: '100', a_s1_c: '45', a_s1_d: '35',
+      a_s2_total: '360', a_s2_a: '330', a_s2_b: '30',
+      b_s1_n: '10', b_s1_sub: '2', b_s1_mult: '180', b_s1_d: '10',
+      b_s2_num: '8', b_s2_mult: '180', b_s2_den: '10', b_s2_ans: '144'
     },
     markingCriteria: { a: 'M1 for 360 − (150 + 100 + 45 + 35) or 360 − 330. A1 for 30.', b: 'M1 for 180(10−2)/10 or 180×8/10. A1 for 144.' }
   },
@@ -388,7 +398,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a': [
         { label: 'Tangent property', stepKey: 's1', elements: [
-          { type: 'text', value: 'ABO = 90°, BAO =' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '/ 2 =' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'ABO = 90°, BAO =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-10' }],
+            denElements: [{ type: 'text', value: '2' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'ABC =' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-10' }
@@ -405,7 +420,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'c': [
         { label: 'Angle at circumference', stepKey: 's1', elements: [
-          { type: 'text', value: 'BDC =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '/ 2 =' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'BDC =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-12' }],
+            denElements: [{ type: 'text', value: '2' }]
+          },
+          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
         ]}
       ]
     },
@@ -494,7 +514,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a': [
         { label: 'Formula', stepKey: 's1', elements: [
-          { type: 'text', value: 'a =' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '/' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'a =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_a', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_b', width: 'w-10' }]
+          }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'a =' }, { type: 'box', key: 's2', width: 'w-12' }, { type: 'text', value: 'm/s²' }
@@ -622,8 +646,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's2_b', width: 'w-14' }, { type: 'text', value: ')' }
         ]},
         { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: '=' }, { type: 'box', key: 's3_a', width: 'w-14' }, { type: 'text', value: '/' },
-          { type: 'text', value: '(' }, { type: 'box', key: 's3_b', width: 'w-14' }, { type: 'text', value: ')' }
+          { type: 'text', value: '=' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's3_a', width: 'w-14' }],
+            denElements: [{ type: 'box', key: 's3_b', width: 'w-14' }]
+          }
         ]}
       ]
     },
@@ -645,6 +672,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
     question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
+    questionFraction: { numerator: 'x', denominator: '4' },
     marks: 6,
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
@@ -652,7 +680,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a_calc': [
         { label: 'Substitute', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(−8) = −8/4 + 3' }
+          { type: 'text', value: 'f(−8) =' },
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: '−8' }],
+            denElements: [{ type: 'text', value: '4' }]
+          },
+          { type: 'text', value: '+ 3' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 's2', width: 'w-14' }
@@ -660,7 +693,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'b_calc': [
         { label: 'Let y = f(x)', stepKey: 's1', elements: [
-          { type: 'text', value: 'y = x/4 + 3 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
+          { type: 'text', value: 'y =' },
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: 'x' }],
+            denElements: [{ type: 'text', value: '4' }]
+          },
+          { type: 'text', value: '+ 3 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
         ]},
         { label: 'f⁻¹(x)', stepKey: 's2', elements: [
           { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 's2', width: 'w-20' }
@@ -668,13 +706,22 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'c_calc': [
         { label: 'f(p)', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(p) = p/4 + 3' }
+          { type: 'text', value: 'f(p) =' },
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: 'p' }],
+            denElements: [{ type: 'text', value: '4' }]
+          },
+          { type: 'text', value: '+ 3' }
         ]},
         { label: 'g(p+5)', stepKey: 's2', elements: [
           { type: 'text', value: 'g(p+5) = 2(p+5−1) = 2(p+' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Equation', stepKey: 's3', elements: [
-          { type: 'text', value: 'p/4 + 3 = 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
+          { type: 'fraction',
+            numElements: [{ type: 'text', value: 'p' }],
+            denElements: [{ type: 'text', value: '4' }]
+          },
+          { type: 'text', value: '+ 3 = 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Multiply by 4', stepKey: 's4', elements: [
           { type: 'text', value: 'p + 12 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
@@ -683,7 +730,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'box', key: 's5_a', width: 'w-10' }, { type: 'text', value: 'p =' }, { type: 'box', key: 's5_b', width: 'w-10' }
         ]},
         { label: 'Answer', stepKey: 's6', elements: [
-          { type: 'text', value: 'p =' }, { type: 'box', key: 's6', width: 'w-16' }
+          { type: 'text', value: 'p =' },
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's6_num', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's6_den', width: 'w-12' }]
+          }
         ]}
       ]
     },
@@ -700,7 +751,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s3_a: '4',
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
-      c_calc_s6: '-20/7'
+      c_calc_s6_num: '-20', c_calc_s6_den: '7'
     },
     markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }
   },
@@ -775,7 +826,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         { type: 'box', key: 's4_b', width: 'w-20' }
       ]},
       { label: 'Solve', stepKey: 's5', elements: [
-        { type: 'text', value: 'x =' }, { type: 'box', key: 's5', width: 'w-14' }
+        { type: 'text', value: 'x =' },
+        { type: 'fraction',
+          numElements: [{ type: 'box', key: 's5_num', width: 'w-12' }],
+          denElements: [{ type: 'box', key: 's5_den', width: 'w-12' }]
+        }
       ]}
     ],
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
@@ -784,7 +839,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '3x²-3x', answer_s2_b: '2x+2',
       answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
-      answer_s5: '1/5'
+      answer_s5_num: '1', answer_s5_den: '5'
     },
     markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },

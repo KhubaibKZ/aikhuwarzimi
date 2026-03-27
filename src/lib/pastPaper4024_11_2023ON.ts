@@ -284,11 +284,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ],
       'b': [
-        { label: 'Index law', stepKey: 's1', elements: [
-          { type: 'text', value: '= 5^(' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: '', stepKey: 's1', elements: [
+          { type: 'text', value: '⇒' },
+          { type: 'fraction', numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }], denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }] },
+          { type: 'text', value: '×' }, { type: 'box', key: 's1_mul', width: 'w-10' }
         ]},
-        { label: 'Simplify', stepKey: 's2', elements: [
-          { type: 'text', value: '= 5' }, { type: 'box', key: 's2_a', width: 'w-8' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
+        { label: '', stepKey: 's2', elements: [
+          { type: 'text', value: '⇒' }, { type: 'box', key: 's2', width: 'w-12' }
         ]}
       ]
     },
@@ -296,7 +298,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '19', b: '25',
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
-      b_s1_a: '-1', b_s1_b: '3', b_s2_a: '2', b_s2_b: '25'
+      b_s1_num: '1', b_s1_den: '5', b_s1_mul: '125', b_s2: '25'
     },
     markingCriteria: { a: 'B1', b: 'B1 for 5² leading to final answer or M1 for (1/5) × 5 × 5 × 5 oe or better. A1 for 25.' }
   },

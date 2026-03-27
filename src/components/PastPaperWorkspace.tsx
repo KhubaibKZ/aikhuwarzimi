@@ -1619,7 +1619,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {/* Q9 - Scatter diagram */}
             {question.id === 'pp_4024_on23_11_q9' && (
               <div className="mt-4">
-                <ScatterDiagram />
+                <ScatterDiagram2023ON />
               </div>
             )}
             

@@ -67,7 +67,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '12', answer_s1_b: '65', answer_s1_c: '780',
       answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80'
     },
-    markingCriteria: { answer: 'M1 for 12 × 65 or 780 seen. A1 for $7.80 (must have dollars or $ sign implied). Accept 7.8 only if working shows cents conversion.' }
+    markingCriteria: { answer: 'B1 for digits 78 or M1 for their answer converted to dollars or for 12 × 0.65. A1 for 7.80 or $7.80.' }
   },
 
 
@@ -168,7 +168,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '50', answer_s2_b: '10',
       answer_s3: '5'
     },
-    markingCriteria: { answer: 'M1 for correctly rounding all three values to 1 s.f. (50, 3, 7). A1 for 5.' }
+    markingCriteria: { answer: 'Full marks for 50, 3 and 7 all seen and final answer 5. B1 for two of 50, 3, 7 seen.' }
   },
 
   // ========== Question 8 ==========
@@ -213,7 +213,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     parts: [{ label: '(a) Correlation type', key: 'a', marks: 1 }, { label: '(b) Time (minutes)', key: 'b', marks: 2 }],
     answer: { a: 'Positive', b: '0.17' },
-    markingCriteria: { a: 'B1 for Positive', b: 'B1 for correct line of best fit drawn. B1 ft for reading at age 50 from their line (accept 0.15 to 0.19).' }
+    markingCriteria: { a: 'B1 for Positive', b: 'B1 for ruled line of best fit. B1 dep for reading their straight line at age 50 (dependent on positive gradient).' }
   },
 
   // ========== Question 10 ==========
@@ -288,7 +288,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
       b_s1_a: '-1', b_s1_b: '3', b_s2_a: '2', b_s2_b: '25'
     },
-    markingCriteria: { a: 'B1', b: 'M1 for 5^(−1+3) or 5². A1 for 25.' }
+    markingCriteria: { a: 'B1', b: 'B1 for 5² leading to final answer or M1 for (1/5) × 5 × 5 × 5 oe or better. A1 for 25.' }
   },
 
   // ========== Question 12 ==========
@@ -305,7 +305,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(c) Position of S', key: 'c', marks: 1 }
     ],
     answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' },
-    markingCriteria: { a: 'M1 for measurement ×20000 or ÷100000 seen. A1 for 1.8 km.', b: 'B1 for correct perpendicular bisector with arcs. B1 for line extending full width.', c: 'B1 for S at intersection of bisector and 105° bearing.' }
+    markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm and their answer is 0.2 × this value. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.', b: 'B1 for acceptable bisector with no/incorrect arcs. B1 for correct arcs.', c: 'B1 dep on their attempt at bisector crossing AB.' }
   },
 
   // ========== Question 13 ==========
@@ -374,7 +374,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s4_a: '2', b_s4_b: '24',
       b_s5_a: '2', b_s5_b: '24', b_s5_c: '11:54'
     },
-    markingCriteria: { a: 'B1 for 2 × 2 × 3 × 3 or any correct factor tree. B1 for 2² × 3² in index form.', b: 'M1 for attempt at LCM using prime factors. A1 for 144. A1 for 11:54.' }
+    markingCriteria: { a: 'B1 for 2, 2, 3, 3 not as product or M1 for any two stages correct in factor tree or ladder method. B1 for 2² × 3² in index form.', b: 'B2 for 144 or 2 h 24 m. M1 for 36 × 48 / 12 oe or for listing multiples of both to at least 144. A1 for 11:54.' }
   },
 
   // ========== Question 15 ==========
@@ -420,7 +420,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '38', b_s1_b: '90', b_s1_c: '90', b_s2: '142',
       c_s1_a: '142', c_s1_b: '71'
     },
-    markingCriteria: { a: 'B1 for 71', b: 'M1 for 360 − 38 − 90 − 90 or equivalent. A1 for 142.', c: 'B1 ft for half their (b).' }
+    markingCriteria: { a: 'B1 for 71', b: 'M1 for angle ABO = 90 or angle ACO = 90 soi. A1 for 142. SC1 if 0 scored for answer = 2 × their (a).', c: 'B1 ft for their (b) ÷ 2.' }
   },
 
   // ========== Question 16 ==========
@@ -461,13 +461,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s2_a: '2', answer_s2_b: '4', answer_s2_c: '0.5',
       answer_s3_a: '0.5', answer_s3_b: '25', answer_s3_c: '2.5'
     },
-    markingCriteria: { answer: 'M1 for y = k√x and k = ½ or 0.5 seen. A1 for 2.5.' }
+    markingCriteria: { answer: 'B1 for k = ½ if y = k√x used. Or M1 for 2 × √25 = y × √16 oe. A1 for 2.5.' }
   },
 
   // ========== Question 18 ==========
   'pp_4024_on23_11_q18': {
     id: 'pp_4024_on23_11_q18', questionNumber: '18', title: 'Venn diagram',
-    question: '(a) In a sports club of 40 members: 22 run (R), 24 cycle (C), 14 sail (S). 3 cycle and sail but not run, 9 run and cycle but not sail, 5 run and sail but not cycle, 6 run only. Complete the Venn diagram.\n(b) Use set notation to describe the shaded subset.',
+    question: '(a) In a sports club of 40 members: 22 run (R), 24 cycle (C), 14 sail (S). 3 cycle and sail but not run, 9 run and cycle but not sail, 5 run and sail but not cycle, 6 run only. Complete the Venn diagram.\n(b) Use set notation to describe the shaded subset in the Venn diagram below.\n[The Venn diagram for (b) shows three sets G, H and F.]',
     marks: 4,
     hints: ['(a) R∩C∩S = 22 − 6 − 9 − 5 = 2', 'C only = 24 − 9 − 2 − 3 = 10', 'S only = 14 − 5 − 2 − 3 = 4', 'Outside = 40 − (6+9+5+2+10+3+4) = 1'],
     type: 'multi-part',
@@ -479,8 +479,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "R ∩ C ∩ S'" },
-    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for R ∩ C ∩ S' or equivalent correct set notation." }
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
+    markingCriteria: { a: 'B2 for Venn diagram with 6 or 7 correct values or B1 for Venn diagram with 4 or 5 correct values or for answer 2 in intersection.', b: "B1 for G ∩ H ∩ F' oe." }
   },
 
   // ========== Question 19 ==========
@@ -526,7 +526,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
       b_s3: '40'
     },
-    markingCriteria: { a: 'B1 for 2', b: 'M1 for area of triangle (½ × 10 × 20 = 100). M1 for 700 = 100 + 20(T − 10) or equivalent area equation. A1 for 40.' }
+    markingCriteria: { a: 'B1 for 2', b: 'M2 for a correct equation in T, e.g. ½ × 10 × 20 + 20(T − 10) = 700. Or B2 for length of rectangle = 30 nfww. Or M1 for a correct method to find a relevant area under the graph e.g. ½ × 10 × 20. A1 for 40.' }
   },
 
   // ========== Question 20 ==========
@@ -600,7 +600,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_s2_a: '4', b_s2_b: '3', b_s2_c: '3', b_s2_d: '-1', b_s2_e: '9',
       b_s2_f: '4', b_s2_g: '2', b_s2_h: '3', b_s2_i: '1', b_s2_j: '11'
     },
-    markingCriteria: { a: 'M1 for |A| = −10 or correct adjugate matrix. A1 for correct inverse (1/−10)(3,−1;−4,−2).', b: 'M1 for at least one correct element from multiplication. A1 for all four elements correct (−7,−3;9,11).' }
+    markingCriteria: { a: 'B1 for k(3,-1;-4,-2) oe or for 1/(-10). M1+A1 implied for correct inverse.', b: 'B1 for two or three correct elements. A1 for all four correct (−7,−3;9,11).' }
   },
 
   // ========== Question 21 ==========
@@ -702,7 +702,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6: '-20/7'
     },
-    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'M1 for correct rearrangement x = 4(y − 3). A1 for 4x − 12.', c_calc: 'M1 for setting f(p) = g(p + 5). M1 for correct expansion and collection. A1 for −20/7.' }
+    markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }
   },
 
   // ========== Question 23 ==========
@@ -747,7 +747,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
       c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
     },
-    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for OA + ½AC or a + ½(c − a). A1 for ½a + ½c.', c_calc: 'M1 for finding OY = a + ⅔c and attempting YX = OX − OY. A1 for −½a − ⅙c.' }
+    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for YX along the lines of the diagram (can include correct OX). A1 for −½a − ⅙c oe simplified.' }
   },
 
   // ========== Question 24 ==========
@@ -786,7 +786,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
       answer_s5: '1/5'
     },
-    markingCriteria: { answer: 'M1 for multiplying through by (x+1)(x−1). M1 for correct expansion of LHS: 3x²−3x−2x−2. M1 for simplifying to −5x = −1 or equivalent. A1 for x = 1/5 or 0.2.' }
+    markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },
 };
 

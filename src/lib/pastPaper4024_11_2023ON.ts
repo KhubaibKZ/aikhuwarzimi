@@ -298,7 +298,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '19', b: '25',
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
-      b_s1_a: '-1', b_s1_b: '3', b_s2_a: '2', b_s2_b: '25'
+      b_s1_num: '1', b_s1_den: '5', b_s1_mul: '125', b_s2: '25'
     },
     markingCriteria: { a: 'B1', b: 'B1 for 5² leading to final answer or M1 for (1/5) × 5 × 5 × 5 oe or better. A1 for 25.' }
   },

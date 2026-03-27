@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,6 +12,8 @@ import {
   BookOpen, Brain, Target, Zap, CheckCircle,
   ChevronRight, Play, Moon, Sun, X, ArrowRight, Star,
   GraduationCap, BarChart3, FileText, Menu, Loader2, Eye, EyeOff } from 'lucide-react';
+
+const POST_AUTH_REDIRECT_KEY = 'post_auth_redirect';
 
 const mathSymbols = [
 { symbol: '∫', className: 'top-[15%] left-[8%] text-4xl animate-float-slow' },
@@ -48,18 +50,14 @@ export default function Landing() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // After a fresh login/register, redirect to the appropriate dashboard
-  const [pendingRedirect, setPendingRedirect] = useState(false);
+  useEffect(() => {
+    if (authLoading || roleLoading || !user) return;
+    if (sessionStorage.getItem(POST_AUTH_REDIRECT_KEY) !== '1') return;
 
-  // Reactively redirect once auth + role loading completes after login
-  if (pendingRedirect && user && !authLoading && !roleLoading) {
-    // Use queueMicrotask to avoid setState during render warning
-    queueMicrotask(() => {
-      setPendingRedirect(false);
-      const target = isAdmin ? '/dashboard' : '/student';
-      navigate(target, { replace: true });
-    });
-  }
+    sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+    const target = isAdmin ? '/dashboard' : '/student';
+    navigate(target, { replace: true });
+  }, [authLoading, roleLoading, user, isAdmin, navigate]);
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
@@ -76,6 +74,7 @@ export default function Landing() {
       return;
     }
 
+    sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
     setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -84,6 +83,7 @@ export default function Landing() {
     setSubmitting(false);
 
     if (error) {
+      sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
       const isInvalidCredentials = error.message.toLowerCase().includes('invalid login credentials');
       toast({
         title: 'Login failed',
@@ -92,8 +92,6 @@ export default function Landing() {
           : error.message,
         variant: 'destructive',
       });
-    } else {
-      setPendingRedirect(true);
     }
   };
 
@@ -148,15 +146,15 @@ export default function Landing() {
   };
 
   const handleGoogleSignIn = async () => {
+    sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, '1');
     setSubmitting(true);
     const { error } = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin
     });
     setSubmitting(false);
     if (error) {
+      sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
       toast({ title: 'Google Sign-in failed', description: String(error), variant: 'destructive' });
-    } else {
-      // OAuth redirects back; auth state change will handle session
     }
   };
 

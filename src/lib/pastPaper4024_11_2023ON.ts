@@ -286,7 +286,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '19', b: '25',
       a_s1_a: '16', a_s1_b: '3', a_s2: '19',
-      b_s1_a: '-1', b_s1_b: '3', b_s2_a: '²', b_s2_b: '25'
+      b_s1_a: '-1', b_s1_b: '3', b_s2_a: '2', b_s2_b: '25'
     },
     markingCriteria: { a: 'B1', b: 'M1 for 5^(−1+3) or 5². A1 for 25.' }
   },
@@ -479,8 +479,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
-    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for (E ∩ F) ∩ G' or equivalent correct set notation." }
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "R ∩ C ∩ S'" },
+    markingCriteria: { a: 'B1 for 2 in centre. B1 for 10 and 4 correct. B1 for 1 outside.', b: "B1 for R ∩ C ∩ S' or equivalent correct set notation." }
   },
 
   // ========== Question 19 ==========

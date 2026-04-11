@@ -5,6 +5,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import alKhwarizmiSilhouette from '@/assets/al-khwarizmi-silhouette.png';
+import logoImg from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -198,9 +199,7 @@ export default function Landing() {
       <nav className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-xl">
         <div className="container flex h-14 md:h-16 items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-              <span className="font-serif text-lg md:text-xl font-bold italic">خ</span>
-            </div>
+            <img src={logoImg} alt="AI Khuwarizmi" className="h-9 w-9 md:h-10 md:w-10 rounded-xl object-contain" />
             <div className="flex flex-col leading-none">
               <span className="text-sm md:text-base font-bold tracking-wide">AI Khuwarizmi</span>
               <span className="text-[10px] text-muted-foreground hidden sm:block">Inspired by Father of Algebra</span>
@@ -503,9 +502,7 @@ export default function Landing() {
             </Button>
 
             <div className="text-center mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow mx-auto mb-4">
-                <span className="font-serif text-xl font-bold italic">خ</span>
-              </div>
+              <img src={logoImg} alt="AI Khuwarizmi" className="h-12 w-12 rounded-xl object-contain mx-auto mb-4" />
               <h2 className="font-serif text-2xl font-bold">
                 {authTab === 'login' ? 'Welcome Back' : 'Join Al-Khuwarizmi'}
               </h2>

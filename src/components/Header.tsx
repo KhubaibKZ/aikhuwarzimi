@@ -1,4 +1,5 @@
-import { BookOpen, TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield } from 'lucide-react';
+import { TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -53,9 +54,7 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
               <ArrowLeft className="h-4 w-4" />
             </Button>
           )}
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-glow">
-            <BookOpen className="h-5 w-5" />
-          </div>
+          <img src={logoImg} alt="AI Khuwarizmi" className="h-10 w-10 rounded-xl object-contain" />
           <div className="flex flex-col">
             <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI</h1>
             <p className="text-xs text-muted-foreground">

@@ -358,8 +358,10 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;
   const avgAccuracy = totalQs > 0 ? Math.round(rows.reduce((s, r: any) => s + Number(r.accuracy_score), 0) / totalQs) : 0;
-  const avgAiCount = totalQs > 0 ? rows.reduce((s, r: any) => s + r.ai_usage_count, 0) / totalQs : 0;
-  const avgIndependence = totalQs > 0 ? Math.round(Math.max(0, 100 - avgAiCount * 20)) : 0;
+  const totalHintsOverall = rows.reduce((s, r: any) => s + (r.ai_usage_count || 0), 0);
+  const totalCheckWorkOverall = rows.reduce((s, r: any) => s + (r.checkwork_count || 0), 0);
+  const totalAiActionsOverall = totalHintsOverall + totalCheckWorkOverall;
+  const avgIndependence = totalQs > 0 ? Math.max(0, Math.round((100 - totalAiActionsOverall * 0.1) * 10) / 10) : 0;
   const avgTime = totalQs > 0 ? rows.reduce((s, r: any) => s + r.time_spent_seconds, 0) / totalQs : 0;
   const avgSpeed = totalQs > 0 ? Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3))) : 0;
   const avgScore = totalQs > 0 ? Math.round(avgAccuracy * 0.4 + avgIndependence * 0.3 + avgSpeed * 0.3) : 0;

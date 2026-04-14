@@ -206,6 +206,7 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
         </div>
         {hasData ? (
           <>
+            <span className="text-[10px] text-muted-foreground mr-0.5">Acc:</span>
             <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[getMasteryColor(accuracyPct)]}`}>
               {accuracyPct}%
             </span>
@@ -219,12 +220,7 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
       {expanded && hasData && (
         <div className="border-t border-border bg-secondary/10 animate-fade-in">
           {/* Per-topic summary stats */}
-          <div className="px-4 py-3 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Progress</p>
-              <p className="text-lg font-bold text-foreground">{progressPct}%</p>
-              <p className="text-[10px] text-muted-foreground">{completedQs}/{totalQsInTopic} Qs</p>
-            </div>
+          <div className="px-4 py-3 grid grid-cols-3 gap-3">
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Accuracy</p>
               <p className="text-lg font-bold text-foreground">{accuracyPct}%</p>

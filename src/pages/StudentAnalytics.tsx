@@ -172,13 +172,19 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const { marksObtained, totalMarks } = useMemo(() => {
     let mo = 0, tm = 0;
     topicRows.forEach((r: any) => {
-      const qData = pastPaperQuestions[r.question_id];
-      const qMarks = qData?.marks || 0;
-      tm += qMarks;
-      mo += (Number(r.accuracy_score) / 100) * qMarks;
+      if (demoMode) {
+        // Demo rows have marks_obtained and marks_available directly
+        tm += r.marks_available || 0;
+        mo += r.marks_obtained || 0;
+      } else {
+        const qData = pastPaperQuestions[r.question_id];
+        const qMarks = qData?.marks || 0;
+        tm += qMarks;
+        mo += (Number(r.accuracy_score) / 100) * qMarks;
+      }
     });
     return { marksObtained: Math.round(mo), totalMarks: tm };
-  }, [topicRows]);
+  }, [topicRows, demoMode]);
   const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
 
   const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);

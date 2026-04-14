@@ -172,13 +172,19 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const { marksObtained, totalMarks } = useMemo(() => {
     let mo = 0, tm = 0;
     topicRows.forEach((r: any) => {
-      const qData = pastPaperQuestions[r.question_id];
-      const qMarks = qData?.marks || 0;
-      tm += qMarks;
-      mo += (Number(r.accuracy_score) / 100) * qMarks;
+      if (demoMode) {
+        // Demo rows have marks_obtained and marks_available directly
+        tm += r.marks_available || 0;
+        mo += r.marks_obtained || 0;
+      } else {
+        const qData = pastPaperQuestions[r.question_id];
+        const qMarks = qData?.marks || 0;
+        tm += qMarks;
+        mo += (Number(r.accuracy_score) / 100) * qMarks;
+      }
     });
     return { marksObtained: Math.round(mo), totalMarks: tm };
-  }, [topicRows]);
+  }, [topicRows, demoMode]);
   const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
 
   const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
@@ -191,18 +197,24 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
 
   const questionBreakdown = useMemo(() => {
     return topicRows.map((r: any) => {
-      const qMarks = demoMode ? 3 : (pastPaperQuestions[r.question_id]?.marks || 0);
+      let qMarks: number, obtMarks: number;
+      if (demoMode) {
+        qMarks = r.marks_available || 3;
+        obtMarks = r.marks_obtained || 0;
+      } else {
+        qMarks = pastPaperQuestions[r.question_id]?.marks || 0;
+        obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks);
+      }
       const paper = demoMode
         ? demoPapers_.find(p => p.id === r.paper_id)
         : pastPapers.find(p => p.id === r.paper_id);
-      const obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks * 100) / 100;
       const qNo = demoMode
         ? r.question_id.replace(/^demo_.*_q/, 'Q')
         : (pastPaperQuestions[r.question_id]?.questionNumber || r.question_id);
       return {
         paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
         questionNo: qNo,
-        marks: `${obtMarks % 1 === 0 ? obtMarks.toFixed(0) : obtMarks.toFixed(1)}/${qMarks}`,
+        marks: `${obtMarks}/${qMarks}`,
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
         checkWorkUsed: r.checkwork_count || 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),
@@ -252,7 +264,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence</p>
               <p className={`text-lg font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
-              <p className="text-[10px] text-muted-foreground">{totalHints} hints</p>
+              <p className="text-[10px] text-muted-foreground">{totalHints} hints · {totalCheckWork} checkwork</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg Time</p>
@@ -346,8 +358,10 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;
   const avgAccuracy = totalQs > 0 ? Math.round(rows.reduce((s, r: any) => s + Number(r.accuracy_score), 0) / totalQs) : 0;
-  const avgAiCount = totalQs > 0 ? rows.reduce((s, r: any) => s + r.ai_usage_count, 0) / totalQs : 0;
-  const avgIndependence = totalQs > 0 ? Math.round(Math.max(0, 100 - avgAiCount * 20)) : 0;
+  const totalHintsOverall = rows.reduce((s, r: any) => s + (r.ai_usage_count || 0), 0);
+  const totalCheckWorkOverall = rows.reduce((s, r: any) => s + (r.checkwork_count || 0), 0);
+  const totalAiActionsOverall = totalHintsOverall + totalCheckWorkOverall;
+  const avgIndependence = totalQs > 0 ? Math.max(0, Math.round((100 - totalAiActionsOverall * 0.1) * 10) / 10) : 0;
   const avgTime = totalQs > 0 ? rows.reduce((s, r: any) => s + r.time_spent_seconds, 0) / totalQs : 0;
   const avgSpeed = totalQs > 0 ? Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3))) : 0;
   const avgScore = totalQs > 0 ? Math.round(avgAccuracy * 0.4 + avgIndependence * 0.3 + avgSpeed * 0.3) : 0;

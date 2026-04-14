@@ -304,6 +304,20 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
 
           {/* ── Past Paper Progress Tab ── */}
           <TabsContent value="pastpapers">
+            {/* Paper Filter */}
+            {paperOptions.length > 0 && (
+              <div className="flex items-center gap-3 mb-5">
+                <PaperFilter
+                  papers={paperOptions}
+                  selectedPaperIds={effectiveSelection}
+                  onChange={setSelectedPaperIds}
+                />
+                <span className="text-[11px] text-muted-foreground">
+                  Showing {paperResults.length} of {allPaperResults.length} paper(s)
+                </span>
+              </div>
+            )}
+
             {/* Overall Mastery */}
             <Card className="bg-card border-border mb-6 overflow-hidden">
               <CardContent className="p-6 flex flex-col items-center text-center">

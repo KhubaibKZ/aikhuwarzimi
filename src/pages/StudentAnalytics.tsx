@@ -541,7 +541,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               ) : (
                 <div className="bg-card border border-border rounded-xl p-4">
                   <ResponsiveContainer width="100%" height={350}>
-                    <RadarChart data={topicMastery.filter(t => t.completedQuestions > 0).map(t => ({
+                    <RadarChart data={topicMastery.map(t => ({
                       topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
                       accuracy: t.latestAccuracy,
                       independence: t.latestReadiness,

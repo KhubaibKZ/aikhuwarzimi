@@ -318,18 +318,10 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               </div>
             )}
 
-            {/* Overall Mastery */}
-            <Card className="bg-card border-border mb-6 overflow-hidden">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <p className="text-xs text-muted-foreground mb-5">
-                  {totalQs === 0 && !isLoading
-                    ? 'Complete some past paper questions to see your analytics here.'
-                    : `Performance across ${totalQs} questions from ${paperResults.length} paper(s)`}
-                </p>
-                <MasteryGauge percentage={avgScore} />
-                <p className="text-xs text-muted-foreground mt-3">Overall Mastery</p>
-              </CardContent>
-            </Card>
+            <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              Overall Mastery
+            </h2>
 
             {/* Key Metrics Row */}
             {(() => {
@@ -390,19 +382,19 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
                       <Brain className="h-5 w-5 text-destructive" />
-                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Dependence</p>
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence</p>
+                      <p className="text-xl font-bold text-foreground">{aiIndependence}%</p>
                       <div className="flex gap-3 text-xs">
                         <div className="flex flex-col items-center">
-                          <span className="text-lg font-bold text-foreground">{totalHints}</span>
+                          <span className="text-sm font-bold text-foreground">{totalHints}</span>
                           <span className="text-[10px] text-muted-foreground">Hints</span>
                         </div>
                         <div className="w-px bg-border" />
                         <div className="flex flex-col items-center">
-                          <span className="text-lg font-bold text-foreground">{totalCheckWork}</span>
+                          <span className="text-sm font-bold text-foreground">{totalCheckWork}</span>
                           <span className="text-[10px] text-muted-foreground">Check Work</span>
                         </div>
                       </div>
-                      <p className="text-xs text-success font-semibold">{aiIndependence}% Independent</p>
                     </CardContent>
                   </Card>
 

@@ -2,6 +2,10 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import iconProgress from '@/assets/icon-progress.png';
+import iconMarks from '@/assets/icon-marks.png';
+import iconBrain from '@/assets/icon-brain.png';
+import iconTimer from '@/assets/icon-timer.png';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -426,7 +430,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   {/* Progress */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <ClipboardList className="h-5 w-5 text-primary" />
+                      <img src={iconProgress} alt="Progress" className="h-10 w-10 object-contain" loading="lazy" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Progress</p>
                       <div className="w-full">
                         <Progress value={progressPct} className="h-2.5 mb-1" />
@@ -439,17 +443,16 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   {/* Marks Obtained */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
+                      <img src={iconMarks} alt="Marks" className="h-10 w-10 object-contain" loading="lazy" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Marks Obtained</p>
                       <p className={`text-xl font-bold ${accuracyPct > 80 ? 'text-success' : accuracyPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{marksObtained}/{totalMarks}</p>
-                      <p className="text-xs text-muted-foreground">{accuracyPct}% Accuracy</p>
                     </CardContent>
                   </Card>
 
                   {/* AI Independence */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
-                      <Brain className="h-5 w-5 text-primary" />
+                      <img src={iconBrain} alt="AI Independence" className="h-10 w-10 object-contain" loading="lazy" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence</p>
                       <p className={`text-xl font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
                       <div className="flex gap-3 text-xs">
@@ -469,10 +472,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   {/* Time Taken */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <Clock className="h-5 w-5 text-primary" />
+                      <img src={iconTimer} alt="Time Taken" className="h-10 w-10 object-contain" loading="lazy" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Time Taken</p>
                       <p className="text-xl font-bold text-foreground">{formatTime(totalTime)}</p>
-                      <p className="text-xs text-muted-foreground">{totalTime}s total</p>
                     </CardContent>
                   </Card>
                 </div>

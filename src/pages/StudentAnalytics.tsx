@@ -185,7 +185,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
 
   const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
-  const totalCheckWork = 0;
+  const totalCheckWork = topicRows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
   const totalAiActions = totalHints + totalCheckWork;
   const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
 

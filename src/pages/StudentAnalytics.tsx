@@ -227,12 +227,12 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
           <div className="px-4 py-3 grid grid-cols-3 gap-3">
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Accuracy</p>
-              <p className="text-lg font-bold text-foreground">{accuracyPct}%</p>
+              <p className={`text-lg font-bold ${accuracyPct > 80 ? 'text-success' : accuracyPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{accuracyPct}%</p>
               <p className="text-[10px] text-muted-foreground">{marksObtained}/{totalMarks} marks</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence</p>
-              <p className="text-lg font-bold text-foreground">{aiIndependence}%</p>
+              <p className={`text-lg font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
               <p className="text-[10px] text-muted-foreground">{totalHints} hints</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
@@ -262,7 +262,7 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
                     <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
                     <td className="py-2 px-2 text-center">{q.marks}</td>
                     <td className="py-2 px-2 text-center">
-                      <span className={q.hintUsed === 'Yes' ? 'text-warning font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                      <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
                     </td>
                     <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
                     <td className="py-2 px-2 text-center">{q.timeTaken}</td>
@@ -483,9 +483,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
 
             {/* Topic Mastery Matrix */}
             <section className="mb-10">
-              <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+              <h2 className="text-sm font-bold text-foreground mb-4 flex items-center justify-center gap-2 uppercase tracking-widest">
                 <Sparkles className="h-4 w-4 text-primary" />
-                Topic Mastery Matrix
+                TOPIC MASTERY MATRIX
               </h2>
               {topicMastery.length === 0 && !isLoading ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No data yet. Submit answers on past papers to see your topic mastery.</p>

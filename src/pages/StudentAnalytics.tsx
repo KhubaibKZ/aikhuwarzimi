@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
-  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock, Clock
+  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock, Clock,
+  ClipboardList, Award
 } from 'lucide-react';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
 import { pastPapers, pastPaperQuestions } from '@/lib/pastPaperData';
@@ -385,8 +386,8 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               </div>
             )}
 
-            <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />
+            <h2 className="text-lg font-bold text-foreground mb-4 flex items-center justify-center gap-2 uppercase tracking-widest">
+              <Target className="h-5 w-5 text-primary" />
               Overall Mastery
             </h2>
 
@@ -425,32 +426,32 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   {/* Progress */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <FileText className="h-5 w-5 text-primary" />
+                      <ClipboardList className="h-5 w-5 text-primary" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Progress</p>
                       <div className="w-full">
                         <Progress value={progressPct} className="h-2.5 mb-1" />
                         <p className="text-xs text-muted-foreground">{totalSolvedQuestions}/{totalPaperQuestions} Questions</p>
                       </div>
-                      <p className="text-xl font-bold text-foreground">{progressPct}%</p>
+                      <p className={`text-xl font-bold ${progressPct > 80 ? 'text-success' : progressPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{progressPct}%</p>
                     </CardContent>
                   </Card>
 
-                  {/* Accuracy */}
+                  {/* Marks Obtained */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <Target className="h-5 w-5 text-warning" />
+                      <Award className="h-5 w-5 text-primary" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Marks Obtained</p>
-                      <p className="text-xl font-bold text-foreground">{marksObtained}/{totalMarks}</p>
+                      <p className={`text-xl font-bold ${accuracyPct > 80 ? 'text-success' : accuracyPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{marksObtained}/{totalMarks}</p>
                       <p className="text-xs text-muted-foreground">{accuracyPct}% Accuracy</p>
                     </CardContent>
                   </Card>
 
-                  {/* AI Dependence */}
+                  {/* AI Independence */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
-                      <Brain className="h-5 w-5 text-destructive" />
+                      <Brain className="h-5 w-5 text-primary" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence</p>
-                      <p className="text-xl font-bold text-foreground">{aiIndependence}%</p>
+                      <p className={`text-xl font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
                       <div className="flex gap-3 text-xs">
                         <div className="flex flex-col items-center">
                           <span className="text-sm font-bold text-foreground">{totalHints}</span>
@@ -468,7 +469,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   {/* Time Taken */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                      <Zap className="h-5 w-5 text-primary" />
+                      <Clock className="h-5 w-5 text-primary" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Time Taken</p>
                       <p className="text-xl font-bold text-foreground">{formatTime(totalTime)}</p>
                       <p className="text-xs text-muted-foreground">{totalTime}s total</p>

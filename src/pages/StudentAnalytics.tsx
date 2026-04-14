@@ -118,6 +118,7 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
   const [expanded, setExpanded] = useState(false);
   const hasData = (topic.completedQuestions || 0) > 0;
 
+  // Get all question IDs for this topic
   const topicQuestionIds = useMemo(() => {
     const ids = new Set<string>();
     Object.entries(questionTopicMap).forEach(([qId, ref]) => {
@@ -126,12 +127,34 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
     return ids;
   }, [topic.topicId]);
 
+  // Filter rows to only this topic's questions
   const topicRows = useMemo(() =>
     rows.filter((r: any) => topicQuestionIds.has(r.question_id)),
     [rows, topicQuestionIds]
   );
 
-  const totalQsInTopic = topic.totalQuestions || 0;
+  // Count total questions for this topic only from papers present in filtered rows
+  const totalQsInTopic = useMemo(() => {
+    // Get unique paper IDs from the filtered rows (all topics)
+    const paperIdsInScope = new Set(rows.map((r: any) => r.paper_id));
+    // Count questions in this topic that belong to those papers
+    let count = 0;
+    Object.entries(questionTopicMap).forEach(([qId, ref]) => {
+      if (ref.topicId !== topic.topicId) return;
+      // Check if this question belongs to any paper in scope
+      const qData = pastPaperQuestions[qId];
+      if (qData) {
+        // Find which paper this question belongs to
+        for (const paper of pastPapers) {
+          if (paperIdsInScope.has(paper.id) && paper.sections.some(s => s.id === qId)) {
+            count++;
+            break;
+          }
+        }
+      }
+    });
+    return count;
+  }, [rows, topicQuestionIds, topic.topicId]);
   const completedQs = topicRows.length;
   const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
 

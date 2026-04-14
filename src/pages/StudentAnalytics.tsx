@@ -513,7 +513,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               ) : (
                 <div className="space-y-2.5">
                   {topicMastery.map((topic, i) => (
-                    <TopicRow key={topic.topicId} topic={topic} index={i} rows={rows} />
+                    <TopicRow key={topic.topicId} topic={topic} index={i} rows={rows} demoMode={isDemoMode} />
                   ))}
                 </div>
               )}

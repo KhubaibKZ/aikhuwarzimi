@@ -133,28 +133,19 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
     [rows, topicQuestionIds]
   );
 
-  // Count total questions for this topic only from papers present in filtered rows
+  // Count total questions for this topic only from selected papers
   const totalQsInTopic = useMemo(() => {
-    // Get unique paper IDs from the filtered rows (all topics)
     const paperIdsInScope = new Set(rows.map((r: any) => r.paper_id));
-    // Count questions in this topic that belong to those papers
     let count = 0;
-    Object.entries(questionTopicMap).forEach(([qId, ref]) => {
-      if (ref.topicId !== topic.topicId) return;
-      // Check if this question belongs to any paper in scope
-      const qData = pastPaperQuestions[qId];
-      if (qData) {
-        // Find which paper this question belongs to
-        for (const paper of pastPapers) {
-          if (paperIdsInScope.has(paper.id) && paper.sections.some(s => s.id === qId)) {
-            count++;
-            break;
-          }
-        }
+    for (const paper of pastPapers) {
+      if (!paperIdsInScope.has(paper.id)) continue;
+      for (const s of paper.sections) {
+        const ref = questionTopicMap[s.questionId];
+        if (ref && ref.topicId === topic.topicId) count++;
       }
-    });
+    }
     return count;
-  }, [rows, topicQuestionIds, topic.topicId]);
+  }, [rows, topic.topicId]);
   const completedQs = topicRows.length;
   const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
 

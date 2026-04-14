@@ -206,9 +206,8 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
         </div>
         {hasData ? (
           <>
-            <span className="text-[10px] text-muted-foreground mr-0.5">Acc:</span>
-            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[getMasteryColor(accuracyPct)]}`}>
-              {accuracyPct}%
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[getMasteryColor(progressPct)]}`}>
+              {progressPct}%
             </span>
             {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
           </>

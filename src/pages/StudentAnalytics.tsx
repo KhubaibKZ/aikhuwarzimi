@@ -207,7 +207,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
         questionNo: qNo,
         marks: `${obtMarks % 1 === 0 ? obtMarks.toFixed(0) : obtMarks.toFixed(1)}/${qMarks}`,
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
-        checkWorkUsed: demoMode ? (r.ai_usage_count > 2 ? 1 : 0) : 0,
+        checkWorkUsed: r.checkwork_count || 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),
       };
     });

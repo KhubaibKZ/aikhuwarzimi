@@ -439,9 +439,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-2">
                       <Target className="h-5 w-5 text-warning" />
-                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Accuracy</p>
-                      <p className="text-xl font-bold text-foreground">{accuracyPct}%</p>
-                      <p className="text-xs text-muted-foreground">{marksObtained}/{totalMarks} Marks</p>
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Marks Obtained</p>
+                      <p className="text-xl font-bold text-foreground">{marksObtained}/{totalMarks}</p>
+                      <p className="text-xs text-muted-foreground">{accuracyPct}% Accuracy</p>
                     </CardContent>
                   </Card>
 

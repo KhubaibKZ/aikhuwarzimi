@@ -4,9 +4,8 @@
 import type { PastPaperResult, TopicMastery, PaperScore } from './analyticsData';
 
 // ── Demo Progress Rows (simulating student_paper_progress rows) ──
-// Each row represents one question answered by the demo student
 
-interface DemoRow {
+export interface DemoRow {
   id: string;
   paper_id: string;
   question_id: string;
@@ -19,6 +18,8 @@ interface DemoRow {
   total_steps: number;
   completed_steps: number;
   submitted_at: string;
+  marks_obtained: number; // whole number marks (marking scheme style)
+  marks_available: number; // total marks for this question
 }
 
 const demoPapers = [
@@ -47,6 +48,17 @@ const topics = [
   { id: 9, name: 'Statistics' },
 ];
 
+// Realistic mark distributions per question (Paper 1: 1-4 marks, Paper 2: 4-10 marks)
+function getQuestionMarks(paper: typeof demoPapers[0], qIndex: number, rng: () => number): number {
+  if (paper.code.startsWith('4024/2')) {
+    // Paper 2: larger questions, 4-10 marks each
+    return Math.round(4 + rng() * 6);
+  }
+  // Paper 1: 1-4 marks per question
+  const options = [1, 2, 2, 3, 3, 3, 4, 4];
+  return options[Math.floor(rng() * options.length)];
+}
+
 // Seed-based pseudo-random for consistency
 function seededRandom(seed: number) {
   let s = seed;
@@ -66,18 +78,30 @@ function generateDemoRows(): DemoRow[] {
     // Not all questions solved — vary completion
     const solved = Math.round(qCount * (0.6 + rng() * 0.35));
     for (let q = 0; q < solved; q++) {
-      const topicId = topics[q % 9].id;
       const questionId = `demo_${paper.id}_q${q + 1}`;
-      const accuracy = Math.round(30 + rng() * 70);
+      const marksAvailable = getQuestionMarks(paper, q, rng);
+      
+      // Marks obtained: whole number from 0 to marksAvailable (weighted toward partial/full)
+      const roll = rng();
+      let marksObtained: number;
+      if (roll < 0.15) marksObtained = 0; // 15% chance of 0
+      else if (roll < 0.35) marksObtained = Math.max(1, Math.floor(marksAvailable * 0.3 + rng() * marksAvailable * 0.2)); // partial low
+      else if (roll < 0.65) marksObtained = Math.round(marksAvailable * 0.5 + rng() * marksAvailable * 0.3); // partial mid
+      else marksObtained = Math.min(marksAvailable, Math.round(marksAvailable * 0.8 + rng() * marksAvailable * 0.2)); // high/full
+      marksObtained = Math.min(marksObtained, marksAvailable);
+      
+      const accuracyScore = marksAvailable > 0 ? Math.round((marksObtained / marksAvailable) * 100) : 0;
+      
       const hintCount = rng() < 0.2 ? Math.round(1 + rng() * 2) : 0; // 20% chance, 1-3 hints
       const checkworkCount = rng() < 0.25 ? Math.round(1 + rng() * 2) : 0; // 25% chance, 1-3
       const time = Math.round(30 + rng() * 280);
+      
       rows.push({
         id: `demo_row_${qIndex++}`,
         paper_id: paper.id,
         question_id: questionId,
-        is_correct: accuracy >= 70,
-        accuracy_score: accuracy,
+        is_correct: marksObtained === marksAvailable,
+        accuracy_score: accuracyScore,
         speed_score: Math.round(Math.max(0, Math.min(100, 100 - (time - 60) / 3))),
         ai_usage_count: hintCount,
         checkwork_count: checkworkCount,
@@ -85,6 +109,8 @@ function generateDemoRows(): DemoRow[] {
         total_steps: Math.round(2 + rng() * 4),
         completed_steps: Math.round(2 + rng() * 3),
         submitted_at: `${paper.year}-${paper.session.includes('May') ? '06' : '11'}-${String(10 + Math.round(rng() * 15)).padStart(2, '0')}`,
+        marks_obtained: marksObtained,
+        marks_available: marksAvailable,
       });
     }
   }
@@ -95,7 +121,6 @@ function generateDemoRows(): DemoRow[] {
 function buildDemoTopicMap(rows: DemoRow[]) {
   const map: Record<string, { topicId: number; topicTitle: string }> = {};
   for (const r of rows) {
-    // Extract q number to assign topic
     const match = r.question_id.match(/_q(\d+)$/);
     const qNum = match ? parseInt(match[1]) : 1;
     const topic = topics[(qNum - 1) % 9];
@@ -121,8 +146,8 @@ export const demoPaperResults: PastPaperResult[] = (() => {
   paperGroups.forEach((questions, paperId) => {
     const paper = demoPapers.find(p => p.id === paperId)!;
     const solvedQ = questions.length;
-    const marksPerQ = paper.totalMarks / paper.totalQuestions;
-    const marksObtained = Math.round(questions.reduce((s, q) => s + (q.accuracy_score / 100) * marksPerQ, 0));
+    const marksObtained = questions.reduce((s, q) => s + q.marks_obtained, 0);
+    const totalMarksAnswered = questions.reduce((s, q) => s + q.marks_available, 0);
     results.push({
       paperId,
       paperTitle: paper.title,
@@ -158,7 +183,6 @@ export const demoTopicMastery: TopicMastery[] = (() => {
     entry.papers.set(r.paper_id, pRows);
   });
 
-  // Count totals per topic
   const totalPerTopic = new Map<number, number>();
   Object.values(demoTopicMap).forEach(ref => {
     totalPerTopic.set(ref.topicId, (totalPerTopic.get(ref.topicId) || 0) + 1);
@@ -169,9 +193,13 @@ export const demoTopicMastery: TopicMastery[] = (() => {
     const paperScores: PaperScore[] = [];
     papers.forEach((qs, paperId) => {
       const paper = demoPapers.find(p => p.id === paperId);
-      const avgAcc = Math.round(qs.reduce((s, q) => s + q.accuracy_score, 0) / qs.length);
-      const avgAi = qs.reduce((s, q) => s + q.ai_usage_count, 0) / qs.length;
-      const independence = Math.round(Math.max(0, 100 - avgAi * 20));
+      // Use actual marks for accuracy
+      const totalMarks = qs.reduce((s, q) => s + q.marks_available, 0);
+      const marksObt = qs.reduce((s, q) => s + q.marks_obtained, 0);
+      const avgAcc = totalMarks > 0 ? Math.round((marksObt / totalMarks) * 100) : 0;
+      
+      const totalAiActions = qs.reduce((s, q) => s + q.ai_usage_count + q.checkwork_count, 0);
+      const independence = Math.round(Math.max(0, 100 - totalAiActions * 2));
       const avgTime = qs.reduce((s, q) => s + q.time_spent_seconds, 0) / qs.length;
       const speed = Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3)));
       paperScores.push({
@@ -185,9 +213,12 @@ export const demoTopicMastery: TopicMastery[] = (() => {
     });
 
     const allQs = Array.from(papers.values()).flat();
-    const avgAcc = Math.round(allQs.reduce((s, q) => s + q.accuracy_score, 0) / allQs.length);
-    const avgAi = allQs.reduce((s, q) => s + q.ai_usage_count, 0) / allQs.length;
-    const avgInd = Math.round(Math.max(0, 100 - avgAi * 20));
+    const totalMarks = allQs.reduce((s, q) => s + q.marks_available, 0);
+    const marksObt = allQs.reduce((s, q) => s + q.marks_obtained, 0);
+    const avgAcc = totalMarks > 0 ? Math.round((marksObt / totalMarks) * 100) : 0;
+    
+    const totalAiActions = allQs.reduce((s, q) => s + q.ai_usage_count + q.checkwork_count, 0);
+    const avgInd = Math.round(Math.max(0, 100 - totalAiActions * 2));
     const avgTime = allQs.reduce((s, q) => s + q.time_spent_seconds, 0) / allQs.length;
     const avgSpeed = Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3)));
 
@@ -214,7 +245,6 @@ export const demoTopicMastery: TopicMastery[] = (() => {
     });
   });
 
-  // Add missing topics with 0
   topics.forEach(t => {
     if (!topicData.has(t.id)) {
       mastery.push({

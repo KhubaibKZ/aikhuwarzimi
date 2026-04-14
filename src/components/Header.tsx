@@ -64,20 +64,11 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="h-9 w-9 rounded-lg"
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-
           {!publicMode && (
             <>
               <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate(studentMode ? '/student/analytics' : '/analytics')}>
                 <TrendingUp className="h-4 w-4" />
-                Your Progress
+                Learning Analytics
               </Button>
 
               {!hideAdmin && isAdmin && (

@@ -68,7 +68,7 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
             <>
               <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate(studentMode ? '/student/analytics' : '/analytics')}>
                 <TrendingUp className="h-4 w-4" />
-                Learning Analytics
+                {studentMode ? 'Learning Analytics' : 'Demo Analytics'}
               </Button>
 
               {!hideAdmin && isAdmin && (

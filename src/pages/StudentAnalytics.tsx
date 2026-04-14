@@ -122,18 +122,21 @@ interface TopicRowProps {
   demoMode?: boolean;
 }
 
-function TopicRow({ topic, index, rows }: TopicRowProps) {
+function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const [expanded, setExpanded] = useState(false);
   const hasData = (topic.completedQuestions || 0) > 0;
+
+  const activeTopicMap = demoMode ? demoTopicMap_ : questionTopicMap;
+  const activePapers = demoMode ? demoPapers_ : pastPapers;
 
   // Get all question IDs for this topic
   const topicQuestionIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.entries(questionTopicMap).forEach(([qId, ref]) => {
+    Object.entries(activeTopicMap).forEach(([qId, ref]) => {
       if (ref.topicId === topic.topicId) ids.add(qId);
     });
     return ids;
-  }, [topic.topicId]);
+  }, [topic.topicId, activeTopicMap]);
 
   // Filter rows to only this topic's questions
   const topicRows = useMemo(() =>
@@ -145,15 +148,27 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
   const totalQsInTopic = useMemo(() => {
     const paperIdsInScope = new Set(rows.map((r: any) => r.paper_id));
     let count = 0;
-    for (const paper of pastPapers) {
-      if (!paperIdsInScope.has(paper.id)) continue;
-      for (const s of paper.sections) {
-        const ref = questionTopicMap[s.questionId];
-        if (ref && ref.topicId === topic.topicId) count++;
+    if (demoMode) {
+      // For demo, count from demoTopicMap
+      Object.entries(demoTopicMap_).forEach(([qId, ref]) => {
+        if (ref.topicId === topic.topicId) {
+          const paperId = qId.replace(/^demo_/, '').replace(/_q\d+$/, '');
+          const fullPaperId = 'demo_' + paperId;
+          // Check if any row belongs to this paper
+          if (paperIdsInScope.has(fullPaperId) || rows.some((r: any) => r.question_id === qId)) count++;
+        }
+      });
+    } else {
+      for (const paper of pastPapers) {
+        if (!paperIdsInScope.has(paper.id)) continue;
+        for (const s of paper.sections) {
+          const ref = questionTopicMap[s.questionId];
+          if (ref && ref.topicId === topic.topicId) count++;
+        }
       }
     }
-    return count;
-  }, [rows, topic.topicId]);
+    return count || topicQuestionIds.size;
+  }, [rows, topic.topicId, demoMode, topicQuestionIds]);
   const completedQs = topicRows.length;
   const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
 

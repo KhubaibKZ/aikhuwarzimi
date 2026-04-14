@@ -197,18 +197,24 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
 
   const questionBreakdown = useMemo(() => {
     return topicRows.map((r: any) => {
-      const qMarks = demoMode ? 3 : (pastPaperQuestions[r.question_id]?.marks || 0);
+      let qMarks: number, obtMarks: number;
+      if (demoMode) {
+        qMarks = r.marks_available || 3;
+        obtMarks = r.marks_obtained || 0;
+      } else {
+        qMarks = pastPaperQuestions[r.question_id]?.marks || 0;
+        obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks);
+      }
       const paper = demoMode
         ? demoPapers_.find(p => p.id === r.paper_id)
         : pastPapers.find(p => p.id === r.paper_id);
-      const obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks * 100) / 100;
       const qNo = demoMode
         ? r.question_id.replace(/^demo_.*_q/, 'Q')
         : (pastPaperQuestions[r.question_id]?.questionNumber || r.question_id);
       return {
         paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
         questionNo: qNo,
-        marks: `${obtMarks % 1 === 0 ? obtMarks.toFixed(0) : obtMarks.toFixed(1)}/${qMarks}`,
+        marks: `${obtMarks}/${qMarks}`,
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
         checkWorkUsed: r.checkwork_count || 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),

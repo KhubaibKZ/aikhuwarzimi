@@ -23,6 +23,7 @@ import {
   type TopicMastery
 } from '@/lib/analyticsData';
 import { PaperFilter } from '@/components/PaperFilter';
+import { demoPaperResults, demoTopicMastery, demoRows_, demoPapers_, demoTopicMap_ } from '@/lib/demoAnalyticsData';
 
 const masteryColorMap = {
   green: 'hsl(142, 76%, 36%)',

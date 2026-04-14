@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -498,42 +499,36 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               )}
             </section>
 
-            {/* Past Paper Timeline */}
+            {/* Topic Performance Radar */}
             <section>
-              <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                Past Paper Timeline
+              <h2 className="text-sm font-bold text-foreground mb-4 flex items-center justify-center gap-2 uppercase tracking-widest">
+                <Target className="h-4 w-4 text-primary" />
+                TOPIC PERFORMANCE RADAR
               </h2>
-              {paperResults.length === 0 && !isLoading ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No papers attempted yet. Start solving past papers to track your progress.</p>
+              {topicMastery.length === 0 || topicMastery.every(t => t.completedQuestions === 0) ? (
+                <p className="text-sm text-muted-foreground text-center py-8">No data yet. Solve past papers to see your topic radar.</p>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {paperResults.map((paper, i) => {
-                    const scorePercent = paper.totalMarks > 0 ? Math.round((paper.marksObtained / paper.totalMarks) * 100) : 0;
-                    return (
-                      <Card
-                        key={paper.paperId}
-                        className="bg-card border-border overflow-hidden animate-fade-in"
-                        style={{ animationDelay: `${i * 100}ms` }}
-                      >
-                        <CardContent className="p-5 flex items-center gap-5">
-                          <SmallCircle percentage={paper.completionPercentage} />
-                          <div className="flex-1 space-y-1.5">
-                            <p className="text-sm font-semibold text-foreground">{paper.paperTitle}</p>
-                            <p className="text-[11px] text-muted-foreground">
-                              {paper.completedDate ? new Date(paper.completedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
-                            </p>
-                            <div className="flex gap-4 text-xs">
-                              <span className="text-muted-foreground">Solved: <span className="text-foreground font-medium">{paper.solvedQuestions}/{paper.totalQuestions}</span></span>
-                              <span className="text-muted-foreground">Score: <span className={`font-bold ${
-                                scorePercent > 70 ? 'text-success' : scorePercent >= 50 ? 'text-warning' : 'text-destructive'
-                              }`}>{scorePercent}%</span></span>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                <div className="bg-card border border-border rounded-xl p-4">
+                  <ResponsiveContainer width="100%" height={350}>
+                    <RadarChart data={topicMastery.filter(t => t.completedQuestions > 0).map(t => ({
+                      topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
+                      accuracy: t.latestAccuracy,
+                      independence: t.latestReadiness,
+                      speed: t.latestSpeed,
+                    }))}>
+                      <PolarGrid stroke="hsl(var(--border))" />
+                      <PolarAngleAxis dataKey="topic" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
+                      <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }} />
+                      <Radar name="Accuracy" dataKey="accuracy" stroke="#22c55e" fill="#22c55e" fillOpacity={0.15} strokeWidth={2} />
+                      <Radar name="Independence" dataKey="independence" stroke="#a855f7" fill="#a855f7" fillOpacity={0.1} strokeWidth={2} />
+                      <Radar name="Speed" dataKey="speed" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={2} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                  <div className="flex justify-center gap-6 mt-2 text-xs">
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />Accuracy</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#a855f7]" />Independence</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />Speed</span>
+                  </div>
                 </div>
               )}
             </section>

@@ -428,9 +428,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               const marksObtained = paperResults.reduce((s, p) => s + p.marksObtained, 0);
               const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
 
-              // AI Dependence: count hints & checkwork used, independence = 100 - 0.1% per usage
+              // AI Dependence: count hints & checkwork used
               const totalHints = rows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
-              const totalCheckWork = 0; // checkwork usage not tracked per row; placeholder
+              const totalCheckWork = rows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
               const totalAiActions = totalHints + totalCheckWork;
               const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
 

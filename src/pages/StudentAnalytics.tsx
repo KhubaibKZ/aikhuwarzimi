@@ -332,36 +332,92 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
             </Card>
 
             {/* Key Metrics Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <FileText className="h-5 w-5 text-primary mb-1.5" />
-                  <p className="text-2xl font-bold text-foreground">{paperResults.length}</p>
-                  <p className="text-[11px] text-muted-foreground">Papers Attempted</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <Brain className="h-5 w-5 text-success mb-1.5" />
-                  <p className="text-2xl font-bold text-foreground">{avgIndependence}%</p>
-                  <p className="text-[11px] text-muted-foreground">AI Independence</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <Target className="h-5 w-5 text-warning mb-1.5" />
-                  <p className="text-2xl font-bold text-foreground">{avgAccuracy}%</p>
-                  <p className="text-[11px] text-muted-foreground">Accuracy</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card border-border">
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <Zap className="h-5 w-5 text-primary mb-1.5" />
-                  <p className="text-2xl font-bold text-foreground">{avgSpeed}%</p>
-                  <p className="text-[11px] text-muted-foreground">Speed</p>
-                </CardContent>
-              </Card>
-            </div>
+            {(() => {
+              // Progress: questions done / total questions in selected papers
+              const totalPaperQuestions = paperResults.reduce((s, p) => s + p.totalQuestions, 0);
+              const totalSolvedQuestions = paperResults.reduce((s, p) => s + p.solvedQuestions, 0);
+              const progressPct = totalPaperQuestions > 0 ? Math.round((totalSolvedQuestions / totalPaperQuestions) * 100) : 0;
+
+              // Accuracy: marks obtained / total marks as percentage
+              const totalMarks = paperResults.reduce((s, p) => s + p.totalMarks, 0);
+              const marksObtained = paperResults.reduce((s, p) => s + p.marksObtained, 0);
+              const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
+
+              // AI Dependence: count hints & checkwork used, independence = 100 - 0.1% per usage
+              const totalHints = rows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
+              const totalCheckWork = 0; // checkwork usage not tracked per row; placeholder
+              const totalAiActions = totalHints + totalCheckWork;
+              const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
+
+              // Time Taken: total seconds
+              const totalTime = rows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
+              const formatTime = (secs: number) => {
+                if (secs < 60) return `${secs}s`;
+                const m = Math.floor(secs / 60);
+                const s2 = secs % 60;
+                if (m < 60) return `${m}m ${s2}s`;
+                const h = Math.floor(m / 60);
+                const rm = m % 60;
+                return `${h}h ${rm}m`;
+              };
+
+              return (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                  {/* Progress */}
+                  <Card className="bg-card border-border">
+                    <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Progress</p>
+                      <div className="w-full">
+                        <Progress value={progressPct} className="h-2.5 mb-1" />
+                        <p className="text-xs text-muted-foreground">{totalSolvedQuestions}/{totalPaperQuestions} Questions</p>
+                      </div>
+                      <p className="text-xl font-bold text-foreground">{progressPct}%</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Accuracy */}
+                  <Card className="bg-card border-border">
+                    <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                      <Target className="h-5 w-5 text-warning" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Accuracy</p>
+                      <p className="text-xl font-bold text-foreground">{accuracyPct}%</p>
+                      <p className="text-xs text-muted-foreground">{marksObtained}/{totalMarks} Marks</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* AI Dependence */}
+                  <Card className="bg-card border-border">
+                    <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
+                      <Brain className="h-5 w-5 text-destructive" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Dependence</p>
+                      <div className="flex gap-3 text-xs">
+                        <div className="flex flex-col items-center">
+                          <span className="text-lg font-bold text-foreground">{totalHints}</span>
+                          <span className="text-[10px] text-muted-foreground">Hints</span>
+                        </div>
+                        <div className="w-px bg-border" />
+                        <div className="flex flex-col items-center">
+                          <span className="text-lg font-bold text-foreground">{totalCheckWork}</span>
+                          <span className="text-[10px] text-muted-foreground">Check Work</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-success font-semibold">{aiIndependence}% Independent</p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Time Taken */}
+                  <Card className="bg-card border-border">
+                    <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                      <Zap className="h-5 w-5 text-primary" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Time Taken</p>
+                      <p className="text-xl font-bold text-foreground">{formatTime(totalTime)}</p>
+                      <p className="text-xs text-muted-foreground">{totalTime}s total</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })()}
 
             {/* Topic Mastery Matrix */}
             <section className="mb-10">

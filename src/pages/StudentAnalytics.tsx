@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ChevronDown, ChevronUp, ArrowLeft, TrendingUp, TrendingDown,
-  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock
+  Minus, Target, Zap, Brain, FileText, Sparkles, BarChart3, BookOpen, Lock, Clock
 } from 'lucide-react';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
+import { pastPapers, pastPaperQuestions } from '@/lib/pastPaperData';
+import { questionTopicMap } from '@/lib/questionTopicMap';
 import {
   getMasteryColor, getMasteryLabel,
   type TopicMastery

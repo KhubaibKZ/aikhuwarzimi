@@ -149,13 +149,10 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
     const paperIdsInScope = new Set(rows.map((r: any) => r.paper_id));
     let count = 0;
     if (demoMode) {
-      // For demo, count from demoTopicMap
-      Object.entries(demoTopicMap_).forEach(([qId, ref]) => {
-        if (ref.topicId === topic.topicId) {
-          const paperId = qId.replace(/^demo_/, '').replace(/_q\d+$/, '');
-          const fullPaperId = 'demo_' + paperId;
-          // Check if any row belongs to this paper
-          if (paperIdsInScope.has(fullPaperId) || rows.some((r: any) => r.question_id === qId)) count++;
+      // Use full topic map (includes unsolved questions) for correct denominator
+      Object.entries(demoFullTopicMap_).forEach(([, ref]) => {
+        if (ref.topicId === topic.topicId && paperIdsInScope.has(ref.paperId)) {
+          count++;
         }
       });
     } else {
@@ -167,8 +164,8 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
         }
       }
     }
-    return count || topicQuestionIds.size;
-  }, [rows, topic.topicId, demoMode, topicQuestionIds]);
+    return count || 1;
+  }, [rows, topic.topicId, demoMode]);
   const completedQs = topicRows.length;
   const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
 

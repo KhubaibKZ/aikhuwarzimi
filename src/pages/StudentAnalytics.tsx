@@ -364,9 +364,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Button>
 
-        <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5">
+        <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5 uppercase tracking-widest justify-center">
           <BarChart3 className="h-5 w-5 text-primary" />
-          Your Progress
+          {isDemoMode ? 'Student Demo Analytics' : 'Your Progress'}
         </h1>
 
         <Tabs defaultValue="pastpapers" className="w-full">

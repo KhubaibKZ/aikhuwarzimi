@@ -14,6 +14,7 @@ interface DemoRow {
   accuracy_score: number;
   speed_score: number;
   ai_usage_count: number;
+  checkwork_count: number;
   time_spent_seconds: number;
   total_steps: number;
   completed_steps: number;
@@ -67,9 +68,10 @@ function generateDemoRows(): DemoRow[] {
     for (let q = 0; q < solved; q++) {
       const topicId = topics[q % 9].id;
       const questionId = `demo_${paper.id}_q${q + 1}`;
-      const accuracy = Math.round(30 + rng() * 70); // 30-100
-      const hintCount = rng() < 0.35 ? Math.round(1 + rng() * 4) : 0; // 35% chance of hints
-      const time = Math.round(30 + rng() * 280); // 30-310 seconds
+      const accuracy = Math.round(30 + rng() * 70);
+      const hintCount = rng() < 0.2 ? Math.round(1 + rng() * 2) : 0; // 20% chance, 1-3 hints
+      const checkworkCount = rng() < 0.25 ? Math.round(1 + rng() * 2) : 0; // 25% chance, 1-3
+      const time = Math.round(30 + rng() * 280);
       rows.push({
         id: `demo_row_${qIndex++}`,
         paper_id: paper.id,
@@ -78,6 +80,7 @@ function generateDemoRows(): DemoRow[] {
         accuracy_score: accuracy,
         speed_score: Math.round(Math.max(0, Math.min(100, 100 - (time - 60) / 3))),
         ai_usage_count: hintCount,
+        checkwork_count: checkworkCount,
         time_spent_seconds: time,
         total_steps: Math.round(2 + rng() * 4),
         completed_steps: Math.round(2 + rng() * 3),

@@ -119,6 +119,7 @@ interface TopicRowProps {
   topic: TopicMastery;
   index: number;
   rows: any[];
+  demoMode?: boolean;
 }
 
 function TopicRow({ topic, index, rows }: TopicRowProps) {

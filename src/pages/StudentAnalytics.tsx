@@ -305,8 +305,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   const navigate = useNavigate();
   const { data, isLoading } = useStudentProgress({ studentMode });
 
-  const allPaperResults = data?.paperResults || [];
-  const allRows = data?.rows || [];
+  const isDemoMode = !studentMode;
+  const allPaperResults = isDemoMode ? demoPaperResults : (data?.paperResults || []);
+  const allRows: any[] = isDemoMode ? demoRows_ : (data?.rows || []);
 
   // Paper filter state — default: all selected
   const paperOptions = useMemo(() =>
@@ -325,13 +326,11 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   const paperResults = useMemo(() => allPaperResults.filter(p => effectiveSelection.has(p.paperId)), [allPaperResults, effectiveSelection]);
   const rows = useMemo(() => allRows.filter((r: any) => effectiveSelection.has(r.paper_id)), [allRows, effectiveSelection]);
   const topicMastery = useMemo(() => {
-    const allTopics = data?.topicMastery || [];
+    const allTopics = isDemoMode ? demoTopicMastery : (data?.topicMastery || []);
     if (effectiveSelection.size === paperOptions.length) return allTopics;
-    // Re-filter paper scores within each topic to only selected papers
     return allTopics.map(t => {
       const filteredScores = t.paperScores.filter(ps => effectiveSelection.has(ps.paperId));
       if (filteredScores.length === 0) return { ...t, paperScores: [], overallScore: 0, latestAccuracy: 0, latestReadiness: 0, latestSpeed: 0, trend: 'new' as const, trendDelta: 0, completedQuestions: 0 };
-      const latest = filteredScores[filteredScores.length - 1];
       const avgAcc = Math.round(filteredScores.reduce((s, ps) => s + ps.accuracy, 0) / filteredScores.length);
       const avgInd = Math.round(filteredScores.reduce((s, ps) => s + ps.readiness, 0) / filteredScores.length);
       const avgSpd = Math.round(filteredScores.reduce((s, ps) => s + ps.speed, 0) / filteredScores.length);
@@ -345,7 +344,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
       }
       return { ...t, paperScores: filteredScores, overallScore: overall, latestAccuracy: avgAcc, latestReadiness: avgInd, latestSpeed: avgSpd, trend, trendDelta };
     });
-  }, [data?.topicMastery, effectiveSelection, paperOptions.length]);
+  }, [isDemoMode, data?.topicMastery, effectiveSelection, paperOptions.length]);
 
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;

@@ -195,16 +195,14 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
         onClick={() => hasData && setExpanded(!expanded)}
         className={`w-full flex items-center gap-3 p-3.5 transition-colors ${hasData ? 'hover:bg-secondary/30 cursor-pointer' : 'cursor-default'}`}
       >
-        <span className="text-sm font-semibold text-foreground min-w-[140px] text-left truncate">{topic.topic}</span>
-        <div className="flex-1 flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 max-w-[220px]">
-              <Progress value={progressPct} className="h-2" />
-            </div>
-            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-              {completedQs}/{totalQsInTopic} Qs
-            </span>
+        <span className="text-sm font-semibold text-foreground min-w-[100px] text-left truncate">{topic.topic}</span>
+        <div className="flex-1 flex items-center gap-2">
+          <div className="flex-1 max-w-[220px]">
+            <Progress value={progressPct} className="h-2" />
           </div>
+          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+            {completedQs}/{totalQsInTopic} Qs
+          </span>
         </div>
         {hasData ? (
           <>
@@ -488,13 +486,10 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
 
             {/* Topic Mastery Matrix */}
             <section className="mb-10">
-              <h2 className="text-base font-semibold text-foreground mb-1 flex items-center gap-2">
+              <h2 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 Topic Mastery Matrix
               </h2>
-              <p className="text-[11px] text-muted-foreground mb-4">
-                Completion shows questions done across all papers. Overall = Accuracy (40%) + Independence (30%) + Speed (30%). Tap a topic for paper-wise breakdown.
-              </p>
               {topicMastery.length === 0 && !isLoading ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No data yet. Submit answers on past papers to see your topic mastery.</p>
               ) : (

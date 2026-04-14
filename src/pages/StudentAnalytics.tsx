@@ -14,6 +14,7 @@ import {
   getMasteryColor, getMasteryLabel,
   type TopicMastery
 } from '@/lib/analyticsData';
+import { PaperFilter } from '@/components/PaperFilter';
 
 const masteryColorMap = {
   green: 'hsl(142, 76%, 36%)',

@@ -23,6 +23,7 @@ import {
   type TopicMastery
 } from '@/lib/analyticsData';
 import { PaperFilter } from '@/components/PaperFilter';
+import { demoPaperResults, demoTopicMastery, demoRows_, demoPapers_, demoTopicMap_ } from '@/lib/demoAnalyticsData';
 
 const masteryColorMap = {
   green: 'hsl(142, 76%, 36%)',
@@ -118,20 +119,24 @@ interface TopicRowProps {
   topic: TopicMastery;
   index: number;
   rows: any[];
+  demoMode?: boolean;
 }
 
-function TopicRow({ topic, index, rows }: TopicRowProps) {
+function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const [expanded, setExpanded] = useState(false);
   const hasData = (topic.completedQuestions || 0) > 0;
+
+  const activeTopicMap = demoMode ? demoTopicMap_ : questionTopicMap;
+  const activePapers = demoMode ? demoPapers_ : pastPapers;
 
   // Get all question IDs for this topic
   const topicQuestionIds = useMemo(() => {
     const ids = new Set<string>();
-    Object.entries(questionTopicMap).forEach(([qId, ref]) => {
+    Object.entries(activeTopicMap).forEach(([qId, ref]) => {
       if (ref.topicId === topic.topicId) ids.add(qId);
     });
     return ids;
-  }, [topic.topicId]);
+  }, [topic.topicId, activeTopicMap]);
 
   // Filter rows to only this topic's questions
   const topicRows = useMemo(() =>
@@ -143,15 +148,27 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
   const totalQsInTopic = useMemo(() => {
     const paperIdsInScope = new Set(rows.map((r: any) => r.paper_id));
     let count = 0;
-    for (const paper of pastPapers) {
-      if (!paperIdsInScope.has(paper.id)) continue;
-      for (const s of paper.sections) {
-        const ref = questionTopicMap[s.questionId];
-        if (ref && ref.topicId === topic.topicId) count++;
+    if (demoMode) {
+      // For demo, count from demoTopicMap
+      Object.entries(demoTopicMap_).forEach(([qId, ref]) => {
+        if (ref.topicId === topic.topicId) {
+          const paperId = qId.replace(/^demo_/, '').replace(/_q\d+$/, '');
+          const fullPaperId = 'demo_' + paperId;
+          // Check if any row belongs to this paper
+          if (paperIdsInScope.has(fullPaperId) || rows.some((r: any) => r.question_id === qId)) count++;
+        }
+      });
+    } else {
+      for (const paper of pastPapers) {
+        if (!paperIdsInScope.has(paper.id)) continue;
+        for (const s of paper.sections) {
+          const ref = questionTopicMap[s.questionId];
+          if (ref && ref.topicId === topic.topicId) count++;
+        }
       }
     }
-    return count;
-  }, [rows, topic.topicId]);
+    return count || topicQuestionIds.size;
+  }, [rows, topic.topicId, demoMode, topicQuestionIds]);
   const completedQs = topicRows.length;
   const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
 
@@ -177,20 +194,24 @@ function TopicRow({ topic, index, rows }: TopicRowProps) {
 
   const questionBreakdown = useMemo(() => {
     return topicRows.map((r: any) => {
-      const qData = pastPaperQuestions[r.question_id];
-      const paper = pastPapers.find(p => p.id === r.paper_id);
-      const qMarks = qData?.marks || 0;
+      const qMarks = demoMode ? 3 : (pastPaperQuestions[r.question_id]?.marks || 0);
+      const paper = demoMode
+        ? demoPapers_.find(p => p.id === r.paper_id)
+        : pastPapers.find(p => p.id === r.paper_id);
       const obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks * 100) / 100;
+      const qNo = demoMode
+        ? r.question_id.replace(/^demo_.*_q/, 'Q')
+        : (pastPaperQuestions[r.question_id]?.questionNumber || r.question_id);
       return {
         paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
-        questionNo: qData?.questionNumber || r.question_id,
+        questionNo: qNo,
         marks: `${obtMarks % 1 === 0 ? obtMarks.toFixed(0) : obtMarks.toFixed(1)}/${qMarks}`,
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
-        checkWorkUsed: 0,
+        checkWorkUsed: demoMode ? (r.ai_usage_count > 2 ? 1 : 0) : 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),
       };
     });
-  }, [topicRows]);
+  }, [topicRows, demoMode]);
 
   return (
     <div
@@ -284,8 +305,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   const navigate = useNavigate();
   const { data, isLoading } = useStudentProgress({ studentMode });
 
-  const allPaperResults = data?.paperResults || [];
-  const allRows = data?.rows || [];
+  const isDemoMode = !studentMode;
+  const allPaperResults = isDemoMode ? demoPaperResults : (data?.paperResults || []);
+  const allRows: any[] = isDemoMode ? demoRows_ : (data?.rows || []);
 
   // Paper filter state — default: all selected
   const paperOptions = useMemo(() =>
@@ -304,13 +326,11 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
   const paperResults = useMemo(() => allPaperResults.filter(p => effectiveSelection.has(p.paperId)), [allPaperResults, effectiveSelection]);
   const rows = useMemo(() => allRows.filter((r: any) => effectiveSelection.has(r.paper_id)), [allRows, effectiveSelection]);
   const topicMastery = useMemo(() => {
-    const allTopics = data?.topicMastery || [];
+    const allTopics = isDemoMode ? demoTopicMastery : (data?.topicMastery || []);
     if (effectiveSelection.size === paperOptions.length) return allTopics;
-    // Re-filter paper scores within each topic to only selected papers
     return allTopics.map(t => {
       const filteredScores = t.paperScores.filter(ps => effectiveSelection.has(ps.paperId));
       if (filteredScores.length === 0) return { ...t, paperScores: [], overallScore: 0, latestAccuracy: 0, latestReadiness: 0, latestSpeed: 0, trend: 'new' as const, trendDelta: 0, completedQuestions: 0 };
-      const latest = filteredScores[filteredScores.length - 1];
       const avgAcc = Math.round(filteredScores.reduce((s, ps) => s + ps.accuracy, 0) / filteredScores.length);
       const avgInd = Math.round(filteredScores.reduce((s, ps) => s + ps.readiness, 0) / filteredScores.length);
       const avgSpd = Math.round(filteredScores.reduce((s, ps) => s + ps.speed, 0) / filteredScores.length);
@@ -324,7 +344,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
       }
       return { ...t, paperScores: filteredScores, overallScore: overall, latestAccuracy: avgAcc, latestReadiness: avgInd, latestSpeed: avgSpd, trend, trendDelta };
     });
-  }, [data?.topicMastery, effectiveSelection, paperOptions.length]);
+  }, [isDemoMode, data?.topicMastery, effectiveSelection, paperOptions.length]);
 
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;
@@ -344,9 +364,9 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
           <ArrowLeft className="h-4 w-4" /> Back to Dashboard
         </Button>
 
-        <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5">
+        <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5 uppercase tracking-widest justify-center">
           <BarChart3 className="h-5 w-5 text-primary" />
-          Your Progress
+          {isDemoMode ? 'Student Demo Analytics' : 'Your Progress'}
         </h1>
 
         <Tabs defaultValue="pastpapers" className="w-full">
@@ -493,7 +513,7 @@ export default function StudentAnalytics({ studentMode = false }: { studentMode?
               ) : (
                 <div className="space-y-2.5">
                   {topicMastery.map((topic, i) => (
-                    <TopicRow key={topic.topicId} topic={topic} index={i} rows={rows} />
+                    <TopicRow key={topic.topicId} topic={topic} index={i} rows={rows} demoMode={isDemoMode} />
                   ))}
                 </div>
               )}

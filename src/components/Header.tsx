@@ -66,7 +66,7 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
         <div className="flex items-center gap-3">
           {!publicMode && (
             <>
-              <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate(studentMode ? '/student/analytics' : '/analytics')}>
+              <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate(studentMode ? '/student/analytics' : '/student-demo-analytics')}>
                 <TrendingUp className="h-4 w-4" />
                 {studentMode ? 'Learning Analytics' : 'Student Demo Analytics'}
               </Button>

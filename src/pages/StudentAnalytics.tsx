@@ -96,8 +96,175 @@ function TrendIndicator({ trend, delta }: { trend: TopicMastery['trend']; delta:
   );
 }
 
-// ─── Topic Row with paper-wise expansion ───
-function TopicRow({ topic, index }: { topic: TopicMastery; index: number }) {
+// Helper to format seconds
+function formatTimeSec(secs: number): string {
+  if (secs < 60) return `${Math.round(secs)}s`;
+  const m = Math.floor(secs / 60);
+  const s2 = Math.round(secs % 60);
+  if (m < 60) return `${m}m ${s2}s`;
+  const h = Math.floor(m / 60);
+  const rm = m % 60;
+  return `${h}h ${rm}m`;
+}
+
+// ─── Topic Row with per-topic stats + question breakdown ───
+interface TopicRowProps {
+  topic: TopicMastery;
+  index: number;
+  rows: any[];
+}
+
+function TopicRow({ topic, index, rows }: TopicRowProps) {
+  const [expanded, setExpanded] = useState(false);
+  const hasData = (topic.completedQuestions || 0) > 0;
+
+  const topicQuestionIds = useMemo(() => {
+    const ids = new Set<string>();
+    Object.entries(questionTopicMap).forEach(([qId, ref]) => {
+      if (ref.topicId === topic.topicId) ids.add(qId);
+    });
+    return ids;
+  }, [topic.topicId]);
+
+  const topicRows = useMemo(() =>
+    rows.filter((r: any) => topicQuestionIds.has(r.question_id)),
+    [rows, topicQuestionIds]
+  );
+
+  const totalQsInTopic = topic.totalQuestions || 0;
+  const completedQs = topicRows.length;
+  const progressPct = totalQsInTopic > 0 ? Math.round((completedQs / totalQsInTopic) * 100) : 0;
+
+  const { marksObtained, totalMarks } = useMemo(() => {
+    let mo = 0, tm = 0;
+    topicRows.forEach((r: any) => {
+      const qData = pastPaperQuestions[r.question_id];
+      const qMarks = qData?.marks || 0;
+      tm += qMarks;
+      mo += (Number(r.accuracy_score) / 100) * qMarks;
+    });
+    return { marksObtained: Math.round(mo), totalMarks: tm };
+  }, [topicRows]);
+  const accuracyPct = totalMarks > 0 ? Math.round((marksObtained / totalMarks) * 100) : 0;
+
+  const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
+  const totalCheckWork = 0;
+  const totalAiActions = totalHints + totalCheckWork;
+  const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
+
+  const totalTime = topicRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
+  const avgTime = completedQs > 0 ? totalTime / completedQs : 0;
+
+  const questionBreakdown = useMemo(() => {
+    return topicRows.map((r: any) => {
+      const qData = pastPaperQuestions[r.question_id];
+      const paper = pastPapers.find(p => p.id === r.paper_id);
+      const qMarks = qData?.marks || 0;
+      const obtMarks = Math.round((Number(r.accuracy_score) / 100) * qMarks * 100) / 100;
+      return {
+        paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
+        questionNo: qData?.questionNumber || r.question_id,
+        marks: `${obtMarks % 1 === 0 ? obtMarks.toFixed(0) : obtMarks.toFixed(1)}/${qMarks}`,
+        hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
+        checkWorkUsed: 0,
+        timeTaken: formatTimeSec(r.time_spent_seconds || 0),
+      };
+    });
+  }, [topicRows]);
+
+  return (
+    <div
+      className="rounded-xl border border-border bg-card overflow-hidden animate-fade-in"
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
+      <button
+        onClick={() => hasData && setExpanded(!expanded)}
+        className={`w-full flex items-center gap-3 p-3.5 transition-colors ${hasData ? 'hover:bg-secondary/30 cursor-pointer' : 'cursor-default'}`}
+      >
+        <span className="text-sm font-semibold text-foreground min-w-[140px] text-left truncate">{topic.topic}</span>
+        <div className="flex-1 flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 max-w-[220px]">
+              <Progress value={progressPct} className="h-2" />
+            </div>
+            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+              {completedQs}/{totalQsInTopic} Qs
+            </span>
+          </div>
+        </div>
+        {hasData ? (
+          <>
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${masteryBgMap[getMasteryColor(accuracyPct)]}`}>
+              {accuracyPct}%
+            </span>
+            <TrendIndicator trend={topic.trend} delta={topic.trendDelta} />
+            {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
+          </>
+        ) : (
+          <span className="text-[10px] text-muted-foreground italic">Not started</span>
+        )}
+      </button>
+
+      {expanded && hasData && (
+        <div className="border-t border-border bg-secondary/10 animate-fade-in">
+          {/* Per-topic summary stats */}
+          <div className="px-4 py-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Progress</p>
+              <p className="text-lg font-bold text-foreground">{progressPct}%</p>
+              <p className="text-[10px] text-muted-foreground">{completedQs}/{totalQsInTopic} Qs</p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Accuracy</p>
+              <p className="text-lg font-bold text-foreground">{accuracyPct}%</p>
+              <p className="text-[10px] text-muted-foreground">{marksObtained}/{totalMarks} marks</p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence</p>
+              <p className="text-lg font-bold text-foreground">{aiIndependence}%</p>
+              <p className="text-[10px] text-muted-foreground">{totalHints} hints</p>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg Time</p>
+              <p className="text-lg font-bold text-foreground">{formatTimeSec(avgTime)}</p>
+              <p className="text-[10px] text-muted-foreground">per question</p>
+            </div>
+          </div>
+
+          {/* Question-wise breakdown table */}
+          <div className="overflow-x-auto border-t border-border/30">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-muted-foreground border-b border-border/50">
+                  <th className="text-left py-2 px-4 font-medium">Paper</th>
+                  <th className="text-left py-2 px-2 font-medium">Question No</th>
+                  <th className="text-center py-2 px-2 font-medium">Marks</th>
+                  <th className="text-center py-2 px-2 font-medium">Hint Used</th>
+                  <th className="text-center py-2 px-2 font-medium">Check Work</th>
+                  <th className="text-center py-2 px-2 font-medium">Time Taken</th>
+                </tr>
+              </thead>
+              <tbody>
+                {questionBreakdown.map((q, i) => (
+                  <tr key={i} className="border-b border-border/30 last:border-0">
+                    <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
+                    <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
+                    <td className="py-2 px-2 text-center">{q.marks}</td>
+                    <td className="py-2 px-2 text-center">
+                      <span className={q.hintUsed === 'Yes' ? 'text-warning font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                    </td>
+                    <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
+                    <td className="py-2 px-2 text-center">{q.timeTaken}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
   const [expanded, setExpanded] = useState(false);
   const completionPct = (topic.totalQuestions && topic.totalQuestions > 0)
     ? Math.round(((topic.completedQuestions || 0) / topic.totalQuestions) * 100)

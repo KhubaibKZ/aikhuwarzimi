@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ClipboardCheck, Loader2, Sparkles, Save, RefreshCcw, ExternalLink, Wand2 } from 'lucide-react';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { getPastPaperQuestion } from '@/lib/pastPaperData';
+import { ProgressProvider } from '@/context/ProgressContext';
 
 const STATUS_TONE: Record<AuditStatus, string> = {
   pass: 'bg-green-500/15 text-green-300 border-green-500/30',

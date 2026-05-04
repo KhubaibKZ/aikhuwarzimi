@@ -67,6 +67,7 @@ import {
   VennHSG_4024_12_2023ON,
   TriangleOAB_4024_12_2023ON
 } from '@/components/diagrams';
+import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
@@ -370,7 +371,28 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
   const checkAnswersInternal = (currentAnswers: Record<string, string> = answers) => {
     if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {}, markingNotes: {} };
-    
+
+    // Q16: custom region+lines scoring
+    if (question.id === 'pp_4024_on23_11_q16') {
+      let data: Q16Data = EMPTY_Q16;
+      try { data = JSON.parse(currentAnswers['q16_data'] || ''); } catch { /* ignore */ }
+      const r = evaluateQ16(data, Q16_EXPECTED);
+      const lineMarks = Math.min(3, Math.floor(r.correctLineCount * 3 / 5)); // up to B3 for lines (5 lines map to 3 marks: 0,1,2,3 thresholds)
+      // Map: 5/5 -> 3, 4/5 -> 2, 3/5 -> 2, 2/5 -> 1, 1/5 -> 0
+      const linesB = r.correctLineCount >= 5 ? 3 : r.correctLineCount >= 4 ? 2 : r.correctLineCount >= 2 ? 1 : 0;
+      const regionB = r.regionCorrect ? 1 : 0;
+      const total = Math.min(question.marks, linesB + regionB);
+      const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {
+        answer: total === question.marks ? 'correct' : 'incorrect',
+      };
+      return {
+        allCorrect: total === question.marks,
+        newFeedback,
+        marksEarned: { answer: total },
+        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.regionCorrect ? 'correct' : 'incorrect'} (${regionB} mark).` },
+      };
+    }
+
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
     const marksEarned: Record<string, number> = {};
     const markingNotes: Record<string, string> = {};
@@ -956,6 +978,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
   // For equationSolveParts, check the last box of the last stage instead of the part key
   const areAllPartsCompleted = (): boolean => {
+    // Q16: requires region bounds filled in builder
+    if (question.id === 'pp_4024_on23_11_q16') {
+      try {
+        const d = JSON.parse(answers['q16_data'] || '{}');
+        return !!(d?.region?.x1 && d?.region?.x2 && d?.region?.y1 && d?.region?.y2);
+      } catch { return false; }
+    }
     if (question.parts) {
       const eqParts = (question as any).equationSolveParts as string[] | undefined;
       return question.parts
@@ -1742,17 +1771,45 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             )}
             
             {/* Q16 - Inequalities coordinate grid */}
-            {question.id === 'pp_4024_on23_11_q16' && (
-              <div className="mt-4">
-                <CoordinateGrid
-                  width={320}
-                  height={320}
-                  xRange={[-1, 5]}
-                  yRange={[-1, 5]}
-                  interactive={true}
-                />
-              </div>
-            )}
+            {question.id === 'pp_4024_on23_11_q16' && (() => {
+              const raw = answers['q16_data'];
+              let data: Q16Data = EMPTY_Q16;
+              try { if (raw) data = JSON.parse(raw); } catch { /* ignore */ }
+              const evalRes = evaluateQ16(data, Q16_EXPECTED);
+              const showFeedback = isChecked || isSubmitted;
+              return (
+                <div className="mt-4">
+                  <InequalityRegionBuilder
+                    data={data}
+                    onChange={(d) => handleAnswerChange('q16_data', JSON.stringify(d))}
+                    disabled={isSubmitted}
+                    lineFeedback={showFeedback ? evalRes.lineFeedback : []}
+                    regionFeedback={showFeedback ? evalRes.regionFeedback : null}
+                  />
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const r = evaluateQ16(data, Q16_EXPECTED);
+                        const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
+                        const regionMsg = r.regionCorrect
+                          ? 'Region R is in the right place.'
+                          : (r.regionFeedback === null ? 'Region R bounds not yet entered.' : 'Region R is not in the right place yet.');
+                        toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
+                        // surface visual feedback by marking checked
+                        setIsChecked(true);
+                      }}
+                      disabled={isSubmitted}
+                    >
+                      Check Work
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
+
             
             {/* Q18 - 3-set Venn diagram */}
             {question.id === 'pp_4024_on23_11_q18' && (
@@ -2175,6 +2232,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   </p>
                 )}
               </div>
+            ) : question.id === 'pp_4024_on23_11_q16' ? (
+              /* Q16 has no extra answer field — region builder above handles all input */
+              null
             ) : (
               /* Short/single answer questions - also use StepWorkspace for consistency */
               <StepWorkspace

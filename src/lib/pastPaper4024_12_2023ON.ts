@@ -320,14 +320,24 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
             { type: 'box', key: 's1_c', width: 'w-10' },
           ],
         },
+      ]},
+      { label: 'Simplify under the root', stepKey: 's2', elements: [
         { type: 'text', value: '=' },
-        { type: 'box', key: 's1_d', width: 'w-14' },
+        { type: 'sqrt', innerElements: [
+          { type: 'box', key: 's2_a', width: 'w-14' },
+        ]},
+      ]},
+      { label: 'Take the square root', stepKey: 's3', elements: [
+        { type: 'text', value: '=' },
+        { type: 'box', key: 's3_a', width: 'w-14' },
       ]},
     ],
     parts: [{ label: 'Estimate', key: 'answer', marks: 2 }],
     answer: {
       answer: '20',
-      answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10', answer_s1_d: '20',
+      answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10',
+      answer_s2_a: '400',
+      answer_s3_a: '20',
     }
   },
 

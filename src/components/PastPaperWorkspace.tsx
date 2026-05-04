@@ -375,6 +375,33 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
     const marksEarned: Record<string, number> = {};
     const markingNotes: Record<string, string> = {};
+  const checkAnswersInternal = (currentAnswers: Record<string, string> = answers) => {
+    if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {}, markingNotes: {} };
+
+    // Q16: custom region+lines scoring
+    if (question.id === 'pp_4024_on23_11_q16') {
+      let data: Q16Data = EMPTY_Q16;
+      try { data = JSON.parse(currentAnswers['q16_data'] || ''); } catch { /* ignore */ }
+      const r = evaluateQ16(data, Q16_EXPECTED);
+      const lineMarks = Math.min(3, Math.floor(r.correctLineCount * 3 / 5)); // up to B3 for lines (5 lines map to 3 marks: 0,1,2,3 thresholds)
+      // Map: 5/5 -> 3, 4/5 -> 2, 3/5 -> 2, 2/5 -> 1, 1/5 -> 0
+      const linesB = r.correctLineCount >= 5 ? 3 : r.correctLineCount >= 4 ? 2 : r.correctLineCount >= 2 ? 1 : 0;
+      const regionB = r.regionCorrect ? 1 : 0;
+      const total = Math.min(question.marks, linesB + regionB);
+      const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {
+        answer: total === question.marks ? 'correct' : 'incorrect',
+      };
+      return {
+        allCorrect: total === question.marks,
+        newFeedback,
+        marksEarned: { answer: total },
+        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.regionCorrect ? 'correct' : 'incorrect'} (${regionB} mark).` },
+      };
+    }
+
+    const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
+    const marksEarned: Record<string, number> = {};
+    const markingNotes: Record<string, string> = {};
     let allCorrect = true;
     const eqParts = (question as any).equationSolveParts as string[] | undefined;
     const fractionParts = (question as any).fractionDivisionParts as string[] | undefined;

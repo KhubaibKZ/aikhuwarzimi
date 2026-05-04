@@ -1,167 +1,170 @@
 // Parallel lines diagram for Q6 4024/11 Oct/Nov 2023
-// Traced from actual pixel data of the exam paper image
-// Image: 251x162px. Using viewBox scaled 2x for quality.
+// "A straight line crosses two parallel lines. One angle is 110°."
+// Two parallel lines (with arrowheads) + one transversal.
+// 110° at upper intersection; x° and y° (adjacent angles on a straight line) at lower intersection.
 
 export function ParallelLines2023ON() {
-  // All coordinates are in 2x scale (original * 2)
-  // Traced lines from pixel analysis:
-  // Upper parallel line: y = 65.8 + 0.167x → scaled: y = 131.6 + 0.167x
-  // Lower parallel line: y = 122.1 + 0.167x → scaled: y = 244.2 + 0.167x
-  // Left transversal: y = 151.4 - 1.36x → scaled: y = 302.8 - 1.36x
-  // Right transversal: y = 271 - 1.4x → scaled: y = 542 - 1.4x
+  // Two parallel lines, sloping slightly down to the right
+  // Upper:   from (20, 90)  to (480, 150)
+  // Lower:   from (20, 230) to (480, 290)
+  // Transversal: from (120, 30) to (380, 340), crosses both
+
+  // Compute intersections
+  // Upper line param: P1=(20,90), dir=(460,60)
+  // Lower line param: P2=(20,230), dir=(460,60)
+  // Transversal: T1=(120,30), Tdir=(260,310)
+
+  // Solve upper ∩ trans:  (20+460u, 90+60u) = (120+260t, 30+310t)
+  // 460u - 260t = 100   ;  60u - 310t = -60
+  // Solve quickly numerically:
+  // From eq2: u = (-60 + 310t)/60 = -1 + 5.1667t
+  // Sub: 460(-1+5.1667t) - 260t = 100 => -460 + 2376.67t - 260t = 100 => 2116.67t = 560 => t=0.2645
+  // u = -1 + 5.1667*0.2645 = 0.366
+  // Upper intersection: x=20+460*0.366=188.4, y=90+60*0.366=111.9 → (188, 112)
+  // Lower ∩ trans: 460u - 260t = 100 ; 60u - 310t = 80
+  // u = (80 + 310t)/60 = 1.333 + 5.1667t
+  // 460(1.333+5.1667t) - 260t = 100 => 613.33 + 2116.67t = 100 => t = -0.2426
+  // Hmm negative — adjust transversal direction.
+  // Use transversal: T1=(80, 20) to (420, 360); Tdir=(340, 340)
+  // Upper ∩: 460u - 340t = 60 ; 60u - 340t = -70 → 400u = 130 → u=0.325, t = (60u+70)/340 = 0.2618
+  // Upper int: (20+460*0.325, 90+60*0.325) = (169.5, 109.5)
+  // Lower ∩: 460u - 340t = 60 ; 60u - 340t = 70 → 400u = -10 → u=-0.025 negative.
+  // Try transversal: T1=(120, 20), Tdir=(220, 340)
+  // Upper: 460u - 220t = 100 ; 60u - 340t = -70
+  // Multiply: 460u - 220t = 100 ; 60u - 340t = -70
+  // From 1: u = (100 + 220t)/460
+  // Sub: 60*(100+220t)/460 - 340t = -70
+  // (6000 + 13200t)/460 - 340t = -70
+  // 13.04 + 28.7t - 340t = -70
+  // -311.3t = -83.04 → t=0.2668; u=(100+220*0.2668)/460=0.345
+  // Upper int: (20+460*0.345, 90+60*0.345) = (178.7, 110.7)
+  // Lower: 460u - 220t = 100 ; 60u - 340t = 70
+  // 60(100+220t)/460 - 340t = 70 → 13.04 + 28.7t - 340t = 70 → -311.3t = 56.96 → t=-0.183 neg
+  // Transversal must extend upper-right to lower-left actually for both crossings.
+  // Use T1=(380, 20), Tdir=(-260, 340) → ends at (120, 360)
+  // Upper ∩: 20+460u = 380 - 260t ; 90+60u = 20+340t
+  // 460u + 260t = 360 ; 60u - 340t = -70
+  // From eq2: u = (-70+340t)/60
+  // 460(-70+340t)/60 + 260t = 360 → (-32200+156400t)/60 + 260t = 360
+  // -536.67 + 2606.67t + 260t = 360 → 2866.67t = 896.67 → t=0.3128
+  // u=(-70+340*0.3128)/60 = (-70+106.35)/60 = 0.606
+  // Upper int: (20+460*0.606, 90+60*0.606) = (298.8, 126.4)
+  // Lower ∩: 60u - 340t = 80 → u=(80+340t)/60
+  // 460(80+340t)/60 + 260t = 360 → (36800+156400t)/60 + 260t = 360
+  // 613.33 + 2606.67t + 260t = 360 → 2866.67t = -253.33 → t=-0.0884 neg.
+
+  // Easier: Make parallel lines horizontal-ish and transversal cross both.
+  // Parallel lines: y=110 and y=250 (slight slope: from (20,100) to (480,140) and (20,240) to (480,280))
+  // Transversal from (380, 30) to (140, 340) — definitely crosses both.
+
+  const upper = { x1: 20, y1: 100, x2: 480, y2: 140 };
+  const lower = { x1: 20, y1: 240, x2: 480, y2: 280 };
+  const trans = { x1: 380, y1: 30, x2: 140, y2: 340 };
+
+  // Compute intersection of two segments (line equations)
+  const intersect = (a: typeof upper, b: typeof trans) => {
+    const x1 = a.x1, y1 = a.y1, x2 = a.x2, y2 = a.y2;
+    const x3 = b.x1, y3 = b.y1, x4 = b.x2, y4 = b.y2;
+    const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+    return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
+  };
+
+  const Ptop = intersect(upper, trans);
+  const Pbot = intersect(lower, trans);
+
+  // Direction unit vectors
+  const upDir = { x: upper.x2 - upper.x1, y: upper.y2 - upper.y1 };
+  const upLen = Math.hypot(upDir.x, upDir.y);
+  const upU = { x: upDir.x / upLen, y: upDir.y / upLen };
+
+  const trDir = { x: trans.x2 - trans.x1, y: trans.y2 - trans.y1 };
+  const trLen = Math.hypot(trDir.x, trDir.y);
+  const trU = { x: trDir.x / trLen, y: trDir.y / trLen };
+
+  // 110° angle at Ptop — between upper line going RIGHT and transversal going DOWN (toward Pbot)
+  // (the obtuse angle on the lower-right of intersection)
+  const a110_start = Math.atan2(upU.y, upU.x); // upper right
+  const a110_end = Math.atan2(trU.y, trU.x); // transversal down (toward bottom)
+  // Arc from upper-right sweeping to transversal-down (clockwise = sweep 1)
+  const r1 = 26;
+  const s1x = Ptop.x + r1 * Math.cos(a110_start);
+  const s1y = Ptop.y + r1 * Math.sin(a110_start);
+  const e1x = Ptop.x + r1 * Math.cos(a110_end);
+  const e1y = Ptop.y + r1 * Math.sin(a110_end);
+
+  // x° at Pbot — angle between transversal coming from above (UP direction) and lower line going LEFT
+  // (acute angle on the upper-left, alternate-interior with 110° supplement = 70°)
+  const r2 = 22;
+  const lowDir = { x: lower.x2 - lower.x1, y: lower.y2 - lower.y1 };
+  const lowLen = Math.hypot(lowDir.x, lowDir.y);
+  const lowU = { x: lowDir.x / lowLen, y: lowDir.y / lowLen };
+  const aXstart = Math.atan2(-trU.y, -trU.x); // transversal up
+  const aXend = Math.atan2(-lowU.y, -lowU.x); // lower line going left
+  const sxX = Pbot.x + r2 * Math.cos(aXstart);
+  const sxY = Pbot.y + r2 * Math.sin(aXstart);
+  const exX = Pbot.x + r2 * Math.cos(aXend);
+  const exY = Pbot.y + r2 * Math.sin(aXend);
+
+  // y° at Pbot — adjacent to x°, between lower line going RIGHT and transversal going UP
+  const aYstart = Math.atan2(lowU.y, lowU.x); // lower right
+  const aYend = Math.atan2(-trU.y, -trU.x); // trans up
+  const syX = Pbot.x + r2 * Math.cos(aYstart);
+  const syY = Pbot.y + r2 * Math.sin(aYstart);
+  const eyX = Pbot.x + r2 * Math.cos(aYend);
+  const eyY = Pbot.y + r2 * Math.sin(aYend);
+
+  // Arrow markers along a line
+  const arrow = (cx: number, cy: number, ux: number, uy: number, key: string) => {
+    const px = -uy, py = ux;
+    return (
+      <polygon
+        key={key}
+        points={`${cx - ux * 7 + px * 5},${cy - uy * 7 + py * 5} ${cx + ux * 7},${cy + uy * 7} ${cx - ux * 7 - px * 5},${cy - uy * 7 - py * 5}`}
+        fill="hsl(var(--foreground))"
+      />
+    );
+  };
 
   return (
-    <svg viewBox="0 0 502 324" className="w-full max-w-md mx-auto">
+    <svg viewBox="0 0 500 360" className="w-full max-w-md mx-auto">
       {/* Upper parallel line */}
-      <line x1="0" y1="132" x2="502" y2="216" stroke="hsl(var(--foreground))" strokeWidth="2.5" />
-      
+      <line x1={upper.x1} y1={upper.y1} x2={upper.x2} y2={upper.y2} stroke="hsl(var(--foreground))" strokeWidth="2.5" />
       {/* Lower parallel line */}
-      <line x1="0" y1="244" x2="480" y2="324" stroke="hsl(var(--foreground))" strokeWidth="2.5" />
+      <line x1={lower.x1} y1={lower.y1} x2={lower.x2} y2={lower.y2} stroke="hsl(var(--foreground))" strokeWidth="2.5" />
+      {/* Transversal */}
+      <line x1={trans.x1} y1={trans.y1} x2={trans.x2} y2={trans.y2} stroke="hsl(var(--foreground))" strokeWidth="2.5" />
 
-      {/* Left transversal: from bottom-left to top-right, steep */}
-      <line x1="0" y1="303" x2="222" y2="0" stroke="hsl(var(--foreground))" strokeWidth="2.5" />
+      {/* Single arrow markers (one per parallel line, indicating they're parallel) */}
+      {arrow(upper.x1 + (upper.x2 - upper.x1) * 0.25, upper.y1 + (upper.y2 - upper.y1) * 0.25, upU.x, upU.y, 'a1')}
+      {arrow(lower.x1 + (lower.x2 - lower.x1) * 0.25, lower.y1 + (lower.y2 - lower.y1) * 0.25, lowU.x, lowU.y, 'a2')}
 
-      {/* Right transversal: from bottom to top-right, steep */}
-      <line x1="156" y1="324" x2="387" y2="0" stroke="hsl(var(--foreground))" strokeWidth="2.5" />
+      {/* 110° arc */}
+      <path
+        d={`M ${s1x.toFixed(1)},${s1y.toFixed(1)} A ${r1},${r1} 0 0,1 ${e1x.toFixed(1)},${e1y.toFixed(1)}`}
+        fill="none"
+        stroke="hsl(var(--foreground))"
+        strokeWidth="1.5"
+      />
+      <text x={Ptop.x + 18} y={Ptop.y + 38} className="text-[15px] fill-foreground font-semibold">110°</text>
 
-      {/* Parallel arrows on upper line — double chevrons pointing right-down */}
-      {/* At ~x=160 on upper line, y ≈ 132 + 0.167*160 = 159 */}
-      {(() => {
-        const dx = 502, dy = 84; // direction of upper line
-        const len = Math.sqrt(dx*dx + dy*dy);
-        const ux = dx/len, uy = dy/len;
-        const px = -uy, py = ux;
-        const cx = 160, cy = 159;
-        return (
-          <>
-            <polygon points={`${cx-ux*6+px*5},${cy-uy*6+py*5} ${cx+ux*6},${cy+uy*6} ${cx-ux*6-px*5},${cy-uy*6-py*5}`} fill="hsl(var(--foreground))" />
-            <polygon points={`${cx+ux*8-ux*6+px*5},${cy+uy*8-uy*6+py*5} ${cx+ux*8+ux*6},${cy+uy*8+uy*6} ${cx+ux*8-ux*6-px*5},${cy+uy*8-uy*6-py*5}`} fill="hsl(var(--foreground))" />
-          </>
-        );
-      })()}
+      {/* x° arc */}
+      <path
+        d={`M ${sxX.toFixed(1)},${sxY.toFixed(1)} A ${r2},${r2} 0 0,1 ${exX.toFixed(1)},${exY.toFixed(1)}`}
+        fill="none"
+        stroke="hsl(var(--foreground))"
+        strokeWidth="1.5"
+      />
+      <text x={Pbot.x - 38} y={Pbot.y - 8} className="text-[14px] fill-foreground font-semibold italic">x°</text>
 
-      {/* Parallel arrows on lower line — at ~x=380, y ≈ 244 + 0.167*380 = 307 */}
-      {(() => {
-        const dx = 480, dy = 80;
-        const len = Math.sqrt(dx*dx + dy*dy);
-        const ux = dx/len, uy = dy/len;
-        const px = -uy, py = ux;
-        const cx = 380, cy = 307;
-        return (
-          <>
-            <polygon points={`${cx-ux*6+px*5},${cy-uy*6+py*5} ${cx+ux*6},${cy+uy*6} ${cx-ux*6-px*5},${cy-uy*6-py*5}`} fill="hsl(var(--foreground))" />
-            <polygon points={`${cx+ux*8-ux*6+px*5},${cy+uy*8-uy*6+py*5} ${cx+ux*8+ux*6},${cy+uy*8+uy*6} ${cx+ux*8-ux*6-px*5},${cy+uy*8-uy*6-py*5}`} fill="hsl(var(--foreground))" />
-          </>
-        );
-      })()}
-
-      {/* Arrow on left transversal — between the two parallel lines, pointing up-right */}
-      {(() => {
-        const dx = 222, dy = -303; // direction upward
-        const len = Math.sqrt(dx*dx + dy*dy);
-        const ux = dx/len, uy = dy/len;
-        const px = -uy, py = ux;
-        // Midpoint between intersections: left trans crosses upper line at (112, 150), lower line at (38, 251)
-        // Arrow around (75, 200)
-        const cx = 78, cy = 197;
-        return (
-          <polygon points={`${cx-ux*7+px*5},${cy-uy*7+py*5} ${cx+ux*7},${cy+uy*7} ${cx-ux*7-px*5},${cy-uy*7-py*5}`} fill="hsl(var(--foreground))" />
-        );
-      })()}
-
-      {/* Arrow on right transversal — between the two parallel lines, pointing up-right */}
-      {(() => {
-        const dx = 231, dy = -324;
-        const len = Math.sqrt(dx*dx + dy*dy);
-        const ux = dx/len, uy = dy/len;
-        const px = -uy, py = ux;
-        // Right trans crosses upper line at (262, 176), lower line at (190, 276)
-        // Arrow around (226, 226)
-        const cx = 226, cy = 226;
-        return (
-          <polygon points={`${cx-ux*7+px*5},${cy-uy*7+py*5} ${cx+ux*7},${cy+uy*7} ${cx-ux*7-px*5},${cy-uy*7-py*5}`} fill="hsl(var(--foreground))" />
-        );
-      })()}
-
-      {/* 110° angle arc at left transversal × upper line intersection
-          Intersection at approximately (112, 150)
-          Angle below the upper line, between line going left and transversal going down */}
-      {(() => {
-        const cx = 112, cy = 150;
-        const r = 30;
-        // Upper line going LEFT direction: angle = atan2(dy, dx) for going left
-        const lineLeftAngle = Math.atan2(84, -502); // toward x=0
-        // Transversal going DOWN direction: toward (0, 303)
-        const transDownAngle = Math.atan2(303, -222); // toward bottom-left
-
-        const startX = cx + r * Math.cos(transDownAngle);
-        const startY = cy + r * Math.sin(transDownAngle);
-        const endX = cx + r * Math.cos(lineLeftAngle);
-        const endY = cy + r * Math.sin(lineLeftAngle);
-
-        return (
-          <>
-            <path
-              d={`M ${startX.toFixed(1)},${startY.toFixed(1)} A ${r},${r} 0 0,0 ${endX.toFixed(1)},${endY.toFixed(1)}`}
-              fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5"
-            />
-            <text x={cx - 50} y={cy + 30} className="text-[15px] fill-foreground font-semibold">110°</text>
-          </>
-        );
-      })()}
-
-      {/* x° angle at right transversal × upper line intersection
-          Intersection at approximately (262, 176)
-          Angle below the upper line, left of transversal */}
-      {(() => {
-        const cx = 262, cy = 176;
-        const r = 26;
-        // Upper line going LEFT: atan2(-84, -502)
-        const lineLeftAngle = Math.atan2(84, -502);
-        // Transversal going DOWN: toward (156, 324)
-        const transDownAngle = Math.atan2(324 - 176, 156 - 262);
-
-        const startX = cx + r * Math.cos(lineLeftAngle);
-        const startY = cy + r * Math.sin(lineLeftAngle);
-        const endX = cx + r * Math.cos(transDownAngle);
-        const endY = cy + r * Math.sin(transDownAngle);
-
-        return (
-          <>
-            <path
-              d={`M ${startX.toFixed(1)},${startY.toFixed(1)} A ${r},${r} 0 0,0 ${endX.toFixed(1)},${endY.toFixed(1)}`}
-              fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5"
-            />
-            <text x={cx - 30} y={cy + 35} className="text-[14px] fill-foreground font-semibold italic">x°</text>
-          </>
-        );
-      })()}
-
-      {/* y° angle at right transversal × upper line intersection
-          Below the upper line, right of transversal */}
-      {(() => {
-        const cx = 262, cy = 176;
-        const r = 26;
-        // Transversal going DOWN-LEFT: toward (156, 324)
-        const transDownAngle = Math.atan2(324 - 176, 156 - 262);
-        // Upper line going RIGHT: toward (502, 216)
-        const lineRightAngle = Math.atan2(216 - 176, 502 - 262);
-
-        const startX = cx + r * Math.cos(transDownAngle);
-        const startY = cy + r * Math.sin(transDownAngle);
-        const endX = cx + r * Math.cos(lineRightAngle);
-        const endY = cy + r * Math.sin(lineRightAngle);
-
-        return (
-          <>
-            <path
-              d={`M ${startX.toFixed(1)},${startY.toFixed(1)} A ${r},${r} 0 0,1 ${endX.toFixed(1)},${endY.toFixed(1)}`}
-              fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5"
-            />
-            <text x={cx + 15} y={cy + 32} className="text-[14px] fill-foreground font-semibold italic">y°</text>
-          </>
-        );
-      })()}
+      {/* y° arc */}
+      <path
+        d={`M ${syX.toFixed(1)},${syY.toFixed(1)} A ${r2},${r2} 0 0,1 ${eyX.toFixed(1)},${eyY.toFixed(1)}`}
+        fill="none"
+        stroke="hsl(var(--foreground))"
+        strokeWidth="1.5"
+      />
+      <text x={Pbot.x + 16} y={Pbot.y - 8} className="text-[14px] fill-foreground font-semibold italic">y°</text>
     </svg>
   );
 }

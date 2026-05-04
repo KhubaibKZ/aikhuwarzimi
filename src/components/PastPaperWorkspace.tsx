@@ -1957,7 +1957,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               /* Multi-part questions - use StepWorkspace + optional fraction division */
               <div className="space-y-4">
                 <StepWorkspace
-                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key)).map(p => ({
+                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key) && !((question as any).primeFactorParts || {})[p.key]).map(p => ({
                       ...p,
                       suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
                               p.label.includes('hour') ? ' hr' :
@@ -1999,6 +1999,40 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       />
                     </div>
                   ) : null;
+                })}
+                {Object.entries(((question as any).primeFactorParts || {}) as Record<string, number>).map(([pKey, target]) => {
+                  const part = question.parts?.find(p => p.key === pKey);
+                  const label = part ? part.label : `Prime factors of ${target}`;
+                  const marks = part?.marks;
+                  return (
+                    <div key={`pf-${pKey}`} className="space-y-2">
+                      <label className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{label} (ladder method)</span>
+                        {marks !== undefined && <span className="text-xs text-muted-foreground">[{marks} mark{marks > 1 ? 's' : ''}]</span>}
+                      </label>
+                      <div className="flex gap-2 items-start">
+                        <div className="flex-1">
+                          <PrimeFactorLadder
+                            value={answers[pKey] || ''}
+                            onChange={(val) => handleAnswerChange(pKey, val)}
+                            disabled={isSubmitted}
+                            targetNumber={target}
+                            isCorrect={feedback[pKey] === 'correct'}
+                            isIncorrect={feedback[pKey] === 'incorrect'}
+                          />
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCheckWorkForPart(pKey, label)}
+                          disabled={isLoading || isSubmitted}
+                          className="shrink-0 mt-1"
+                        >
+                          {loadingPartKey === pKey ? <span className="animate-pulse">...</span> : <BookOpen className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  );
                 })}
                 {(question as any).equationSolveParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);

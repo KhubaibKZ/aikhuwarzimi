@@ -94,21 +94,31 @@ export function EquationSolveWorkspace({
       const next = prev.map((step) => step.slice());
       const step = next[f.si];
       if (!step) return prev;
-      const insertAt = f.pi + 1;
-      const toInsert: CustomPart[] = [{ kind: 'frac', n: '', d: '' }];
-      // Only add a trailing text slot if the next part isn't already a text slot
-      const nextPart = step[insertAt];
-      if (!nextPart || nextPart.kind !== 'txt') {
-        toInsert.push({ kind: 'txt', s: '' });
+      const cur = step[f.pi];
+      // Case A: focused on empty txt → replace it in place with frac, ensure trailing txt
+      if (cur && cur.kind === 'txt' && cur.s === '') {
+        step.splice(f.pi, 1, { kind: 'frac', n: '', d: '' });
+        if (!step[f.pi + 1] || step[f.pi + 1].kind !== 'txt') {
+          step.splice(f.pi + 1, 0, { kind: 'txt', s: '' });
+        }
+        newSlot = `cs:${f.si}:${f.pi}:n`;
+      } else {
+        // Case B: insert after current part
+        const insertAt = f.pi + 1;
+        const toInsert: CustomPart[] = [{ kind: 'frac', n: '', d: '' }];
+        const nextPart = step[insertAt];
+        if (!nextPart || nextPart.kind !== 'txt') {
+          toInsert.push({ kind: 'txt', s: '' });
+        }
+        step.splice(insertAt, 0, ...toInsert);
+        newSlot = `cs:${f.si}:${insertAt}:n`;
       }
-      step.splice(insertAt, 0, ...toInsert);
-      newSlot = `cs:${f.si}:${insertAt}:n`;
       return next;
     });
     setTimeout(() => setFocusedSlot(newSlot), 0);
   };
 
-  // Serialize a custom step into a readable string for the AI tutor / answer store
+  // Serialize a custom step into a readable string for the AI tutor
   const serializeStep = (step: CustomStep): string =>
     step
       .map((p) => {

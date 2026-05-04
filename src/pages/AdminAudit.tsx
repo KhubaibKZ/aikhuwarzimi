@@ -35,7 +35,7 @@ interface StoredReport {
   audited_at: string;
 }
 
-export default function AdminAudit() {
+function AdminAuditInner() {
   const navigate = useNavigate();
   const { toast } = useToast();
 

@@ -425,3 +425,12 @@ function AdminAuditInner() {
     </div>
   );
 }
+
+
+export default function AdminAudit() {
+  return (
+    <ProgressProvider>
+      <AdminAuditInner />
+    </ProgressProvider>
+  );
+}

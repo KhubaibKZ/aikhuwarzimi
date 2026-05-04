@@ -63,9 +63,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     parts: [{ label: '$ Answer', key: 'answer', marks: 2 }],
     answer: {
-      answer: '7.80',
+      answer: '7.80|7.8',
       answer_s1_a: '12', answer_s1_b: '65', answer_s1_c: '780',
-      answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80'
+      answer_s2_a: '780', answer_s2_b: '100', answer_s2_c: '7.80|7.8'
     },
     markingCriteria: { answer: 'B1 for digits 78 or M1 for their answer converted to dollars or for 12 × 0.65. A1 for 7.80 or $7.80.' }
   },

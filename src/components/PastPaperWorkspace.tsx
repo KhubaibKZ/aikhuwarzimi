@@ -55,7 +55,8 @@ import {
   SpeedTimeGraph2023ON,
   VectorParallelogram2023ON,
   VennDiagram3Set2023ON,
-  ScatterDiagram2023ON
+  ScatterDiagram2023ON,
+  ScaleDrawing2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {
@@ -1714,6 +1715,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {question.id === 'pp_4024_on23_11_q9' && (
               <div className="mt-4">
                 <ScatterDiagram2023ON />
+              </div>
+            )}
+
+            {/* Q12 - Scale drawing & bearings */}
+            {question.id === 'pp_4024_on23_11_q12' && (
+              <div className="mt-4">
+                <ScaleDrawing2023ON />
               </div>
             )}
             

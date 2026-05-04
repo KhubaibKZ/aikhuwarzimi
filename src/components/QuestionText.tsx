@@ -11,14 +11,21 @@ import React from "react";
  *
  * Newlines (\n) are preserved as line breaks.
  */
-const FRAC_RE = /\[\[([^\]]+?)\/([^\]]+?)\]\]/g;
+const FRAC_RE = /(√)?\[\[([^\]]+?)\/([^\]]+?)\]\]/g;
 
-function StackedFraction({ num, den }: { num: string; den: string }) {
-  return (
+function StackedFraction({ num, den, sqrt }: { num: string; den: string; sqrt?: boolean }) {
+  const inner = (
     <span className="inline-flex flex-col items-center mx-1 align-middle">
       <span className="font-mono text-base px-2">{num}</span>
       <span className="w-full border-t border-foreground" />
       <span className="font-mono text-base px-2">{den}</span>
+    </span>
+  );
+  if (!sqrt) return inner;
+  return (
+    <span className="inline-flex items-stretch align-middle mx-1">
+      <span className="font-mono text-lg self-end pr-0.5">√</span>
+      <span className="border-t border-foreground pt-0.5">{inner}</span>
     </span>
   );
 }

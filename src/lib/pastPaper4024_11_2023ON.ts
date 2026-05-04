@@ -390,37 +390,40 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Tangent ⊥ radius: angle ABO = 90°; triangle ABO → angle BAO = 19°; angle ABC = 90 − 19 = 71', '(b) 360 − 38 − 90 − 90 = 142', '(c) Angle at centre = 2 × angle at circumference'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b', 'c'],
+    allowCustomSteps: true,
     equationStagesMap: {
       'a': [
-        { label: 'Tangent property', stepKey: 's1', elements: [
-          { type: 'text', value: 'ABO = 90°, BAO =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's1_a', width: 'w-10' }],
-            denElements: [{ type: 'text', value: '2' }]
-          },
-          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
+        { label: '', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_a', width: 'w-14' },
+          { type: 'box', key: 's1_op1', width: 'w-8' },
+          { type: 'box', key: 's1_b', width: 'w-14' },
+          { type: 'box', key: 's1_op2', width: 'w-8' },
+          { type: 'box', key: 's1_c', width: 'w-14' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_d', width: 'w-14' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
-          { type: 'text', value: 'ABC =' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-10' }
+          { type: 'text', value: 'ABC =' }, { type: 'box', key: 's2', width: 'w-14' }
         ]}
       ],
       'b': [
-        { label: 'Quadrilateral ABOC', stepKey: 's1', elements: [
-          { type: 'text', value: 'BOC = 360 −' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '−' },
-          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_c', width: 'w-10' }
+        { label: '', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_a', width: 'w-14' },
+          { type: 'box', key: 's1_op1', width: 'w-8' },
+          { type: 'box', key: 's1_b', width: 'w-14' },
+          { type: 'box', key: 's1_op2', width: 'w-8' },
+          { type: 'box', key: 's1_c', width: 'w-14' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_d', width: 'w-14' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
-          { type: 'text', value: 'BOC =' }, { type: 'box', key: 's2', width: 'w-12' }
+          { type: 'text', value: 'BOC =' }, { type: 'box', key: 's2', width: 'w-14' }
         ]}
       ],
       'c': [
-        { label: 'Angle at circumference', stepKey: 's1', elements: [
+        { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'BDC =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's1_a', width: 'w-12' }],
-            denElements: [{ type: 'text', value: '2' }]
-          },
-          { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'box', key: 's1_a', width: 'w-14' }
         ]}
       ]
     },
@@ -431,9 +434,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a: '71', b: '142', c: '71',
-      a_s1_a: '38', a_s1_b: '19', a_s2_a: '90', a_s2_b: '19', a_s2_c: '71',
-      b_s1_a: '38', b_s1_b: '90', b_s1_c: '90', b_s2: '142',
-      c_s1_a: '142', c_s1_b: '71'
+      a_s1_d: '71', a_s2: '71',
+      b_s1_d: '142', b_s2: '142',
+      c_s1_a: '71'
     },
     markingCriteria: { a: 'B1 for 71', b: 'M1 for angle ABO = 90 or angle ACO = 90 soi. A1 for 142. SC1 if 0 scored for answer = 2 × their (a).', c: 'B1 ft for their (b) ÷ 2.' }
   },

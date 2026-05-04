@@ -683,10 +683,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         { label: 'Substitute', stepKey: 's1', elements: [
           { type: 'text', value: 'f(−8) =' },
           { type: 'fraction',
-            numElements: [{ type: 'text', value: '−8' }],
-            denElements: [{ type: 'text', value: '4' }]
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-12' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
           },
-          { type: 'text', value: '+ 3' }
+          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' }
         ]},
         { label: 'Answer', stepKey: 's2', elements: [
           { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 's2', width: 'w-14' }
@@ -696,10 +696,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         { label: 'Let y = f(x)', stepKey: 's1', elements: [
           { type: 'text', value: 'y =' },
           { type: 'fraction',
-            numElements: [{ type: 'text', value: 'x' }],
-            denElements: [{ type: 'text', value: '4' }]
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
           },
-          { type: 'text', value: '+ 3 → x =' }, { type: 'box', key: 's1', width: 'w-20' }
+          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' },
+          { type: 'text', value: '→ x =' }, { type: 'box', key: 's1_x', width: 'w-20' }
         ]},
         { label: 'f⁻¹(x)', stepKey: 's2', elements: [
           { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 's2', width: 'w-20' }
@@ -709,20 +710,21 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         { label: 'f(p)', stepKey: 's1', elements: [
           { type: 'text', value: 'f(p) =' },
           { type: 'fraction',
-            numElements: [{ type: 'text', value: 'p' }],
-            denElements: [{ type: 'text', value: '4' }]
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
           },
-          { type: 'text', value: '+ 3' }
+          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' }
         ]},
         { label: 'g(p+5)', stepKey: 's2', elements: [
           { type: 'text', value: 'g(p+5) = 2(p+5−1) = 2(p+' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Equation', stepKey: 's3', elements: [
           { type: 'fraction',
-            numElements: [{ type: 'text', value: 'p' }],
-            denElements: [{ type: 'text', value: '4' }]
+            numElements: [{ type: 'box', key: 's3_num', width: 'w-10' }],
+            denElements: [{ type: 'box', key: 's3_den', width: 'w-10' }]
           },
-          { type: 'text', value: '+ 3 = 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
+          { type: 'text', value: '+' }, { type: 'box', key: 's3_c', width: 'w-10' },
+          { type: 'text', value: '= 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
         ]},
         { label: 'Multiply by 4', stepKey: 's4', elements: [
           { type: 'text', value: 'p + 12 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }

@@ -315,11 +315,36 @@ export function EquationSolveWorkspace({
                       })}
                     </div>
                   );
-                  return (
-                    <span key={i} className="inline-flex flex-col items-center mx-1">
+                  const frac = (
+                    <span className="inline-flex flex-col items-center mx-1">
                       {renderSubElements(el.numElements)}
                       <div className="w-full border-t border-foreground my-0.5" />
                       {renderSubElements(el.denElements)}
+                    </span>
+                  );
+                  if (el.sqrt) {
+                    return (
+                      <span key={i} className="inline-flex items-stretch align-middle mx-1">
+                        <span className="font-mono text-xl self-end pr-0.5">√</span>
+                        <span className="border-t-2 border-foreground pt-0.5">{frac}</span>
+                      </span>
+                    );
+                  }
+                  return <span key={i}>{frac}</span>;
+                }
+                if (el.type === 'sqrt') {
+                  return (
+                    <span key={i} className="inline-flex items-stretch align-middle mx-1">
+                      <span className="font-mono text-xl self-end pr-0.5">√</span>
+                      <span className="border-t-2 border-foreground pt-0.5 flex items-center gap-1 px-1">
+                        {el.innerElements?.map((subEl, j) => {
+                          if (subEl.type === 'text')
+                            return <span key={j} className="font-mono text-base">{subEl.value}</span>;
+                          if (subEl.type === 'box' && subEl.key)
+                            return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
+                          return null;
+                        })}
+                      </span>
                     </span>
                   );
                 }

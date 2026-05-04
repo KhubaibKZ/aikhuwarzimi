@@ -103,6 +103,11 @@ function AdminAuditInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paperId, questionId]);
 
+  // Reset attached QP/MS/Solved pages when switching papers (they're paper-scoped).
+  useEffect(() => {
+    setQpImg(''); setMsImg(''); setSolvedImg('');
+  }, [paperId]);
+
   const saveCheck = async (checkType: AuditCheckType, defaultStatus: AuditStatus, defaultNotes: string) => {
     if (!question) return;
     setSavingKey(checkType);
@@ -240,6 +245,45 @@ function AdminAuditInner() {
           </div>
         </section>
 
+        {/* Paper-level source documents (shared across all questions in this paper). */}
+        <section className="rounded-xl border border-dashed border-border bg-card/40 p-4 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="text-sm font-medium text-foreground">Paper source documents</div>
+              <div className="text-xs text-muted-foreground">
+                Attach the QP, MS and (optional) Solved Paper for <span className="text-foreground">{paper?.title}</span>. These persist across every question in this paper.
+              </div>
+            </div>
+            {(qpImg || msImg || solvedImg) && (
+              <Button size="sm" variant="ghost" onClick={() => { setQpImg(''); setMsImg(''); setSolvedImg(''); }}>
+                Clear
+              </Button>
+            )}
+          </div>
+          <div className="grid gap-2 md:grid-cols-3 text-xs">
+            {([
+              ['Question Paper', qpImg, setQpImg] as const,
+              ['Marking Scheme', msImg, setMsImg] as const,
+              ['Solved Paper (optional)', solvedImg, setSolvedImg] as const,
+            ]).map(([label, val, setter]) => (
+              <label key={label} className="flex flex-col gap-1">
+                <span className="text-muted-foreground">{label}</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return setter('');
+                    setter(await fileToBase64(f));
+                  }}
+                  className="text-xs"
+                />
+                {val && <span className="text-green-400">✓ attached ({Math.round(val.length / 1024)} KB)</span>}
+              </label>
+            ))}
+          </div>
+        </section>
+
         {question && report && counts && (
           <section className="rounded-xl border border-border bg-card p-5 space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -263,33 +307,8 @@ function AdminAuditInner() {
 
             <pre className="whitespace-pre-wrap rounded-lg bg-muted/40 p-3 text-sm text-foreground">{question.question}</pre>
 
-            {/* QP / MS / Solved page screenshots — fed to the AI vision audit */}
-            <div className="rounded-lg border border-dashed border-border p-3 space-y-2">
-              <div className="text-xs text-muted-foreground">
-                Attach the QP, MS and (optional) Solved Paper page screenshots so AI can compare against the source of truth.
-              </div>
-              <div className="grid gap-2 md:grid-cols-3 text-xs">
-                {([
-                  ['Question Paper page', qpImg, setQpImg] as const,
-                  ['Marking Scheme page', msImg, setMsImg] as const,
-                  ['Solved Paper page (optional)', solvedImg, setSolvedImg] as const,
-                ]).map(([label, val, setter]) => (
-                  <label key={label} className="flex flex-col gap-1">
-                    <span className="text-muted-foreground">{label}</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg"
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0];
-                        if (!f) return setter('');
-                        setter(await fileToBase64(f));
-                      }}
-                      className="text-xs"
-                    />
-                    {val && <span className="text-green-400">✓ attached ({Math.round(val.length / 1024)} KB base64)</span>}
-                  </label>
-                ))}
-              </div>
+            <div className="text-xs text-muted-foreground">
+              Source documents: {qpImg ? '✓ QP' : '✗ QP'} · {msImg ? '✓ MS' : '✗ MS'} · {solvedImg ? '✓ Solved' : '— Solved'}
             </div>
 
             {aiSummary && (

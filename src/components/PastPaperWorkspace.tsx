@@ -202,6 +202,21 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     if (c.includes('|')) {
       return c.split('|').some(alt => answersMatch(userRaw, alt.trim()));
     }
+    // Support comma-separated multi-value answers e.g. '0, 3' (both roots required, any order)
+    if (c.includes(',') && u.includes(',')) {
+      const cParts = c.split(',').map(s => s.trim()).filter(Boolean);
+      const uParts = u.split(',').map(s => s.trim()).filter(Boolean);
+      if (cParts.length !== uParts.length) return false;
+      const used = new Array(cParts.length).fill(false);
+      return cParts.every(cp => {
+        const idx = uParts.findIndex((up, i) => !used[i] && answersMatch(up, cp));
+        if (idx === -1) return false;
+        used[idx] = true;
+        return true;
+      });
+    }
+    // If correct expects multiple comma-separated values but user gave only one → not a match
+    if (c.includes(',') && !u.includes(',')) return false;
     if (u === c) return true;
     if (isNumericallyEqual(u, c)) return true;
     // Fraction equivalence: 5/20 = 1/4

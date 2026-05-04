@@ -128,13 +128,24 @@ export default function AdminAudit() {
   const runAiVision = async () => {
     if (!question) return;
     setAiLoading(true);
+    setAiSummary('');
     const { data, error } = await supabase.functions.invoke('audit-vision', {
       body: {
         paperId,
         questionId: question.id,
         questionNumber: question.questionNumber,
         questionText: question.question,
+        marks: question.marks,
+        hints: question.hints,
+        parts: question.parts,
+        equationStages: question.equationStages ?? question.equationStagesMap ?? null,
         answerKey: question.answer ?? null,
+        markingCriteria: question.markingCriteria ?? null,
+        hasImage: !!question.image,
+        hasInteractiveDiagram: !!question.diagramParts?.length,
+        qpBase64: qpImg || undefined,
+        msBase64: msImg || undefined,
+        solvedBase64: solvedImg || undefined,
       },
     });
     setAiLoading(false);
@@ -147,24 +158,30 @@ export default function AdminAudit() {
       toast({ title: 'No verdict returned', variant: 'destructive' });
       return;
     }
+    setAiSummary(verdicts.summary ?? '');
+    const checkKeys: AuditCheckType[] = [
+      'question_fidelity', 'diagram_fidelity', 'workspace_scaffolding', 'check_work_coverage', 'submit_validation',
+    ];
     const { data: userRes } = await supabase.auth.getUser();
-    const rows = (Object.keys(verdicts) as AuditCheckType[]).map((k) => ({
-      paper_id: paperId,
-      question_id: question.id,
-      check_type: k,
-      status: verdicts[k].status,
-      source: 'ai_vision',
-      notes: verdicts[k].notes,
-      audited_by: userRes.user?.id ?? null,
-      audited_at: new Date().toISOString(),
-    }));
+    const rows = checkKeys
+      .filter((k) => verdicts[k])
+      .map((k) => ({
+        paper_id: paperId,
+        question_id: question.id,
+        check_type: k,
+        status: verdicts[k].status,
+        source: 'ai_vision',
+        notes: verdicts[k].notes,
+        audited_by: userRes.user?.id ?? null,
+        audited_at: new Date().toISOString(),
+      }));
     const { error: upErr } = await supabase
       .from('audit_reports')
       .upsert(rows, { onConflict: 'paper_id,question_id,check_type,source' });
     if (upErr) {
       toast({ title: 'Save failed', description: upErr.message, variant: 'destructive' });
     } else {
-      toast({ title: 'AI audit saved' });
+      toast({ title: 'AI audit saved', description: `${rows.length} verdict(s) stored` });
       loadStored();
     }
   };

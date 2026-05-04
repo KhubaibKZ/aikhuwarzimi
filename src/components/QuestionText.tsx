@@ -46,7 +46,7 @@ export function QuestionText({ text, className }: { text: string; className?: st
             );
           }
           nodes.push(
-            <StackedFraction key={`f-${li}-${m.index}`} num={m[1].trim()} den={m[2].trim()} />
+            <StackedFraction key={`f-${li}-${m.index}`} num={m[2].trim()} den={m[3].trim()} sqrt={!!m[1]} />
           );
           lastIdx = m.index + m[0].length;
         }

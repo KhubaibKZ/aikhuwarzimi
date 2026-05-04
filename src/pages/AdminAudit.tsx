@@ -307,33 +307,8 @@ function AdminAuditInner() {
 
             <pre className="whitespace-pre-wrap rounded-lg bg-muted/40 p-3 text-sm text-foreground">{question.question}</pre>
 
-            {/* QP / MS / Solved page screenshots — fed to the AI vision audit */}
-            <div className="rounded-lg border border-dashed border-border p-3 space-y-2">
-              <div className="text-xs text-muted-foreground">
-                Attach the QP, MS and (optional) Solved Paper page screenshots so AI can compare against the source of truth.
-              </div>
-              <div className="grid gap-2 md:grid-cols-3 text-xs">
-                {([
-                  ['Question Paper page', qpImg, setQpImg] as const,
-                  ['Marking Scheme page', msImg, setMsImg] as const,
-                  ['Solved Paper page (optional)', solvedImg, setSolvedImg] as const,
-                ]).map(([label, val, setter]) => (
-                  <label key={label} className="flex flex-col gap-1">
-                    <span className="text-muted-foreground">{label}</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg"
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0];
-                        if (!f) return setter('');
-                        setter(await fileToBase64(f));
-                      }}
-                      className="text-xs"
-                    />
-                    {val && <span className="text-green-400">✓ attached ({Math.round(val.length / 1024)} KB base64)</span>}
-                  </label>
-                ))}
-              </div>
+            <div className="text-xs text-muted-foreground">
+              Source documents: {qpImg ? '✓ QP' : '✗ QP'} · {msImg ? '✓ MS' : '✗ MS'} · {solvedImg ? '✓ Solved' : '— Solved'}
             </div>
 
             {aiSummary && (

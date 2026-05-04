@@ -806,7 +806,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 24 ==========
   'pp_4024_on23_11_q24': {
     id: 'pp_4024_on23_11_q24', questionNumber: '24', title: 'Algebraic fractions equation',
-    question: 'Solve 3x/(x+1) − 2/(x−1) = 3.',
+    question: 'Solve [[3x/(x+1)]] − [[2/(x−1)]] = 3.',
     marks: 4,
     hints: ['Multiply through by (x+1)(x−1)', 'Expand: 3x(x−1) − 2(x+1) = 3(x+1)(x−1)', 'Simplify and solve'],
     type: 'multi-part',

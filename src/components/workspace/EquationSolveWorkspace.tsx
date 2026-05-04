@@ -205,6 +205,59 @@ export function EquationSolveWorkspace({
         </div>
       )}
 
+      {/* Custom student-added equation steps */}
+      {allowCustomSteps && (
+        <div className="space-y-2 border-t pt-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground font-medium">My working</span>
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isSubmitted}
+                onClick={() => setCustomSteps(prev => [...prev, ''])}
+                className="h-7 text-xs"
+              >
+                + Add step
+              </Button>
+              {customSteps.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={isSubmitted}
+                  onClick={() => setCustomSteps(prev => prev.slice(0, -1))}
+                  className="h-7 text-xs"
+                >
+                  − Remove
+                </Button>
+              )}
+            </div>
+          </div>
+          {customSteps.map((val, i) => {
+            const id = `__custom_${i}`;
+            return (
+              <div key={id} className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground w-6 text-right">{i + 1}.</span>
+                <Input
+                  ref={(el) => { customRefs.current[id] = el; }}
+                  value={val}
+                  onChange={(e) => updateCustomStep(i, e.target.value)}
+                  onFocus={() => setFocusedInput(id)}
+                  disabled={isSubmitted}
+                  placeholder="Write your own step…"
+                  className={cn(
+                    "flex-1 h-9 font-mono text-base border-muted-foreground/40",
+                    focusedInput === id && "ring-2 ring-primary/30"
+                  )}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* Keyboard */}
       <div className="border-t pt-3">
         <HorizontalKeyboard

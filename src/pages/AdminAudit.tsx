@@ -61,6 +61,17 @@ export default function AdminAudit() {
   const [savingKey, setSavingKey] = useState<AuditCheckType | null>(null);
   const [overrideNotes, setOverrideNotes] = useState<Partial<Record<AuditCheckType, string>>>({});
   const [overrideStatus, setOverrideStatus] = useState<Partial<Record<AuditCheckType, AuditStatus>>>({});
+  const [qpImg, setQpImg] = useState<string>('');
+  const [msImg, setMsImg] = useState<string>('');
+  const [solvedImg, setSolvedImg] = useState<string>('');
+  const [aiSummary, setAiSummary] = useState<string>('');
+
+  const fileToBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1] ?? '');
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
 
   const loadStored = async () => {
     if (!paperId || !questionId) return;

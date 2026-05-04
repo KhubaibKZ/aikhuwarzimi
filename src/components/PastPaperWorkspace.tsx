@@ -2204,6 +2204,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   </p>
                 )}
               </div>
+            ) : question.id === 'pp_4024_on23_11_q16' ? (
+              /* Q16 has no extra answer field — region builder above handles all input */
+              null
             ) : (
               /* Short/single answer questions - also use StepWorkspace for consistency */
               <StepWorkspace

@@ -74,7 +74,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 5 ==========
   'pp_4024_on23_11_q5': {
     id: 'pp_4024_on23_11_q5', questionNumber: '5', title: 'Bar chart statistics',
-    question: 'Yasmin asks 20 people how many pets they own. The results are shown in the bar chart.\n(a) Find the range.\n(b) Find the fraction of the 20 people who own 3 pets.\n     Give your answer in its simplest form.',
+    question: 'Yasmin asks 20 people how many pets they own. The results are shown in the bar chart.\n(a) Find the range.\n(b) Find the fraction of the 20 people who own 3 pets.',
     marks: 2,
     hints: ['(a) Range = highest value − lowest value of number of pets that have non-zero frequency', '(b) Read frequency for 3 pets from chart, write as fraction of 20 in simplest form'],
     type: 'multi-part',
@@ -96,8 +96,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       ]
     },
     parts: [{ label: '(a) Range', key: 'a', marks: 1 }, { label: '(b) Fraction (simplest form)', key: 'b', marks: 1 }],
-    answer: { a: '4', b: '1/4', a_s1_a: '4', a_s1_b: '0', a_s1_ans: '4', b_s1_num: '1', b_s1_den: '4' },
-    markingCriteria: { a: 'B1', b: 'B1 for 5/20 or equivalent fraction in simplest form 1/4' }
+    answer: { a: '4', b: '1/4|5/20', a_s1_a: '4', a_s1_b: '0', a_s1_ans: '4', b_s1_num: '1|5', b_s1_den: '4|20' },
+    markingCriteria: { a: 'B1', b: 'B1 for 5/20 oe fraction (any equivalent fraction accepted, e.g. 1/4).' }
   },
 
   // ========== Question 6 ==========
@@ -213,8 +213,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Look at the trend of the points', '(b) Draw a line through the data and read off at age 50'],
     type: 'multi-part',
     parts: [{ label: '(a) Correlation type', key: 'a', marks: 1 }, { label: '(b) Time (minutes)', key: 'b', marks: 2 }],
-    answer: { a: 'Positive', b: '0.17' },
-    markingCriteria: { a: 'B1 for Positive', b: 'B1 for ruled line of best fit. B1 dep for reading their straight line at age 50 (dependent on positive gradient).' }
+    answer: { a: 'Positive|positive correlation', b: '0.17|0.16|0.18|0.15|0.19|0.20' },
+    markingCriteria: { a: 'B1 for Positive', b: 'B1 for ruled line of best fit. B1 dep for reading their straight line at age 50 (any sensible reading from a positive-gradient line of best fit accepted).' }
   },
 
   // ========== Question 10 ==========
@@ -316,7 +316,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(b) Construction', key: 'b', marks: 2 },
       { label: '(c) Position of S', key: 'c', marks: 1 }
     ],
-    answer: { map: '9', a: '1.8', b: 'Perpendicular bisector', c: 'S marked correctly' },
+    answer: { map: '9|8.8|8.9|9.0|9.1|9.2', a: '1.8|1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84', b: 'Perpendicular bisector', c: 'S marked correctly' },
     markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm and their answer is 0.2 × this value. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.', b: 'B1 for acceptable bisector with no/incorrect arcs. B1 for correct arcs.', c: 'B1 dep on their attempt at bisector crossing AB.' }
   },
 
@@ -379,7 +379,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(b) Next time', key: 'b', marks: 3 }
     ],
     answer: {
-      a: '2² × 3²', b: '11:54',
+      a: '2² × 3²|2^2 × 3^2|2x2x3x3|2 × 2 × 3 × 3|2*2*3*3', b: '11:54|11 54|1154',
       b_s1_a: '2', b_s1_b: '2', b_s1_c: '3', b_s1_d: '3',
       b_s2_a: '2', b_s2_b: '2', b_s2_c: '2', b_s2_d: '2', b_s2_e: '3',
       b_s3: '144',
@@ -501,7 +501,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'" },
+    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'|G∩H∩F'|(G∩H)\\F|G and H not F" },
     markingCriteria: { a: 'B2 for Venn diagram with 6 or 7 correct values or B1 for Venn diagram with 4 or 5 correct values or for answer 2 in intersection.', b: "B1 for G ∩ H ∩ F' oe." }
   },
 
@@ -836,7 +836,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
     answer: {
-      answer: '1/5',
+      answer: '1/5|0.2',
       answer_s0_n1: '3x', answer_s0_n2: 'x', answer_s0_n3: '1',
       answer_s0_n4: '2', answer_s0_n5: 'x', answer_s0_n6: '1',
       answer_s0_d1: 'x', answer_s0_d2: '1', answer_s0_d3: 'x', answer_s0_d4: '1',

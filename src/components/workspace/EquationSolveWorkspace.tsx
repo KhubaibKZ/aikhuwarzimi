@@ -59,12 +59,17 @@ export function EquationSolveWorkspace({
   aiResponse,
   keyboardKeys,
   allowCustomSteps,
+  structuredExtraStep,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // Predefined-stage answer typing
   const k = (suffix: string) => `${questionKey}_${suffix}`;
+
+  // Structured extra rows: each row is array of box counts. Boxes are removable individually.
+  // Row state: array of arrays of boolean (true = present). Operator boxes mirror value-box presence.
+  const [extraRows, setExtraRows] = useState<boolean[][]>([]);
 
   // ===== Custom steps state =====
   const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);

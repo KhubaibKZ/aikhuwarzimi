@@ -303,6 +303,7 @@ export default function AdminAudit() {
                 const stored_ = stored.filter((s) => s.check_type === r.checkType);
                 const status = overrideStatus[r.checkType] ?? r.status;
                 const notes = overrideNotes[r.checkType] ?? r.notes;
+                const issues = r.issues ?? [];
                 return (
                   <div key={r.checkType} className="rounded-lg border border-border p-3 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -320,6 +321,71 @@ export default function AdminAudit() {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {issues.length > 0 && (
+                      <div className="space-y-2">
+                        {issues.map((iss, i) => {
+                          const fixKey = `${r.checkType}::${i}`;
+                          const fixOut = fixResults[fixKey];
+                          return (
+                            <div key={fixKey} className="rounded-md border border-red-500/20 bg-red-500/5 p-2 text-xs space-y-1">
+                              <div className="text-foreground">{iss.message}</div>
+                              {(iss.ref || iss.path) && (
+                                <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                                  {iss.ref && <span>📍 <span className="text-foreground">{iss.ref}</span></span>}
+                                  {iss.path && <code className="rounded bg-muted px-1 py-0.5 font-mono">{iss.path}</code>}
+                                </div>
+                              )}
+                              {iss.suggestion && (
+                                <div className="text-amber-300/90">💡 {iss.suggestion}</div>
+                              )}
+                              <div className="flex items-center gap-2 pt-1">
+                                <Button
+                                  size="sm" variant="outline" className="h-7 text-xs"
+                                  onClick={() => setPreviewOpen(true)}
+                                >
+                                  <ExternalLink className="h-3 w-3 mr-1" /> Open in workspace
+                                </Button>
+                                <Button
+                                  size="sm" className="h-7 text-xs"
+                                  disabled={fixLoadingKey === fixKey}
+                                  onClick={async () => {
+                                    setFixLoadingKey(fixKey);
+                                    const { data, error } = await supabase.functions.invoke('audit-suggest-fix', {
+                                      body: {
+                                        paperId, questionId: question.id, checkType: r.checkType,
+                                        issue: iss,
+                                        questionSnippet: question.question?.slice(0, 600),
+                                        contextSnippet: JSON.stringify({
+                                          parts: question.parts,
+                                          equationStages: question.equationStages,
+                                          equationStagesMap: question.equationStagesMap,
+                                          answer: question.answer,
+                                          markingCriteria: question.markingCriteria,
+                                        }, null, 2).slice(0, 4000),
+                                      },
+                                    });
+                                    setFixLoadingKey(null);
+                                    if (error) {
+                                      toast({ title: 'Suggest fix failed', description: error.message, variant: 'destructive' });
+                                      return;
+                                    }
+                                    setFixResults((p) => ({ ...p, [fixKey]: (data as any)?.fix ?? 'No fix returned.' }));
+                                  }}
+                                >
+                                  {fixLoadingKey === fixKey ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <Wand2 className="h-3 w-3 mr-1" />}
+                                  Suggest fix
+                                </Button>
+                              </div>
+                              {fixOut && (
+                                <pre className="mt-1 whitespace-pre-wrap rounded bg-muted/50 p-2 text-foreground">{fixOut}</pre>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     <Textarea
                       rows={2}
                       value={notes}
@@ -342,6 +408,18 @@ export default function AdminAudit() {
             </div>
           </section>
         )}
+
+        {question && (() => {
+          const liveQ = getPastPaperQuestion(question.id);
+          return liveQ ? (
+            <PastPaperWorkspace
+              question={liveQ}
+              isOpen={previewOpen}
+              onClose={() => setPreviewOpen(false)}
+              workspaceMode="general"
+            />
+          ) : null;
+        })()}
       </main>
     </div>
   );

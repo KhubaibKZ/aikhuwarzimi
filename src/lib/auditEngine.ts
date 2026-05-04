@@ -1,10 +1,4 @@
 // Shared deterministic audit engine for past-paper questions.
-// Encodes the 5-point audit definition:
-//  1. Question fidelity   — wording / symbols / numbers exactly match QP
-//  2. Diagram fidelity    — same diagram, interactive when solving needs it
-//  3. Workspace scaffolding — boxes-only, no pre-filled working / hints
-//  4. Check Work coverage — every step wired with a stepKey
-//  5. Submit validation   — answer keys + MS alternatives + marking criteria
 import type { PastPaperQuestion } from './pastPaperData';
 
 export type AuditCheckType =
@@ -16,10 +10,18 @@ export type AuditCheckType =
 
 export type AuditStatus = 'pending' | 'pass' | 'warning' | 'fail';
 
+export interface AuditIssue {
+  message: string;
+  ref?: string;        // human-readable location
+  path?: string;       // dotted path into the question object
+  suggestion?: string; // concrete fix hint
+}
+
 export interface AuditCheckResult {
   checkType: AuditCheckType;
   status: AuditStatus;
   notes: string;
+  issues: AuditIssue[];
   findings: Record<string, unknown>;
 }
 
@@ -38,202 +40,286 @@ const CHECK_LABELS: Record<AuditCheckType, string> = {
 };
 export function getCheckLabel(c: AuditCheckType) { return CHECK_LABELS[c]; }
 
-// ───────── helpers ─────────
 const looksLikeDiagramRef = (text: string) =>
-  /diagram|chart|graph|figure|shown|grid|triangle|circle|venn|scatter|sector|parallelogram|rectangle|cylinder|histogram|net of|bar chart|frequency polygon|cumulative|pie chart|map|coordinate|axes|plot/i.test(
-    text,
-  );
+  /diagram|chart|graph|figure|shown|grid|triangle|circle|venn|scatter|sector|parallelogram|rectangle|cylinder|histogram|net of|bar chart|frequency polygon|cumulative|pie chart|map|coordinate|axes|plot/i.test(text);
 
-const PROHIBITED_WORDING_PATTERNS = [
-  { re: /\\frac|\\sqrt|\\cdot|\\times|\$\$|\\\(/, msg: 'LaTeX detected — use plain Unicode math symbols.' },
-  { re: /\bsqrt\(/i, msg: 'ASCII "sqrt(...)" detected — use the √ character.' },
-  { re: /\*\*/, msg: 'Markdown bold (**) detected in question text.' },
-  { re: /\bx\s*\^\s*2\b/, msg: 'Use x² (Unicode) instead of x^2.' },
+const PROHIBITED_WORDING_PATTERNS: { re: RegExp; msg: string; suggestion: string }[] = [
+  { re: /\\frac|\\sqrt|\\cdot|\\times|\$\$|\\\(/, msg: 'LaTeX detected in question text.', suggestion: 'Replace with plain Unicode math symbols (e.g. √, ×, ÷, ²).' },
+  { re: /\bsqrt\(/i, msg: 'ASCII "sqrt(...)" detected.', suggestion: 'Replace sqrt(x) with √x.' },
+  { re: /\*\*/, msg: 'Markdown bold (**) detected in question text.', suggestion: 'Remove ** — use plain text only.' },
+  { re: /\bx\s*\^\s*2\b/, msg: 'ASCII exponent "x^2" detected.', suggestion: 'Use the Unicode superscript x².' },
 ];
 
-// ───────── 1. Question fidelity ─────────
-function checkQuestionFidelity(q: PastPaperQuestion): AuditCheckResult {
-  const issues: string[] = [];
-  if (!q.question || q.question.trim().length < 5) issues.push('Question text missing/too short.');
-  if (!q.title || q.title.length < 3) issues.push('Title missing.');
-  if (typeof q.marks !== 'number' || q.marks < 0) issues.push('Marks missing/invalid.');
+function mkResult(
+  checkType: AuditCheckType,
+  issues: AuditIssue[],
+  passNote: string,
+  failOn: (m: string) => boolean = () => false,
+  findings: Record<string, unknown> = {},
+): AuditCheckResult {
+  const status: AuditStatus = !issues.length
+    ? 'pass'
+    : issues.some((i) => failOn(i.message)) ? 'fail' : 'warning';
+  return {
+    checkType,
+    status,
+    notes: issues.length ? issues.map((i) => i.message).join(' ') : passNote,
+    issues,
+    findings: { ...findings, issues: issues.map((i) => i.message) },
+  };
+}
 
-  for (const { re, msg } of PROHIBITED_WORDING_PATTERNS) {
-    if (re.test(q.question)) issues.push(msg);
+function checkQuestionFidelity(q: PastPaperQuestion): AuditCheckResult {
+  const issues: AuditIssue[] = [];
+  if (!q.question || q.question.trim().length < 5) {
+    issues.push({ message: 'Question text missing/too short.', ref: 'question', path: 'question', suggestion: 'Paste the exact wording from the QP.' });
   }
-  // Multi-part question text should reference each part label (a), (b)…
+  if (!q.title || q.title.length < 3) {
+    issues.push({ message: 'Title missing.', ref: 'title', path: 'title' });
+  }
+  if (typeof q.marks !== 'number' || q.marks < 0) {
+    issues.push({ message: 'Marks missing/invalid.', ref: 'marks', path: 'marks' });
+  }
+  for (const { re, msg, suggestion } of PROHIBITED_WORDING_PATTERNS) {
+    const m = q.question?.match(re);
+    if (m) issues.push({ message: msg, ref: `question text ("…${m[0]}…")`, path: 'question', suggestion });
+  }
   if (q.parts && q.parts.length > 1) {
     for (const p of q.parts) {
-      if (p.marks > 0 && !new RegExp(`\\(${p.key}\\)`, 'i').test(q.question + ' ' + p.label)) {
-        // soft: only warn if both label and question lack it
-        if (!new RegExp(`\\(${p.key}\\)`).test(q.question)) {
-          issues.push(`Part "(${p.key})" not referenced in question text.`);
-        }
+      if (p.marks > 0 && !new RegExp(`\\(${p.key}\\)`).test(q.question)) {
+        issues.push({
+          message: `Part "(${p.key})" not referenced in question text.`,
+          ref: `parts[${p.key}]`,
+          path: `question`,
+          suggestion: `Add "(${p.key})" prefix where this sub-question begins.`,
+        });
       }
     }
   }
-  return {
-    checkType: 'question_fidelity',
-    status: issues.length ? 'warning' : 'pass',
-    notes: issues.length
-      ? issues.join(' ')
-      : 'Wording, symbols, parts and metadata pass deterministic checks. Run AI vision to confirm against QP scan.',
-    findings: { issues, charCount: q.question.length, partCount: q.parts?.length ?? 0 },
-  };
+  return mkResult(
+    'question_fidelity',
+    issues,
+    'Wording, symbols, parts and metadata pass deterministic checks. Run AI vision to confirm against QP scan.',
+    () => false,
+    { charCount: q.question?.length ?? 0, partCount: q.parts?.length ?? 0 },
+  );
 }
 
-// ───────── 2. Diagram fidelity ─────────
 function checkDiagramFidelity(q: PastPaperQuestion): AuditCheckResult {
-  const text = q.question + ' ' + (q.title || '');
+  const text = (q.question ?? '') + ' ' + (q.title ?? '');
   const needsDiagram = looksLikeDiagramRef(text);
   const hasImage = !!q.image;
   const hasInteractive = !!q.diagramParts?.length;
+  const findings = { needsDiagram, hasImage, hasInteractive };
+
   if (!needsDiagram && !hasImage && !hasInteractive) {
-    return {
-      checkType: 'diagram_fidelity', status: 'pass',
-      notes: 'No diagram required.',
-      findings: { needsDiagram, hasImage, hasInteractive },
-    };
+    return { checkType: 'diagram_fidelity', status: 'pass', notes: 'No diagram required.', issues: [], findings };
   }
   if (needsDiagram && !hasImage && !hasInteractive) {
-    return {
-      checkType: 'diagram_fidelity', status: 'fail',
-      notes: 'Question references a diagram/figure but no image OR interactive diagram is wired.',
-      findings: { needsDiagram, hasImage, hasInteractive },
+    const issue: AuditIssue = {
+      message: 'Question references a diagram/figure but no image OR interactive diagram is wired.',
+      ref: 'diagramParts / image',
+      path: 'diagramParts',
+      suggestion: 'Wire an SVG diagram component or attach an image matching the QP figure.',
     };
+    return { checkType: 'diagram_fidelity', status: 'fail', notes: issue.message, issues: [issue], findings };
   }
-  // Heuristic: if the question requires reading values off a graph/chart/scale, an interactive diagram is preferable.
   const needsInteractive = /read|measure|plot|construct|draw|mark|find from the (graph|diagram|chart)/i.test(text);
   if (needsInteractive && !hasInteractive) {
-    return {
-      checkType: 'diagram_fidelity', status: 'warning',
-      notes: 'Question requires reading/measuring/plotting on a diagram but no interactive diagram is wired (only static image).',
-      findings: { needsDiagram, hasImage, hasInteractive, needsInteractive },
+    const issue: AuditIssue = {
+      message: 'Question requires reading/measuring/plotting on a diagram but only a static image is wired.',
+      ref: 'diagramParts',
+      path: 'diagramParts',
+      suggestion: 'Add an interactive diagram component (clickable points / draggable line / measurable axes).',
     };
+    return { checkType: 'diagram_fidelity', status: 'warning', notes: issue.message, issues: [issue], findings };
   }
-  return {
-    checkType: 'diagram_fidelity', status: 'warning',
-    notes: 'Diagram hook present. Confirm scale, labels and interactivity match QP via AI vision.',
-    findings: { needsDiagram, hasImage, hasInteractive },
+  const issue: AuditIssue = {
+    message: 'Diagram hook present. Confirm scale, labels and interactivity match QP via AI vision.',
+    ref: 'diagram',
   };
+  return { checkType: 'diagram_fidelity', status: 'warning', notes: issue.message, issues: [issue], findings };
 }
 
-// ───────── 3. Workspace scaffolding ─────────
 function checkWorkspaceScaffolding(q: PastPaperQuestion): AuditCheckResult {
-  const issues: string[] = [];
+  const issues: AuditIssue[] = [];
   const stages = q.equationStages ?? [];
   const stagesMap = q.equationStagesMap ?? {};
-  const allStages = [...stages, ...Object.values(stagesMap).flat()];
+  const allStages: { stage: any; partKey?: string; idx: number }[] = [
+    ...stages.map((s, idx) => ({ stage: s, idx })),
+    ...Object.entries(stagesMap).flatMap(([partKey, arr]) =>
+      (arr as any[]).map((s, idx) => ({ stage: s, partKey, idx })),
+    ),
+  ];
 
-  // Boxes-only: no long instructional text mid-stage
-  for (const s of allStages) {
+  for (const { stage: s, partKey, idx } of allStages) {
+    const refBase = partKey ? `equationStagesMap.${partKey}[${idx}] "${s.label}"` : `equationStages[${idx}] "${s.label}"`;
+    const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
     let boxCount = 0, textCount = 0;
-    for (const el of s.elements ?? []) {
+    (s.elements ?? []).forEach((el: any, eIdx: number) => {
       if (el.type === 'box') boxCount++;
       if (el.type === 'text' && el.value) {
         textCount++;
         if (/[a-zA-Z]{6,}/.test(el.value) &&
             !/cents|dollars|km|cm|mm|mins?|hours?|minutes?|hrs?|degrees?|metres?|grams?|seconds?/i.test(el.value)) {
-          issues.push(`Stage "${s.label}" contains long instructional text "${el.value}" — should be a fillable box.`);
+          issues.push({
+            message: `Stage "${s.label}" contains long instructional text "${el.value}" — should be a fillable box.`,
+            ref: `${refBase} → text element [${eIdx}]`,
+            path: `${pathBase}.elements[${eIdx}]`,
+            suggestion: 'Replace this text element with a {type:"box", key:"…"} so the student fills it in.',
+          });
         }
       }
-    }
+    });
     if (boxCount === 0 && (s.elements?.length ?? 0) > 0) {
-      issues.push(`Stage "${s.label}" has no fillable boxes — students can't enter anything.`);
+      issues.push({
+        message: `Stage "${s.label}" has no fillable boxes — students can't enter anything.`,
+        ref: refBase,
+        path: pathBase,
+        suggestion: 'Add at least one {type:"box", key:"…"} element so the step is interactive.',
+      });
     }
     if (textCount > boxCount * 4 && boxCount > 0) {
-      issues.push(`Stage "${s.label}" is text-heavy (${textCount} text vs ${boxCount} boxes).`);
+      issues.push({
+        message: `Stage "${s.label}" is text-heavy (${textCount} text vs ${boxCount} boxes).`,
+        ref: refBase,
+        path: pathBase,
+        suggestion: 'Reduce instructional text and convert to additional fillable boxes.',
+      });
     }
   }
 
-  // Hints should be brief Socratic nudges, not full solutions
   if (q.hints) {
-    for (let i = 0; i < q.hints.length; i++) {
-      if (q.hints[i].length > 220) issues.push(`Hint ${i + 1} is too long (${q.hints[i].length} chars) — keep nudges short.`);
-    }
+    q.hints.forEach((h, i) => {
+      if (h.length > 220)
+        issues.push({
+          message: `Hint ${i + 1} is too long (${h.length} chars) — keep nudges short.`,
+          ref: `hints[${i}]`,
+          path: `hints[${i}]`,
+          suggestion: 'Trim to a single Socratic nudge (≤2 sentences).',
+        });
+    });
   }
-
-  if (q.type === 'multi-part' && !q.parts?.length) issues.push('multi-part question has no parts[] declared.');
-
-  // Scoring stages should have stepKey for grouped check (already enforced in #4 too)
-  return {
-    checkType: 'workspace_scaffolding',
-    status: issues.length ? (issues.some(i => i.includes('no fillable boxes')) ? 'fail' : 'warning') : 'pass',
-    notes: issues.length ? issues.join(' ') : 'Scaffolding is clean (boxes-only, concise hints).',
-    findings: { issues, stageCount: allStages.length },
-  };
+  if (q.type === 'multi-part' && !q.parts?.length) {
+    issues.push({ message: 'multi-part question has no parts[] declared.', ref: 'parts', path: 'parts' });
+  }
+  return mkResult(
+    'workspace_scaffolding',
+    issues,
+    'Scaffolding is clean (boxes-only, concise hints).',
+    (m) => m.includes('no fillable boxes'),
+    { stageCount: allStages.length },
+  );
 }
 
-// ───────── 4. Check Work coverage ─────────
 function checkWorkCoverage(q: PastPaperQuestion): AuditCheckResult {
   const stages = q.equationStages ?? [];
   const stagesMap = q.equationStagesMap ?? {};
-  const allStages = [...stages, ...Object.values(stagesMap).flat()];
-  const issues: string[] = [];
+  const allStages: { stage: any; partKey?: string; idx: number }[] = [
+    ...stages.map((s, idx) => ({ stage: s, idx })),
+    ...Object.entries(stagesMap).flatMap(([partKey, arr]) =>
+      (arr as any[]).map((s, idx) => ({ stage: s, partKey, idx })),
+    ),
+  ];
+  const issues: AuditIssue[] = [];
 
   if (allStages.length === 0) {
     return {
       checkType: 'check_work_coverage', status: 'pass',
       notes: 'No multi-step workspace — Check Work runs against the final answer.',
-      findings: {},
+      issues: [], findings: {},
     };
   }
-  const missingKeys = allStages.filter((s) => !s.stepKey).map((s) => s.label);
-  if (missingKeys.length) issues.push(`Missing stepKey on: ${missingKeys.join(', ')}`);
 
-  // Each stage box should have a corresponding answer key for adaptive feedback
-  const ansObj = (q.answer && typeof q.answer === 'object') ? (q.answer as Record<string, string>) : {};
-  for (const s of allStages) {
-    for (const el of s.elements ?? []) {
-      if (el.type === 'box' && el.key) {
-        const partKey = q.equationSolveParts?.[0]; // primary scaffold part
-        const fullKey = partKey ? `${partKey}_${el.key}` : el.key;
-        if (!(fullKey in ansObj) && !(el.key in ansObj)) {
-          issues.push(`Box "${el.key}" in "${s.label}" has no answer key — Check Work can't validate it.`);
-        }
-      }
+  for (const { stage: s, partKey, idx } of allStages) {
+    const refBase = partKey ? `equationStagesMap.${partKey}[${idx}] "${s.label}"` : `equationStages[${idx}] "${s.label}"`;
+    const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
+    if (!s.stepKey) {
+      issues.push({
+        message: `Missing stepKey on stage "${s.label}".`,
+        ref: refBase,
+        path: `${pathBase}.stepKey`,
+        suggestion: 'Add stepKey:"…" so Check Work can scope adaptive feedback to this step.',
+      });
     }
   }
-  return {
-    checkType: 'check_work_coverage',
-    status: issues.length ? 'fail' : 'pass',
-    notes: issues.length
-      ? issues.join(' ')
-      : `${allStages.length} stage(s); every box has a key + answer entry. Adaptive feedback delivered by ai-tutor edge function.`,
-    findings: { issues, stageCount: allStages.length },
-  };
+
+  const ansObj = (q.answer && typeof q.answer === 'object') ? (q.answer as Record<string, string>) : {};
+  for (const { stage: s, partKey, idx } of allStages) {
+    const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
+    (s.elements ?? []).forEach((el: any, eIdx: number) => {
+      if (el.type === 'box' && el.key) {
+        const primary = q.equationSolveParts?.[0];
+        const fullKey = primary ? `${primary}_${el.key}` : el.key;
+        if (!(fullKey in ansObj) && !(el.key in ansObj)) {
+          issues.push({
+            message: `Box "${el.key}" in "${s.label}" has no answer key — Check Work can't validate it.`,
+            ref: `${pathBase}.elements[${eIdx}] (key="${el.key}")`,
+            path: `answer.${fullKey}`,
+            suggestion: `Add an entry "${fullKey}": "<expected>" to the answer object.`,
+          });
+        }
+      }
+    });
+  }
+  return mkResult(
+    'check_work_coverage',
+    issues,
+    `${allStages.length} stage(s); every box has a key + answer entry.`,
+    () => true, // any missing wiring = fail
+    { stageCount: allStages.length },
+  );
 }
 
-// ───────── 5. Submit validation ─────────
 function checkSubmitValidation(q: PastPaperQuestion): AuditCheckResult {
-  const issues: string[] = [];
+  const issues: AuditIssue[] = [];
   let altCount = 0;
   if (q.answer === undefined || q.answer === null) {
-    issues.push('No answer key defined.');
+    issues.push({ message: 'No answer key defined.', ref: 'answer', path: 'answer', suggestion: 'Add an answer key matching the marking scheme.' });
   } else if (typeof q.answer === 'object') {
     const ans = q.answer as Record<string, string>;
-    const keys = Object.keys(ans);
-    if (!keys.length) issues.push('Answer object is empty.');
+    if (!Object.keys(ans).length) {
+      issues.push({ message: 'Answer object is empty.', ref: 'answer', path: 'answer' });
+    }
     if (q.parts) {
       for (const p of q.parts) {
-        if (p.marks > 0 && !(p.key in ans)) issues.push(`Missing answer for scoring part "${p.key}".`);
+        if (p.marks > 0 && !(p.key in ans)) {
+          issues.push({
+            message: `Missing answer for scoring part "${p.key}".`,
+            ref: `parts[${p.key}]`,
+            path: `answer.${p.key}`,
+            suggestion: `Add "${p.key}": "<MS answer>" to the answer object.`,
+          });
+        }
       }
     }
     for (const v of Object.values(ans)) if (typeof v === 'string' && v.includes('|')) altCount++;
   } else if (typeof q.answer === 'string' && q.answer.includes('|')) {
     altCount++;
   }
-  if (!q.markingCriteria || !Object.keys(q.markingCriteria).length)
-    issues.push('No markingCriteria — Submit feedback won\'t reflect MS rules (M1/A1/B1/oe).');
-  if (q.marks >= 2 && altCount === 0)
-    issues.push('No "oe" alternatives provided (no pipe-separated answers) for a multi-mark question.');
-
-  return {
-    checkType: 'submit_validation',
-    status: issues.length ? (issues.some(i => i.includes('No answer key')) ? 'fail' : 'warning') : 'pass',
-    notes: issues.length ? issues.join(' ') : `Answer keys, ${altCount} alternative form(s) and marking criteria present.`,
-    findings: { issues, altCount },
-  };
+  if (!q.markingCriteria || !Object.keys(q.markingCriteria).length) {
+    issues.push({
+      message: 'No markingCriteria — Submit feedback won\'t reflect MS rules (M1/A1/B1/oe).',
+      ref: 'markingCriteria',
+      path: 'markingCriteria',
+      suggestion: 'Add markingCriteria mirroring the MS mark allocation (M1, A1, B1, oe alternatives).',
+    });
+  }
+  if (q.marks >= 2 && altCount === 0) {
+    issues.push({
+      message: 'No "oe" alternatives provided (no pipe-separated answers) for a multi-mark question.',
+      ref: 'answer',
+      path: 'answer',
+      suggestion: 'Use "primary|alt1|alt2" to allow equivalent forms accepted by the MS.',
+    });
+  }
+  return mkResult(
+    'submit_validation',
+    issues,
+    `Answer keys, ${altCount} alternative form(s) and marking criteria present.`,
+    (m) => m.includes('No answer key'),
+    { altCount },
+  );
 }
 
 export function runDeterministicAudit(paperId: string, q: PastPaperQuestion): AuditReport {

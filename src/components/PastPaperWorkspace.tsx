@@ -371,12 +371,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
   const checkAnswersInternal = (currentAnswers: Record<string, string> = answers) => {
     if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {}, markingNotes: {} };
-    
-    const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {};
-    const marksEarned: Record<string, number> = {};
-    const markingNotes: Record<string, string> = {};
-  const checkAnswersInternal = (currentAnswers: Record<string, string> = answers) => {
-    if (!question.answer) return { allCorrect: false, newFeedback: {}, marksEarned: {}, markingNotes: {} };
 
     // Q16: custom region+lines scoring
     if (question.id === 'pp_4024_on23_11_q16') {

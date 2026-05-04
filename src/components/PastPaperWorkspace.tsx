@@ -1905,6 +1905,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                         aiResponse={aiResponse}
                         keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                        allowCustomSteps={(question as any).allowCustomSteps}
                       />
                     </div>
                   ) : null;

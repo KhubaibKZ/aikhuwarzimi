@@ -1,5 +1,6 @@
 // Shared deterministic audit engine for past-paper questions.
 import type { PastPaperQuestion } from './pastPaperData';
+import { EXTERNAL_DIAGRAM_QUESTIONS, isWorkingStepBoxKey } from './auditEngineRegistry';
 
 export type AuditCheckType =
   | 'question_fidelity'
@@ -98,6 +99,11 @@ function checkQuestionFidelity(q: PastPaperQuestion): AuditCheckResult {
   }
   if (q.parts && q.parts.length > 1) {
     for (const p of q.parts) {
+      // Internal-only keys (e.g. "p4", "a_calc", "b_calc", "*_num", "*_den") are
+      // helper compute slots, not user-facing part labels — don't expect them in
+      // the question text.
+      const isInternalKey = /^(p\d+|.*_(calc|num|den|mul|ans|a|b|c|d|e|f|g|h|i|j))$/.test(p.key);
+      if (isInternalKey) continue;
       if (p.marks > 0 && !new RegExp(`\\(${p.key}\\)`).test(q.question)) {
         issues.push({
           message: `Part "(${p.key})" not referenced in question text.`,
@@ -121,8 +127,8 @@ function checkDiagramFidelity(q: PastPaperQuestion): AuditCheckResult {
   const text = (q.question ?? '') + ' ' + (q.title ?? '');
   const needsDiagram = looksLikeDiagramRef(text);
   const hasImage = !!q.image;
-  const hasInteractive = !!q.diagramParts?.length;
-  const findings = { needsDiagram, hasImage, hasInteractive };
+  const hasInteractive = !!q.diagramParts?.length || EXTERNAL_DIAGRAM_QUESTIONS.has(q.id);
+  const findings = { needsDiagram, hasImage, hasInteractive, externallyWired: EXTERNAL_DIAGRAM_QUESTIONS.has(q.id) };
 
   if (!needsDiagram && !hasImage && !hasInteractive) {
     return { checkType: 'diagram_fidelity', status: 'pass', notes: 'No diagram required.', issues: [], findings };
@@ -261,6 +267,10 @@ function checkWorkCoverage(q: PastPaperQuestion): AuditCheckResult {
     const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
     (s.elements ?? []).forEach((el: any, eIdx: number) => {
       if (el.type === 'box' && el.key) {
+        // Intermediate working-step boxes ("_a", "_b", "_num"…) are intentional
+        // zero-mark scaffolding (see project memory) — Check Work targets the
+        // stage's final answer, not each working sub-box. Skip those.
+        if (isWorkingStepBoxKey(el.key)) return;
         const primary = q.equationSolveParts?.[0];
         const fullKey = primary ? `${primary}_${el.key}` : el.key;
         if (!(fullKey in ansObj) && !(el.key in ansObj)) {

@@ -2058,6 +2058,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         aiResponse={aiResponse}
                         keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                         allowCustomSteps={(question as any).allowCustomSteps}
+                        structuredExtraStep={((question as any).structuredExtraStepMap || {})[partKey]}
                       />
                     </div>
                   ) : null;

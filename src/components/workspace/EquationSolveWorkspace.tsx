@@ -1,11 +1,19 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
+import { CheckCircle2, XCircle, BookOpen, Trash2, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
+
+interface StructuredExtraStep {
+  afterStepKey: string; // insert rows after this stage
+  initialBoxes: number; // e.g. 3
+  hasOperators?: boolean; // if true, render small operator box between value boxes
+  boxWidth?: string;
+  opWidth?: string;
+}
 
 interface EquationSolveWorkspaceProps {
   questionKey: string;
@@ -21,6 +29,7 @@ interface EquationSolveWorkspaceProps {
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
   allowCustomSteps?: boolean;
+  structuredExtraStep?: StructuredExtraStep;
 }
 
 // Custom step token model
@@ -50,12 +59,17 @@ export function EquationSolveWorkspace({
   aiResponse,
   keyboardKeys,
   allowCustomSteps,
+  structuredExtraStep,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   // Predefined-stage answer typing
   const k = (suffix: string) => `${questionKey}_${suffix}`;
+
+  // Structured extra rows: each row is array of box counts. Boxes are removable individually.
+  // Row state: array of arrays of boolean (true = present). Operator boxes mirror value-box presence.
+  const [extraRows, setExtraRows] = useState<boolean[][]>([]);
 
   // ===== Custom steps state =====
   const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
@@ -281,77 +295,177 @@ export function EquationSolveWorkspace({
     </span>
   );
 
+  const renderStage = (stage: EquationStage) => {
+    const fullStepKey = k(stage.stepKey);
+    return (
+      <div key={stage.stepKey} className="space-y-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {stage.label && (
+            <span className="text-xs text-muted-foreground font-medium mr-1">{stage.label}</span>
+          )}
+          {stage.elements.map((el, i) => {
+            if (el.type === 'text') {
+              return (
+                <span key={i} className="font-mono text-base">
+                  {el.value}
+                </span>
+              );
+            }
+            if (el.type === 'box' && el.key) {
+              return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
+            }
+            if (el.type === 'fraction') {
+              const renderSubElements = (elements: typeof el.numElements) => (
+                <div className="flex items-center gap-0.5">
+                  {elements?.map((subEl, j) => {
+                    if (subEl.type === 'text')
+                      return (
+                        <span key={j} className="font-mono text-sm">
+                          {subEl.value}
+                        </span>
+                      );
+                    if (subEl.type === 'box' && subEl.key)
+                      return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
+                    return null;
+                  })}
+                </div>
+              );
+              const frac = (
+                <span className="inline-flex flex-col items-center mx-1">
+                  {renderSubElements(el.numElements)}
+                  <div className="w-full border-t border-foreground my-0.5" />
+                  {renderSubElements(el.denElements)}
+                </span>
+              );
+              if (el.sqrt) {
+                return <Radical key={i}>{frac}</Radical>;
+              }
+              return <span key={i}>{frac}</span>;
+            }
+            if (el.type === 'sqrt') {
+              return (
+                <Radical key={i}>
+                  <span className="flex items-center gap-1">
+                    {el.innerElements?.map((subEl, j) => {
+                      if (subEl.type === 'text')
+                        return <span key={j} className="font-mono text-base">{subEl.value}</span>;
+                      if (subEl.type === 'box' && subEl.key)
+                        return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
+                      return null;
+                    })}
+                  </span>
+                </Radical>
+              );
+            }
+            return null;
+          })}
+          {checkBtn(fullStepKey, stage.label || stage.stepKey)}
+          {stepFeedbackIcon(fullStepKey)}
+        </div>
+        {renderAiResponse(fullStepKey)}
+      </div>
+    );
+  };
+
+  const renderExtraRow = (rowIdx: number) => {
+    if (!structuredExtraStep) return null;
+    const presence = extraRows[rowIdx];
+    const boxW = structuredExtraStep.boxWidth || 'w-14';
+    const opW = structuredExtraStep.opWidth || 'w-8';
+    const removeBox = (bi: number) => {
+      setExtraRows((prev) =>
+        prev.map((r, i) => (i === rowIdx ? r.map((p, j) => (j === bi ? false : p)) : r)),
+      );
+      onAnswerChange(k(`extra_${rowIdx}_v${bi}`), '');
+      onAnswerChange(k(`extra_${rowIdx}_o${bi}`), '');
+    };
+    const removeRow = () => {
+      setExtraRows((prev) => prev.filter((_, i) => i !== rowIdx));
+    };
+    return (
+      <div key={`extra_${rowIdx}`} className="flex items-center gap-1.5 flex-wrap">
+        {presence.map((present, bi) =>
+          present ? (
+            <span key={bi} className="inline-flex flex-col items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => removeBox(bi)}
+                disabled={isSubmitted}
+                className="h-4 w-4 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center"
+                title="Remove this box"
+              >
+                <X className="h-3 w-3" />
+              </button>
+              <span className="inline-flex items-center gap-1">
+                {box(k(`extra_${rowIdx}_v${bi}`), boxW)}
+                {bi < presence.length - 1 && presence.slice(bi + 1).some(Boolean) && (
+                  <span>{box(k(`extra_${rowIdx}_o${bi}`), opW)}</span>
+                )}
+              </span>
+            </span>
+          ) : null,
+        )}
+        <span className="font-mono text-base">=</span>
+        {box(k(`extra_${rowIdx}_eq`), boxW)}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={isSubmitted}
+          onClick={removeRow}
+          className="h-7 w-7 p-0 opacity-50 hover:opacity-100"
+          title="Remove step"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    );
+  };
+
+  const addExtraRow = () => {
+    if (!structuredExtraStep) return;
+    setExtraRows((prev) => [
+      ...prev,
+      Array.from({ length: structuredExtraStep.initialBoxes }, () => true),
+    ]);
+  };
+
+  const stagesBefore: EquationStage[] = [];
+  const stagesAfter: EquationStage[] = [];
+  if (structuredExtraStep) {
+    let crossed = false;
+    stages.forEach((s) => {
+      if (!crossed) {
+        stagesBefore.push(s);
+        if (s.stepKey === structuredExtraStep.afterStepKey) crossed = true;
+      } else {
+        stagesAfter.push(s);
+      }
+    });
+  }
+
   return (
     <div className="space-y-5">
-      {stages.map((stage) => {
-        const fullStepKey = k(stage.stepKey);
-        return (
-          <div key={stage.stepKey} className="space-y-1">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs text-muted-foreground font-medium mr-1">{stage.label}</span>
-              {stage.elements.map((el, i) => {
-                if (el.type === 'text') {
-                  return (
-                    <span key={i} className="font-mono text-base">
-                      {el.value}
-                    </span>
-                  );
-                }
-                if (el.type === 'box' && el.key) {
-                  return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
-                }
-                if (el.type === 'fraction') {
-                  const renderSubElements = (elements: typeof el.numElements) => (
-                    <div className="flex items-center gap-0.5">
-                      {elements?.map((subEl, j) => {
-                        if (subEl.type === 'text')
-                          return (
-                            <span key={j} className="font-mono text-sm">
-                              {subEl.value}
-                            </span>
-                          );
-                        if (subEl.type === 'box' && subEl.key)
-                          return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
-                        return null;
-                      })}
-                    </div>
-                  );
-                  const frac = (
-                    <span className="inline-flex flex-col items-center mx-1">
-                      {renderSubElements(el.numElements)}
-                      <div className="w-full border-t border-foreground my-0.5" />
-                      {renderSubElements(el.denElements)}
-                    </span>
-                  );
-                  if (el.sqrt) {
-                    return <Radical key={i}>{frac}</Radical>;
-                  }
-                  return <span key={i}>{frac}</span>;
-                }
-                if (el.type === 'sqrt') {
-                  return (
-                    <Radical key={i}>
-                      <span className="flex items-center gap-1">
-                        {el.innerElements?.map((subEl, j) => {
-                          if (subEl.type === 'text')
-                            return <span key={j} className="font-mono text-base">{subEl.value}</span>;
-                          if (subEl.type === 'box' && subEl.key)
-                            return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
-                          return null;
-                        })}
-                      </span>
-                    </Radical>
-                  );
-                }
-                return null;
-              })}
-              {checkBtn(fullStepKey, stage.label)}
-              {stepFeedbackIcon(fullStepKey)}
-            </div>
-            {renderAiResponse(fullStepKey)}
-          </div>
-        );
-      })}
+      {(structuredExtraStep ? stagesBefore : stages).map(renderStage)}
+
+      {structuredExtraStep && (
+        <div className="space-y-2">
+          {extraRows.map((_, idx) => renderExtraRow(idx))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isSubmitted}
+            onClick={addExtraRow}
+            className="h-7 text-xs gap-1"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add step
+          </Button>
+        </div>
+      )}
+
+      {structuredExtraStep && stagesAfter.map(renderStage)}
 
       {isSubmitted && correctAnswers && (
         <div className="text-sm text-green-600 font-medium space-y-0.5">

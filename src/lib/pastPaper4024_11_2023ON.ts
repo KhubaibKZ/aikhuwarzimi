@@ -390,7 +390,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Tangent ⊥ radius: angle ABO = 90°; triangle ABO → angle BAO = 19°; angle ABC = 90 − 19 = 71', '(b) 360 − 38 − 90 − 90 = 142', '(c) Angle at centre = 2 × angle at circumference'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b', 'c'],
-    allowCustomSteps: true,
+    structuredExtraStepMap: {
+      'a': { afterStepKey: 's1', initialBoxes: 3, boxWidth: 'w-14', opWidth: 'w-8' },
+      'b': { afterStepKey: 's1', initialBoxes: 3, boxWidth: 'w-14', opWidth: 'w-8' }
+    },
     equationStagesMap: {
       'a': [
         { label: '', stepKey: 's1', elements: [
@@ -423,7 +426,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       'c': [
         { label: '', stepKey: 's1', elements: [
           { type: 'text', value: 'BDC =' },
-          { type: 'box', key: 's1_a', width: 'w-14' }
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_n', width: 'w-14' }],
+            denElements: [{ type: 'box', key: 's1_d', width: 'w-14' }]
+          }
+        ]},
+        { label: 'Answer', stepKey: 's2', elements: [
+          { type: 'text', value: 'BDC =' }, { type: 'box', key: 's2', width: 'w-14' }
         ]}
       ]
     },
@@ -436,7 +445,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       a: '71', b: '142', c: '71',
       a_s1_d: '71', a_s2: '71',
       b_s1_d: '142', b_s2: '142',
-      c_s1_a: '71'
+      c_s1_n: '142', c_s1_d: '2', c_s2: '71'
     },
     markingCriteria: { a: 'B1 for 71', b: 'M1 for angle ABO = 90 or angle ACO = 90 soi. A1 for 142. SC1 if 0 scored for answer = 2 × their (a).', c: 'B1 ft for their (b) ÷ 2.' }
   },

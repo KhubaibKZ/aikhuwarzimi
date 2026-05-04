@@ -1,5 +1,6 @@
 // Shared deterministic audit engine for past-paper questions.
 import type { PastPaperQuestion } from './pastPaperData';
+import { EXTERNAL_DIAGRAM_QUESTIONS, isWorkingStepBoxKey } from './auditEngineRegistry';
 
 export type AuditCheckType =
   | 'question_fidelity'
@@ -121,8 +122,8 @@ function checkDiagramFidelity(q: PastPaperQuestion): AuditCheckResult {
   const text = (q.question ?? '') + ' ' + (q.title ?? '');
   const needsDiagram = looksLikeDiagramRef(text);
   const hasImage = !!q.image;
-  const hasInteractive = !!q.diagramParts?.length;
-  const findings = { needsDiagram, hasImage, hasInteractive };
+  const hasInteractive = !!q.diagramParts?.length || EXTERNAL_DIAGRAM_QUESTIONS.has(q.id);
+  const findings = { needsDiagram, hasImage, hasInteractive, externallyWired: EXTERNAL_DIAGRAM_QUESTIONS.has(q.id) };
 
   if (!needsDiagram && !hasImage && !hasInteractive) {
     return { checkType: 'diagram_fidelity', status: 'pass', notes: 'No diagram required.', issues: [], findings };

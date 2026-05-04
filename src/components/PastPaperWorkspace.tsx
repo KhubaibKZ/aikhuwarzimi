@@ -1073,7 +1073,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               )}
               {question.questionFraction && '.'}
             </p>
-            
+            )}
+
             {/* Interactive Diagrams based on question ID */}
             {question.id === 'pp_0580_s22_q2b' && (
               <div className="mt-4">

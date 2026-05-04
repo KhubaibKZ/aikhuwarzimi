@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
+import { Radical } from '@/components/Radical';
 
 interface EquationSolveWorkspaceProps {
   questionKey: string;
@@ -323,20 +324,14 @@ export function EquationSolveWorkspace({
                     </span>
                   );
                   if (el.sqrt) {
-                    return (
-                      <span key={i} className="inline-flex items-stretch align-middle mx-1">
-                        <span className="font-mono text-xl self-end pr-0.5">√</span>
-                        <span className="border-t-2 border-foreground pt-0.5">{frac}</span>
-                      </span>
-                    );
+                    return <Radical key={i}>{frac}</Radical>;
                   }
                   return <span key={i}>{frac}</span>;
                 }
                 if (el.type === 'sqrt') {
                   return (
-                    <span key={i} className="inline-flex items-stretch align-middle mx-1">
-                      <span className="font-mono text-xl self-end pr-0.5">√</span>
-                      <span className="border-t-2 border-foreground pt-0.5 flex items-center gap-1 px-1">
+                    <Radical key={i}>
+                      <span className="flex items-center gap-1">
                         {el.innerElements?.map((subEl, j) => {
                           if (subEl.type === 'text')
                             return <span key={j} className="font-mono text-base">{subEl.value}</span>;
@@ -345,7 +340,7 @@ export function EquationSolveWorkspace({
                           return null;
                         })}
                       </span>
-                    </span>
+                    </Radical>
                   );
                 }
                 return null;

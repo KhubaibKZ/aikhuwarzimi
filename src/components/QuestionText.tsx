@@ -1,31 +1,20 @@
 import React from "react";
+import { Radical } from "@/components/Radical";
 
 /**
- * Renders question text with inline stacked fractions.
+ * Renders question text with inline stacked fractions and proper √ vinculum.
  *
- * Markup convention inside the source string:
- *   [[numerator/denominator]]   -> rendered as a properly stacked fraction
- *
- * Numerator/denominator may contain any characters except `]]` and the top-level `/`
- * that separates them. Use parentheses inside if needed, e.g. [[3x/(x+1)]].
- *
- * Newlines (\n) are preserved as line breaks.
+ *   [[num/den]]    -> stacked fraction
+ *   √[[num/den]]   -> stacked fraction under a connected square-root vinculum
  */
 const FRAC_RE = /(√)?\[\[([^\]]+?)\/([^\]]+?)\]\]/g;
 
-function StackedFraction({ num, den, sqrt }: { num: string; den: string; sqrt?: boolean }) {
-  const inner = (
+function StackedFraction({ num, den }: { num: string; den: string }) {
+  return (
     <span className="inline-flex flex-col items-center mx-1 align-middle">
       <span className="font-mono text-base px-2">{num}</span>
       <span className="w-full border-t border-foreground" />
       <span className="font-mono text-base px-2">{den}</span>
-    </span>
-  );
-  if (!sqrt) return inner;
-  return (
-    <span className="inline-flex items-stretch align-middle mx-1">
-      <span className="font-mono text-lg self-end pr-0.5">√</span>
-      <span className="border-t border-foreground pt-0.5">{inner}</span>
     </span>
   );
 }
@@ -45,8 +34,13 @@ export function QuestionText({ text, className }: { text: string; className?: st
               <span key={`t-${li}-${lastIdx}`}>{line.slice(lastIdx, m.index)}</span>
             );
           }
+          const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;
           nodes.push(
-            <StackedFraction key={`f-${li}-${m.index}`} num={m[2].trim()} den={m[3].trim()} sqrt={!!m[1]} />
+            m[1] ? (
+              <Radical key={`f-${li}-${m.index}`}>{frac}</Radical>
+            ) : (
+              <React.Fragment key={`f-${li}-${m.index}`}>{frac}</React.Fragment>
+            )
           );
           lastIdx = m.index + m[0].length;
         }

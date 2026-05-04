@@ -1042,38 +1042,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Inline fraction helper for stacked display */}
-          {(() => { return null; })()}
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
-            {question.id === 'pp_4024_on23_11_q24' ? (
-              <p className="text-foreground flex flex-wrap items-center gap-1">
-                <span>Solve</span>
-                <span className="inline-flex flex-col items-center mx-1 align-middle">
-                  <span className="font-mono text-base px-2">3x</span>
-                  <span className="w-full border-t border-foreground" />
-                  <span className="font-mono text-base px-2">x+1</span>
-                </span>
-                <span>−</span>
-                <span className="inline-flex flex-col items-center mx-1 align-middle">
-                  <span className="font-mono text-base px-2">2</span>
-                  <span className="w-full border-t border-foreground" />
-                  <span className="font-mono text-base px-2">x−1</span>
-                </span>
-                <span>= 3.</span>
-              </p>
-            ) : (
-            <p className="whitespace-pre-line text-foreground">
-              {question.question}
-              {question.questionFraction && (
+            <QuestionText text={question.question} />
+            {question.questionFraction && (
+              <p className="text-foreground flex flex-wrap items-center gap-1 mt-2">
                 <span className="inline-flex flex-col items-center mx-2 align-middle">
                   <span className="font-mono text-base px-2">{question.questionFraction.numerator}</span>
                   <span className="w-full border-t border-foreground" />
                   <span className="font-mono text-base px-2">{question.questionFraction.denominator}</span>
                 </span>
-              )}
-              {question.questionFraction && '.'}
-            </p>
+                <span>.</span>
+              </p>
             )}
 
             {/* Interactive Diagrams based on question ID */}

@@ -1,50 +1,79 @@
 // Circle theorem diagram for Q15 4024/11 Oct/Nov 2023
-// B, C, D on circle centre O. AB, AC tangents. Angle BAC = 38°
+// A external point, tangents from A touch circle (centre O) at B (top) and C (bottom).
+// D is on the circle to the right. Lines BD, CD drawn (chord BC also). Angle BAC = 38°.
 
 export function CircleTheorem2023ON() {
-  const cx = 150, cy = 130, r = 80;
-  // Points on circle
-  const B = { x: cx - r * Math.sin(0.7), y: cy - r * Math.cos(0.7) };
-  const C = { x: cx - r * Math.sin(-0.7), y: cy - r * Math.cos(-0.7) };
+  const cx = 200, cy = 170, r = 90;
+  // Angle BAC = 38°, tangents from A. Distance AO computed so tangent length is sensible.
+  // Half-angle at A = 19°. sin(19°) = r / AO  => AO = r / sin(19°)
+  const halfA = (38 / 2) * Math.PI / 180;
+  const AO = r / Math.sin(halfA);
+  const A = { x: cx - AO, y: cy };
+
+  // Tangent points B and C: OB ⊥ AB. Angle of OB from O measured from line OA (pointing -x).
+  // The tangent point lies at angle (90° - halfA) from OA direction.
+  // OA direction from O = (-1, 0). Rotate by ±(90° - halfA).
+  const phi = Math.PI / 2 - halfA; // angle between OA and OB
+  // B is upper tangent point
+  const B = {
+    x: cx + r * Math.cos(Math.PI - phi),
+    y: cy - r * Math.sin(Math.PI - phi),
+  };
+  const C = {
+    x: cx + r * Math.cos(Math.PI - phi),
+    y: cy + r * Math.sin(Math.PI - phi),
+  };
+  // D on the right of the circle
   const D = { x: cx + r, y: cy };
-  // Tangent point A (external)
-  const A = { x: cx - 180, y: cy };
+
+  // Extend tangent lines a bit past B and C
+  const extend = (P: {x:number;y:number}, Q: {x:number;y:number}, t: number) => ({
+    x: Q.x + (Q.x - P.x) * t,
+    y: Q.y + (Q.y - P.y) * t,
+  });
+  const Bext = extend(A, B, 0.25);
+  const Cext = extend(A, C, 0.25);
 
   return (
-    <svg viewBox="0 0 300 260" className="w-full max-w-sm mx-auto">
+    <svg viewBox="0 0 460 340" className="w-full max-w-md mx-auto">
       {/* Circle */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5" />
 
-      {/* Centre O */}
-      <circle cx={cx} cy={cy} r="2.5" fill="hsl(var(--foreground))" />
-      <text x={cx + 6} y={cy + 4} className="text-[11px] fill-foreground font-bold">O</text>
+      {/* Tangent lines from A through B and C, extended */}
+      <line x1={A.x} y1={A.y} x2={Bext.x} y2={Bext.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={A.x} y1={A.y} x2={Cext.x} y2={Cext.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
 
-      {/* Tangent lines AB and AC */}
-      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <line x1={A.x} y1={A.y} x2={C.x} y2={C.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-
-      {/* Lines on circle: BC, BD, CD */}
+      {/* Chords */}
       <line x1={B.x} y1={B.y} x2={C.x} y2={C.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <line x1={B.x} y1={B.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1" strokeDasharray="4,3" />
-      <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1" strokeDasharray="4,3" />
+      <line x1={B.x} y1={B.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
 
       {/* Radii OB and OC */}
-      <line x1={cx} y1={cy} x2={B.x} y2={B.y} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
-      <line x1={cx} y1={cy} x2={C.x} y2={C.y} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
+      <line x1={cx} y1={cy} x2={B.x} y2={B.y} stroke="hsl(var(--foreground))" strokeWidth="1.2" />
+      <line x1={cx} y1={cy} x2={C.x} y2={C.y} stroke="hsl(var(--foreground))" strokeWidth="1.2" />
 
-      {/* Right angle marks at B and C (tangent ⊥ radius) */}
-      <rect x={B.x - 1} y={B.y + 2} width="8" height="8" fill="none" stroke="hsl(var(--muted-foreground))" strokeWidth="0.8" transform={`rotate(-40, ${B.x}, ${B.y})`} />
-      <rect x={C.x - 1} y={C.y - 10} width="8" height="8" fill="none" stroke="hsl(var(--muted-foreground))" strokeWidth="0.8" transform={`rotate(40, ${C.x}, ${C.y})`} />
+      {/* Centre O */}
+      <circle cx={cx} cy={cy} r="2.5" fill="hsl(var(--foreground))" />
+      <text x={cx + 6} y={cy - 4} fontStyle="italic" fontSize="13" fill="hsl(var(--foreground))">O</text>
 
-      {/* Angle arc at A */}
-      <path d={`M ${A.x + 35},${A.y - 12} A 30,30 0 0,1 ${A.x + 35},${A.y + 12}`} fill="none" stroke="hsl(var(--primary))" strokeWidth="1.5" />
-      <text x={A.x + 40} y={A.y + 5} className="text-[10px] fill-primary font-medium">38°</text>
+      {/* Angle arc at A (38°) */}
+      <path
+        d={`M ${A.x + 26} ${A.y - 26 * Math.tan(halfA)} A 26 26 0 0 1 ${A.x + 26} ${A.y + 26 * Math.tan(halfA)}`}
+        fill="none"
+        stroke="hsl(var(--foreground))"
+        strokeWidth="1"
+      />
+      <text x={A.x + 18} y={A.y + 5} fontSize="12" fill="hsl(var(--foreground))">38°</text>
 
       {/* Labels */}
-      <text x={A.x - 10} y={A.y + 5} className="text-[12px] fill-foreground font-bold">A</text>
-      <text x={B.x - 14} y={B.y - 4} className="text-[12px] fill-foreground font-bold">B</text>
-      <text x={C.x - 14} y={C.y + 16} className="text-[12px] fill-foreground font-bold">C</text>
-      <text x={D.x + 6} y={D.y + 5} className="text-[12px] fill-foreground font-bold">D</text>
+      <text x={A.x - 14} y={A.y + 5} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">A</text>
+      <text x={B.x - 4} y={B.y - 8} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">B</text>
+      <text x={C.x - 4} y={C.y + 18} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">C</text>
+      <text x={D.x + 6} y={D.y + 5} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">D</text>
+
+      {/* NOT TO SCALE */}
+      <text x={400} y={150} fontSize="10" fill="hsl(var(--muted-foreground))">NOT TO</text>
+      <text x={400} y={163} fontSize="10" fill="hsl(var(--muted-foreground))">SCALE</text>
     </svg>
   );
 }

@@ -72,7 +72,7 @@ export const questions4024_21_2023ON: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_on23_21_q7': {
     id: 'pp_4024_on23_21_q7', questionNumber: '7', title: 'Algebra',
-    question: '(a) Simplify 7a − 4b − 2a + b.\n(b) Expand 3(2x−3) + 5(x+2).\n(c) Solve 6x² − 2x − 9 = 0 (2 d.p.).\n(d)(i) Simplify x/4 × 2/y.\n(d)(ii) Write as single fraction: 3/(x−5) − 7/(2x+1).',
+    question: '(a) Simplify 7a − 4b − 2a + b.\n(b) Expand 3(2x−3) + 5(x+2).\n(c) Solve 6x² − 2x − 9 = 0 (2 d.p.).\n(d)(i) Simplify [[x/4]] × [[2/y]].\n(d)(ii) Write as single fraction: [[3/(x−5)]] − [[7/(2x+1)]].',
     marks: 11, hints: ['(a) 5a − 3b', '(b) 6x−9+5x+10 = 11x+1', '(c) Quadratic formula', '(d)(i) x/(2y) or xy/... MS says xy/2'],
     type: 'multi-part',
     parts: [

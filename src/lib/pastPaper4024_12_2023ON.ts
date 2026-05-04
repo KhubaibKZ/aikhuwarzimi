@@ -301,7 +301,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 10 ==========
   'pp_4024_on23_12_q10': {
     id: 'pp_4024_on23_12_q10', questionNumber: '10', title: 'Estimation',
-    question: 'By writing each number correct to 1 significant figure, estimate the value of (1240 × 3.8) / 11.2.',
+    question: 'By writing each number correct to 1 significant figure, estimate the value of [[(1240 × 3.8)/11.2]].',
     marks: 2,
     hints: ['1240 ≈ 1000, 3.8 ≈ 4, 11.2 ≈ 10', '1000 × 4 / 10 = 400... but wait: MS answer = 20 — re-check: maybe question is √(1240) × 3.8 / 11.2 or similar'],
     type: 'multi-part',

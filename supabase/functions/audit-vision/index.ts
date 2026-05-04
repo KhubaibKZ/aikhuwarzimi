@@ -75,13 +75,13 @@ Deno.serve(async (req) => {
       `  • the official Question Paper page (QP)\n` +
       `  • the official Marking Scheme page (MS)\n` +
       `  • optionally the Solved Paper page\n\n` +
-      `Audit against this strict 5-point definition:\n` +
-      `1. question_fidelity — wording, symbols, numbers and formatting EXACTLY match QP. Any drift = fail.\n` +
-      `2. diagram_fidelity — diagram present and visually matches QP scale/labels; if QP requires reading/measuring/plotting and the app only has a static image, status=warning at minimum.\n` +
-      `3. workspace_scaffolding — only blank fillable boxes; no pre-filled steps, no instructional text inside the workspace. The structure must mirror the solved paper's box layout.\n` +
+      `Audit against this strict 5-point definition. ALWAYS ground every verdict in the attached QP and MS images — never guess. If QP/MS aren't attached, lower confidence and say so.\n` +
+      `1. question_fidelity — wording, symbols, numbers and formatting EXACTLY match QP. Any drift = fail. Be context-aware: words like "figures" can mean *significant figures* (e.g. "to 3 figures") and do NOT imply a diagram.\n` +
+      `2. diagram_fidelity — only flag missing diagrams when the QP actually shows one. Phrases like "give your answer to N significant figures / decimal places / nearest whole number" are NOT diagram references. Confirm visually from the QP image.\n` +
+      `3. workspace_scaffolding — only blank fillable boxes; no pre-filled steps, no instructional text inside the workspace. Structure must mirror the SOLVED paper's box layout.\n` +
       `4. check_work_coverage — every solving step has a stepKey and a corresponding answer entry so adaptive feedback can fire on each.\n` +
-      `5. submit_validation — answer keys cover every scoring part; alternative forms (oe) provided; markingCriteria reflect M1/A1/B1 wording from MS.\n\n` +
-      `Be SPECIFIC in notes: quote the exact word/number that differs. Always respond via the tool.`;
+      `5. submit_validation — answer keys must match the MS exactly. IMPORTANT: if the MS only lists a final answer (no M1/A1/B1 breakdown — typical for 1-mark parts), then markingCriteria are NOT required and their absence must NOT be flagged. Only require markingCriteria when the MS itself awards method marks (M, A, B). Always provide "oe" alternatives where the MS lists equivalent forms.\n\n` +
+      `Be SPECIFIC in notes: quote the exact word/number from the QP or MS that differs (or confirms the app is correct). For each non-pass verdict, embed a concrete fix the developer can paste into the question definition. Always respond via the tool.`;
 
     const userParts: Array<Record<string, unknown>> = [
       {

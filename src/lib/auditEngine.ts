@@ -170,14 +170,26 @@ function checkWorkspaceScaffolding(q: PastPaperQuestion): AuditCheckResult {
     ),
   ];
 
+  // Count boxes/text recursively so nested fraction/numElements/denElements count too.
+  const tally = (els: any[] | undefined, acc: { box: number; text: number }) => {
+    (els ?? []).forEach((el) => {
+      if (!el || typeof el !== 'object') return;
+      if (el.type === 'box') acc.box++;
+      if (el.type === 'fraction') {
+        tally(el.numElements, acc);
+        tally(el.denElements, acc);
+      }
+      if (el.type === 'text' && el.value) acc.text++;
+    });
+  };
+
   for (const { stage: s, partKey, idx } of allStages) {
     const refBase = partKey ? `equationStagesMap.${partKey}[${idx}] "${s.label}"` : `equationStages[${idx}] "${s.label}"`;
     const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
-    let boxCount = 0, textCount = 0;
+    const counts = { box: 0, text: 0 };
+    tally(s.elements, counts);
     (s.elements ?? []).forEach((el: any, eIdx: number) => {
-      if (el.type === 'box') boxCount++;
       if (el.type === 'text' && el.value) {
-        textCount++;
         if (/[a-zA-Z]{6,}/.test(el.value) &&
             !/cents|dollars|km|cm|mm|mins?|hours?|minutes?|hrs?|degrees?|metres?|grams?|seconds?/i.test(el.value)) {
           issues.push({
@@ -189,7 +201,7 @@ function checkWorkspaceScaffolding(q: PastPaperQuestion): AuditCheckResult {
         }
       }
     });
-    if (boxCount === 0 && (s.elements?.length ?? 0) > 0) {
+    if (counts.box === 0 && (s.elements?.length ?? 0) > 0) {
       issues.push({
         message: `Stage "${s.label}" has no fillable boxes — students can't enter anything.`,
         ref: refBase,
@@ -197,9 +209,9 @@ function checkWorkspaceScaffolding(q: PastPaperQuestion): AuditCheckResult {
         suggestion: 'Add at least one {type:"box", key:"…"} element so the step is interactive.',
       });
     }
-    if (textCount > boxCount * 4 && boxCount > 0) {
+    if (counts.text > counts.box * 4 && counts.box > 0) {
       issues.push({
-        message: `Stage "${s.label}" is text-heavy (${textCount} text vs ${boxCount} boxes).`,
+        message: `Stage "${s.label}" is text-heavy (${counts.text} text vs ${counts.box} boxes).`,
         ref: refBase,
         path: pathBase,
         suggestion: 'Reduce instructional text and convert to additional fillable boxes.',
@@ -263,16 +275,30 @@ function checkWorkCoverage(q: PastPaperQuestion): AuditCheckResult {
   }
 
   const ansObj = (q.answer && typeof q.answer === 'object') ? (q.answer as Record<string, string>) : {};
+  // Recursively walk fraction/numElements/denElements too — those nested boxes
+  // also need answer-key entries.
+  const walkBoxes = (els: any[] | undefined, fn: (el: any, eIdx: number) => void) => {
+    (els ?? []).forEach((el, eIdx) => {
+      if (!el || typeof el !== 'object') return;
+      fn(el, eIdx);
+      if (el.type === 'fraction') {
+        walkBoxes(el.numElements, fn);
+        walkBoxes(el.denElements, fn);
+      }
+    });
+  };
+
   for (const { stage: s, partKey, idx } of allStages) {
     const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
-    (s.elements ?? []).forEach((el: any, eIdx: number) => {
+    walkBoxes(s.elements, (el, eIdx) => {
       if (el.type === 'box' && el.key) {
         // Intermediate working-step boxes ("_a", "_b", "_num"…) are intentional
-        // zero-mark scaffolding (see project memory) — Check Work targets the
-        // stage's final answer, not each working sub-box. Skip those.
+        // zero-mark scaffolding — Check Work targets the stage's final answer.
         if (isWorkingStepBoxKey(el.key)) return;
-        const primary = q.equationSolveParts?.[0];
-        const fullKey = primary ? `${primary}_${el.key}` : el.key;
+        // The answer-key prefix must be the CURRENT part key for stagesMap entries,
+        // not equationSolveParts[0] (which is just the first part).
+        const prefix = partKey ?? q.equationSolveParts?.[0];
+        const fullKey = prefix ? `${prefix}_${el.key}` : el.key;
         if (!(fullKey in ansObj) && !(el.key in ansObj)) {
           issues.push({
             message: `Box "${el.key}" in "${s.label}" has no answer key — Check Work can't validate it.`,

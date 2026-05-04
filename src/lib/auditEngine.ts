@@ -16,10 +16,18 @@ export type AuditCheckType =
 
 export type AuditStatus = 'pending' | 'pass' | 'warning' | 'fail';
 
+export interface AuditIssue {
+  message: string;
+  ref?: string;        // human-readable location, e.g. "Stage 'Multiply' → box 'num'"
+  path?: string;       // dotted path into the question object, e.g. "equationStages[0].elements[2]"
+  suggestion?: string; // optional concrete fix hint
+}
+
 export interface AuditCheckResult {
   checkType: AuditCheckType;
   status: AuditStatus;
   notes: string;
+  issues: AuditIssue[];
   findings: Record<string, unknown>;
 }
 

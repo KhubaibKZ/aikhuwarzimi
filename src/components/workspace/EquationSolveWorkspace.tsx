@@ -34,10 +34,13 @@ export function EquationSolveWorkspace({
   isSubmitted,
   correctAnswers,
   aiResponse,
-  keyboardKeys
+  keyboardKeys,
+  allowCustomSteps
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [customSteps, setCustomSteps] = useState<string[]>([]);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const customRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const k = (suffix: string) => `${questionKey}_${suffix}`;
 

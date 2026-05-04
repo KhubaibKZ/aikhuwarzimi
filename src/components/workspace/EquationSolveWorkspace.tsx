@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
@@ -94,15 +94,41 @@ export function EquationSolveWorkspace({
       const next = prev.map((step) => step.slice());
       const step = next[f.si];
       if (!step) return prev;
-      // Always append a fraction after current part, then trailing empty txt
-      const insertAt = f.pi + 1;
-      step.splice(insertAt, 0, { kind: 'frac', n: '', d: '' }, { kind: 'txt', s: '' });
-      newSlot = `cs:${f.si}:${insertAt}:n`;
+      const cur = step[f.pi];
+      // Case A: focused on empty txt → replace it in place with frac, ensure trailing txt
+      if (cur && cur.kind === 'txt' && cur.s === '') {
+        step.splice(f.pi, 1, { kind: 'frac', n: '', d: '' });
+        if (!step[f.pi + 1] || step[f.pi + 1].kind !== 'txt') {
+          step.splice(f.pi + 1, 0, { kind: 'txt', s: '' });
+        }
+        newSlot = `cs:${f.si}:${f.pi}:n`;
+      } else {
+        // Case B: insert after current part
+        const insertAt = f.pi + 1;
+        const toInsert: CustomPart[] = [{ kind: 'frac', n: '', d: '' }];
+        const nextPart = step[insertAt];
+        if (!nextPart || nextPart.kind !== 'txt') {
+          toInsert.push({ kind: 'txt', s: '' });
+        }
+        step.splice(insertAt, 0, ...toInsert);
+        newSlot = `cs:${f.si}:${insertAt}:n`;
+      }
       return next;
     });
-    // focus numerator after state commits
     setTimeout(() => setFocusedSlot(newSlot), 0);
   };
+
+  // Serialize a custom step into a readable string for the AI tutor
+  const serializeStep = (step: CustomStep): string =>
+    step
+      .map((p) => {
+        if (p.kind === 'txt') return p.s;
+        const n = p.n || '?';
+        const d = p.d || '?';
+        return `(${n})/(${d})`;
+      })
+      .join('')
+      .trim();
 
   const handleKeyPress = useCallback(
     (key: string) => {
@@ -356,56 +382,69 @@ export function EquationSolveWorkspace({
             </p>
           )}
 
-          {customSteps.map((step, si) => (
-            <div
-              key={si}
-              className="flex items-start gap-2 group"
-              onClick={() => {
-                // if nothing focused yet inside, focus the first txt buffer
-                if (!focusedSlot?.startsWith(`cs:${si}:`)) {
-                  setFocusedSlot(`cs:${si}:0:txt`);
-                  setFocusedInput(null);
-                }
-              }}
-            >
-              <span className="text-xs text-muted-foreground w-6 text-right pt-1.5">
-                {si + 1}.
-              </span>
-              <div
-                className={cn(
-                  'flex-1 flex flex-wrap items-center gap-1 rounded border bg-background/40 px-2 py-2 min-h-[2.75rem]',
-                  focusedSlot?.startsWith(`cs:${si}:`) && 'border-primary/60',
-                )}
-              >
-                {step.map((part, pi) => {
-                  if (part.kind === 'txt') {
-                    return renderTxt(part.s, `cs:${si}:${pi}:txt`);
-                  }
-                  return renderFrac(
-                    part.n,
-                    part.d,
-                    `cs:${si}:${pi}:n`,
-                    `cs:${si}:${pi}:d`,
-                  );
-                })}
+          {customSteps.map((step, si) => {
+            const customKey = k(`custom_${si}`);
+            const serialized = serializeStep(step);
+            // keep parent answers in sync so onCheckWork has access to the text
+            if (answers[customKey] !== serialized) {
+              setTimeout(() => onAnswerChange(customKey, serialized), 0);
+            }
+            return (
+              <div key={si} className="space-y-1">
+                <div
+                  className="flex items-start gap-2 group"
+                  onClick={() => {
+                    if (!focusedSlot?.startsWith(`cs:${si}:`)) {
+                      setFocusedSlot(`cs:${si}:0:txt`);
+                      setFocusedInput(null);
+                    }
+                  }}
+                >
+                  <span className="text-xs text-muted-foreground w-6 text-right pt-2">
+                    {si + 1}.
+                  </span>
+                  <div
+                    className={cn(
+                      'flex-1 flex flex-wrap items-center gap-1 rounded border bg-background/40 px-2 py-2 min-h-[2.75rem]',
+                      focusedSlot?.startsWith(`cs:${si}:`) && 'border-primary/60',
+                      feedback[customKey] === 'correct' && 'border-green-500 bg-green-500/5',
+                      feedback[customKey] === 'incorrect' && 'border-destructive bg-destructive/5',
+                    )}
+                  >
+                    {step.map((part, pi) => {
+                      if (part.kind === 'txt') {
+                        return renderTxt(part.s, `cs:${si}:${pi}:txt`);
+                      }
+                      return renderFrac(
+                        part.n,
+                        part.d,
+                        `cs:${si}:${pi}:n`,
+                        `cs:${si}:${pi}:d`,
+                      );
+                    })}
+                  </div>
+                  {checkBtn(customKey, `My step ${si + 1}`)}
+                  {stepFeedbackIcon(customKey)}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={isSubmitted}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCustomSteps((prev) => prev.filter((_, i) => i !== si));
+                      if (focusedSlot?.startsWith(`cs:${si}:`)) setFocusedSlot(null);
+                    }}
+                    className="h-7 w-7 p-0 opacity-50 group-hover:opacity-100"
+                    title="Delete step"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                {renderAiResponse(customKey)}
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={isSubmitted}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCustomSteps((prev) => prev.filter((_, i) => i !== si));
-                  if (focusedSlot?.startsWith(`cs:${si}:`)) setFocusedSlot(null);
-                }}
-                className="h-7 w-7 p-0 opacity-50 group-hover:opacity-100"
-                title="Delete step"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

@@ -85,6 +85,7 @@ export interface PastPaperQuestion {
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
   allowCustomSteps?: boolean; // Lets students add their own equation lines under equation stages
   diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
+  primeFactorParts?: Record<string, number>; // Map of answer-key -> target number, renders a PrimeFactorLadder for that key
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")
   questionFraction?: { numerator: string; denominator: string }; // Display question with a proper vertical fraction
 }

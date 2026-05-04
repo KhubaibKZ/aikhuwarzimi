@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
+import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
@@ -22,6 +22,19 @@ interface EquationSolveWorkspaceProps {
   allowCustomSteps?: boolean;
 }
 
+// Custom step token model
+type CustomPart = { kind: 'txt'; s: string } | { kind: 'frac'; n: string; d: string };
+type CustomStep = CustomPart[];
+
+// Rich keyboard used in the "My working" custom steps area
+const RICH_EQ_KEYBOARD: string[][] = [
+  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+  ['x', 'y', 'a', 'b', 'n', '+', '−', '×', '÷', '='],
+  ['(', ')', '.', '²', '³', '√', 'π', 'a/b', '⌫', 'Clear'],
+];
+
+const newStep = (): CustomStep => [{ kind: 'txt', s: '' }];
+
 export function EquationSolveWorkspace({
   questionKey,
   stages,
@@ -35,74 +48,132 @@ export function EquationSolveWorkspace({
   correctAnswers,
   aiResponse,
   keyboardKeys,
-  allowCustomSteps
+  allowCustomSteps,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [customSteps, setCustomSteps] = useState<string[]>([]);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const customRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
+  // Predefined-stage answer typing
   const k = (suffix: string) => `${questionKey}_${suffix}`;
 
-  const updateCustomStep = (i: number, val: string) => {
-    setCustomSteps(prev => {
-      const next = [...prev];
-      next[i] = val;
+  // ===== Custom steps state =====
+  const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
+  // focusedSlot identifies which buffer we are typing into:
+  //  format: `cs:${stepIdx}:${partIdx}:${slot}` where slot ∈ {'txt','n','d'}
+  const [focusedSlot, setFocusedSlot] = useState<string | null>(null);
+
+  const parseSlot = (s: string | null) => {
+    if (!s || !s.startsWith('cs:')) return null;
+    const [, si, pi, slot] = s.split(':');
+    return { si: +si, pi: +pi, slot: slot as 'txt' | 'n' | 'd' };
+  };
+
+  const updateBuffer = (mut: (buf: string) => string) => {
+    const f = parseSlot(focusedSlot);
+    if (!f) return;
+    setCustomSteps((prev) => {
+      const next = prev.map((step, i) => {
+        if (i !== f.si) return step;
+        return step.map((p, j) => {
+          if (j !== f.pi) return p;
+          if (p.kind === 'txt' && f.slot === 'txt') return { ...p, s: mut(p.s) };
+          if (p.kind === 'frac' && f.slot === 'n') return { ...p, n: mut(p.n) };
+          if (p.kind === 'frac' && f.slot === 'd') return { ...p, d: mut(p.d) };
+          return p;
+        });
+      });
       return next;
     });
   };
 
-  const handleKeyPress = useCallback((key: string) => {
-    if (!focusedInput || isSubmitted) return;
-    const isCustom = focusedInput.startsWith('__custom_');
-    const input = isCustom ? customRefs.current[focusedInput] : inputRefs.current[focusedInput];
-    if (!input) return;
+  const insertFractionAtFocus = () => {
+    const f = parseSlot(focusedSlot);
+    if (!f) return;
+    let newSlot = focusedSlot;
+    setCustomSteps((prev) => {
+      const next = prev.map((step) => step.slice());
+      const step = next[f.si];
+      if (!step) return prev;
+      // Always append a fraction after current part, then trailing empty txt
+      const insertAt = f.pi + 1;
+      step.splice(insertAt, 0, { kind: 'frac', n: '', d: '' }, { kind: 'txt', s: '' });
+      newSlot = `cs:${f.si}:${insertAt}:n`;
+      return next;
+    });
+    // focus numerator after state commits
+    setTimeout(() => setFocusedSlot(newSlot), 0);
+  };
 
-    const start = input.selectionStart || 0;
-    const end = input.selectionEnd || 0;
-    const currentValue = isCustom
-      ? (customSteps[parseInt(focusedInput.replace('__custom_', ''), 10)] || '')
-      : (answers[focusedInput] || '');
+  const handleKeyPress = useCallback(
+    (key: string) => {
+      if (isSubmitted) return;
 
-    const apply = (newValue: string, caret: number) => {
-      if (isCustom) {
-        const idx = parseInt(focusedInput.replace('__custom_', ''), 10);
-        updateCustomStep(idx, newValue);
+      // Custom steps focused?
+      if (focusedSlot?.startsWith('cs:')) {
+        if (key === 'a/b') return insertFractionAtFocus();
+        if (key === '⌫') return updateBuffer((s) => s.slice(0, -1));
+        if (key === 'Clear') {
+          const f = parseSlot(focusedSlot);
+          if (!f) return;
+          setCustomSteps((prev) =>
+            prev.map((step, i) => (i === f.si ? newStep() : step)),
+          );
+          setFocusedSlot(`cs:${f.si}:0:txt`);
+          return;
+        }
+        return updateBuffer((s) => s + key);
+      }
+
+      // Predefined-stage <Input> editing path
+      if (!focusedInput) return;
+      const input = inputRefs.current[focusedInput];
+      if (!input) return;
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const cur = answers[focusedInput] || '';
+      const apply = (v: string, caret: number) => {
+        onAnswerChange(focusedInput, v);
+        setTimeout(() => {
+          input.focus();
+          input.setSelectionRange(caret, caret);
+        }, 0);
+      };
+      if (key === '⌫') {
+        if (start === end && start > 0) apply(cur.slice(0, start - 1) + cur.slice(end), start - 1);
+        else if (start !== end) apply(cur.slice(0, start) + cur.slice(end), start);
+      } else if (key === 'Clear') {
+        apply('', 0);
+      } else if (key === 'a/b') {
+        // ignore in normal inputs
       } else {
-        onAnswerChange(focusedInput, newValue);
+        apply(cur.slice(0, start) + key + cur.slice(end), start + key.length);
       }
-      setTimeout(() => { input.focus(); input.setSelectionRange(caret, caret); }, 0);
-    };
+    },
+    [focusedInput, focusedSlot, isSubmitted, answers, onAnswerChange],
+  );
 
-    if (key === '⌫') {
-      if (start === end && start > 0) {
-        apply(currentValue.slice(0, start - 1) + currentValue.slice(end), start - 1);
-      } else if (start !== end) {
-        apply(currentValue.slice(0, start) + currentValue.slice(end), start);
-      }
-    } else if (key === 'Clear') {
-      apply('', 0);
-    } else {
-      apply(currentValue.slice(0, start) + key + currentValue.slice(end), start + key.length);
-    }
-  }, [focusedInput, isSubmitted, answers, customSteps, onAnswerChange]);
-
-  const setRef = useCallback((id: string) => (el: HTMLInputElement | null) => {
-    inputRefs.current[id] = el;
-  }, []);
+  const setRef = useCallback(
+    (id: string) => (el: HTMLInputElement | null) => {
+      inputRefs.current[id] = el;
+    },
+    [],
+  );
 
   const box = (id: string, width: string = 'w-12') => (
     <Input
       ref={setRef(id)}
       value={answers[id] || ''}
       onChange={(e) => onAnswerChange(id, e.target.value)}
-      onFocus={() => setFocusedInput(id)}
+      onFocus={() => {
+        setFocusedInput(id);
+        setFocusedSlot(null);
+      }}
       disabled={isSubmitted}
       className={cn(
         `${width} h-9 text-center font-mono text-base p-0 border-muted-foreground/40`,
-        feedback[id] === 'correct' && "border-green-500 bg-green-500/5",
-        feedback[id] === 'incorrect' && "border-destructive bg-destructive/5",
-        focusedInput === id && "ring-2 ring-primary/30"
+        feedback[id] === 'correct' && 'border-green-500 bg-green-500/5',
+        feedback[id] === 'incorrect' && 'border-destructive bg-destructive/5',
+        focusedInput === id && 'ring-2 ring-primary/30',
       )}
     />
   );
@@ -134,10 +205,14 @@ export function EquationSolveWorkspace({
   const renderAiResponse = (stepKey: string) => {
     if (aiResponse?.partKey !== stepKey) return null;
     return (
-      <div className={cn(
-        "rounded-lg border p-2 text-sm mt-1",
-        aiResponse.type === 'hint' ? "border-amber-500/30 bg-amber-500/10" : "border-blue-500/30 bg-blue-500/10"
-      )}>
+      <div
+        className={cn(
+          'rounded-lg border p-2 text-sm mt-1',
+          aiResponse.type === 'hint'
+            ? 'border-amber-500/30 bg-amber-500/10'
+            : 'border-blue-500/30 bg-blue-500/10',
+        )}
+      >
         <div className="flex items-start gap-2">
           <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
           <p className="whitespace-pre-line">{aiResponse.content}</p>
@@ -145,6 +220,39 @@ export function EquationSolveWorkspace({
       </div>
     );
   };
+
+  // ===== Custom step rendering =====
+  const slotClasses = (slot: string, content: string, baseW: string) => {
+    const focused = focusedSlot === slot;
+    return cn(
+      baseW,
+      'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base cursor-text whitespace-pre',
+      focused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
+      content === '' && 'text-muted-foreground/50',
+    );
+  };
+
+  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]') => (
+    <span
+      key={slot}
+      className={slotClasses(slot, text, minW)}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        setFocusedSlot(slot);
+        setFocusedInput(null);
+      }}
+    >
+      {text || '\u200b'}
+    </span>
+  );
+
+  const renderFrac = (n: string, d: string, slotN: string, slotD: string) => (
+    <span key={`${slotN}|${slotD}`} className="inline-flex flex-col items-center mx-1 align-middle">
+      {renderTxt(n, slotN, 'min-w-[2.5rem]')}
+      <span className="block w-full border-t border-foreground my-0.5" />
+      {renderTxt(d, slotD, 'min-w-[2.5rem]')}
+    </span>
+  );
 
   return (
     <div className="space-y-5">
@@ -156,7 +264,11 @@ export function EquationSolveWorkspace({
               <span className="text-xs text-muted-foreground font-medium mr-1">{stage.label}</span>
               {stage.elements.map((el, i) => {
                 if (el.type === 'text') {
-                  return <span key={i} className="font-mono text-base">{el.value}</span>;
+                  return (
+                    <span key={i} className="font-mono text-base">
+                      {el.value}
+                    </span>
+                  );
                 }
                 if (el.type === 'box' && el.key) {
                   return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
@@ -165,8 +277,14 @@ export function EquationSolveWorkspace({
                   const renderSubElements = (elements: typeof el.numElements) => (
                     <div className="flex items-center gap-0.5">
                       {elements?.map((subEl, j) => {
-                        if (subEl.type === 'text') return <span key={j} className="font-mono text-sm">{subEl.value}</span>;
-                        if (subEl.type === 'box' && subEl.key) return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
+                        if (subEl.type === 'text')
+                          return (
+                            <span key={j} className="font-mono text-sm">
+                              {subEl.value}
+                            </span>
+                          );
+                        if (subEl.type === 'box' && subEl.key)
+                          return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
                         return null;
                       })}
                     </div>
@@ -189,81 +307,114 @@ export function EquationSolveWorkspace({
         );
       })}
 
-      {/* Show correct answer after submission */}
       {isSubmitted && correctAnswers && (
         <div className="text-sm text-green-600 font-medium space-y-0.5">
-          {stages.map(stage => {
-            const boxElements = stage.elements.filter(el => el.type === 'box' && el.key);
-            const hasIncorrect = boxElements.some(el => feedback[k(el.key!)] === 'incorrect');
+          {stages.map((stage) => {
+            const boxElements = stage.elements.filter((el) => el.type === 'box' && el.key);
+            const hasIncorrect = boxElements.some((el) => feedback[k(el.key!)] === 'incorrect');
             if (!hasIncorrect) return null;
             return (
               <p key={stage.stepKey}>
-                {stage.label}: {boxElements.map(el => correctAnswers[k(el.key!)] || '').join(', ')}
+                {stage.label}:{' '}
+                {boxElements.map((el) => correctAnswers[k(el.key!)] || '').join(', ')}
               </p>
             );
           })}
         </div>
       )}
 
-      {/* Custom student-added equation steps */}
+      {/* ===== Custom student-built steps ===== */}
       {allowCustomSteps && (
-        <div className="space-y-2 border-t pt-3">
+        <div className="space-y-3 border-t pt-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-medium">My working</span>
-            <div className="flex gap-1">
+            <span className="text-xs text-muted-foreground font-medium">
+              My working — build each step using the keyboard below
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isSubmitted}
+              onClick={() => {
+                setCustomSteps((prev) => {
+                  const next = [...prev, newStep()];
+                  setTimeout(() => setFocusedSlot(`cs:${next.length - 1}:0:txt`), 0);
+                  return next;
+                });
+              }}
+              className="h-7 text-xs gap-1"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add step
+            </Button>
+          </div>
+
+          {customSteps.length === 0 && (
+            <p className="text-xs text-muted-foreground italic">
+              Click <span className="font-medium">+ Add step</span> to start writing your own
+              equation lines.
+            </p>
+          )}
+
+          {customSteps.map((step, si) => (
+            <div
+              key={si}
+              className="flex items-start gap-2 group"
+              onClick={() => {
+                // if nothing focused yet inside, focus the first txt buffer
+                if (!focusedSlot?.startsWith(`cs:${si}:`)) {
+                  setFocusedSlot(`cs:${si}:0:txt`);
+                  setFocusedInput(null);
+                }
+              }}
+            >
+              <span className="text-xs text-muted-foreground w-6 text-right pt-1.5">
+                {si + 1}.
+              </span>
+              <div
+                className={cn(
+                  'flex-1 flex flex-wrap items-center gap-1 rounded border bg-background/40 px-2 py-2 min-h-[2.75rem]',
+                  focusedSlot?.startsWith(`cs:${si}:`) && 'border-primary/60',
+                )}
+              >
+                {step.map((part, pi) => {
+                  if (part.kind === 'txt') {
+                    return renderTxt(part.s, `cs:${si}:${pi}:txt`);
+                  }
+                  return renderFrac(
+                    part.n,
+                    part.d,
+                    `cs:${si}:${pi}:n`,
+                    `cs:${si}:${pi}:d`,
+                  );
+                })}
+              </div>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 disabled={isSubmitted}
-                onClick={() => setCustomSteps(prev => [...prev, ''])}
-                className="h-7 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCustomSteps((prev) => prev.filter((_, i) => i !== si));
+                  if (focusedSlot?.startsWith(`cs:${si}:`)) setFocusedSlot(null);
+                }}
+                className="h-7 w-7 p-0 opacity-50 group-hover:opacity-100"
+                title="Delete step"
               >
-                + Add step
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
-              {customSteps.length > 0 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={isSubmitted}
-                  onClick={() => setCustomSteps(prev => prev.slice(0, -1))}
-                  className="h-7 text-xs"
-                >
-                  − Remove
-                </Button>
-              )}
             </div>
-          </div>
-          {customSteps.map((val, i) => {
-            const id = `__custom_${i}`;
-            return (
-              <div key={id} className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground w-6 text-right">{i + 1}.</span>
-                <Input
-                  ref={(el) => { customRefs.current[id] = el; }}
-                  value={val}
-                  onChange={(e) => updateCustomStep(i, e.target.value)}
-                  onFocus={() => setFocusedInput(id)}
-                  disabled={isSubmitted}
-                  placeholder="Write your own step…"
-                  className={cn(
-                    "flex-1 h-9 font-mono text-base border-muted-foreground/40",
-                    focusedInput === id && "ring-2 ring-primary/30"
-                  )}
-                />
-              </div>
-            );
-          })}
+          ))}
         </div>
       )}
 
-      {/* Keyboard */}
+      {/* Keyboard — use rich algebra keyboard when a custom-step buffer is active */}
       <div className="border-t pt-3">
         <HorizontalKeyboard
-          keys={keyboardKeys}
+          keys={focusedSlot?.startsWith('cs:') ? RICH_EQ_KEYBOARD : keyboardKeys}
           onKeyPress={handleKeyPress}
-          disabled={isSubmitted || !focusedInput}
+          disabled={isSubmitted || (!focusedInput && !focusedSlot)}
         />
       </div>
     </div>

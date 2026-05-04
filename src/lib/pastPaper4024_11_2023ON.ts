@@ -832,28 +832,6 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         },
         { type: 'text', value: '=' },
         { type: 'box', key: 's0_rhs', width: 'w-12' }
-      ]},
-      { label: 'Multiply out', stepKey: 's1', elements: [
-        { type: 'text', value: '3x(x−1) − 2(x+1) = 3(x+1)(x−1)' }
-      ]},
-      { label: 'Expand LHS', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a', width: 'w-20' }, { type: 'text', value: '−' },
-        { type: 'box', key: 's2_b', width: 'w-16' }
-      ]},
-      { label: 'Expand RHS', stepKey: 's3', elements: [
-        { type: 'text', value: '= 3(' }, { type: 'box', key: 's3_a', width: 'w-16' }, { type: 'text', value: ')' },
-        { type: 'text', value: '=' }, { type: 'box', key: 's3_b', width: 'w-16' }
-      ]},
-      { label: 'Simplify', stepKey: 's4', elements: [
-        { type: 'box', key: 's4_a', width: 'w-20' }, { type: 'text', value: '=' },
-        { type: 'box', key: 's4_b', width: 'w-20' }
-      ]},
-      { label: 'Solve', stepKey: 's5', elements: [
-        { type: 'text', value: 'x =' },
-        { type: 'fraction',
-          numElements: [{ type: 'box', key: 's5_num', width: 'w-12' }],
-          denElements: [{ type: 'box', key: 's5_den', width: 'w-12' }]
-        }
       ]}
     ],
     parts: [{ label: 'x =', key: 'answer', marks: 4 }],
@@ -862,11 +840,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_s0_n1: '3x', answer_s0_n2: 'x', answer_s0_n3: '1',
       answer_s0_n4: '2', answer_s0_n5: 'x', answer_s0_n6: '1',
       answer_s0_d1: 'x', answer_s0_d2: '1', answer_s0_d3: 'x', answer_s0_d4: '1',
-      answer_s0_rhs: '3',
-      answer_s2_a: '3x²-3x', answer_s2_b: '2x+2',
-      answer_s3_a: 'x²-1', answer_s3_b: '3x²-3',
-      answer_s4_a: '3x²-5x-2', answer_s4_b: '3x²-3',
-      answer_s5_num: '1', answer_s5_den: '5'
+      answer_s0_rhs: '3'
     },
     markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },

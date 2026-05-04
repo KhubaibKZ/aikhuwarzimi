@@ -25,7 +25,12 @@ Deno.serve(async (req) => {
     const KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!KEY) throw new Error('LOVABLE_API_KEY not configured');
 
-    const sys = `You are a Cambridge past-paper content engineer. Given a single audit issue, return a SHORT concrete fix the developer can apply to the question definition (TypeScript object). Be specific: name the field, give the corrected value, no preamble.`;
+    const sys = `You are a Cambridge past-paper content engineer. Given a single audit issue, return a SHORT concrete fix the developer can apply to the question definition (TypeScript object). Be specific: name the field, give the corrected value, no preamble.
+
+Context-aware rules you MUST apply before suggesting a fix:
+- "figures" in phrases like "to 3 figures" / "to 3 significant figures" / "to 2 decimal places" refers to rounding, NOT a diagram. Do not propose adding a diagram for these.
+- If the official MS for this part only lists a final answer (no M1/A1/B1), do NOT propose adding markingCriteria — instead reply: "No fix needed — MS is answer-only for this part."
+- If the issue contradicts the actual QP/MS (e.g. flags a missing diagram on a sig-fig question), reply: "False positive — <one-line reason>." and suggest no code change.`;
     const user =
 `PAPER: ${paperId}
 QUESTION: ${questionId}

@@ -40,8 +40,20 @@ const CHECK_LABELS: Record<AuditCheckType, string> = {
 };
 export function getCheckLabel(c: AuditCheckType) { return CHECK_LABELS[c]; }
 
-const looksLikeDiagramRef = (text: string) =>
-  /diagram|chart|graph|figure|shown|grid|triangle|circle|venn|scatter|sector|parallelogram|rectangle|cylinder|histogram|net of|bar chart|frequency polygon|cumulative|pie chart|map|coordinate|axes|plot/i.test(text);
+// Strip phrases where "figure(s)" / "figs" mean sig-figs / decimals, not a diagram.
+const stripNonDiagramPhrases = (text: string) =>
+  text
+    .replace(/\b\d+\s*(significant\s+figures?|sig\.?\s*figs?|s\.?f\.?)\b/gi, '')
+    .replace(/\bsignificant\s+figures?\b/gi, '')
+    .replace(/\bto\s+\d+\s+(decimal\s+places?|d\.?p\.?|figures?|figs?)\b/gi, '')
+    .replace(/\bcorrect\s+to\s+\d+\s+(decimal\s+places?|d\.?p\.?|figures?|figs?)\b/gi, '')
+    .replace(/\bnearest\s+(whole\s+number|integer|ten|hundred|thousand)\b/gi, '');
+
+const looksLikeDiagramRef = (raw: string) => {
+  const text = stripNonDiagramPhrases(raw);
+  // "figure"/"figures" alone is ambiguous — require an explicit visual noun.
+  return /diagram|chart|graph|shown (above|below|in the)|grid\b|triangle|circle|venn|scatter|sector|parallelogram|rectangle\b|cylinder|histogram|net of|bar chart|frequency polygon|cumulative|pie chart|\bmap\b|coordinate|axes|plot|sketch|construction|number line/i.test(text);
+};
 
 const PROHIBITED_WORDING_PATTERNS: { re: RegExp; msg: string; suggestion: string }[] = [
   { re: /\\frac|\\sqrt|\\cdot|\\times|\$\$|\\\(/, msg: 'LaTeX detected in question text.', suggestion: 'Replace with plain Unicode math symbols (e.g. √, ×, ÷, ²).' },
@@ -297,15 +309,22 @@ function checkSubmitValidation(q: PastPaperQuestion): AuditCheckResult {
   } else if (typeof q.answer === 'string' && q.answer.includes('|')) {
     altCount++;
   }
-  if (!q.markingCriteria || !Object.keys(q.markingCriteria).length) {
+  // markingCriteria are only required when the MS awards method marks (M1/B1).
+  // Pure answer-only parts (typical 1-mark Qs where MS just lists the final answer)
+  // do not need markingCriteria — flagging them creates noise.
+  const partsArr = q.parts ?? [];
+  const hasMethodMarkPart = partsArr.some((p) => p.marks >= 2);
+  const isAnswerOnlyQuestion =
+    !partsArr.length ? q.marks <= 1 : !hasMethodMarkPart;
+  if (!isAnswerOnlyQuestion && (!q.markingCriteria || !Object.keys(q.markingCriteria).length)) {
     issues.push({
       message: 'No markingCriteria — Submit feedback won\'t reflect MS rules (M1/A1/B1/oe).',
       ref: 'markingCriteria',
       path: 'markingCriteria',
-      suggestion: 'Add markingCriteria mirroring the MS mark allocation (M1, A1, B1, oe alternatives).',
+      suggestion: 'Add markingCriteria mirroring the MS mark allocation (M1, A1, B1, oe alternatives). Skip if MS lists answer-only.',
     });
   }
-  if (q.marks >= 2 && altCount === 0) {
+  if (q.marks >= 3 && altCount === 0 && hasMethodMarkPart) {
     issues.push({
       message: 'No "oe" alternatives provided (no pipe-separated answers) for a multi-mark question.',
       ref: 'answer',

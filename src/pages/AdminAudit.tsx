@@ -103,6 +103,11 @@ function AdminAuditInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paperId, questionId]);
 
+  // Reset attached QP/MS/Solved pages when switching papers (they're paper-scoped).
+  useEffect(() => {
+    setQpImg(''); setMsImg(''); setSolvedImg('');
+  }, [paperId]);
+
   const saveCheck = async (checkType: AuditCheckType, defaultStatus: AuditStatus, defaultNotes: string) => {
     if (!question) return;
     setSavingKey(checkType);

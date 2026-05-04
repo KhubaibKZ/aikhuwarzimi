@@ -14,7 +14,9 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ClipboardCheck, Loader2, Sparkles, Save, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, ClipboardCheck, Loader2, Sparkles, Save, RefreshCcw, ExternalLink, Wand2 } from 'lucide-react';
+import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { getPastPaperQuestion } from '@/lib/pastPaperData';
 
 const STATUS_TONE: Record<AuditStatus, string> = {
   pass: 'bg-green-500/15 text-green-300 border-green-500/30',

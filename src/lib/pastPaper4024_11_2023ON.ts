@@ -19,7 +19,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 2 ==========
   'pp_4024_on23_11_q2': {
     id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Ordering fractions and percentages',
-    question: 'Write these numbers in order of size, starting with the smallest: 1/5, 3/25, 13%, 0.1.',
+    question: 'Write these numbers in order of size, starting with the smallest: [[1/5]], [[3/25]], 13%, 0.1.',
     marks: 2,
     hints: ['Convert to decimals: 1/5 = 0.2, 3/25 = 0.12, 13% = 0.13, 0.1', 'Order: 0.1, 3/25, 13%, 1/5'],
     type: 'multi-part',
@@ -448,7 +448,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 16 ==========
   'pp_4024_on23_11_q16': {
     id: 'pp_4024_on23_11_q16', questionNumber: '16', title: 'Region defined by inequalities',
-    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ x/2 + 1. Find and label region R.',
+    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ [[x/2]] + 1. Find and label region R.',
     marks: 4,
     hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
     type: 'short', answer: 'Region R correctly identified',
@@ -632,7 +632,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 21 ==========
   'pp_4024_on23_11_q21': {
     id: 'pp_4024_on23_11_q21', questionNumber: '21', title: 'Factorisation',
-    question: '(a) Factorise 6a − 9.\n(b) Factorise 4b² − 25.\n(c) Simplify (2c² − 8c)/(2c² − 5c − 12).',
+    question: '(a) Factorise 6a − 9.\n(b) Factorise 4b² − 25.\n(c) Simplify [[(2c² − 8c)/(2c² − 5c − 12)]].',
     marks: 5,
     hints: ['(a) 3(2a − 3)', '(b) (2b + 5)(2b − 5)', '(c) Factor: 2c(c−4)/((2c+3)(c−4)) = 2c/(2c+3)'],
     type: 'multi-part',
@@ -673,8 +673,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 22 ==========
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
-    question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
-    questionFraction: { numerator: 'x', denominator: '4' },
+    question: 'f(x) = [[x/4]] + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
     marks: 6,
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
@@ -806,7 +805,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 24 ==========
   'pp_4024_on23_11_q24': {
     id: 'pp_4024_on23_11_q24', questionNumber: '24', title: 'Algebraic fractions equation',
-    question: 'Solve 3x/(x+1) − 2/(x−1) = 3.',
+    question: 'Solve [[3x/(x+1)]] − [[2/(x−1)]] = 3.',
     marks: 4,
     hints: ['Multiply through by (x+1)(x−1)', 'Expand: 3x(x−1) − 2(x+1) = 3(x+1)(x−1)', 'Simplify and solve'],
     type: 'multi-part',

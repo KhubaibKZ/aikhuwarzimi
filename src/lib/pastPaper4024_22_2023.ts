@@ -14,7 +14,7 @@ export const questions4024_22_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_22_q2': {
     id: 'pp_4024_s23_22_q2', questionNumber: '2', title: 'Equations, factorise, fractions, rearrange, mean',
-    question: '(a) 5 bars at p cents + 8 packs at 75¢ = $9.10. Find p.\n(b) Factorise 6ac − 27c.\n(c) Write (3m)/(10) − (5n)/(9m) as a single fraction.\n(d) Rearrange y = 3x² to make x the subject.\n(e) A group of k numbers has mean 56.8. Adding 52 gives mean 56.5. Find k.',
+    question: '(a) 5 bars at p cents + 8 packs at 75¢ = $9.10. Find p.\n(b) Factorise 6ac − 27c.\n(c) Write [[3m/10]] − [[5n/9m]] as a single fraction.\n(d) Rearrange y = 3x² to make x the subject.\n(e) A group of k numbers has mean 56.8. Adding 52 gives mean 56.5. Find k.',
     marks: 13, hints: ['(a) 5p + 600 = 910, p = 62', '(b) 3c(2a−9)', '(e) 56.8k + 52 = 56.5(k+1)'],
     type: 'multi-part',
     parts: [{ label: '(a) p', key: 'a', marks: 3 }, { label: '(b) Factorised', key: 'b', marks: 2 }, { label: '(c) Single fraction', key: 'c', marks: 2 }, { label: '(d) x =', key: 'd', marks: 2 }, { label: '(e) k', key: 'e', marks: 4 }],
@@ -30,7 +30,7 @@ export const questions4024_22_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_22_q4': {
     id: 'pp_4024_s23_22_q4', questionNumber: '4', title: 'Exponential graph',
-    question: '(a) Complete table for y = 2^(x/2).\n(b) Draw graph for −1 ≤ x ≤ 4.\n(c) Solve 2^(x/2) = 6 using the graph (draw y = 1.2 line).\n(d)(i) Complete table for 4y = 2x + 1.\n(d)(ii) Draw line on grid.\n(d)(iii) Find x-coordinates of intersections.\n(d)(iv) Find A, B, C where A·2^(x/2) + Bx + C = 0.',
+    question: '(a) Complete table for y = 2^([[x/2]]).\n(b) Draw graph for −1 ≤ x ≤ 4.\n(c) Solve 2^([[x/2]]) = 6 using the graph (draw y = 1.2 line).\n(d)(i) Complete table for 4y = 2x + 1.\n(d)(ii) Draw line on grid.\n(d)(iii) Find x-coordinates of intersections.\n(d)(iv) Find A, B, C where A·2^([[x/2]]) + Bx + C = 0.',
     marks: 12, hints: ['(a) When x = 4: y = 2² = 4 → but actually y = 2^(x/2), so check', '(c) Draw horizontal line at appropriate height'],
     type: 'multi-part',
     parts: [{ label: '(a) y when x = 4', key: 'a', marks: 1 }, { label: '(c) x', key: 'c', marks: 2 }, { label: '(d)(iv) A', key: 'dA', marks: 1 }, { label: '(d)(iv) B', key: 'dB', marks: 1 }, { label: '(d)(iv) C', key: 'dC', marks: 1 }],

@@ -19,7 +19,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 2 ==========
   'pp_4024_on23_11_q2': {
     id: 'pp_4024_on23_11_q2', questionNumber: '2', title: 'Ordering fractions and percentages',
-    question: 'Write these numbers in order of size, starting with the smallest: 1/5, 3/25, 13%, 0.1.',
+    question: 'Write these numbers in order of size, starting with the smallest: [[1/5]], [[3/25]], 13%, 0.1.',
     marks: 2,
     hints: ['Convert to decimals: 1/5 = 0.2, 3/25 = 0.12, 13% = 0.13, 0.1', 'Order: 0.1, 3/25, 13%, 1/5'],
     type: 'multi-part',

@@ -67,6 +67,7 @@ import {
   VennHSG_4024_12_2023ON,
   TriangleOAB_4024_12_2023ON
 } from '@/components/diagrams';
+import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;

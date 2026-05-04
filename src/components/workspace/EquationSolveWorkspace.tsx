@@ -7,6 +7,14 @@ import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
 
+interface StructuredExtraStep {
+  afterStepKey: string; // insert rows after this stage
+  initialBoxes: number; // e.g. 3
+  hasOperators?: boolean; // if true, render small operator box between value boxes
+  boxWidth?: string;
+  opWidth?: string;
+}
+
 interface EquationSolveWorkspaceProps {
   questionKey: string;
   stages: EquationStage[];
@@ -21,6 +29,7 @@ interface EquationSolveWorkspaceProps {
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
   allowCustomSteps?: boolean;
+  structuredExtraStep?: StructuredExtraStep;
 }
 
 // Custom step token model

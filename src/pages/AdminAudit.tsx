@@ -67,6 +67,9 @@ export default function AdminAudit() {
   const [msImg, setMsImg] = useState<string>('');
   const [solvedImg, setSolvedImg] = useState<string>('');
   const [aiSummary, setAiSummary] = useState<string>('');
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [fixLoadingKey, setFixLoadingKey] = useState<string | null>(null);
+  const [fixResults, setFixResults] = useState<Record<string, string>>({});
 
   const fileToBase64 = (file: File) => new Promise<string>((resolve, reject) => {
     const r = new FileReader();

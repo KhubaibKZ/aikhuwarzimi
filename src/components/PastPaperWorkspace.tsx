@@ -779,6 +779,81 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       } // end else (has sub-keys)
     }
 
+    // ===== Custom student-built step (My working) =====
+    // partKey looks like `${rootPart}_custom_${i}` — there is no expected answer for it,
+    // so we send rich context (original question, ALL reference answers, marking criteria,
+    // and any previous custom steps) to the AI so it can analyse the actual algebra.
+    const customMatch = partKey.match(/^(.*)_custom_(\d+)$/);
+    if (customMatch) {
+      const [, rootPart, idxStr] = customMatch;
+      const studentExpression = answers[partKey] || '';
+      if (!normalizeAnswer(studentExpression)) {
+        setAiResponse({
+          type: 'guidance',
+          content: `Build at least one expression in this step before checking.`,
+          partKey,
+        });
+        return;
+      }
+
+      // Collect previous custom steps (so AI sees the chain of working)
+      const previousSteps: Record<string, string> = {};
+      const idx = parseInt(idxStr, 10);
+      for (let i = 0; i < idx; i++) {
+        const k = `${rootPart}_custom_${i}`;
+        if (answers[k]) previousSteps[`step_${i + 1}`] = answers[k];
+      }
+
+      // Reference: full correct answer map for this question (gives AI the target form
+      // and any predefined-stage answers like "3x", "x", "1", "2", etc.)
+      const referenceAnswers = typeof question.answer === 'object' ? question.answer : { answer: question.answer };
+
+      setAttemptCount(prev => ({ ...prev, [partKey]: (prev[partKey] || 0) + 1 }));
+      setIsLoading(true);
+      setLoadingType('check');
+      setLoadingPartKey(partKey);
+      aiUsageRef.current += 1;
+      if (user && matchedPaper && paperQuota) {
+        await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
+        refetchAssignments();
+      }
+      try {
+        const { data, error } = await supabase.functions.invoke('ai-tutor', {
+          body: {
+            question: question.question,
+            actionType: 'checkWork',
+            userAnswers: {
+              [`student_step_${idx + 1}`]: studentExpression,
+              ...previousSteps,
+            },
+            correctAnswers: referenceAnswers,
+            topic: question.title,
+            hints: question.hints,
+            attemptCount: (attemptCount[partKey] || 0) + 1,
+            hasMissing: false,
+            hasWrong: true,
+            specificPart: `Student's own working line ${idx + 1}: "${studentExpression}". Analyse the ALGEBRA in this expression against the original question. Identify the EXACT mathematical error (e.g. forgot to multiply RHS by the common denominator, sign error, expansion mistake). Do not give generic guidance about "common denominator" unless that IS the specific error you can verify.`,
+            workingContent: '',
+            markingCriteria: question.markingCriteria,
+          },
+        });
+        if (error) throw error;
+        setAiResponse({ type: 'guidance', content: data.hint, partKey });
+      } catch (error) {
+        console.error('Check work error:', error);
+        setAiResponse({
+          type: 'guidance',
+          content: `Re-check this line against the original equation. Make sure every term — including the right-hand side — has been multiplied through correctly.`,
+          partKey,
+        });
+      } finally {
+        setIsLoading(false);
+        setLoadingType(null);
+        setLoadingPartKey(null);
+      }
+      return;
+    }
+
     // Standard single-value check
     const rawAnswer = directAnswer !== undefined ? directAnswer : (answers[partKey] || '');
     const correctRaw = typeof question.answer === 'object' ? question.answer[partKey] || '' : 

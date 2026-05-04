@@ -673,8 +673,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 22 ==========
   'pp_4024_on23_11_q22': {
     id: 'pp_4024_on23_11_q22', questionNumber: '22', title: 'Functions',
-    question: 'f(x) = x/4 + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
-    questionFraction: { numerator: 'x', denominator: '4' },
+    question: 'f(x) = [[x/4]] + 3, g(x) = 2(x − 1).\n(a) Find f(−8).\n(b) Find f⁻¹(x).\n(c) Find the value of p if f(p) = g(p + 5).',
     marks: 6,
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',

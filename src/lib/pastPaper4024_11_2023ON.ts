@@ -810,7 +810,29 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['Multiply through by (x+1)(x−1)', 'Expand: 3x(x−1) − 2(x+1) = 3(x+1)(x−1)', 'Simplify and solve'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
+    allowCustomSteps: true,
     equationStages: [
+      { label: 'Combine into one fraction (LCM)', stepKey: 's0', elements: [
+        { type: 'fraction',
+          numElements: [
+            { type: 'box', key: 's0_n1', width: 'w-10' },
+            { type: 'text', value: '(' }, { type: 'box', key: 's0_n2', width: 'w-10' },
+            { type: 'text', value: '−' }, { type: 'box', key: 's0_n3', width: 'w-10' }, { type: 'text', value: ')' },
+            { type: 'text', value: '−' },
+            { type: 'box', key: 's0_n4', width: 'w-10' },
+            { type: 'text', value: '(' }, { type: 'box', key: 's0_n5', width: 'w-10' },
+            { type: 'text', value: '+' }, { type: 'box', key: 's0_n6', width: 'w-10' }, { type: 'text', value: ')' }
+          ],
+          denElements: [
+            { type: 'text', value: '(' }, { type: 'box', key: 's0_d1', width: 'w-10' },
+            { type: 'text', value: '+' }, { type: 'box', key: 's0_d2', width: 'w-10' }, { type: 'text', value: ')' },
+            { type: 'text', value: '(' }, { type: 'box', key: 's0_d3', width: 'w-10' },
+            { type: 'text', value: '−' }, { type: 'box', key: 's0_d4', width: 'w-10' }, { type: 'text', value: ')' }
+          ]
+        },
+        { type: 'text', value: '=' },
+        { type: 'box', key: 's0_rhs', width: 'w-12' }
+      ]},
       { label: 'Multiply out', stepKey: 's1', elements: [
         { type: 'text', value: '3x(x−1) − 2(x+1) = 3(x+1)(x−1)' }
       ]},

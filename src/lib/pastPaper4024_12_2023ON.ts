@@ -320,28 +320,14 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
             { type: 'box', key: 's1_c', width: 'w-10' },
           ],
         },
-      ]},
-      { label: 'Simplify inside', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '×' },
-        { type: 'box', key: 's2_b', width: 'w-10' },
         { type: 'text', value: '=' },
-        { type: 'box', key: 's2_c', width: 'w-14' },
+        { type: 'box', key: 's1_d', width: 'w-14' },
       ]},
-      { label: 'Take square root', stepKey: 's3', elements: [
-        {
-          type: 'sqrt',
-          innerElements: [{ type: 'box', key: 's3_a', width: 'w-14' }],
-        },
-        { type: 'text', value: '=' },
-        { type: 'box', key: 's3_b', width: 'w-12' },
-      ]}
     ],
     parts: [{ label: 'Estimate', key: 'answer', marks: 2 }],
     answer: {
       answer: '20',
-      answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10',
-      answer_s2_a: '1000', answer_s2_b: '4', answer_s2_c: '4000',
-      answer_s3_a: '400', answer_s3_b: '20',
+      answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10', answer_s1_d: '20',
     }
   },
 

@@ -632,7 +632,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 21 ==========
   'pp_4024_on23_11_q21': {
     id: 'pp_4024_on23_11_q21', questionNumber: '21', title: 'Factorisation',
-    question: '(a) Factorise 6a − 9.\n(b) Factorise 4b² − 25.\n(c) Simplify (2c² − 8c)/(2c² − 5c − 12).',
+    question: '(a) Factorise 6a − 9.\n(b) Factorise 4b² − 25.\n(c) Simplify [[(2c² − 8c)/(2c² − 5c − 12)]].',
     marks: 5,
     hints: ['(a) 3(2a − 3)', '(b) (2b + 5)(2b − 5)', '(c) Factor: 2c(c−4)/((2c+3)(c−4)) = 2c/(2c+3)'],
     type: 'multi-part',

@@ -34,8 +34,13 @@ export function QuestionText({ text, className }: { text: string; className?: st
               <span key={`t-${li}-${lastIdx}`}>{line.slice(lastIdx, m.index)}</span>
             );
           }
+          const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;
           nodes.push(
-            <StackedFraction key={`f-${li}-${m.index}`} num={m[2].trim()} den={m[3].trim()} sqrt={!!m[1]} />
+            m[1] ? (
+              <Radical key={`f-${li}-${m.index}`}>{frac}</Radical>
+            ) : (
+              <React.Fragment key={`f-${li}-${m.index}`}>{frac}</React.Fragment>
+            )
           );
           lastIdx = m.index + m[0].length;
         }

@@ -19,6 +19,7 @@ interface EquationSolveWorkspaceProps {
   correctAnswers?: Record<string, string>;
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
+  allowCustomSteps?: boolean;
 }
 
 export function EquationSolveWorkspace({

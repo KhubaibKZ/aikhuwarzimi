@@ -301,9 +301,9 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 10 ==========
   'pp_4024_on23_12_q10': {
     id: 'pp_4024_on23_12_q10', questionNumber: '10', title: 'Estimation',
-    question: 'By writing each number correct to 1 significant figure, estimate the value of [[(1240 × 3.8)/11.2]].',
+    question: 'By writing each number correct to 1 significant figure, estimate the value of √([[(1240 × 3.8)/11.2]]).',
     marks: 2,
-    hints: ['1240 ≈ 1000, 3.8 ≈ 4, 11.2 ≈ 10', '1000 × 4 / 10 = 400... but wait: MS answer = 20 — re-check: maybe question is √(1240) × 3.8 / 11.2 or similar'],
+    hints: ['1240 ≈ 1000, 3.8 ≈ 4, 11.2 ≈ 10', '√((1000 × 4)/10) = √400 = 20'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
@@ -312,17 +312,21 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
         { type: 'text', value: ', 3.8 ≈' }, { type: 'box', key: 's1_b', width: 'w-10' },
         { type: 'text', value: ', 11.2 ≈' }, { type: 'box', key: 's1_c', width: 'w-10' }
       ]},
-      { label: 'Calculate', stepKey: 's2', elements: [
+      { label: 'Inside the root', stepKey: 's2', elements: [
         { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: '×' },
         { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '÷' },
         { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_d', width: 'w-12' }
+      ]},
+      { label: 'Take square root', stepKey: 's3', elements: [
+        { type: 'text', value: '√' }, { type: 'box', key: 's3_a', width: 'w-14' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_b', width: 'w-10' }
       ]}
     ],
     parts: [{ label: 'Estimate', key: 'answer', marks: 2 }],
     answer: {
-      answer: '400',
+      answer: '20',
       answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10',
-      answer_s2_a: '1000', answer_s2_b: '4', answer_s2_c: '10', answer_s2_d: '400'
+      answer_s2_a: '1000', answer_s2_b: '4', answer_s2_c: '10', answer_s2_d: '400',
+      answer_s3_a: '400', answer_s3_b: '20'
     }
   },
 

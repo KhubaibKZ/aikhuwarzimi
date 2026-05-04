@@ -1775,6 +1775,17 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               </div>
             )}
             
+            {/* ========== 4024/12 Oct/Nov 2023 Diagrams ========== */}
+            {question.id === 'pp_4024_on23_12_q2' && (<div className="mt-4"><RectangleSquares_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q6' && (<div className="mt-4"><ParallelLines_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q7' && (<div className="mt-4"><TransformGrid_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q14' && (<div className="mt-4"><TriangleConstruct_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q17' && (<div className="mt-4"><CumulativeFrequency_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q18' && (<div className="mt-4"><SpeedTime_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q21' && (<div className="mt-4"><TwoSectors_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q23' && (<div className="mt-4"><VennHSG_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q24' && (<div className="mt-4"><TriangleOAB_4024_12_2023ON /></div>)}
+
             {/* Fallback to static image if no interactive diagram and image exists */}
             {question.image && 
              !['pp_0580_s22_q2b', 'pp_0580_s22_q2d', 'pp_0580_s22_q4a', 'pp_0580_s22_q4b', 'pp_0580_s22_q8a', 'pp_0580_s22_q8b', 'pp_0580_s22_q8c', 'pp_0580_s22_q8d', 'pp_0580_s22_q9',

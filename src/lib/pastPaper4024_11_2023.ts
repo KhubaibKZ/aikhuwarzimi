@@ -132,7 +132,7 @@ export const questions4024_11_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_11_q18': {
     id: 'pp_4024_s23_11_q18', questionNumber: '18', title: 'Rearrange formula',
-    question: 'y = √((x + 2)/3). Rearrange the formula to make x the subject.',
+    question: 'y = √([[(x + 2)/3]]). Rearrange the formula to make x the subject.',
     marks: 3, hints: ['Square both sides: y² = (x + 2)/3', 'Multiply by 3: 3y² = x + 2', 'x = 3y² − 2'],
     type: 'short', answer: 'x = 3y² - 2'
   },

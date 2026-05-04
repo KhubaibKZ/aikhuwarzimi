@@ -46,7 +46,7 @@ export const questions4024_21_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_21_q6': {
     id: 'pp_4024_s23_21_q6', questionNumber: '6', title: 'Algebra',
-    question: '(a) Simplify 3u − 6w − 5u + 9w.\n(b) Emilio buys m pencils at 40¢ each and 12 pens at 85¢. Pays $20, gets $2.20 change. Find m.\n(c) y ∝ (x−2)³. When y = 12, x = 4. Find y when x = 5.\n(d) Write as single fraction: 3/(x−1) − 4/(2x+1).',
+    question: '(a) Simplify 3u − 6w − 5u + 9w.\n(b) Emilio buys m pencils at 40¢ each and 12 pens at 85¢. Pays $20, gets $2.20 change. Find m.\n(c) y ∝ (x−2)³. When y = 12, x = 4. Find y when x = 5.\n(d) Write as single fraction: [[3/(x−1)]] − [[4/(2x+1)]].',
     marks: 11, hints: ['(a) −2u + 3w', '(b) 40m + 1020 = 1780, m = 19', '(c) k = 12/8 = 3/2, y = (3/2)(27) = 40.5'],
     type: 'multi-part',
     parts: [{ label: '(a) Simplified', key: 'a', marks: 2 }, { label: '(b) Pencils', key: 'b', marks: 4 }, { label: '(c) y', key: 'c', marks: 2 }, { label: '(d) Single fraction', key: 'd', marks: 3 }],

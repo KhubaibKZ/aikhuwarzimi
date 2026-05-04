@@ -56,7 +56,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 3 ==========
   'pp_4024_on23_12_q3': {
     id: 'pp_4024_on23_12_q3', questionNumber: '3', title: 'Decimals and cube root',
-    question: '(a) Find the decimal exactly halfway between 3/5 and 68%.\n(b) Write 4.07382 correct to 3 decimal places.\n(c) Evaluate ³√64.',
+    question: '(a) Find the decimal exactly halfway between [[3/5]] and 68%.\n(b) Write 4.07382 correct to 3 decimal places.\n(c) Evaluate ³√64.',
     marks: 3,
     hints: ['(a) 3/5 = 0.6, 68% = 0.68, halfway = 0.64', '(b) Look at 4th decimal place to round', '(c) 4³ = 64'],
     type: 'multi-part',
@@ -583,7 +583,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 19 ==========
   'pp_4024_on23_12_q19': {
     id: 'pp_4024_on23_12_q19', questionNumber: '19', title: 'Algebraic fractions',
-    question: 'Express as a single fraction: (x+1)/8 + 3x/4 − 5x/16.',
+    question: 'Express as a single fraction: [[(x+1)/8]] + [[3x/4]] − [[5x/16]].',
     marks: 2,
     hints: ['Common denominator = 16', '2(x+1)/16 + 12x/16 − 5x/16 = (2x+2+12x−5x)/16 = (9x+2)/16'],
     type: 'multi-part',

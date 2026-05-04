@@ -60,7 +60,7 @@ export const questions4024_21_2023ON: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_on23_21_q6': {
     id: 'pp_4024_on23_21_q6', questionNumber: '6', title: 'Rectangle area and graph',
-    question: 'ABCD rectangle area 30 cm², AB = x cm. Rectangle DEFG removed (AE = CG = 2 cm).\n(a) Expression for BC.\n(b) Show shaded area y = 2x + 60/x − 4.\n(c) Complete table.\n(d) Draw graph.\n(e) When y = 24, find dimensions.',
+    question: 'ABCD rectangle area 30 cm², AB = x cm. Rectangle DEFG removed (AE = CG = 2 cm).\n(a) Expression for BC.\n(b) Show shaded area y = 2x + [[60/x]] − 4.\n(c) Complete table.\n(d) Draw graph.\n(e) When y = 24, find dimensions.',
     marks: 10, hints: ['(a) BC = 30/x', '(b) Shaded = total − removed rectangle', '(e) Read x values from graph at y = 24'],
     type: 'multi-part',
     parts: [

@@ -80,7 +80,7 @@ export const questions4024_12_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_12_q11': {
     id: 'pp_4024_s23_12_q11', questionNumber: '11', title: 'Estimation',
-    question: 'By writing each number correct to 1 significant figure, estimate the value of 18/(0.2 × 0.395).',
+    question: 'By writing each number correct to 1 significant figure, estimate the value of [[18/(0.2 × 0.395)]].',
     marks: 2, hints: ['18 ≈ 20, 0.2 stays, 0.395 ≈ 0.4', '20/(0.2 × 0.4) = 20/0.08 = 250'],
     type: 'short', answer: '250'
   },
@@ -148,7 +148,7 @@ export const questions4024_12_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_12_q20': {
     id: 'pp_4024_s23_12_q20', questionNumber: '20', title: 'Expand and simplify indices',
-    question: '(a) Expand and simplify (4x − y)(2x + 5y)\n(b) Simplify (x¹²/8)^(2/3)',
+    question: '(a) Expand and simplify (4x − y)(2x + 5y)\n(b) Simplify ([[x¹²/8]])^([[2/3]])',
     marks: 4, hints: ['(a) 8x² + 20xy − 2xy − 5y² = 8x² + 18xy − 5y²', '(b) x⁸/4'],
     type: 'multi-part',
     parts: [{ label: '(a) Expanded', key: 'a', marks: 2 }, { label: '(b) Simplified', key: 'b', marks: 2 }],
@@ -156,7 +156,7 @@ export const questions4024_12_2023: Record<string, PastPaperQuestion> = {
   },
   'pp_4024_s23_12_q21': {
     id: 'pp_4024_s23_12_q21', questionNumber: '21', title: 'Solve fractional equation',
-    question: 'Solve: 5x/(x − 3) = x + 4',
+    question: 'Solve: [[5x/(x − 3)]] = x + 4',
     marks: 4, hints: ['5x = (x + 4)(x − 3)', '5x = x² + x − 12', 'x² − 4x − 12 = 0', '(x − 6)(x + 2) = 0'],
     type: 'multi-part',
     parts: [{ label: 'x (first value)', key: 'x1', marks: 2 }, { label: 'x (second value)', key: 'x2', marks: 2 }],

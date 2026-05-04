@@ -56,7 +56,16 @@ import {
   VectorParallelogram2023ON,
   VennDiagram3Set2023ON,
   ScatterDiagram2023ON,
-  ScaleDrawing2023ON
+  ScaleDrawing2023ON,
+  RectangleSquares_4024_12_2023ON,
+  ParallelLines_4024_12_2023ON,
+  TransformGrid_4024_12_2023ON,
+  TriangleConstruct_4024_12_2023ON,
+  CumulativeFrequency_4024_12_2023ON,
+  SpeedTime_4024_12_2023ON,
+  TwoSectors_4024_12_2023ON,
+  VennHSG_4024_12_2023ON,
+  TriangleOAB_4024_12_2023ON
 } from '@/components/diagrams';
 
 interface PastPaperWorkspaceProps {

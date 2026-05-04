@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
+import { CheckCircle2, XCircle, BookOpen, Trash2, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';

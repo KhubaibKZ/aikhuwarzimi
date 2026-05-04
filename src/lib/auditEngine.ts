@@ -262,6 +262,10 @@ function checkWorkCoverage(q: PastPaperQuestion): AuditCheckResult {
     const pathBase = partKey ? `equationStagesMap.${partKey}[${idx}]` : `equationStages[${idx}]`;
     (s.elements ?? []).forEach((el: any, eIdx: number) => {
       if (el.type === 'box' && el.key) {
+        // Intermediate working-step boxes ("_a", "_b", "_num"…) are intentional
+        // zero-mark scaffolding (see project memory) — Check Work targets the
+        // stage's final answer, not each working sub-box. Skip those.
+        if (isWorkingStepBoxKey(el.key)) return;
         const primary = q.equationSolveParts?.[0];
         const fullKey = primary ? `${primary}_${el.key}` : el.key;
         if (!(fullKey in ansObj) && !(el.key in ansObj)) {

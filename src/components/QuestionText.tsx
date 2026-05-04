@@ -22,7 +22,7 @@ function StackedFraction({ num, den }: { num: string; den: string }) {
 export function QuestionText({ text, className }: { text: string; className?: string }) {
   const lines = text.split("\n");
   return (
-    <p className={`text-foreground flex flex-wrap items-baseline gap-x-1 gap-y-2 ${className ?? ""}`}>
+    <p className={`text-foreground flex flex-wrap items-center gap-x-1 gap-y-2 ${className ?? ""}`}>
       {lines.map((line, li) => {
         const nodes: React.ReactNode[] = [];
         let lastIdx = 0;

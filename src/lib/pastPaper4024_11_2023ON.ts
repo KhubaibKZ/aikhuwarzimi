@@ -748,10 +748,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a_calc: '1', b_calc: '4x-12', c_calc: '-20/7',
+      a_calc_s1_num: '-8', a_calc_s1_den: '4', a_calc_s1_c: '3',
       a_calc_s2: '1',
-      b_calc_s1: '4(y-3)', b_calc_s2: '4x-12',
+      b_calc_s1_num: 'x', b_calc_s1_den: '4', b_calc_s1_c: '3', b_calc_s1_x: '4(y-3)|4y-12',
+      b_calc_s2: '4x-12|4(x-3)',
+      c_calc_s1_num: 'p', c_calc_s1_den: '4', c_calc_s1_c: '3',
       c_calc_s2_a: '4',
-      c_calc_s3_a: '4',
+      c_calc_s3_num: 'p', c_calc_s3_den: '4', c_calc_s3_c: '3', c_calc_s3_a: '4',
       c_calc_s4_a: '8', c_calc_s4_b: '32',
       c_calc_s5_a: '-7', c_calc_s5_b: '20',
       c_calc_s6_num: '-20', c_calc_s6_den: '7'

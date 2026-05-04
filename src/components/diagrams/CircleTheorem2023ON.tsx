@@ -1,49 +1,44 @@
 // Circle theorem diagram for Q15 4024/11 Oct/Nov 2023
 // A external point, tangents from A touch circle (centre O) at B (top) and C (bottom).
-// D is on the circle to the right. Lines BD, CD drawn (chord BC also). Angle BAC = 38°.
+// D on the circle to the right. Chords BD, CD, BC drawn. Radii OB, OC. Angle BAC = 38°.
 
 export function CircleTheorem2023ON() {
-  const cx = 200, cy = 170, r = 90;
-  // Angle BAC = 38°, tangents from A. Distance AO computed so tangent length is sensible.
-  // Half-angle at A = 19°. sin(19°) = r / AO  => AO = r / sin(19°)
-  const halfA = (38 / 2) * Math.PI / 180;
-  const AO = r / Math.sin(halfA);
-  const A = { x: cx - AO, y: cy };
+  const halfA = (38 / 2) * Math.PI / 180; // 19°
+  const r = 70;
+  const AO = r / Math.sin(halfA); // ≈ 215
+  // Place A near left edge, O = A + AO to the right
+  const A = { x: 30, y: 180 };
+  const cx = A.x + AO;
+  const cy = A.y;
 
-  // Tangent points B and C: OB ⊥ AB. Angle of OB from O measured from line OA (pointing -x).
-  // The tangent point lies at angle (90° - halfA) from OA direction.
-  // OA direction from O = (-1, 0). Rotate by ±(90° - halfA).
-  const phi = Math.PI / 2 - halfA; // angle between OA and OB
-  // B is upper tangent point
-  const B = {
-    x: cx + r * Math.cos(Math.PI - phi),
-    y: cy - r * Math.sin(Math.PI - phi),
-  };
-  const C = {
-    x: cx + r * Math.cos(Math.PI - phi),
-    y: cy + r * Math.sin(Math.PI - phi),
-  };
-  // D on the right of the circle
+  // Tangent points (symmetric about line AO which is horizontal)
+  // Angle from O: OB makes angle (90° - halfA) with OA-direction (which points -x from O)
+  const phi = Math.PI / 2 - halfA;
+  const B = { x: cx - r * Math.cos(phi), y: cy - r * Math.sin(phi) };
+  const C = { x: cx - r * Math.cos(phi), y: cy + r * Math.sin(phi) };
   const D = { x: cx + r, y: cy };
 
-  // Extend tangent lines a bit past B and C
+  // Extend tangent lines past tangent points
   const extend = (P: {x:number;y:number}, Q: {x:number;y:number}, t: number) => ({
     x: Q.x + (Q.x - P.x) * t,
     y: Q.y + (Q.y - P.y) * t,
   });
-  const Bext = extend(A, B, 0.25);
-  const Cext = extend(A, C, 0.25);
+  const Bext = extend(A, B, 0.30);
+  const Cext = extend(A, C, 0.30);
+
+  const W = Math.max(Bext.x, Cext.x, D.x) + 70;
+  const H = Math.max(Cext.y, cy + r) + 30;
 
   return (
-    <svg viewBox="0 0 460 340" className="w-full max-w-md mx-auto">
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-md mx-auto">
       {/* Circle */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5" />
 
-      {/* Tangent lines from A through B and C, extended */}
+      {/* Tangent lines from A through B and C, extended past */}
       <line x1={A.x} y1={A.y} x2={Bext.x} y2={Bext.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={A.x} y1={A.y} x2={Cext.x} y2={Cext.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
 
-      {/* Chords */}
+      {/* Chords BC, BD, CD */}
       <line x1={B.x} y1={B.y} x2={C.x} y2={C.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={B.x} y1={B.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
@@ -54,16 +49,16 @@ export function CircleTheorem2023ON() {
 
       {/* Centre O */}
       <circle cx={cx} cy={cy} r="2.5" fill="hsl(var(--foreground))" />
-      <text x={cx + 6} y={cy - 4} fontStyle="italic" fontSize="13" fill="hsl(var(--foreground))">O</text>
+      <text x={cx + 6} y={cy - 4} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">O</text>
 
       {/* Angle arc at A (38°) */}
       <path
-        d={`M ${A.x + 26} ${A.y - 26 * Math.tan(halfA)} A 26 26 0 0 1 ${A.x + 26} ${A.y + 26 * Math.tan(halfA)}`}
+        d={`M ${A.x + 28} ${A.y - 28 * Math.tan(halfA)} A 28 28 0 0 1 ${A.x + 28} ${A.y + 28 * Math.tan(halfA)}`}
         fill="none"
         stroke="hsl(var(--foreground))"
-        strokeWidth="1"
+        strokeWidth="1.2"
       />
-      <text x={A.x + 18} y={A.y + 5} fontSize="12" fill="hsl(var(--foreground))">38°</text>
+      <text x={A.x + 14} y={A.y + 4} fontSize="12" fill="hsl(var(--foreground))">38°</text>
 
       {/* Labels */}
       <text x={A.x - 14} y={A.y + 5} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">A</text>
@@ -72,8 +67,8 @@ export function CircleTheorem2023ON() {
       <text x={D.x + 6} y={D.y + 5} fontStyle="italic" fontSize="14" fill="hsl(var(--foreground))">D</text>
 
       {/* NOT TO SCALE */}
-      <text x={400} y={150} fontSize="10" fill="hsl(var(--muted-foreground))">NOT TO</text>
-      <text x={400} y={163} fontSize="10" fill="hsl(var(--muted-foreground))">SCALE</text>
+      <text x={D.x + 22} y={cy - 10} fontSize="10" fill="hsl(var(--muted-foreground))">NOT TO</text>
+      <text x={D.x + 22} y={cy + 3} fontSize="10" fill="hsl(var(--muted-foreground))">SCALE</text>
     </svg>
   );
 }

@@ -551,10 +551,10 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a) CF diagram', key: 'a', marks: 2 }, { label: '(b) IQR (cm)', key: 'b', marks: 2 }, { label: '(c) H', key: 'c', marks: 2 }],
     answer: {
-      a: 'Correct CF diagram', b: '4', c: '7',
-      b_s1_a: '20', b_s1_b: '3.5',
-      b_s2_a: '60', b_s2_b: '7.5',
-      b_s3_a: '7.5', b_s3_b: '3.5', b_s3_c: '4',
+      a: 'Correct CF diagram', b: '3.8|4', c: '7',
+      b_s1_a: '20', b_s1_b: '4.2',
+      b_s2_a: '60', b_s2_b: '8',
+      b_s3_a: '8', b_s3_b: '4.2', b_s3_c: '3.8',
       c_s1_a: '28', c_s1_b: '52', c_s2_a: '7'
     }
   },
@@ -662,9 +662,9 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 21 ==========
   'pp_4024_on23_12_q21': {
     id: 'pp_4024_on23_12_q21', questionNumber: '21', title: 'Sector and arc length',
-    question: 'Diagram A: sector centre D, radius 3y, angle 6x° (obtuse). Diagram B: sector centre P, radius y, angle x°. Major arc EF = 9 × arc QR.\n(a) Show x = 20.\n(b) Find y when area of sector QPR = 2π cm².',
+    question: 'Diagram A: sector centre D, radius (3/4)y cm, obtuse angle EDF = 6x°. Diagram B: sector centre P, radius y cm, sector angle x°. The length of the major arc EF is 9 times the length of arc QR.\n(a) Show that x = 20.\n(b) Find y when the area of sector QPR = 2π cm².',
     marks: 5,
-    hints: ['(a) Major arc EF = (360−6x)/360 × 2π(3y), arc QR = x/360 × 2πy', '(b) Area = (x/360)πy² = (20/360)πy² = 2π → y² = 36, y = 6'],
+    hints: ['(a) Major arc EF = (360−6x)/360 × 2π × (3y/4); arc QR = (x/360) × 2πy', '(b) Area = (x/360)πy² = (20/360)πy² = 2π → y² = 36, y = 6'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
@@ -796,11 +796,11 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a)(i) AP', key: 'ai', marks: 1 }, { label: '(a)(ii) OB', key: 'aii', marks: 3 }, { label: '(b) QP', key: 'b', marks: 1 }],
     answer: {
-      ai: '2b-a', aii: '-a+5b', b: '2/5(-a+5b)',
+      ai: '2b-a', aii: '(3/2)a+5b|(3a+10b)/2|3a/2+5b', b: '(3/5)a+2b|3a/5+2b',
       ai_s1_a: '3a+2b', ai_s1_b: '4a', ai_s2_a: '2b−a',
       aii_s1_a: '5', aii_s1_b: '2', aii_s2_a: '5b−5a/2',
-      aii_s3_a: '-a+5b',
-      b_s1_a: '2/5(-a+5b)'
+      aii_s3_a: '(3/2)a+5b',
+      b_s1_a: '(3/5)a+2b'
     }
   },
 };

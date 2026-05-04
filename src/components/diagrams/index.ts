@@ -34,3 +34,14 @@ export { VectorParallelogram2023ON } from './VectorParallelogram2023ON';
 export { VennDiagram3Set2023ON } from './VennDiagram3Set2023ON';
 export { ScatterDiagram2023ON } from './ScatterDiagram2023ON';
 export { ScaleDrawing2023ON } from './ScaleDrawing2023ON';
+export {
+  RectangleSquares_4024_12_2023ON,
+  ParallelLines_4024_12_2023ON,
+  TransformGrid_4024_12_2023ON,
+  TriangleConstruct_4024_12_2023ON,
+  CumulativeFrequency_4024_12_2023ON,
+  SpeedTime_4024_12_2023ON,
+  TwoSectors_4024_12_2023ON,
+  VennHSG_4024_12_2023ON,
+  TriangleOAB_4024_12_2023ON,
+} from './Paper4024_12_2023ON_Diagrams';

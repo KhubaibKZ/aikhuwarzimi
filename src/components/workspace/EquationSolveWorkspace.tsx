@@ -94,15 +94,31 @@ export function EquationSolveWorkspace({
       const next = prev.map((step) => step.slice());
       const step = next[f.si];
       if (!step) return prev;
-      // Always append a fraction after current part, then trailing empty txt
       const insertAt = f.pi + 1;
-      step.splice(insertAt, 0, { kind: 'frac', n: '', d: '' }, { kind: 'txt', s: '' });
+      const toInsert: CustomPart[] = [{ kind: 'frac', n: '', d: '' }];
+      // Only add a trailing text slot if the next part isn't already a text slot
+      const nextPart = step[insertAt];
+      if (!nextPart || nextPart.kind !== 'txt') {
+        toInsert.push({ kind: 'txt', s: '' });
+      }
+      step.splice(insertAt, 0, ...toInsert);
       newSlot = `cs:${f.si}:${insertAt}:n`;
       return next;
     });
-    // focus numerator after state commits
     setTimeout(() => setFocusedSlot(newSlot), 0);
   };
+
+  // Serialize a custom step into a readable string for the AI tutor / answer store
+  const serializeStep = (step: CustomStep): string =>
+    step
+      .map((p) => {
+        if (p.kind === 'txt') return p.s;
+        const n = p.n || '?';
+        const d = p.d || '?';
+        return `(${n})/(${d})`;
+      })
+      .join('')
+      .trim();
 
   const handleKeyPress = useCallback(
     (key: string) => {

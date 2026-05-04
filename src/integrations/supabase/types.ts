@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_reports: {
+        Row: {
+          audited_at: string
+          audited_by: string | null
+          check_type: Database["public"]["Enums"]["audit_check_type"]
+          findings: Json | null
+          id: string
+          notes: string | null
+          paper_id: string
+          question_id: string
+          source: string
+          status: Database["public"]["Enums"]["audit_status"]
+        }
+        Insert: {
+          audited_at?: string
+          audited_by?: string | null
+          check_type: Database["public"]["Enums"]["audit_check_type"]
+          findings?: Json | null
+          id?: string
+          notes?: string | null
+          paper_id: string
+          question_id: string
+          source?: string
+          status?: Database["public"]["Enums"]["audit_status"]
+        }
+        Update: {
+          audited_at?: string
+          audited_by?: string | null
+          check_type?: Database["public"]["Enums"]["audit_check_type"]
+          findings?: Json | null
+          id?: string
+          notes?: string | null
+          paper_id?: string
+          question_id?: string
+          source?: string
+          status?: Database["public"]["Enums"]["audit_status"]
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -214,6 +253,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "student"
+      audit_check_type:
+        | "question_fidelity"
+        | "diagram_fidelity"
+        | "workspace_scaffolding"
+        | "check_work_coverage"
+        | "submit_validation"
+      audit_status: "pending" | "pass" | "warning" | "fail"
       workspace_mode: "general" | "student"
     }
     CompositeTypes: {
@@ -343,6 +389,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "student"],
+      audit_check_type: [
+        "question_fidelity",
+        "diagram_fidelity",
+        "workspace_scaffolding",
+        "check_work_coverage",
+        "submit_validation",
+      ],
+      audit_status: ["pending", "pass", "warning", "fail"],
       workspace_mode: ["general", "student"],
     },
   },

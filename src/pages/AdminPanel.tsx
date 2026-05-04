@@ -198,6 +198,9 @@ export default function AdminPanel() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/audit')} className="hidden sm:flex">
+              <FileText className="h-3.5 w-3.5 mr-1" /> Audit
+            </Button>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9 rounded-lg">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>

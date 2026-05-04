@@ -323,7 +323,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 13 ==========
   'pp_4024_on23_11_q13': {
     id: 'pp_4024_on23_11_q13', questionNumber: '13', title: 'Fraction division',
-    question: 'Work out 1³⁄₅ ÷ 1²⁄₃.\nGive your answer as a fraction in its simplest form.',
+    question: 'Work out 1[[3/5]] ÷ 1[[2/3]].\nGive your answer as a fraction in its simplest form.',
     marks: 2,
     hints: ['Convert to improper: 8/5 ÷ 5/3', 'Flip and multiply: 8/5 × 3/5 = 24/25'],
     type: 'multi-part',
@@ -331,10 +331,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: 'Answer', key: 'answer', marks: 2 }],
     answer: {
       answer: '24/25',
-      answer_s1_n1: '8', answer_s1_n2: '3', answer_s1_d1: '5', answer_s1_d2: '5',
-      answer_s1_rn: '24', answer_s1_rd: '25',
-      answer_s2_n1: '24', answer_s2_gcd: '1', answer_s2_d1: '25', answer_s2_gcd2: '1',
-      answer_s2_fn: '24', answer_s2_fd: '25'
+      // Stage 0: convert to improper fractions (÷ form)
+      answer_s0_n1: '8', answer_s0_d1: '5', answer_s0_n2: '5', answer_s0_d2: '3',
+      // Stage 1: flip & multiply with result
+      answer_s1_n1: '8', answer_s1_d1: '5', answer_s1_n2: '3', answer_s1_d2: '5',
+      answer_s1_rn: '24', answer_s1_rd: '25'
     },
     markingCriteria: { answer: 'M1 for 8/5 × 3/5 or 8/5 ÷ 5/3 seen. A1 for 24/25.' }
   },

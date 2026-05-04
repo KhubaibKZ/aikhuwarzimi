@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
-import AdminAudit from "./pages/AdminAudit";
+
 import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -22,7 +22,7 @@ const AppRoutes = () => (
       <Route path="/student-demo-analytics" element={<StudentAnalytics />} />
       <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
-      <Route path="/admin/audit" element={<AdminAudit />} />
+      
       <Route path="/student" element={<StudentDashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

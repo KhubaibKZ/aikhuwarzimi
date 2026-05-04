@@ -37,15 +37,18 @@ export function FractionDivisionWorkspace({
 
   const k = (suffix: string) => `${questionKey}_${suffix}`;
 
+  // Determine which stages to render based on which answer keys are configured
+  const has = (suffix: string) => correctAnswers && (k(suffix) in correctAnswers);
+  const showImproper = has('s0_n1');
+  const showSimplify = has('s2_fn');
+
   const handleKeyPress = useCallback((key: string) => {
     if (!focusedInput || isSubmitted) return;
     const input = inputRefs.current[focusedInput];
     if (!input) return;
-
     const start = input.selectionStart || 0;
     const end = input.selectionEnd || 0;
     const currentValue = answers[focusedInput] || '';
-
     if (key === '⌫') {
       if (start === end && start > 0) {
         const newValue = currentValue.slice(0, start - 1) + currentValue.slice(end);
@@ -99,38 +102,49 @@ export function FractionDivisionWorkspace({
     );
   };
 
-  // All box IDs for this workspace
-  const s1_n1 = k('s1_n1'); const s1_n2 = k('s1_n2');
-  const s1_d1 = k('s1_d1'); const s1_d2 = k('s1_d2');
-  const s1_rn = k('s1_rn'); const s1_rd = k('s1_rd');
-  const s2_n1 = k('s2_n1'); const s2_gcd = k('s2_gcd');
-  const s2_d1 = k('s2_d1'); const s2_gcd2 = k('s2_gcd2');
-  const s2_fn = k('s2_fn'); const s2_fd = k('s2_fd');
+  const Frac = ({ nKey, dKey }: { nKey: string; dKey: string }) => (
+    <div className="inline-flex flex-col items-center gap-0.5">
+      <Input ref={setRef(nKey)} value={answers[nKey] || ''} onChange={(e) => onAnswerChange(nKey, e.target.value)} onFocus={() => setFocusedInput(nKey)} disabled={isSubmitted} className={getBoxClass(nKey)} />
+      <div className="w-12 h-px bg-foreground" />
+      <Input ref={setRef(dKey)} value={answers[dKey] || ''} onChange={(e) => onAnswerChange(dKey, e.target.value)} onFocus={() => setFocusedInput(dKey)} disabled={isSubmitted} className={getBoxClass(dKey)} />
+    </div>
+  );
+
+  // Stage 0: improper fractions joined by ÷
+  const s0_n1 = k('s0_n1'), s0_d1 = k('s0_d1'), s0_n2 = k('s0_n2'), s0_d2 = k('s0_d2');
+  // Stage 1: × form with result
+  const s1_n1 = k('s1_n1'), s1_d1 = k('s1_d1'), s1_n2 = k('s1_n2'), s1_d2 = k('s1_d2');
+  const s1_rn = k('s1_rn'), s1_rd = k('s1_rd');
+  // Stage 2: simplify
+  const s2_n1 = k('s2_n1'), s2_gcd = k('s2_gcd'), s2_d1 = k('s2_d1'), s2_gcd2 = k('s2_gcd2');
+  const s2_fn = k('s2_fn'), s2_fd = k('s2_fd');
 
   return (
     <div className="space-y-5">
-      {/* Step 1: Multiply numerators and denominators */}
+      {/* Stage 0: Convert to improper fractions */}
+      {showImproper && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Frac nKey={s0_n1} dKey={s0_d1} />
+            <span className="text-lg font-mono">÷</span>
+            <Frac nKey={s0_n2} dKey={s0_d2} />
+            <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s0'), 'Convert to improper fractions')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
+              {loadingStepKey === k('s0') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
+            </Button>
+            {stepFeedbackIcon(k('s0'))}
+          </div>
+          {renderAiResponse(k('s0'))}
+        </div>
+      )}
+
+      {/* Stage 1: Flip & multiply with result */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="inline-flex flex-col items-center gap-0.5">
-            <div className="flex items-center gap-0.5">
-              <Input ref={setRef(s1_n1)} value={answers[s1_n1] || ''} onChange={(e) => onAnswerChange(s1_n1, e.target.value)} onFocus={() => setFocusedInput(s1_n1)} disabled={isSubmitted} className={getBoxClass(s1_n1)} />
-              <span className="text-sm font-mono">×</span>
-              <Input ref={setRef(s1_n2)} value={answers[s1_n2] || ''} onChange={(e) => onAnswerChange(s1_n2, e.target.value)} onFocus={() => setFocusedInput(s1_n2)} disabled={isSubmitted} className={getBoxClass(s1_n2)} />
-            </div>
-            <div className="w-24 h-px bg-foreground" />
-            <div className="flex items-center gap-0.5">
-              <Input ref={setRef(s1_d1)} value={answers[s1_d1] || ''} onChange={(e) => onAnswerChange(s1_d1, e.target.value)} onFocus={() => setFocusedInput(s1_d1)} disabled={isSubmitted} className={getBoxClass(s1_d1)} />
-              <span className="text-sm font-mono">×</span>
-              <Input ref={setRef(s1_d2)} value={answers[s1_d2] || ''} onChange={(e) => onAnswerChange(s1_d2, e.target.value)} onFocus={() => setFocusedInput(s1_d2)} disabled={isSubmitted} className={getBoxClass(s1_d2)} />
-            </div>
-          </div>
+          <Frac nKey={s1_n1} dKey={s1_d1} />
+          <span className="text-lg font-mono">×</span>
+          <Frac nKey={s1_n2} dKey={s1_d2} />
           <span className="text-lg font-mono">=</span>
-          <div className="inline-flex flex-col items-center gap-0.5">
-            <Input ref={setRef(s1_rn)} value={answers[s1_rn] || ''} onChange={(e) => onAnswerChange(s1_rn, e.target.value)} onFocus={() => setFocusedInput(s1_rn)} disabled={isSubmitted} className={getBoxClass(s1_rn)} />
-            <div className="w-10 h-px bg-foreground" />
-            <Input ref={setRef(s1_rd)} value={answers[s1_rd] || ''} onChange={(e) => onAnswerChange(s1_rd, e.target.value)} onFocus={() => setFocusedInput(s1_rd)} disabled={isSubmitted} className={getBoxClass(s1_rd)} />
-          </div>
+          <Frac nKey={s1_rn} dKey={s1_rd} />
           <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s1'), 'Multiply numerators and denominators')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
             {loadingStepKey === k('s1') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
           </Button>
@@ -139,44 +153,40 @@ export function FractionDivisionWorkspace({
         {renderAiResponse(k('s1'))}
       </div>
 
-      {/* Step 2: Simplify */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="inline-flex flex-col items-center gap-0.5">
-            <div className="flex items-center gap-0.5">
-              <Input ref={setRef(s2_n1)} value={answers[s2_n1] || ''} onChange={(e) => onAnswerChange(s2_n1, e.target.value)} onFocus={() => setFocusedInput(s2_n1)} disabled={isSubmitted} className={getBoxClass(s2_n1)} />
-              <span className="text-sm font-mono">÷</span>
-              <Input ref={setRef(s2_gcd)} value={answers[s2_gcd] || ''} onChange={(e) => onAnswerChange(s2_gcd, e.target.value)} onFocus={() => setFocusedInput(s2_gcd)} disabled={isSubmitted} className={getBoxClass(s2_gcd)} />
+      {/* Stage 2: Simplify (only if needed) */}
+      {showSimplify && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="inline-flex flex-col items-center gap-0.5">
+              <div className="flex items-center gap-0.5">
+                <Input ref={setRef(s2_n1)} value={answers[s2_n1] || ''} onChange={(e) => onAnswerChange(s2_n1, e.target.value)} onFocus={() => setFocusedInput(s2_n1)} disabled={isSubmitted} className={getBoxClass(s2_n1)} />
+                <span className="text-sm font-mono">÷</span>
+                <Input ref={setRef(s2_gcd)} value={answers[s2_gcd] || ''} onChange={(e) => onAnswerChange(s2_gcd, e.target.value)} onFocus={() => setFocusedInput(s2_gcd)} disabled={isSubmitted} className={getBoxClass(s2_gcd)} />
+              </div>
+              <div className="w-24 h-px bg-foreground" />
+              <div className="flex items-center gap-0.5">
+                <Input ref={setRef(s2_d1)} value={answers[s2_d1] || ''} onChange={(e) => onAnswerChange(s2_d1, e.target.value)} onFocus={() => setFocusedInput(s2_d1)} disabled={isSubmitted} className={getBoxClass(s2_d1)} />
+                <span className="text-sm font-mono">÷</span>
+                <Input ref={setRef(s2_gcd2)} value={answers[s2_gcd2] || ''} onChange={(e) => onAnswerChange(s2_gcd2, e.target.value)} onFocus={() => setFocusedInput(s2_gcd2)} disabled={isSubmitted} className={getBoxClass(s2_gcd2)} />
+              </div>
             </div>
-            <div className="w-24 h-px bg-foreground" />
-            <div className="flex items-center gap-0.5">
-              <Input ref={setRef(s2_d1)} value={answers[s2_d1] || ''} onChange={(e) => onAnswerChange(s2_d1, e.target.value)} onFocus={() => setFocusedInput(s2_d1)} disabled={isSubmitted} className={getBoxClass(s2_d1)} />
-              <span className="text-sm font-mono">÷</span>
-              <Input ref={setRef(s2_gcd2)} value={answers[s2_gcd2] || ''} onChange={(e) => onAnswerChange(s2_gcd2, e.target.value)} onFocus={() => setFocusedInput(s2_gcd2)} disabled={isSubmitted} className={getBoxClass(s2_gcd2)} />
-            </div>
+            <span className="text-lg font-mono">=</span>
+            <Frac nKey={s2_fn} dKey={s2_fd} />
+            <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s2'), 'Simplify the fraction')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
+              {loadingStepKey === k('s2') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
+            </Button>
+            {stepFeedbackIcon(k('s2'))}
           </div>
-          <span className="text-lg font-mono">=</span>
-          <div className="inline-flex flex-col items-center gap-0.5">
-            <Input ref={setRef(s2_fn)} value={answers[s2_fn] || ''} onChange={(e) => onAnswerChange(s2_fn, e.target.value)} onFocus={() => setFocusedInput(s2_fn)} disabled={isSubmitted} className={getBoxClass(s2_fn)} />
-            <div className="w-10 h-px bg-foreground" />
-            <Input ref={setRef(s2_fd)} value={answers[s2_fd] || ''} onChange={(e) => onAnswerChange(s2_fd, e.target.value)} onFocus={() => setFocusedInput(s2_fd)} disabled={isSubmitted} className={getBoxClass(s2_fd)} />
-          </div>
-          <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s2'), 'Simplify the fraction')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
-            {loadingStepKey === k('s2') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
-          </Button>
-          {stepFeedbackIcon(k('s2'))}
+          {renderAiResponse(k('s2'))}
         </div>
-        {renderAiResponse(k('s2'))}
-      </div>
+      )}
 
-      {/* Show correct answers after submission */}
       {isSubmitted && correctAnswers && (
         <p className="text-sm text-green-600 font-medium">
-          Correct: {correctAnswers[questionKey] || '4/15'}
+          Correct: {correctAnswers[questionKey] || ''}
         </p>
       )}
 
-      {/* Keyboard */}
       <div className="border-t pt-3">
         <HorizontalKeyboard
           keys={keyboardKeys}

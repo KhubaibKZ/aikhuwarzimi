@@ -448,7 +448,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 16 ==========
   'pp_4024_on23_11_q16': {
     id: 'pp_4024_on23_11_q16', questionNumber: '16', title: 'Region defined by inequalities',
-    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ x/2 + 1. Find and label region R.',
+    question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ [[x/2]] + 1. Find and label region R.',
     marks: 4,
     hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
     type: 'short', answer: 'Region R correctly identified',

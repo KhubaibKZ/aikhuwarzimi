@@ -99,6 +99,11 @@ function checkQuestionFidelity(q: PastPaperQuestion): AuditCheckResult {
   }
   if (q.parts && q.parts.length > 1) {
     for (const p of q.parts) {
+      // Internal-only keys (e.g. "p4", "a_calc", "b_calc", "*_num", "*_den") are
+      // helper compute slots, not user-facing part labels — don't expect them in
+      // the question text.
+      const isInternalKey = /^(p\d+|.*_(calc|num|den|mul|ans|a|b|c|d|e|f|g|h|i|j))$/.test(p.key);
+      if (isInternalKey) continue;
       if (p.marks > 0 && !new RegExp(`\\(${p.key}\\)`).test(q.question)) {
         issues.push({
           message: `Part "(${p.key})" not referenced in question text.`,

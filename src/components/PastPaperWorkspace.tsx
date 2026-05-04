@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useStudentAssignments } from '@/hooks/useStudentAssignments';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
+import { QuestionText } from '@/components/QuestionText';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { StepWorkspace, FractionDivisionWorkspace, EquationSolveWorkspace } from '@/components/workspace';

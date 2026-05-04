@@ -44,34 +44,48 @@ export function EquationSolveWorkspace({
 
   const k = (suffix: string) => `${questionKey}_${suffix}`;
 
+  const updateCustomStep = (i: number, val: string) => {
+    setCustomSteps(prev => {
+      const next = [...prev];
+      next[i] = val;
+      return next;
+    });
+  };
+
   const handleKeyPress = useCallback((key: string) => {
     if (!focusedInput || isSubmitted) return;
-    const input = inputRefs.current[focusedInput];
+    const isCustom = focusedInput.startsWith('__custom_');
+    const input = isCustom ? customRefs.current[focusedInput] : inputRefs.current[focusedInput];
     if (!input) return;
 
     const start = input.selectionStart || 0;
     const end = input.selectionEnd || 0;
-    const currentValue = answers[focusedInput] || '';
+    const currentValue = isCustom
+      ? (customSteps[parseInt(focusedInput.replace('__custom_', ''), 10)] || '')
+      : (answers[focusedInput] || '');
+
+    const apply = (newValue: string, caret: number) => {
+      if (isCustom) {
+        const idx = parseInt(focusedInput.replace('__custom_', ''), 10);
+        updateCustomStep(idx, newValue);
+      } else {
+        onAnswerChange(focusedInput, newValue);
+      }
+      setTimeout(() => { input.focus(); input.setSelectionRange(caret, caret); }, 0);
+    };
 
     if (key === '⌫') {
       if (start === end && start > 0) {
-        const newValue = currentValue.slice(0, start - 1) + currentValue.slice(end);
-        onAnswerChange(focusedInput, newValue);
-        setTimeout(() => { input.focus(); input.setSelectionRange(start - 1, start - 1); }, 0);
+        apply(currentValue.slice(0, start - 1) + currentValue.slice(end), start - 1);
       } else if (start !== end) {
-        const newValue = currentValue.slice(0, start) + currentValue.slice(end);
-        onAnswerChange(focusedInput, newValue);
-        setTimeout(() => { input.focus(); input.setSelectionRange(start, start); }, 0);
+        apply(currentValue.slice(0, start) + currentValue.slice(end), start);
       }
     } else if (key === 'Clear') {
-      onAnswerChange(focusedInput, '');
-      setTimeout(() => input.focus(), 0);
+      apply('', 0);
     } else {
-      const newValue = currentValue.slice(0, start) + key + currentValue.slice(end);
-      onAnswerChange(focusedInput, newValue);
-      setTimeout(() => { input.focus(); input.setSelectionRange(start + key.length, start + key.length); }, 0);
+      apply(currentValue.slice(0, start) + key + currentValue.slice(end), start + key.length);
     }
-  }, [focusedInput, isSubmitted, answers, onAnswerChange]);
+  }, [focusedInput, isSubmitted, answers, customSteps, onAnswerChange]);
 
   const setRef = useCallback((id: string) => (el: HTMLInputElement | null) => {
     inputRefs.current[id] = el;

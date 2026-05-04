@@ -245,6 +245,45 @@ function AdminAuditInner() {
           </div>
         </section>
 
+        {/* Paper-level source documents (shared across all questions in this paper). */}
+        <section className="rounded-xl border border-dashed border-border bg-card/40 p-4 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="text-sm font-medium text-foreground">Paper source documents</div>
+              <div className="text-xs text-muted-foreground">
+                Attach the QP, MS and (optional) Solved Paper for <span className="text-foreground">{paper?.title}</span>. These persist across every question in this paper.
+              </div>
+            </div>
+            {(qpImg || msImg || solvedImg) && (
+              <Button size="sm" variant="ghost" onClick={() => { setQpImg(''); setMsImg(''); setSolvedImg(''); }}>
+                Clear
+              </Button>
+            )}
+          </div>
+          <div className="grid gap-2 md:grid-cols-3 text-xs">
+            {([
+              ['Question Paper', qpImg, setQpImg] as const,
+              ['Marking Scheme', msImg, setMsImg] as const,
+              ['Solved Paper (optional)', solvedImg, setSolvedImg] as const,
+            ]).map(([label, val, setter]) => (
+              <label key={label} className="flex flex-col gap-1">
+                <span className="text-muted-foreground">{label}</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return setter('');
+                    setter(await fileToBase64(f));
+                  }}
+                  className="text-xs"
+                />
+                {val && <span className="text-green-400">✓ attached ({Math.round(val.length / 1024)} KB)</span>}
+              </label>
+            ))}
+          </div>
+        </section>
+
         {question && report && counts && (
           <section className="rounded-xl border border-border bg-card p-5 space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">

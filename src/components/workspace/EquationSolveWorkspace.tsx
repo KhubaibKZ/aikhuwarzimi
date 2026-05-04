@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle, BookOpen, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
+import { Radical } from '@/components/Radical';
 
 interface EquationSolveWorkspaceProps {
   questionKey: string;

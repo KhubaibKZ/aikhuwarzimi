@@ -1743,17 +1743,45 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             )}
             
             {/* Q16 - Inequalities coordinate grid */}
-            {question.id === 'pp_4024_on23_11_q16' && (
-              <div className="mt-4">
-                <CoordinateGrid
-                  width={320}
-                  height={320}
-                  xRange={[-1, 5]}
-                  yRange={[-1, 5]}
-                  interactive={true}
-                />
-              </div>
-            )}
+            {question.id === 'pp_4024_on23_11_q16' && (() => {
+              const raw = answers['q16_data'];
+              let data: Q16Data = EMPTY_Q16;
+              try { if (raw) data = JSON.parse(raw); } catch { /* ignore */ }
+              const evalRes = evaluateQ16(data, Q16_EXPECTED);
+              const showFeedback = isChecked || isSubmitted;
+              return (
+                <div className="mt-4">
+                  <InequalityRegionBuilder
+                    data={data}
+                    onChange={(d) => handleAnswerChange('q16_data', JSON.stringify(d))}
+                    disabled={isSubmitted}
+                    lineFeedback={showFeedback ? evalRes.lineFeedback : []}
+                    regionFeedback={showFeedback ? evalRes.regionFeedback : null}
+                  />
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const r = evaluateQ16(data, Q16_EXPECTED);
+                        const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
+                        const regionMsg = r.regionCorrect
+                          ? 'Region R is in the right place.'
+                          : (r.regionFeedback === null ? 'Region R bounds not yet entered.' : 'Region R is not in the right place yet.');
+                        toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
+                        // surface visual feedback by marking checked
+                        setIsChecked(true);
+                      }}
+                      disabled={isSubmitted}
+                    >
+                      Check Work
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
+
             
             {/* Q18 - 3-set Venn diagram */}
             {question.id === 'pp_4024_on23_11_q18' && (

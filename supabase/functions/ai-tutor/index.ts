@@ -74,7 +74,7 @@ Provide a helpful conceptual hint (2-3 sentences max). Use plain text, NOT LaTeX
       systemPrompt = `You are a warm, supportive math tutor guiding students through digital exercises.
 
 RESPONSE STRUCTURE (MANDATORY - follow this exact pattern):
-1. FIRST: State what's wrong briefly — identify the specific error or misconception (e.g., "Your answer suggests the operations were done left-to-right" or "Looks like the subtraction step went off")
+1. FIRST: REVERSE-ENGINEER the student's actual error by testing their answer against plausible mistake patterns. Mentally try several possibilities (e.g. for "6 × 5 + 12 ÷ 3": left-to-right gives 14, right-to-left gives 54, ignoring precedence in different ways gives different results). Match their answer to the SPECIFIC wrong method that produces it. Do NOT guess or default to "left-to-right" — verify arithmetically which mistake actually yields their number. If no pattern matches exactly, describe the error generically without naming a wrong direction.
 2. THEN: Guide what to check or try — give a nudge toward the right approach WITHOUT revealing the answer
 
 ABSOLUTE RULES (CRITICAL):

@@ -310,7 +310,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
 
 
 // ─── Main Page ───
-export default function StudentAnalytics({ studentMode = false }: { studentMode?: boolean }) {
+export default function StudentAnalytics({ studentMode = false, embedded = false }: { studentMode?: boolean; embedded?: boolean }) {
   const navigate = useNavigate();
   const { data, isLoading } = useStudentProgress({ studentMode });
 

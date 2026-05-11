@@ -69,14 +69,30 @@ import {
 } from '@/components/diagrams';
 import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 
+export interface SubmitProgressPayload {
+  questionId: string;
+  paperId: string;
+  isCorrect: boolean;
+  accuracyScore: number;
+  speedScore: number;
+  aiUsageCount: number;
+  timeSpentSeconds: number;
+  totalSteps: number;
+  completedSteps: number;
+  marksObtained: number;
+  marksAvailable: number;
+  submittedAt: string;
+}
+
 interface PastPaperWorkspaceProps {
   question: PastPaperQuestion;
   isOpen: boolean;
   onClose: () => void;
   workspaceMode?: 'general' | 'student';
+  onSubmitProgress?: (payload: SubmitProgressPayload) => void;
 }
 
-export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general' }: PastPaperWorkspaceProps) {
+export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general', onSubmitProgress }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -1079,6 +1095,32 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
       // Invalidate progress queries
       queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+    }
+
+    // Always notify external listeners (e.g. demo mode) regardless of auth
+    if (onSubmitProgress) {
+      const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
+      const correctCount = Object.values(newFeedback).filter(f => f === 'correct').length;
+      const totalCount = Object.values(newFeedback).length;
+      const accuracyScore = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+      const speedScore = Math.round(Math.max(0, Math.min(100, 100 - (timeSpent - 60) / 3)));
+      const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
+      const marksAvailable = question.marks || 0;
+      const marksObtained = Math.round(Object.values(marksEarned).reduce((s, v) => s + (v || 0), 0));
+      onSubmitProgress({
+        questionId: question.id,
+        paperId: matchedPaper?.id || '',
+        isCorrect: allCorrect,
+        accuracyScore,
+        speedScore,
+        aiUsageCount: aiUsageRef.current,
+        timeSpentSeconds: timeSpent,
+        totalSteps: totalCount,
+        completedSteps: correctCount,
+        marksObtained,
+        marksAvailable,
+        submittedAt: new Date().toISOString(),
+      });
     }
 
     if (allCorrect && Object.keys(newFeedback).length > 0) {

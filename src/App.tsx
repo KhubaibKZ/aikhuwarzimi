@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
+import Demo from "./pages/Demo";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
 
@@ -22,6 +23,7 @@ const AppRoutes = () => (
       <Route path="/student-demo-analytics" element={<StudentAnalytics />} />
       <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/demo" element={<Demo />} />
       
       <Route path="/student" element={<StudentDashboard />} />
       <Route path="*" element={<NotFound />} />

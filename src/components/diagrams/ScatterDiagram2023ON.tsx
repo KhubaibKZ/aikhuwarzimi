@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Q9 – Scatter diagram for 4024/11 Oct/Nov 2023
 // Student draws their own line of best fit by clicking two endpoints,

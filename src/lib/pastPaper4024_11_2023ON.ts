@@ -306,18 +306,16 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 12 ==========
   'pp_4024_on23_11_q12': {
     id: 'pp_4024_on23_11_q12', questionNumber: '12', title: 'Scale drawing and bearings',
-    question: 'A scale drawing shows boats A and B. Scale is 1 : 20 000.\n(a) Find the actual distance of A from B in kilometres.\n(b) Construct the locus of points equidistant from A and B.\n(c) Mark position of ship S on bearing 105° from A and equidistant from A and B.',
-    marks: 5,
-    hints: ['(a) Measure distance in cm, multiply by 20000, convert to km', '(b) Perpendicular bisector of AB', '(c) Intersection of bisector and bearing line'],
+    question: 'A scale drawing shows boats A and B. Scale is 1 : 20 000.\nFind the actual distance of A from B in kilometres.',
+    marks: 2,
+    hints: ['Measure AB on the diagram (it is 8.8 cm)', 'Actual distance in cm = map distance × 20 000', 'Convert cm to km by dividing by 100 000', '8.8 × 20 000 = 176 000 cm = 1.76 km'],
     type: 'multi-part',
     parts: [
-      { label: 'Map distance (cm)', key: 'map', marks: 0 },
-      { label: '(a) Distance (km)', key: 'a', marks: 2 },
-      { label: '(b) Construction', key: 'b', marks: 2 },
-      { label: '(c) Position of S', key: 'c', marks: 1 }
+      { label: 'AB on map (cm)', key: 'map', marks: 0 },
+      { label: 'AB actual distance (km)', key: 'a', marks: 2 }
     ],
-    answer: { map: '9|8.8|8.9|9.0|9.1|9.2', a: '1.8|1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84', b: 'Perpendicular bisector', c: 'S marked correctly' },
-    markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm and their answer is 0.2 × this value. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.', b: 'B1 for acceptable bisector with no/incorrect arcs. B1 for correct arcs.', c: 'B1 dep on their attempt at bisector crossing AB.' }
+    answer: { map: '8.8|8.9|9.0|9.1|9.2', a: '1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84' },
+    markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm × 0.2. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.' }
   },
 
   // ========== Question 13 ==========

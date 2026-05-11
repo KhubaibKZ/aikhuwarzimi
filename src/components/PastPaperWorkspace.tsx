@@ -95,6 +95,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const { getPaperQuota, refetch: refetchAssignments } = useStudentAssignments();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
+  const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 

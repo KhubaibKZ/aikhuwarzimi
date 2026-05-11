@@ -368,12 +368,14 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
 
   return (
     <div className="min-h-screen bg-background">
-      <Header hideAdmin={studentMode} studentMode={studentMode} />
+      {!embedded && <Header hideAdmin={studentMode} studentMode={studentMode} />}
 
       <main className="container px-4 py-6 md:px-6 max-w-5xl">
-        <Button variant="ghost" size="sm" onClick={() => navigate(studentMode ? '/student' : '/dashboard')} className="mb-4 gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-        </Button>
+        {!embedded && (
+          <Button variant="ghost" size="sm" onClick={() => navigate(studentMode ? '/student' : '/dashboard')} className="mb-4 gap-2">
+            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          </Button>
+        )}
 
         <h1 className="text-xl font-bold text-foreground flex items-center gap-2 mb-5 uppercase tracking-widest justify-center">
           <BarChart3 className="h-5 w-5 text-primary" />

@@ -648,6 +648,23 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       }
     }
 
+    // === Q9 (4024/11 ON23) — split (b)'s 2 marks: B1 line of best fit + B1 reading ===
+    if (question.id === 'pp_4024_on23_11_q9') {
+      const lineDrawn = !!(window as any).__pp_q9_lineDrawn;
+      const userB = (currentAnswers['b'] || '').trim();
+      const correctB = typeof question.answer === 'object' ? (question.answer as any).b || '' : '';
+      const readingCorrect = !!userB && answersMatch(userB, correctB);
+      let bMarks = 0;
+      const notes: string[] = [];
+      if (lineDrawn) { bMarks += 1; notes.push('B1 awarded for drawing a line of best fit.'); }
+      else notes.push('Incomplete submission: line of best fit not drawn (−1 mark).');
+      if (readingCorrect) { bMarks += 1; notes.push('B1 awarded for the correct time reading at age 50.'); }
+      marksEarned['b'] = bMarks;
+      newFeedback['b'] = bMarks === 2 ? 'correct' : 'incorrect';
+      markingNotes['b'] = notes.join(' ');
+      if (bMarks < 2) allCorrect = false;
+    }
+
     return { allCorrect, newFeedback, marksEarned, markingNotes };
   };
 

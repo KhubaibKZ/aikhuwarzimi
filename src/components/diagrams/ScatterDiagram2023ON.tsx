@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Q9 – Scatter diagram for 4024/11 Oct/Nov 2023
 // Student draws their own line of best fit by clicking two endpoints,
@@ -37,6 +37,12 @@ export function ScatterDiagram2023ON() {
   const slope = lineReady ? (linePts[1].y - linePts[0].y) / (linePts[1].x - linePts[0].x) : 0;
   const intercept = lineReady ? linePts[0].y - slope * linePts[0].x : 0;
   const getYOnLine = (x: number) => slope * x + intercept;
+
+  // Expose draw-state so the workspace scorer can award the "line of best fit" mark
+  useEffect(() => {
+    (window as any).__pp_q9_lineDrawn = lineReady;
+    return () => { (window as any).__pp_q9_lineDrawn = false; };
+  }, [lineReady]);
 
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

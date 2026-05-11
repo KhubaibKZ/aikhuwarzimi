@@ -219,7 +219,7 @@ function DemoInner() {
           {/* ─── Demo Analytics tab ─── */}
           <TabsContent value="demo" className="mt-6 -mx-4 md:-mx-6">
             <div className="border-t border-border">
-              <StudentAnalytics />
+              <StudentAnalytics embedded />
             </div>
           </TabsContent>
         </Tabs>

@@ -95,6 +95,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const { getPaperQuota, refetch: refetchAssignments } = useStudentAssignments();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
+  const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 
@@ -809,10 +810,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             hasWrong: true,
             specificPart: partLabel,
             workingContent: '',
-            markingCriteria: question.markingCriteria
+            markingCriteria: question.markingCriteria,
+            previousFeedback: previousFeedbackRef.current[partKey] || []
           }
         });
         if (error) throw error;
+        if (data?.hint) {
+          previousFeedbackRef.current[partKey] = [...(previousFeedbackRef.current[partKey] || []), data.hint].slice(-5);
+        }
         setAiResponse({ type: 'guidance', content: data.hint, partKey });
       } catch (error) {
         console.error('Check work error:', error);
@@ -882,9 +887,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             specificPart: `Student's own working line ${idx + 1}: "${studentExpression}". Analyse the ALGEBRA in this expression against the original question. Identify the EXACT mathematical error (e.g. forgot to multiply RHS by the common denominator, sign error, expansion mistake). Do not give generic guidance about "common denominator" unless that IS the specific error you can verify.`,
             workingContent: '',
             markingCriteria: question.markingCriteria,
+            previousFeedback: previousFeedbackRef.current[partKey] || []
           },
         });
         if (error) throw error;
+        if (data?.hint) {
+          previousFeedbackRef.current[partKey] = [...(previousFeedbackRef.current[partKey] || []), data.hint].slice(-5);
+        }
         setAiResponse({ type: 'guidance', content: data.hint, partKey });
       } catch (error) {
         console.error('Check work error:', error);
@@ -955,11 +964,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           hasWrong: true,
           specificPart: partLabel,
           workingContent: answers['working'] || '',
-          markingCriteria: question.markingCriteria
+          markingCriteria: question.markingCriteria,
+          previousFeedback: previousFeedbackRef.current[partKey] || []
         }
       });
 
       if (error) throw error;
+      if (data?.hint) {
+        previousFeedbackRef.current[partKey] = [...(previousFeedbackRef.current[partKey] || []), data.hint].slice(-5);
+      }
       setAiResponse({ type: 'guidance', content: data.hint, partKey });
     } catch (error) {
       console.error('Check work error:', error);

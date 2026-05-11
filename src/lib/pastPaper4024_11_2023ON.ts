@@ -311,8 +311,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['Measure AB on the diagram (it is 8.8 cm)', 'Actual distance in cm = map distance × 20 000', 'Convert cm to km by dividing by 100 000', '8.8 × 20 000 = 176 000 cm = 1.76 km'],
     type: 'multi-part',
     parts: [
-      { label: 'AB on map (cm)', key: 'map', marks: 0, suffix: 'cm' },
-      { label: 'AB actual distance (km)', key: 'a', marks: 2, suffix: 'km' }
+      { label: 'AB on map (cm)', key: 'map', marks: 0 },
+      { label: 'AB actual distance (km)', key: 'a', marks: 2 }
     ],
     answer: { map: '8.8|8.9|9.0|9.1|9.2', a: '1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84' },
     markingCriteria: { a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm × 0.2. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.' }

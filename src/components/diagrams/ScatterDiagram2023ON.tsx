@@ -38,6 +38,12 @@ export function ScatterDiagram2023ON() {
   const intercept = lineReady ? linePts[0].y - slope * linePts[0].x : 0;
   const getYOnLine = (x: number) => slope * x + intercept;
 
+  // Expose draw-state so the workspace scorer can award the "line of best fit" mark
+  useEffect(() => {
+    (window as any).__pp_q9_lineDrawn = lineReady;
+    return () => { (window as any).__pp_q9_lineDrawn = false; };
+  }, [lineReady]);
+
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - rect.left) * (width / rect.width);

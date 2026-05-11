@@ -656,9 +656,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       const readingCorrect = !!userB && answersMatch(userB, correctB);
       let bMarks = 0;
       const notes: string[] = [];
-      if (lineDrawn) { bMarks += 1; notes.push('B1 awarded for drawing a line of best fit.'); }
-      else notes.push('Incomplete submission: line of best fit not drawn (−1 mark).');
-      if (readingCorrect) { bMarks += 1; notes.push('B1 awarded for the correct time reading at age 50.'); }
+      if (lineDrawn) {
+        bMarks += 1;
+        notes.push('B1 awarded for drawing a line of best fit.');
+        if (readingCorrect) {
+          bMarks += 1;
+          notes.push('B1 awarded for the correct time reading at age 50.');
+        } else if (userB) {
+          notes.push('The reading at age 50 is not correct.');
+        }
+      } else {
+        notes.push('Incomplete submission: line of best fit not drawn. Both marks for part (b) are withheld.');
+      }
       marksEarned['b'] = bMarks;
       newFeedback['b'] = bMarks === 2 ? 'correct' : 'incorrect';
       markingNotes['b'] = notes.join(' ');

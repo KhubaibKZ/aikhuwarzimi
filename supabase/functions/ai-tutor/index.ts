@@ -129,6 +129,7 @@ ${specificPart ? `Specific part being checked: "${specificPart}"` : ''}
 ${workingSection}
 Student's answers: ${JSON.stringify(userAnswers)}
 Attempt number: ${attemptCount || 1}
+${Array.isArray(previousFeedback) && previousFeedback.length > 0 ? `\nPREVIOUS FEEDBACK ALREADY GIVEN to this student for this part (DO NOT REPEAT — say something genuinely different):\n${previousFeedback.map((f: string, i: number) => `${i + 1}. "${f}"`).join('\n')}\n` : ''}
 
 ${hints && hints.length > 0 ? `Key concepts:\n${hints.join('\n')}` : ''}
 

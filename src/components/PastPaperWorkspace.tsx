@@ -810,10 +810,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             hasWrong: true,
             specificPart: partLabel,
             workingContent: '',
-            markingCriteria: question.markingCriteria
+            markingCriteria: question.markingCriteria,
+            previousFeedback: previousFeedbackRef.current[partKey] || []
           }
         });
         if (error) throw error;
+        if (data?.hint) {
+          previousFeedbackRef.current[partKey] = [...(previousFeedbackRef.current[partKey] || []), data.hint].slice(-5);
+        }
         setAiResponse({ type: 'guidance', content: data.hint, partKey });
       } catch (error) {
         console.error('Check work error:', error);

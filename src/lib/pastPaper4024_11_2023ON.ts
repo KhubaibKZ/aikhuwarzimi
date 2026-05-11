@@ -208,7 +208,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 9 ==========
   'pp_4024_on23_11_q9': {
     id: 'pp_4024_on23_11_q9', questionNumber: '9', title: 'Scatter diagram',
-    question: '(a) Write down the type of correlation shown on the scatter diagram.\n(b) By drawing a line of best fit, estimate the time taken by a person aged 50.',
+    question: 'The scatter diagram shows the ages of ten people and the time they each take to complete a task.\n(a) Write down the type of correlation shown on the scatter diagram.\n(b) By drawing a line of best fit, estimate the time taken by a person aged 50.',
     marks: 3,
     hints: ['(a) Look at the trend of the points', '(b) Draw a line through the data and read off at age 50'],
     type: 'multi-part',

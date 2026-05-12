@@ -545,9 +545,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     structuredExtraStepMap: {
       b: {
         afterStepKey: 'intro',
-        initialBoxes: 3,
+        initialBoxes: 2,
         hasOperators: true,
-        boxWidth: 'w-24',
+        boxWidth: 'w-32',
         opWidth: 'w-12',
         noTrailingEquals: true,
         initialRows: 1,

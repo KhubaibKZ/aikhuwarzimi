@@ -13,20 +13,18 @@ export function Radical({ children, className }: { children: React.ReactNode; cl
         viewBox="0 0 14 28"
         preserveAspectRatio="none"
         aria-hidden="true"
-        className="self-stretch w-[0.7em] h-auto text-foreground"
+        className="self-stretch w-[1.1em] h-auto text-foreground"
       >
-        {/* Hook of the radical, ending exactly at top-right corner so the
-            vinculum continues from there with zero gap. */}
         <polyline
           points="0,18 4,16 7,27 13,1"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.4"
+          strokeWidth="1.6"
           strokeLinejoin="miter"
           strokeLinecap="square"
         />
       </svg>
-      <span className="flex items-center border-t-[1.5px] border-foreground pt-0.5 px-1 -ml-px">
+      <span className="flex items-center border-t-[2px] border-foreground pt-1 px-1.5 -ml-px">
         {children}
       </span>
     </span>

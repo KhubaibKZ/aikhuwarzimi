@@ -729,7 +729,7 @@ export function EquationSolveWorkspace({
 
       <div className="border-t pt-3">
         <HorizontalKeyboard
-          keys={focusedSlot?.startsWith('cs:') ? RICH_EQ_KEYBOARD : keyboardKeys}
+          keys={keyboardKeys}
           onKeyPress={handleKeyPress}
           disabled={isSubmitted || (!focusedInput && !focusedSlot)}
         />

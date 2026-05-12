@@ -50,10 +50,16 @@ const RICH_EQ_KEYBOARD: string[][] = [
   ['(', ')', '.', '²', '³', '√', 'π', 'a/b', '⌫', 'Clear'],
 ];
 
-const newStep = (template: 'text' | 'fraction' = 'text'): CustomStep =>
-  template === 'fraction'
-    ? [{ kind: 'frac', n: '', d: '' }]
-    : [{ kind: 'txt', s: '' }];
+const newStep = (template: 'text' | 'fraction' | 'lhs_rhs' = 'text'): CustomStep => {
+  if (template === 'fraction') return [{ kind: 'frac', n: '', d: '' }];
+  if (template === 'lhs_rhs')
+    return [
+      { kind: 'txt', s: '' },
+      { kind: 'sep', v: '=' },
+      { kind: 'txt', s: '' },
+    ];
+  return [{ kind: 'txt', s: '' }];
+};
 
 export function EquationSolveWorkspace({
   questionKey,

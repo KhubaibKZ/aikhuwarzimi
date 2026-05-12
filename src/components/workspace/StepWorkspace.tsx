@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
+import { VecText } from '@/components/VecText';
 
 export interface AnswerStep {
   key: string;
@@ -102,7 +103,7 @@ export function StepWorkspace({
               )}>
                 {index + 1}
               </span>
-              <span className={cn("font-medium", step.marks === 0 && "text-muted-foreground italic")}>{step.label}</span>
+              <span className={cn("font-medium", step.marks === 0 && "text-muted-foreground italic")}><VecText value={step.label} /></span>
             </span>
             {step.marks > 0 && (
               <span className="text-xs text-muted-foreground">[{step.marks} mark{step.marks > 1 ? 's' : ''}]</span>

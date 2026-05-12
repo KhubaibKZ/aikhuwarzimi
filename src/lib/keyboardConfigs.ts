@@ -405,11 +405,12 @@ export const KEYBOARD_CONFIGS = {
     ['°', '+', '−', '×', '÷', '=', '.', '⌫', 'Clear'],
   ],
 
-  // Vectors keyboard (kept basic: numbers, vector variables, operators, brackets)
+  // Vectors keyboard — basics + vector tokens (combining arrow over letters)
   'vectors': [
     ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    ['a', 'b', 'c', '½', '⅓', '⅔', '+', '−', '/', '='],
-    ['(', ')', '.', '⌫', 'Clear'],
+    ['a', 'b', 'c', '½', '⅓', '⅔', '¼', '¾', '⅙', '⅚'],
+    ['O⃗A', 'O⃗B', 'O⃗C', 'O⃗X', 'O⃗Y', 'A⃗B', 'A⃗C', 'A⃗Y', 'B⃗C', 'Y⃗X'],
+    ['+', '−', '×', '/', '=', '(', ')', '.', '⌫', 'Clear'],
   ],
 
   // Probability keyboard

@@ -728,27 +728,18 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) <v>AC</v> = <v>AO</v> + <v>OC</v> = −a + c = c − a', '(b) <v>OX</v> = <v>OA</v> + ½<v>AC</v> = a + ½(c−a) = ½a + ½c', '(c) <v>AY</v> = ⅔<v>AB</v> = ⅔c, <v>OY</v> = a + ⅔c, <v>YX</v> = <v>OX</v> − <v>OY</v>'],
     type: 'multi-part',
     equationSolveParts: ['b_calc', 'c_calc'],
+    allowCustomSteps: true,
+    customStepTemplateMap: { b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
+    initialCustomStepsMap: { b_calc: 1, c_calc: 1 },
     equationStagesMap: {
       'b_calc': [
-        { label: '<v>OX</v> = <v>OA</v> + <v>AX</v>', stepKey: 's1', elements: [
-          { type: 'text', value: '<v>OX</v> = a + ½(' }, { type: 'box', key: 's1', width: 'w-16' }, { type: 'text', value: ')' }
-        ]},
-        { label: 'Expand', stepKey: 's2', elements: [
-          { type: 'text', value: '<v>OX</v> = a +' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-12' }
-        ]},
-        { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: '<v>OX</v> =' }, { type: 'box', key: 's3', width: 'w-20' }
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: '<v>OX</v> =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ],
       'c_calc': [
-        { label: 'Find <v>OY</v>', stepKey: 's1', elements: [
-          { type: 'text', value: '<v>AY</v> = ⅔<v>AB</v> = ⅔c → <v>OY</v> = a +' }, { type: 'box', key: 's1', width: 'w-14' }
-        ]},
-        { label: '<v>YX</v> = <v>OX</v> − <v>OY</v>', stepKey: 's2', elements: [
-          { type: 'text', value: '<v>YX</v> = (½a+½c) − (a+' }, { type: 'box', key: 's2', width: 'w-14' }, { type: 'text', value: ')' }
-        ]},
-        { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: '<v>YX</v> =' }, { type: 'box', key: 's3', width: 'w-24' }
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: '<v>YX</v> =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ]
     },
@@ -759,8 +750,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a: 'c-a', b_calc: '½a+½c', c_calc: '-½a-⅙c',
-      b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
-      c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
+      b_calc_final: '½a+½c|(a+c)/2|½(a+c)',
+      c_calc_final: '-½a-⅙c|-(3a+c)/6'
     },
     markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for <v>YX</v> along the lines of the diagram (can include correct <v>OX</v>). A1 for −½a − ⅙c oe simplified.' }
   },

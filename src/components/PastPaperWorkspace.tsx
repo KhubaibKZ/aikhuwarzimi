@@ -2499,7 +2499,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                           </div>
                           {storedMarkingNotes[part.key] && (
                             <p className="ml-5 text-xs text-muted-foreground">
-                              {storedMarkingNotes[part.key]}
+                              <VecText value={storedMarkingNotes[part.key]} />
                             </p>
                           )}
                         </div>

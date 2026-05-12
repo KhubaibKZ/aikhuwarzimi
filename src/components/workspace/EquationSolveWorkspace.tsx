@@ -346,11 +346,15 @@ export function EquationSolveWorkspace({
     setFocusedSlot(null);
   };
 
-  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]', showClear = true) => (
+  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]', showClear = true) => {
+    const isFocused = focusedSlot === slot;
+    const showClearButton = showClear && !isSubmitted && (isFocused || !!text);
+
+    return (
     <span key={slot} className="relative inline-flex group/slot">
       <span
         className={slotClasses(slot, text, minW)}
-        onMouseDown={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           setFocusedSlot(slot);
           setFocusedInput(null);
@@ -358,23 +362,30 @@ export function EquationSolveWorkspace({
       >
         {text || '\u200b'}
       </span>
-      {showClear && text && !isSubmitted && (
+      {showClearButton && (
         <button
           type="button"
-          onClick={(e) => {
+          onPointerDown={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             clearSlot(slot);
           }}
-          className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover/slot:opacity-100 transition-opacity"
+          className={cn(
+            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground/90 hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-100 shadow-sm',
+          )}
           title="Clear"
         >
-          <X className="h-2.5 w-2.5" />
+          <X className="h-3 w-3" />
         </button>
       )}
     </span>
-  );
+    );
+  };
 
-  const renderFrac = (n: string, d: string, slotN: string, slotD: string, si: number, pi: number) => (
+  const renderFrac = (n: string, d: string, slotN: string, slotD: string, si: number, pi: number) => {
+    const isFocused = focusedSlot === slotN || focusedSlot === slotD;
+
+    return (
     <span key={`${slotN}|${slotD}`} className="relative inline-flex flex-col items-center mx-1 align-middle group/frac">
       {renderTxt(n, slotN, 'min-w-[8rem]')}
       <span className="block w-full border-t border-foreground my-0.5" />
@@ -382,18 +393,22 @@ export function EquationSolveWorkspace({
       {!isSubmitted && (
         <button
           type="button"
-          onClick={(e) => {
+          onPointerDown={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             removeFracPart(si, pi);
           }}
-          className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover/frac:opacity-100 transition-opacity"
+          className={cn(
+            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground/90 hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-100 shadow-sm',
+          )}
           title="Remove fraction"
         >
-          <X className="h-2.5 w-2.5" />
+          <X className="h-3 w-3" />
         </button>
       )}
     </span>
-  );
+    );
+  };
 
   const renderStage = (stage: EquationStage) => {
     const fullStepKey = k(stage.stepKey);

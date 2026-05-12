@@ -652,6 +652,8 @@ export function EquationSolveWorkspace({
                     part.d,
                     `cs:${si}:${pi}:n`,
                     `cs:${si}:${pi}:d`,
+                    si,
+                    pi,
                   );
                 })}
               </div>

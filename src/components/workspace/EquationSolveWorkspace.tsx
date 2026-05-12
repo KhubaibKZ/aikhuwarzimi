@@ -420,7 +420,7 @@ export function EquationSolveWorkspace({
       <div key={stage.stepKey} className="space-y-1">
         <div className="flex items-center gap-1.5 flex-wrap">
           {stage.label && (
-            <span className="text-xs text-muted-foreground font-medium mr-1">{stage.label}</span>
+            <VecText value={stage.label} className="text-xs text-muted-foreground font-medium mr-1" />
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
@@ -729,7 +729,7 @@ export function EquationSolveWorkspace({
             if (!hasIncorrect) return null;
             return (
               <p key={stage.stepKey}>
-                {stage.label}:{' '}
+                <VecText value={stage.label || ''} />:{' '}
                 {boxElements.map((el) => correctAnswers[k(el.key!)] || '').join(', ')}
               </p>
             );

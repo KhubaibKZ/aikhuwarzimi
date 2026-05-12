@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useStudentAssignments } from '@/hooks/useStudentAssignments';
+import { VecText } from '@/components/VecText';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { QuestionText } from '@/components/QuestionText';
 import { LCMLadder } from '@/components/LCMLadder';
@@ -2146,7 +2147,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   return part ? (
                     <div key={partKey} className="space-y-2">
                       <label className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{part.label}</span>
+                        <VecText value={part.label} className="font-medium" />
                         <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
                       </label>
                       <FractionDivisionWorkspace
@@ -2206,7 +2207,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   return part && stages ? (
                     <div key={partKey} className="space-y-2">
                       <label className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{part.label}</span>
+                        <VecText value={part.label} className="font-medium" />
                         <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
                       </label>
                       <EquationSolveWorkspace
@@ -2458,7 +2459,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                                 return (
                                   <div key={p.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                     {correct ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-destructive" />}
-                                    <span>{p.label}: {answers[p.key] || '—'}</span>
+                                    <span><VecText value={p.label} />: {answers[p.key] || '—'}</span>
                                     {!correct && correctVal && <span className="text-green-600 ml-1">(correct: {correctVal})</span>}
                                   </div>
                                 );
@@ -2487,7 +2488,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
                                isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
                                <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                              {part.label}
+                              <VecText value={part.label} />
                             </span>
                             <span className={cn(
                               "font-mono font-semibold text-xs",

@@ -306,9 +306,9 @@ export function EquationSolveWorkspace({
 
   const renderFrac = (n: string, d: string, slotN: string, slotD: string) => (
     <span key={`${slotN}|${slotD}`} className="inline-flex flex-col items-center mx-1 align-middle">
-      {renderTxt(n, slotN, 'min-w-[2.5rem]')}
+      {renderTxt(n, slotN, 'min-w-[8rem]')}
       <span className="block w-full border-t border-foreground my-0.5" />
-      {renderTxt(d, slotD, 'min-w-[2.5rem]')}
+      {renderTxt(d, slotD, 'min-w-[8rem]')}
     </span>
   );
 

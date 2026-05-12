@@ -32,7 +32,7 @@ export function QuestionText({ text, className }: { text: string; className?: st
         while ((m = FRAC_RE.exec(line)) !== null) {
           if (m.index > lastIdx) {
             nodes.push(
-              <span key={`t-${li}-${lastIdx}`}>{line.slice(lastIdx, m.index)}</span>
+              <VecText key={`t-${li}-${lastIdx}`} value={line.slice(lastIdx, m.index)} />
             );
           }
           const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;

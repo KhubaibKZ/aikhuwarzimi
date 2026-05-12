@@ -546,8 +546,9 @@ export function EquationSolveWorkspace({
               disabled={isSubmitted}
               onClick={() => {
                 setCustomSteps((prev) => {
-                  const next = [...prev, newStep()];
-                  setTimeout(() => setFocusedSlot(`cs:${next.length - 1}:0:txt`), 0);
+                  const next = [...prev, newStep(customStepTemplate)];
+                  const initSlot = customStepTemplate === 'fraction' ? 'n' : 'txt';
+                  setTimeout(() => setFocusedSlot(`cs:${next.length - 1}:0:${initSlot}`), 0);
                   return next;
                 });
               }}

@@ -437,25 +437,34 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                         <div className="ml-5 pl-3 border-l-2 border-border space-y-1 mt-1 mb-2">
                                           {paper.sections.map((section) => {
                                             const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
+                                            const sectionLocked = !!section.locked;
                                             return (
                                               <button
                                                 key={section.id}
-                                                onClick={() => onPastPaperSelect?.(paper.id, section)}
-                                                className="flex w-full items-center gap-3 rounded-lg p-2.5 text-left transition-all hover:bg-card hover:shadow-sm"
+                                                onClick={() => { if (!sectionLocked) onPastPaperSelect?.(paper.id, section); }}
+                                                disabled={sectionLocked}
+                                                className={cn(
+                                                  "flex w-full items-center gap-3 rounded-lg p-2.5 text-left transition-all",
+                                                  sectionLocked ? "opacity-60 cursor-not-allowed" : "hover:bg-card hover:shadow-sm"
+                                                )}
                                               >
                                                 <div className={cn(
                                                   "flex h-7 w-7 items-center justify-center rounded-lg",
+                                                  sectionLocked ? "bg-muted text-muted-foreground" :
                                                   completed ? "bg-success/10 text-success" : "bg-secondary text-secondary-foreground"
                                                 )}>
-                                                  {completed ? <CheckCircle2 className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
+                                                  {sectionLocked ? <Lock className="h-3.5 w-3.5" /> : completed ? <CheckCircle2 className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
                                                 </div>
                                                 <div className="flex-1">
-                                                  <span className={cn("text-xs font-medium", completed ? "text-success" : "text-foreground")}>
+                                                  <span className={cn("text-xs font-medium", sectionLocked ? "text-muted-foreground" : completed ? "text-success" : "text-foreground")}>
                                                     {section.title}
                                                   </span>
-                                                  {completed && <p className="text-[10px] text-success">Recorded</p>}
+                                                  {sectionLocked && <p className="text-[10px] text-muted-foreground italic">{section.lockedReason || 'Locked'}</p>}
+                                                  {!sectionLocked && completed && <p className="text-[10px] text-success">Recorded</p>}
                                                 </div>
-                                                {completed ? (
+                                                {sectionLocked ? (
+                                                  <Badge variant="outline" className="text-[10px] border-muted-foreground/30 text-muted-foreground">{section.lockedReason || 'Locked'}</Badge>
+                                                ) : completed ? (
                                                   <Badge variant="outline" className="text-[10px] border-success/30 text-success bg-success/5">Recorded</Badge>
                                                 ) : (
                                                   <ChevronRight className="h-4 w-4 text-muted-foreground" />

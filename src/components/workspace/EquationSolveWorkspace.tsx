@@ -47,7 +47,10 @@ const RICH_EQ_KEYBOARD: string[][] = [
   ['(', ')', '.', '²', '³', '√', 'π', 'a/b', '⌫', 'Clear'],
 ];
 
-const newStep = (): CustomStep => [{ kind: 'txt', s: '' }];
+const newStep = (template: 'text' | 'fraction' = 'text'): CustomStep =>
+  template === 'fraction'
+    ? [{ kind: 'frac', n: '', d: '' }]
+    : [{ kind: 'txt', s: '' }];
 
 export function EquationSolveWorkspace({
   questionKey,

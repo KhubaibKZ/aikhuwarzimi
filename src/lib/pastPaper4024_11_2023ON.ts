@@ -468,6 +468,9 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['answer'],
     equationStages: [
       { label: '', stepKey: 'intro', elements: [] },
+      { label: 'Final answer', stepKey: 'final', elements: [
+        { type: 'text', value: 'y =' }, { type: 'box', key: 'final_y', width: 'w-20' }
+      ]}
     ],
     structuredExtraStepMap: {
       answer: {
@@ -483,6 +486,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: 'y =', key: 'answer', marks: 2 }],
     answer: {
       answer: '2.5',
+      answer_final_y: '2.5',
     },
     markingCriteria: { answer: 'B1 for k = ½ if y = k√x used. Or M1 for 2 × √25 = y × √16 oe. A1 for 2.5.' }
   },

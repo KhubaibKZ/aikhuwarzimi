@@ -536,20 +536,17 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ],
       'b': [
-        { label: 'Area = distance', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-14' }, { type: 'text', value: '= ½ ×' },
-          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '+' },
-          { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: '(T −' },
-          { type: 'box', key: 's1_e', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: 'Step 1', stepKey: 's1', elements: [
+          { type: 'box', key: 's1', width: 'w-full' }
         ]},
-        { label: 'Simplify', stepKey: 's2', elements: [
-          { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: '=' },
-          { type: 'box', key: 's2_b', width: 'w-12' }, { type: 'text', value: '+ 20(T −' },
-          { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: 'Step 2', stepKey: 's2', elements: [
+          { type: 'box', key: 's2', width: 'w-full' }
         ]},
-        { label: 'Solve', stepKey: 's3', elements: [
-          { type: 'text', value: 'T =' }, { type: 'box', key: 's3', width: 'w-12' }
+        { label: 'Step 3', stepKey: 's3', elements: [
+          { type: 'box', key: 's3', width: 'w-full' }
+        ]},
+        { label: 'T =', stepKey: 's4', elements: [
+          { type: 'text', value: 'T =' }, { type: 'box', key: 's4', width: 'w-16' }
         ]}
       ]
     },
@@ -557,9 +554,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '2', b: '40',
       a_s1_a: '20', a_s1_b: '10', a_s2: '2',
-      b_s1_a: '700', b_s1_b: '10', b_s1_c: '20', b_s1_d: '20', b_s1_e: '10',
-      b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
-      b_s3: '40'
+      b_s1: '½ × 10 × 20 + 20(T − 10) = 700',
+      b_s2: '100 + 20(T − 10) = 700',
+      b_s3: '20(T − 10) = 600',
+      b_s4: '40'
     },
     markingCriteria: { a: 'B1 for 2', b: 'M2 for a correct equation in T, e.g. ½ × 10 × 20 + 20(T − 10) = 700. Or B2 for length of rectangle = 30 nfww. Or M1 for a correct method to find a relevant area under the graph e.g. ½ × 10 × 20. A1 for 40.' }
   },

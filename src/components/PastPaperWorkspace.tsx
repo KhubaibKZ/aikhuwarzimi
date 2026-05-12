@@ -2226,6 +2226,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         structuredExtraStep={((question as any).structuredExtraStepMap || {})[partKey]}
                         customStepsAfterStepKey={((question as any).customStepsAfterStepKeyMap || {})[partKey]}
                         customStepTemplate={((question as any).customStepTemplateMap || {})[partKey]}
+                        initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
                       />
                     </div>
                   ) : null;

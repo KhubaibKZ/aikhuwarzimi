@@ -467,9 +467,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
-      { label: '', stepKey: 'intro', elements: [
-        { type: 'text', value: 'Build your working below — each line: variable, operator, expression. Add as many steps as you need.' }
-      ]},
+      { label: '', stepKey: 'intro', elements: [] },
       { label: 'Final answer', stepKey: 'final', elements: [
         { type: 'text', value: 'y =' }, { type: 'box', key: 'final_y', width: 'w-20' }
       ]}

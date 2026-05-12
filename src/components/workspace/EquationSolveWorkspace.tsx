@@ -391,6 +391,26 @@ export function EquationSolveWorkspace({
     const removeRow = () => {
       setExtraRows((prev) => prev.filter((_, i) => i !== rowIdx));
     };
+    // Build a serialized representation of this row's content and sync to
+    // answers[`custom_${rowIdx}`] so PastPaperWorkspace's "_custom_" branch
+    // (which sends the full expression to the AI tutor) handles the check.
+    const customKey = k(`custom_${rowIdx}`);
+    const parts: string[] = [];
+    presence.forEach((present, bi) => {
+      if (!present) return;
+      const v = (answers[k(`extra_${rowIdx}_v${bi}`)] || '').trim();
+      if (v) parts.push(v);
+      const showOp = bi < presence.length - 1 && presence.slice(bi + 1).some(Boolean);
+      if (showOp) {
+        const o = (answers[k(`extra_${rowIdx}_o${bi}`)] || '').trim();
+        if (o) parts.push(o);
+      }
+    });
+    const serialized = parts.join(' ');
+    if ((answers[customKey] || '') !== serialized) {
+      setTimeout(() => onAnswerChange(customKey, serialized), 0);
+    }
+
     return (
       <div key={`extra_${rowIdx}`} className="flex items-center gap-1.5 flex-wrap">
         {presence.map((present, bi) =>
@@ -420,8 +440,8 @@ export function EquationSolveWorkspace({
             {box(k(`extra_${rowIdx}_eq`), boxW)}
           </>
         )}
-        {checkBtn(k(`extra_${rowIdx}`), `Step ${rowIdx + 1}`)}
-        {stepFeedbackIcon(k(`extra_${rowIdx}`))}
+        {checkBtn(customKey, `Step ${rowIdx + 1}`)}
+        {stepFeedbackIcon(customKey)}
         <Button
           type="button"
           variant="ghost"
@@ -433,7 +453,7 @@ export function EquationSolveWorkspace({
         >
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
-        {renderAiResponse(k(`extra_${rowIdx}`))}
+        {renderAiResponse(customKey)}
       </div>
     );
   };

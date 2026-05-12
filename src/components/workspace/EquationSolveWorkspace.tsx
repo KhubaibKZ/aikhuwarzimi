@@ -306,6 +306,9 @@ export function EquationSolveWorkspace({
 
   const renderStage = (stage: EquationStage) => {
     const fullStepKey = k(stage.stepKey);
+    const hasCheckable = stage.elements.some(
+      (el) => el.type === 'box' || el.type === 'fraction' || el.type === 'sqrt',
+    );
     return (
       <div key={stage.stepKey} className="space-y-1">
         <div className="flex items-center gap-1.5 flex-wrap">

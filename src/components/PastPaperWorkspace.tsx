@@ -926,7 +926,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             attemptCount: (attemptCount[partKey] || 0) + 1,
             hasMissing: false,
             hasWrong: true,
-            specificPart: `Student's own working line ${idx + 1}: "${studentExpression}". Analyse the ALGEBRA in this expression against the original question. Identify the EXACT mathematical error (e.g. forgot to multiply RHS by the common denominator, sign error, expansion mistake). Do not give generic guidance about "common denominator" unless that IS the specific error you can verify.`,
+            specificPart: `Student's working line ${idx + 1}: "${studentExpression}". Evaluate ONLY whether THIS line itself is mathematically valid and consistent with the original question and any previous steps shown. Confirm if it is correct, or point out the specific error in THIS line. Do NOT suggest, hint at, or guide toward the next step. Do NOT tell the student what to do next. Just justify or correct this single line.`,
             workingContent: '',
             markingCriteria: question.markingCriteria,
             previousFeedback: previousFeedbackRef.current[partKey] || []

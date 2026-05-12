@@ -536,28 +536,28 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ],
       'b': [
-        { label: 'Step 1', stepKey: 's1', elements: [
-          { type: 'box', key: 's1', width: 'w-full' }
-        ]},
-        { label: 'Step 2', stepKey: 's2', elements: [
-          { type: 'box', key: 's2', width: 'w-full' }
-        ]},
-        { label: 'Step 3', stepKey: 's3', elements: [
-          { type: 'box', key: 's3', width: 'w-full' }
-        ]},
-        { label: 'T =', stepKey: 's4', elements: [
-          { type: 'text', value: 'T =' }, { type: 'box', key: 's4', width: 'w-16' }
+        { label: '', stepKey: 'intro', elements: [] },
+        { label: 'Final answer', stepKey: 'final', elements: [
+          { type: 'text', value: 'T =' }, { type: 'box', key: 'final_T', width: 'w-20' }
         ]}
       ]
+    },
+    structuredExtraStepMap: {
+      b: {
+        afterStepKey: 'intro',
+        initialBoxes: 3,
+        hasOperators: true,
+        boxWidth: 'w-24',
+        opWidth: 'w-12',
+        noTrailingEquals: true,
+        initialRows: 1,
+      }
     },
     parts: [{ label: '(a) Acceleration (m/s²)', key: 'a', marks: 1 }, { label: '(b) T', key: 'b', marks: 3 }],
     answer: {
       a: '2', b: '40',
       a_s1_a: '20', a_s1_b: '10', a_s2: '2',
-      b_s1: '½ × 10 × 20 + 20(T − 10) = 700',
-      b_s2: '100 + 20(T − 10) = 700',
-      b_s3: '20(T − 10) = 600',
-      b_s4: '40'
+      b_final_T: '40'
     },
     markingCriteria: { a: 'B1 for 2', b: 'M2 for a correct equation in T, e.g. ½ × 10 × 20 + 20(T − 10) = 700. Or B2 for length of rectangle = 30 nfww. Or M1 for a correct method to find a relevant area under the graph e.g. ½ × 10 × 20. A1 for 40.' }
   },

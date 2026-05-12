@@ -1,5 +1,6 @@
 import React from "react";
 import { Radical } from "@/components/Radical";
+import { VecText } from "@/components/VecText";
 
 /**
  * Renders question text with inline stacked fractions and proper √ vinculum.

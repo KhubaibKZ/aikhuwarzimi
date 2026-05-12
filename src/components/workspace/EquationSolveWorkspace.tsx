@@ -729,7 +729,7 @@ export function EquationSolveWorkspace({
             if (!hasIncorrect) return null;
             return (
               <p key={stage.stepKey}>
-                {stage.label}:{' '}
+                <VecText value={stage.label || ''} />:{' '}
                 {boxElements.map((el) => correctAnswers[k(el.key!)] || '').join(', ')}
               </p>
             );

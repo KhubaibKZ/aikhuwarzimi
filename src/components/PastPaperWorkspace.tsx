@@ -2224,6 +2224,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                         allowCustomSteps={(question as any).allowCustomSteps}
                         structuredExtraStep={((question as any).structuredExtraStepMap || {})[partKey]}
+                        customStepsAfterStepKey={((question as any).customStepsAfterStepKeyMap || {})[partKey]}
+                        customStepTemplate={((question as any).customStepTemplateMap || {})[partKey]}
                       />
                     </div>
                   ) : null;

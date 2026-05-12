@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useStudentAssignments } from '@/hooks/useStudentAssignments';
+import { VecText } from '@/components/VecText';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { QuestionText } from '@/components/QuestionText';
 import { LCMLadder } from '@/components/LCMLadder';

@@ -182,9 +182,48 @@ export function EquationSolveWorkspace({
     (key: string) => {
       if (isSubmitted) return;
 
+      // Unicode fraction characters → insert as a real stacked fraction part
+      const FRAC_MAP: Record<string, [string, string]> = {
+        '½': ['1', '2'], '⅓': ['1', '3'], '⅔': ['2', '3'],
+        '¼': ['1', '4'], '¾': ['3', '4'],
+        '⅕': ['1', '5'], '⅖': ['2', '5'], '⅗': ['3', '5'], '⅘': ['4', '5'],
+        '⅙': ['1', '6'], '⅚': ['5', '6'],
+        '⅛': ['1', '8'], '⅜': ['3', '8'], '⅝': ['5', '8'], '⅞': ['7', '8'],
+      };
+
       // Custom steps focused?
       if (focusedSlot?.startsWith('cs:')) {
         if (key === 'a/b') return insertFractionAtFocus();
+        if (FRAC_MAP[key]) {
+          // Insert a stacked fraction with the unicode value's numerator/denominator
+          const [n, d] = FRAC_MAP[key];
+          const f = parseSlot(focusedSlot);
+          if (!f) return;
+          let newSlot = focusedSlot;
+          setCustomSteps((prev) => {
+            const next = prev.map((step) => step.slice());
+            const step = next[f.si];
+            if (!step) return prev;
+            const cur = step[f.pi];
+            if (cur && cur.kind === 'txt' && cur.s === '') {
+              step.splice(f.pi, 1, { kind: 'frac', n, d });
+              if (!step[f.pi + 1] || step[f.pi + 1].kind !== 'txt') {
+                step.splice(f.pi + 1, 0, { kind: 'txt', s: '' });
+              }
+              newSlot = `cs:${f.si}:${f.pi + 1}:txt`;
+            } else {
+              const insertAt = f.pi + 1;
+              const toInsert: CustomPart[] = [{ kind: 'frac', n, d }];
+              const nextPart = step[insertAt];
+              if (!nextPart || nextPart.kind !== 'txt') toInsert.push({ kind: 'txt', s: '' });
+              step.splice(insertAt, 0, ...toInsert);
+              newSlot = `cs:${f.si}:${insertAt + 1}:txt`;
+            }
+            return next;
+          });
+          setTimeout(() => setFocusedSlot(newSlot), 0);
+          return;
+        }
         if (key === '⌫') return updateBuffer((s) => s.slice(0, -1));
         if (key === 'Clear') {
           const f = parseSlot(focusedSlot);

@@ -87,6 +87,7 @@ export interface PastPaperQuestion {
   structuredExtraStepMap?: Record<string, { afterStepKey: string; initialBoxes: number; boxWidth?: string; opWidth?: string; hasOperators?: boolean; noTrailingEquals?: boolean; initialRows?: number }>;
   customStepsAfterStepKeyMap?: Record<string, string>; // Per-part: render "My working" block right after this stage
   customStepTemplateMap?: Record<string, 'text' | 'fraction' | 'lhs_rhs'>; // Per-part: shape of each newly added custom step
+  initialCustomStepsMap?: Record<string, number>; // Per-part: pre-seed N custom-step rows on mount
   diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
   primeFactorParts?: Record<string, number>; // Map of answer-key -> target number, renders a PrimeFactorLadder for that key
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")

@@ -33,11 +33,14 @@ interface EquationSolveWorkspaceProps {
   allowCustomSteps?: boolean;
   structuredExtraStep?: StructuredExtraStep;
   customStepsAfterStepKey?: string; // insert "My working" block right after this stage
-  customStepTemplate?: 'text' | 'fraction'; // shape of each newly added custom step
+  customStepTemplate?: 'text' | 'fraction' | 'lhs_rhs'; // shape of each newly added custom step
 }
 
 // Custom step token model
-type CustomPart = { kind: 'txt'; s: string } | { kind: 'frac'; n: string; d: string };
+type CustomPart =
+  | { kind: 'txt'; s: string }
+  | { kind: 'frac'; n: string; d: string }
+  | { kind: 'sep'; v: string };
 type CustomStep = CustomPart[];
 
 // Rich keyboard used in the "My working" custom steps area

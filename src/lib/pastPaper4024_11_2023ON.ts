@@ -645,9 +645,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['c'],
     allowCustomSteps: true,
+    customStepsAfterStepKeyMap: { c: 's1' },
+    customStepTemplateMap: { c: 'fraction' },
     equationStagesMap: {
       'c': [
-        { label: 'Factorise (numerator / denominator)', stepKey: 's1', elements: [
+        { label: 'Factorise', stepKey: 's1', elements: [
           { type: 'fraction',
             numElements: [{ type: 'box', key: 's1_num', width: 'w-32' }],
             denElements: [{ type: 'box', key: 's1_den', width: 'w-32' }]

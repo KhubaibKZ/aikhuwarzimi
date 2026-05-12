@@ -687,7 +687,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
     allowCustomSteps: true,
     customStepsAfterStepKeyMap: { a_calc: 's1', b_calc: 's1', c_calc: 's1' },
-    customStepTemplateMap: { a_calc: 'fraction', b_calc: 'fraction', c_calc: 'fraction' },
+    customStepTemplateMap: { a_calc: 'lhs_rhs', b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
     equationStagesMap: {
       'a_calc': [
         { label: 'Substitute', stepKey: 's1', elements: [

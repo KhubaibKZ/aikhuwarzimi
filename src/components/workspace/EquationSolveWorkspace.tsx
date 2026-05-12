@@ -425,9 +425,7 @@ export function EquationSolveWorkspace({
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <span key={i} className="font-mono text-base">
-                  {el.value}
-                </span>
+                <VecText key={i} value={el.value} className="font-mono text-base" />
               );
             }
             if (el.type === 'box' && el.key) {

@@ -495,10 +495,8 @@ export function EquationSolveWorkspace({
 
   const customStepsBlock = allowCustomSteps ? (
     <div className="space-y-3 border-t pt-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground font-medium">
-          My working — build each step using the keyboard below
-        </span>
+      <div className="flex items-center justify-end">
+
         <Button
           type="button"
           variant="outline"

@@ -173,9 +173,10 @@ export function EquationSolveWorkspace({
           const f = parseSlot(focusedSlot);
           if (!f) return;
           setCustomSteps((prev) =>
-            prev.map((step, i) => (i === f.si ? newStep() : step)),
+            prev.map((step, i) => (i === f.si ? newStep(customStepTemplate) : step)),
           );
-          setFocusedSlot(`cs:${f.si}:0:txt`);
+          const initSlot = customStepTemplate === 'fraction' ? 'n' : 'txt';
+          setFocusedSlot(`cs:${f.si}:0:${initSlot}`);
           return;
         }
         return updateBuffer((s) => s + key);

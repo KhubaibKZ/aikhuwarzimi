@@ -470,6 +470,13 @@ export const KEYBOARD_CONFIGS = {
     ['x', 'y', 'p', 'f', 'g', '(', ')', '+', '−', '='],
     ['×', '÷', '/', 'a/b', '⁻¹', '²', ',', '.', '⌫', 'Clear'],
   ],
+
+  // Q24 (4024/11 Oct/Nov 2023) — Algebraic fractions equation
+  'pp_4024_on23_11_q24': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['x', '(', ')', '+', '−', '×', '÷', '=', '²', 'a/b'],
+    ['½', '⅓', '¼', '⅕', '/', '.', ',', '±', '⌫', 'Clear'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;

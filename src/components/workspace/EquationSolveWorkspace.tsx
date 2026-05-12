@@ -34,6 +34,7 @@ interface EquationSolveWorkspaceProps {
   structuredExtraStep?: StructuredExtraStep;
   customStepsAfterStepKey?: string; // insert "My working" block right after this stage
   customStepTemplate?: 'text' | 'fraction' | 'lhs_rhs'; // shape of each newly added custom step
+  initialCustomSteps?: number; // pre-seed N custom-step rows on mount
 }
 
 // Custom step token model
@@ -78,6 +79,7 @@ export function EquationSolveWorkspace({
   structuredExtraStep,
   customStepsAfterStepKey,
   customStepTemplate = 'text',
+  initialCustomSteps = 0,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -97,7 +99,11 @@ export function EquationSolveWorkspace({
   });
 
   // ===== Custom steps state =====
-  const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
+  const [customSteps, setCustomSteps] = useState<CustomStep[]>(() =>
+    initialCustomSteps > 0
+      ? Array.from({ length: initialCustomSteps }, () => newStep(customStepTemplate))
+      : [],
+  );
   // focusedSlot identifies which buffer we are typing into:
   //  format: `cs:${stepIdx}:${partIdx}:${slot}` where slot ∈ {'txt','n','d'}
   const [focusedSlot, setFocusedSlot] = useState<string | null>(null);

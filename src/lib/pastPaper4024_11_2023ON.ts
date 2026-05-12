@@ -686,35 +686,21 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
     allowCustomSteps: true,
-    customStepsAfterStepKeyMap: { a_calc: 's1', b_calc: 's1', c_calc: 's1' },
+    customStepsAfterStepKeyMap: {},
     customStepTemplateMap: { a_calc: 'lhs_rhs', b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
+    initialCustomStepsMap: { a_calc: 1, b_calc: 1, c_calc: 1 },
     equationStagesMap: {
       'a_calc': [
-        { label: 'Substitute', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_lhs', width: 'w-40' },
-          { type: 'text', value: '=' },
-          { type: 'box', key: 's1_rhs', width: 'w-40' }
-        ]},
         { label: 'Answer', stepKey: 'final', elements: [
           { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 'final', width: 'w-16' }
         ]}
       ],
       'b_calc': [
-        { label: 'Let y = f(x)', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_lhs', width: 'w-40' },
-          { type: 'text', value: '=' },
-          { type: 'box', key: 's1_rhs', width: 'w-40' }
-        ]},
         { label: 'Answer', stepKey: 'final', elements: [
           { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ],
       'c_calc': [
-        { label: 'Set f(p) = g(p+5)', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_lhs', width: 'w-40' },
-          { type: 'text', value: '=' },
-          { type: 'box', key: 's1_rhs', width: 'w-40' }
-        ]},
         { label: 'Answer', stepKey: 'final', elements: [
           { type: 'text', value: 'p =' }, { type: 'box', key: 'final', width: 'w-20' }
         ]}
@@ -727,11 +713,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a_calc: '1', b_calc: '4x-12', c_calc: '-20/7',
-      a_calc_s1_lhs: 'f(-8)', a_calc_s1_rhs: '-8/4+3|-2+3',
       a_calc_final: '1',
-      b_calc_s1_lhs: 'y|f(x)', b_calc_s1_rhs: 'x/4+3',
       b_calc_final: '4x-12|4(x-3)',
-      c_calc_s1_lhs: 'f(p)|p/4+3', c_calc_s1_rhs: 'g(p+5)|2(p+4)|2p+8',
       c_calc_final: '-20/7'
     },
     markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }

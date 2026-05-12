@@ -1892,10 +1892,16 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             })()}
 
             
-            {/* Q18 - 3-set Venn diagram */}
+            {/* Q18 - 3-set Venn diagram (interactive) */}
             {question.id === 'pp_4024_on23_11_q18' && (
               <div className="mt-4">
-                <VennDiagram3Set2023ON />
+                <VennDiagram3Set2023ON
+                  answers={answers}
+                  onAnswerChange={handleAnswerChange}
+                  feedback={feedback}
+                  isSubmitted={isSubmitted}
+                  correctAnswers={typeof question.answer === 'object' ? question.answer as Record<string, string> : undefined}
+                />
               </div>
             )}
             

@@ -99,7 +99,11 @@ export function EquationSolveWorkspace({
   });
 
   // ===== Custom steps state =====
-  const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
+  const [customSteps, setCustomSteps] = useState<CustomStep[]>(() =>
+    initialCustomSteps > 0
+      ? Array.from({ length: initialCustomSteps }, () => newStep(customStepTemplate))
+      : [],
+  );
   // focusedSlot identifies which buffer we are typing into:
   //  format: `cs:${stepIdx}:${partIdx}:${slot}` where slot ∈ {'txt','n','d'}
   const [focusedSlot, setFocusedSlot] = useState<string | null>(null);

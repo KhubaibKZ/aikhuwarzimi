@@ -723,46 +723,46 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 23 ==========
   'pp_4024_on23_11_q23': {
     id: 'pp_4024_on23_11_q23', questionNumber: '23', title: 'Vectors in parallelogram',
-    question: 'OABC is a parallelogram. OA = a, OC = c. X is the midpoint of AC. Y is the point on AB where AY:YB = 2:1.\n(a) Find AC.\n(b) Find the position vector of X.\n(c) Find YX.',
+    question: 'OABC is a parallelogram. <v>OA</v> = a, <v>OC</v> = c. X is the midpoint of AC. Y is the point on AB where AY:YB = 2:1.\n(a) Find <v>AC</v>.\n(b) Find the position vector <v>OX</v>.\n(c) Find <v>YX</v>.',
     marks: 5,
-    hints: ['(a) AC = AO + OC = −a + c = c − a', '(b) OX = OA + ½AC = a + ½(c−a) = ½a + ½c', '(c) AY = ⅔AB = ⅔c, OY = a + ⅔c, YX = OX − OY'],
+    hints: ['(a) <v>AC</v> = <v>AO</v> + <v>OC</v> = −a + c = c − a', '(b) <v>OX</v> = <v>OA</v> + ½<v>AC</v> = a + ½(c−a) = ½a + ½c', '(c) <v>AY</v> = ⅔<v>AB</v> = ⅔c, <v>OY</v> = a + ⅔c, <v>YX</v> = <v>OX</v> − <v>OY</v>'],
     type: 'multi-part',
     equationSolveParts: ['b_calc', 'c_calc'],
     equationStagesMap: {
       'b_calc': [
-        { label: 'OX = OA + AX', stepKey: 's1', elements: [
-          { type: 'text', value: 'OX = a + ½(' }, { type: 'box', key: 's1', width: 'w-16' }, { type: 'text', value: ')' }
+        { label: '<v>OX</v> = <v>OA</v> + <v>AX</v>', stepKey: 's1', elements: [
+          { type: 'text', value: '<v>OX</v> = a + ½(' }, { type: 'box', key: 's1', width: 'w-16' }, { type: 'text', value: ')' }
         ]},
         { label: 'Expand', stepKey: 's2', elements: [
-          { type: 'text', value: 'OX = a +' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-12' }
+          { type: 'text', value: '<v>OX</v> = a +' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-12' }
         ]},
         { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: 'OX =' }, { type: 'box', key: 's3', width: 'w-20' }
+          { type: 'text', value: '<v>OX</v> =' }, { type: 'box', key: 's3', width: 'w-20' }
         ]}
       ],
       'c_calc': [
-        { label: 'Find OY', stepKey: 's1', elements: [
-          { type: 'text', value: 'AY = ⅔AB = ⅔c → OY = a +' }, { type: 'box', key: 's1', width: 'w-14' }
+        { label: 'Find <v>OY</v>', stepKey: 's1', elements: [
+          { type: 'text', value: '<v>AY</v> = ⅔<v>AB</v> = ⅔c → <v>OY</v> = a +' }, { type: 'box', key: 's1', width: 'w-14' }
         ]},
-        { label: 'YX = OX − OY', stepKey: 's2', elements: [
-          { type: 'text', value: 'YX = (½a+½c) − (a+' }, { type: 'box', key: 's2', width: 'w-14' }, { type: 'text', value: ')' }
+        { label: '<v>YX</v> = <v>OX</v> − <v>OY</v>', stepKey: 's2', elements: [
+          { type: 'text', value: '<v>YX</v> = (½a+½c) − (a+' }, { type: 'box', key: 's2', width: 'w-14' }, { type: 'text', value: ')' }
         ]},
         { label: 'Simplify', stepKey: 's3', elements: [
-          { type: 'text', value: 'YX =' }, { type: 'box', key: 's3', width: 'w-24' }
+          { type: 'text', value: '<v>YX</v> =' }, { type: 'box', key: 's3', width: 'w-24' }
         ]}
       ]
     },
     parts: [
-      { label: '(a) AC', key: 'a', marks: 1 },
-      { label: '(b) Position vector of X', key: 'b_calc', marks: 2 },
-      { label: '(c) YX', key: 'c_calc', marks: 2 }
+      { label: '(a) <v>AC</v>', key: 'a', marks: 1 },
+      { label: '(b) Position vector <v>OX</v>', key: 'b_calc', marks: 2 },
+      { label: '(c) <v>YX</v>', key: 'c_calc', marks: 2 }
     ],
     answer: {
       a: 'c-a', b_calc: '½a+½c', c_calc: '-½a-⅙c',
       b_calc_s1: 'c-a', b_calc_s2_a: '½c', b_calc_s2_b: '½a', b_calc_s3: '½a+½c',
       c_calc_s1: '⅔c', c_calc_s2: '⅔c', c_calc_s3: '-½a-⅙c'
     },
-    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for YX along the lines of the diagram (can include correct OX). A1 for −½a − ⅙c oe simplified.' }
+    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for <v>YX</v> along the lines of the diagram (can include correct <v>OX</v>). A1 for −½a − ⅙c oe simplified.' }
   },
 
   // ========== Question 24 ==========

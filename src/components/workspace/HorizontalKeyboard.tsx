@@ -57,7 +57,7 @@ function renderKeyContent(key: string) {
 }
 
 function keyInsertValue(key: string): string {
-  if (key === 'a/b' || key === '□/□') return '/';
+  // Pass through as-is; consumers (EquationSolveWorkspace, StepWorkspace) decide semantics.
   return key;
 }
 

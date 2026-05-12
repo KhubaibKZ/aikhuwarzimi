@@ -13,6 +13,8 @@ interface StructuredExtraStep {
   hasOperators?: boolean; // if true, render small operator box between value boxes
   boxWidth?: string;
   opWidth?: string;
+  noTrailingEquals?: boolean; // if true, omit "= [box]" tail
+  initialRows?: number; // if set, pre-populate that many rows on mount
 }
 
 interface EquationSolveWorkspaceProps {

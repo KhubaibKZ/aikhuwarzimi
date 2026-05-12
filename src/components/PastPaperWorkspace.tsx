@@ -55,6 +55,7 @@ import {
   SpeedTimeGraph2023ON,
   VectorParallelogram2023ON,
   VennDiagram3Set2023ON,
+  VennDiagramGHF_2023ON,
   ScatterDiagram2023ON,
   ScaleDrawing2023ON,
   RectangleSquares_4024_12_2023ON,
@@ -1894,7 +1895,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             
             {/* Q18 - 3-set Venn diagram (interactive) */}
             {question.id === 'pp_4024_on23_11_q18' && (
-              <div className="mt-4">
+              <div className="mt-4 space-y-6">
                 <VennDiagram3Set2023ON
                   answers={answers}
                   onAnswerChange={handleAnswerChange}
@@ -1902,6 +1903,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   isSubmitted={isSubmitted}
                   correctAnswers={typeof question.answer === 'object' ? question.answer as Record<string, string> : undefined}
                 />
+                <div className="pt-4 border-t border-border/40">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    (b) Use set notation to describe the shaded subset in the Venn diagram below.
+                  </p>
+                  <VennDiagramGHF_2023ON />
+                </div>
               </div>
             )}
             
@@ -2101,7 +2108,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               /* Multi-part questions - use StepWorkspace + optional fraction division */
               <div className="space-y-4">
                 <StepWorkspace
-                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key) && !((question as any).primeFactorParts || {})[p.key] && !(question.id === 'pp_4024_on23_11_q18' && ['rcs', 'conly', 'sonly', 'outside', 'ronly', 'rcOnly', 'rsOnly', 'csOnly'].includes(p.key))).map(p => ({
+                  steps={question.parts.filter(p => !(question as any).fractionDivisionParts?.includes(p.key) && !(question as any).equationSolveParts?.includes(p.key) && !((question as any).primeFactorParts || {})[p.key] && !(question.id === 'pp_4024_on23_11_q18' && ['a', 'rcs', 'conly', 'sonly', 'outside', 'ronly', 'rcOnly', 'rsOnly', 'csOnly'].includes(p.key))).map(p => ({
                       ...p,
                       suffix: p.label.includes('°') || p.label.includes('degree') ? '°' :
                               p.label.includes('hour') ? ' hr' :

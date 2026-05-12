@@ -1,5 +1,6 @@
 import React from "react";
 import { Radical } from "@/components/Radical";
+import { VecText } from "@/components/VecText";
 
 /**
  * Renders question text with inline stacked fractions and proper √ vinculum.
@@ -31,7 +32,7 @@ export function QuestionText({ text, className }: { text: string; className?: st
         while ((m = FRAC_RE.exec(line)) !== null) {
           if (m.index > lastIdx) {
             nodes.push(
-              <span key={`t-${li}-${lastIdx}`}>{line.slice(lastIdx, m.index)}</span>
+              <VecText key={`t-${li}-${lastIdx}`} value={line.slice(lastIdx, m.index)} />
             );
           }
           const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;
@@ -45,7 +46,7 @@ export function QuestionText({ text, className }: { text: string; className?: st
           lastIdx = m.index + m[0].length;
         }
         if (lastIdx < line.length) {
-          nodes.push(<span key={`t-${li}-end`}>{line.slice(lastIdx)}</span>);
+          nodes.push(<VecText key={`t-${li}-end`} value={line.slice(lastIdx)} />);
         }
         return (
           <React.Fragment key={`l-${li}`}>

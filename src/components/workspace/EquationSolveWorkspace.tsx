@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
+import { VecText } from '@/components/VecText';
 
 interface StructuredExtraStep {
   afterStepKey: string; // insert rows after this stage
@@ -424,9 +425,7 @@ export function EquationSolveWorkspace({
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <span key={i} className="font-mono text-base">
-                  {el.value}
-                </span>
+                <VecText key={i} value={el.value} className="font-mono text-base" />
               );
             }
             if (el.type === 'box' && el.key) {
@@ -438,9 +437,7 @@ export function EquationSolveWorkspace({
                   {elements?.map((subEl, j) => {
                     if (subEl.type === 'text')
                       return (
-                        <span key={j} className="font-mono text-sm">
-                          {subEl.value}
-                        </span>
+                        <VecText key={j} value={subEl.value} className="font-mono text-sm" />
                       );
                     if (subEl.type === 'box' && subEl.key)
                       return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
@@ -466,7 +463,7 @@ export function EquationSolveWorkspace({
                   <span className="flex items-center gap-1">
                     {el.innerElements?.map((subEl, j) => {
                       if (subEl.type === 'text')
-                        return <span key={j} className="font-mono text-base">{subEl.value}</span>;
+                        return <VecText key={j} value={subEl.value} className="font-mono text-base" />;
                       if (subEl.type === 'box' && subEl.key)
                         return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
                       return null;

@@ -95,6 +95,8 @@ export interface PastPaperSection {
   id: string;
   title: string;
   questionId: string;
+  locked?: boolean;
+  lockedReason?: string;
 }
 
 export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)' | 'Paper 1' | 'Paper 2';

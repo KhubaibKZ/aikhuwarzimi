@@ -878,7 +878,7 @@ export const sections4024_11_2023ON: PastPaperSection[] = [
   { id: 's_4024_on23_11_q17', title: 'Q17 – Direct proportion', questionId: 'pp_4024_on23_11_q17' },
   { id: 's_4024_on23_11_q18', title: 'Q18 – Venn diagram', questionId: 'pp_4024_on23_11_q18' },
   { id: 's_4024_on23_11_q19', title: 'Q19 – Speed-time graph', questionId: 'pp_4024_on23_11_q19' },
-  { id: 's_4024_on23_11_q20', title: 'Q20 – Matrices', questionId: 'pp_4024_on23_11_q20' },
+  { id: 's_4024_on23_11_q20', title: 'Q20 – Matrices', questionId: 'pp_4024_on23_11_q20', locked: true, lockedReason: 'Not included in syllabus' },
   { id: 's_4024_on23_11_q21', title: 'Q21 – Factorisation', questionId: 'pp_4024_on23_11_q21' },
   { id: 's_4024_on23_11_q22', title: 'Q22 – Functions', questionId: 'pp_4024_on23_11_q22' },
   { id: 's_4024_on23_11_q23', title: 'Q23 – Vectors', questionId: 'pp_4024_on23_11_q23' },

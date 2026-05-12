@@ -13,6 +13,8 @@ interface StructuredExtraStep {
   hasOperators?: boolean; // if true, render small operator box between value boxes
   boxWidth?: string;
   opWidth?: string;
+  noTrailingEquals?: boolean; // if true, omit "= [box]" tail
+  initialRows?: number; // if set, pre-populate that many rows on mount
 }
 
 interface EquationSolveWorkspaceProps {
@@ -69,7 +71,14 @@ export function EquationSolveWorkspace({
 
   // Structured extra rows: each row is array of box counts. Boxes are removable individually.
   // Row state: array of arrays of boolean (true = present). Operator boxes mirror value-box presence.
-  const [extraRows, setExtraRows] = useState<boolean[][]>([]);
+  const [extraRows, setExtraRows] = useState<boolean[][]>(() => {
+    if (structuredExtraStep?.initialRows && structuredExtraStep.initialRows > 0) {
+      return Array.from({ length: structuredExtraStep.initialRows }, () =>
+        Array.from({ length: structuredExtraStep.initialBoxes }, () => true),
+      );
+    }
+    return [];
+  });
 
   // ===== Custom steps state =====
   const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);
@@ -405,8 +414,12 @@ export function EquationSolveWorkspace({
             </span>
           ) : null,
         )}
-        <span className="font-mono text-base">=</span>
-        {box(k(`extra_${rowIdx}_eq`), boxW)}
+        {!structuredExtraStep.noTrailingEquals && (
+          <>
+            <span className="font-mono text-base">=</span>
+            {box(k(`extra_${rowIdx}_eq`), boxW)}
+          </>
+        )}
         <Button
           type="button"
           variant="ghost"

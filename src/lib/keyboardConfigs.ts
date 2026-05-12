@@ -441,6 +441,13 @@ export const KEYBOARD_CONFIGS = {
     ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     ['π', '²', '³', '+', '−', '×', '÷', '=', '.', '⌫'],
   ],
+
+  // Q17 (4024/11 Oct/Nov 2023) — Direct proportion
+  'pp_4024_on23_11_q17': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['y', 'x', 'k', '∝', '=', '√', '²', '.', '/', '×'],
+    ['(', ')', '+', '−', '÷', '½', '¼', '⌫', 'Clear'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;

@@ -463,28 +463,32 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_11_q17', questionNumber: '17', title: 'Direct proportion',
     question: 'y is directly proportional to the square root of x. When x = 16, y = 2. Find y when x = 25.',
     marks: 2,
-    hints: ['y = k√x', '2 = k√16 = 4k, so k = 0.5', 'y = 0.5√25 = 0.5 × 5 = 2.5'],
+    hints: ['Write the proportionality: y ∝ √x, then y = k√x', 'Substitute x = 16, y = 2 to find k = 0.5', 'Use y = 0.5 × √25 = 2.5'],
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
-      { label: 'Set up', stepKey: 's1', elements: [
-        { type: 'text', value: 'y = k√x →' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '= k√' }, { type: 'box', key: 's1_b', width: 'w-10' }
+      { label: '', stepKey: 'intro', elements: [
+        { type: 'text', value: 'Build your working below — each line: variable, operator, expression. Add as many steps as you need.' }
       ]},
-      { label: 'Find k', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '= k ×' }, { type: 'box', key: 's2_b', width: 'w-10' },
-        { type: 'text', value: ', k =' }, { type: 'box', key: 's2_c', width: 'w-12' }
-      ]},
-      { label: 'Find y', stepKey: 's3', elements: [
-        { type: 'text', value: 'y =' }, { type: 'box', key: 's3_a', width: 'w-12' }, { type: 'text', value: '× √' },
-        { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_c', width: 'w-12' }
+      { label: 'Final answer', stepKey: 'final', elements: [
+        { type: 'text', value: 'y =' }, { type: 'box', key: 'final_y', width: 'w-20' }
       ]}
     ],
+    structuredExtraStepMap: {
+      answer: {
+        afterStepKey: 'intro',
+        initialBoxes: 2,
+        hasOperators: true,
+        boxWidth: 'w-24',
+        opWidth: 'w-12',
+        noTrailingEquals: true,
+        initialRows: 1,
+      }
+    },
     parts: [{ label: 'y =', key: 'answer', marks: 2 }],
     answer: {
       answer: '2.5',
-      answer_s1_a: '2', answer_s1_b: '16',
-      answer_s2_a: '2', answer_s2_b: '4', answer_s2_c: '0.5',
-      answer_s3_a: '0.5', answer_s3_b: '25', answer_s3_c: '2.5'
+      answer_final_y: '2.5',
     },
     markingCriteria: { answer: 'B1 for k = ½ if y = k√x used. Or M1 for 2 × √25 = y × √16 oe. A1 for 2.5.' }
   },

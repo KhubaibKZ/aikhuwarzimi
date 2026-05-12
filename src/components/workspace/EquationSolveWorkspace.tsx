@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
 import { EquationStage } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
+import { VecText } from '@/components/VecText';
 
 interface StructuredExtraStep {
   afterStepKey: string; // insert rows after this stage

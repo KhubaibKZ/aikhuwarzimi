@@ -493,9 +493,110 @@ export function EquationSolveWorkspace({
   }
   const useSplit = !!splitAfterKey;
 
+  const customStepsBlock = allowCustomSteps ? (
+    <div className="space-y-3 border-t pt-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground font-medium">
+          My working — build each step using the keyboard below
+        </span>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isSubmitted}
+          onClick={() => {
+            setCustomSteps((prev) => {
+              const next = [...prev, newStep(customStepTemplate)];
+              const initSlot = customStepTemplate === 'fraction' ? 'n' : 'txt';
+              setTimeout(() => setFocusedSlot(`cs:${next.length - 1}:0:${initSlot}`), 0);
+              return next;
+            });
+          }}
+          className="h-7 text-xs gap-1"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add step
+        </Button>
+      </div>
+
+      {customSteps.length === 0 && (
+        <p className="text-xs text-muted-foreground italic">
+          Click <span className="font-medium">+ Add step</span> to start writing your own
+          equation lines.
+        </p>
+      )}
+
+      {customSteps.map((step, si) => {
+        const customKey = k(`custom_${si}`);
+        const serialized = serializeStep(step);
+        if (answers[customKey] !== serialized) {
+          setTimeout(() => onAnswerChange(customKey, serialized), 0);
+        }
+        return (
+          <div key={si} className="space-y-1">
+            <div
+              className="flex items-start gap-2 group"
+              onClick={() => {
+                if (!focusedSlot?.startsWith(`cs:${si}:`)) {
+                  const initSlot = step[0]?.kind === 'frac' ? 'n' : 'txt';
+                  setFocusedSlot(`cs:${si}:0:${initSlot}`);
+                  setFocusedInput(null);
+                }
+              }}
+            >
+              <span className="text-xs text-muted-foreground w-6 text-right pt-2">
+                {si + 1}.
+              </span>
+              <div
+                className={cn(
+                  'flex-1 flex flex-wrap items-center gap-1 rounded border bg-background/40 px-2 py-2 min-h-[2.75rem]',
+                  focusedSlot?.startsWith(`cs:${si}:`) && 'border-primary/60',
+                  feedback[customKey] === 'correct' && 'border-green-500 bg-green-500/5',
+                  feedback[customKey] === 'incorrect' && 'border-destructive bg-destructive/5',
+                )}
+              >
+                {step.map((part, pi) => {
+                  if (part.kind === 'txt') {
+                    return renderTxt(part.s, `cs:${si}:${pi}:txt`);
+                  }
+                  return renderFrac(
+                    part.n,
+                    part.d,
+                    `cs:${si}:${pi}:n`,
+                    `cs:${si}:${pi}:d`,
+                  );
+                })}
+              </div>
+              {checkBtn(customKey, `My step ${si + 1}`)}
+              {stepFeedbackIcon(customKey)}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={isSubmitted}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCustomSteps((prev) => prev.filter((_, i) => i !== si));
+                  if (focusedSlot?.startsWith(`cs:${si}:`)) setFocusedSlot(null);
+                }}
+                className="h-7 w-7 p-0 opacity-50 group-hover:opacity-100"
+                title="Delete step"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            {renderAiResponse(customKey)}
+          </div>
+        );
+      })}
+    </div>
+  ) : null;
+
+  const customStepsInline = allowCustomSteps && !!customStepsAfterStepKey;
+
   return (
     <div className="space-y-5">
-      {(structuredExtraStep ? stagesBefore : stages).map(renderStage)}
+      {(useSplit ? stagesBefore : stages).map(renderStage)}
 
       {structuredExtraStep && (
         <div className="space-y-2">
@@ -514,7 +615,9 @@ export function EquationSolveWorkspace({
         </div>
       )}
 
-      {structuredExtraStep && stagesAfter.map(renderStage)}
+      {customStepsInline && customStepsBlock}
+
+      {useSplit && stagesAfter.map(renderStage)}
 
       {isSubmitted && correctAnswers && (
         <div className="text-sm text-green-600 font-medium space-y-0.5">
@@ -532,108 +635,8 @@ export function EquationSolveWorkspace({
         </div>
       )}
 
-      {/* ===== Custom student-built steps ===== */}
-      {allowCustomSteps && (
-        <div className="space-y-3 border-t pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-medium">
-              My working — build each step using the keyboard below
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={isSubmitted}
-              onClick={() => {
-                setCustomSteps((prev) => {
-                  const next = [...prev, newStep(customStepTemplate)];
-                  const initSlot = customStepTemplate === 'fraction' ? 'n' : 'txt';
-                  setTimeout(() => setFocusedSlot(`cs:${next.length - 1}:0:${initSlot}`), 0);
-                  return next;
-                });
-              }}
-              className="h-7 text-xs gap-1"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Add step
-            </Button>
-          </div>
+      {!customStepsInline && customStepsBlock}
 
-          {customSteps.length === 0 && (
-            <p className="text-xs text-muted-foreground italic">
-              Click <span className="font-medium">+ Add step</span> to start writing your own
-              equation lines.
-            </p>
-          )}
-
-          {customSteps.map((step, si) => {
-            const customKey = k(`custom_${si}`);
-            const serialized = serializeStep(step);
-            // keep parent answers in sync so onCheckWork has access to the text
-            if (answers[customKey] !== serialized) {
-              setTimeout(() => onAnswerChange(customKey, serialized), 0);
-            }
-            return (
-              <div key={si} className="space-y-1">
-                <div
-                  className="flex items-start gap-2 group"
-                  onClick={() => {
-                    if (!focusedSlot?.startsWith(`cs:${si}:`)) {
-                      const initSlot = step[0]?.kind === 'frac' ? 'n' : 'txt';
-                      setFocusedSlot(`cs:${si}:0:${initSlot}`);
-                      setFocusedInput(null);
-                    }
-                  }}
-                >
-                  <span className="text-xs text-muted-foreground w-6 text-right pt-2">
-                    {si + 1}.
-                  </span>
-                  <div
-                    className={cn(
-                      'flex-1 flex flex-wrap items-center gap-1 rounded border bg-background/40 px-2 py-2 min-h-[2.75rem]',
-                      focusedSlot?.startsWith(`cs:${si}:`) && 'border-primary/60',
-                      feedback[customKey] === 'correct' && 'border-green-500 bg-green-500/5',
-                      feedback[customKey] === 'incorrect' && 'border-destructive bg-destructive/5',
-                    )}
-                  >
-                    {step.map((part, pi) => {
-                      if (part.kind === 'txt') {
-                        return renderTxt(part.s, `cs:${si}:${pi}:txt`);
-                      }
-                      return renderFrac(
-                        part.n,
-                        part.d,
-                        `cs:${si}:${pi}:n`,
-                        `cs:${si}:${pi}:d`,
-                      );
-                    })}
-                  </div>
-                  {checkBtn(customKey, `My step ${si + 1}`)}
-                  {stepFeedbackIcon(customKey)}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={isSubmitted}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCustomSteps((prev) => prev.filter((_, i) => i !== si));
-                      if (focusedSlot?.startsWith(`cs:${si}:`)) setFocusedSlot(null);
-                    }}
-                    className="h-7 w-7 p-0 opacity-50 group-hover:opacity-100"
-                    title="Delete step"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-                {renderAiResponse(customKey)}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Keyboard — use rich algebra keyboard when a custom-step buffer is active */}
       <div className="border-t pt-3">
         <HorizontalKeyboard
           keys={focusedSlot?.startsWith('cs:') ? RICH_EQ_KEYBOARD : keyboardKeys}

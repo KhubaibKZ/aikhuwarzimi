@@ -86,7 +86,7 @@ export interface PastPaperQuestion {
   allowCustomSteps?: boolean; // Lets students add their own equation lines under equation stages
   structuredExtraStepMap?: Record<string, { afterStepKey: string; initialBoxes: number; boxWidth?: string; opWidth?: string; hasOperators?: boolean; noTrailingEquals?: boolean; initialRows?: number }>;
   customStepsAfterStepKeyMap?: Record<string, string>; // Per-part: render "My working" block right after this stage
-  customStepTemplateMap?: Record<string, 'text' | 'fraction'>; // Per-part: shape of each newly added custom step
+  customStepTemplateMap?: Record<string, 'text' | 'fraction' | 'lhs_rhs'>; // Per-part: shape of each newly added custom step
   diagramParts?: string[]; // Keys of parts answered via interactive diagram (no text input needed)
   primeFactorParts?: Record<string, number>; // Map of answer-key -> target number, renders a PrimeFactorLadder for that key
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")

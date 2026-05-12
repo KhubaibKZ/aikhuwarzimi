@@ -33,11 +33,14 @@ interface EquationSolveWorkspaceProps {
   allowCustomSteps?: boolean;
   structuredExtraStep?: StructuredExtraStep;
   customStepsAfterStepKey?: string; // insert "My working" block right after this stage
-  customStepTemplate?: 'text' | 'fraction'; // shape of each newly added custom step
+  customStepTemplate?: 'text' | 'fraction' | 'lhs_rhs'; // shape of each newly added custom step
 }
 
 // Custom step token model
-type CustomPart = { kind: 'txt'; s: string } | { kind: 'frac'; n: string; d: string };
+type CustomPart =
+  | { kind: 'txt'; s: string }
+  | { kind: 'frac'; n: string; d: string }
+  | { kind: 'sep'; v: string };
 type CustomStep = CustomPart[];
 
 // Rich keyboard used in the "My working" custom steps area
@@ -47,10 +50,16 @@ const RICH_EQ_KEYBOARD: string[][] = [
   ['(', ')', '.', '²', '³', '√', 'π', 'a/b', '⌫', 'Clear'],
 ];
 
-const newStep = (template: 'text' | 'fraction' = 'text'): CustomStep =>
-  template === 'fraction'
-    ? [{ kind: 'frac', n: '', d: '' }]
-    : [{ kind: 'txt', s: '' }];
+const newStep = (template: 'text' | 'fraction' | 'lhs_rhs' = 'text'): CustomStep => {
+  if (template === 'fraction') return [{ kind: 'frac', n: '', d: '' }];
+  if (template === 'lhs_rhs')
+    return [
+      { kind: 'txt', s: '' },
+      { kind: 'sep', v: '=' },
+      { kind: 'txt', s: '' },
+    ];
+  return [{ kind: 'txt', s: '' }];
+};
 
 export function EquationSolveWorkspace({
   questionKey,
@@ -154,6 +163,7 @@ export function EquationSolveWorkspace({
     step
       .map((p) => {
         if (p.kind === 'txt') return p.s;
+        if (p.kind === 'sep') return ` ${p.v} `;
         const n = p.n || '?';
         const d = p.d || '?';
         return `(${n})/(${d})`;
@@ -555,7 +565,14 @@ export function EquationSolveWorkspace({
               >
                 {step.map((part, pi) => {
                   if (part.kind === 'txt') {
-                    return renderTxt(part.s, `cs:${si}:${pi}:txt`);
+                    return renderTxt(part.s, `cs:${si}:${pi}:txt`, 'min-w-[8rem]');
+                  }
+                  if (part.kind === 'sep') {
+                    return (
+                      <span key={`sep-${pi}`} className="font-mono text-base px-1">
+                        {part.v}
+                      </span>
+                    );
                   }
                   return renderFrac(
                     part.n,

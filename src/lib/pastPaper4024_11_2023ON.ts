@@ -765,36 +765,19 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['answer'],
     allowCustomSteps: true,
-    equationStages: [
-      { label: 'Combine into one fraction (LCM)', stepKey: 's0', elements: [
-        { type: 'fraction',
-          numElements: [
-            { type: 'box', key: 's0_n1', width: 'w-10' },
-            { type: 'text', value: '(' }, { type: 'box', key: 's0_n2', width: 'w-10' },
-            { type: 'text', value: '−' }, { type: 'box', key: 's0_n3', width: 'w-10' }, { type: 'text', value: ')' },
-            { type: 'text', value: '−' },
-            { type: 'box', key: 's0_n4', width: 'w-10' },
-            { type: 'text', value: '(' }, { type: 'box', key: 's0_n5', width: 'w-10' },
-            { type: 'text', value: '+' }, { type: 'box', key: 's0_n6', width: 'w-10' }, { type: 'text', value: ')' }
-          ],
-          denElements: [
-            { type: 'text', value: '(' }, { type: 'box', key: 's0_d1', width: 'w-10' },
-            { type: 'text', value: '+' }, { type: 'box', key: 's0_d2', width: 'w-10' }, { type: 'text', value: ')' },
-            { type: 'text', value: '(' }, { type: 'box', key: 's0_d3', width: 'w-10' },
-            { type: 'text', value: '−' }, { type: 'box', key: 's0_d4', width: 'w-10' }, { type: 'text', value: ')' }
-          ]
-        },
-        { type: 'text', value: '=' },
-        { type: 'box', key: 's0_rhs', width: 'w-12' }
-      ]}
-    ],
-    parts: [{ label: 'x =', key: 'answer', marks: 4 }],
+    customStepTemplateMap: { answer: 'lhs_rhs' },
+    initialCustomStepsMap: { answer: 2 },
+    equationStagesMap: {
+      'answer': [
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: 'x =' }, { type: 'box', key: 'final', width: 'w-20' }
+        ]}
+      ]
+    },
+    parts: [{ label: 'Solve for x', key: 'answer', marks: 4 }],
     answer: {
       answer: '1/5|0.2',
-      answer_s0_n1: '3x', answer_s0_n2: 'x', answer_s0_n3: '1',
-      answer_s0_n4: '2', answer_s0_n5: 'x', answer_s0_n6: '1',
-      answer_s0_d1: 'x', answer_s0_d2: '1', answer_s0_d3: 'x', answer_s0_d4: '1',
-      answer_s0_rhs: '3'
+      answer_final: '1/5|0.2'
     },
     markingCriteria: { answer: 'M2 for elimination of fractions or correct use of common denominator in an equation, accept LHS as two fractions. Or M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi. AND M1 for expansion of all brackets in clearing fractions. A1 for x = 1/5 or 0.2.' }
   },

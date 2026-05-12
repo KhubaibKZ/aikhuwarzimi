@@ -32,6 +32,8 @@ interface EquationSolveWorkspaceProps {
   keyboardKeys: string[][];
   allowCustomSteps?: boolean;
   structuredExtraStep?: StructuredExtraStep;
+  customStepsAfterStepKey?: string; // insert "My working" block right after this stage
+  customStepTemplate?: 'text' | 'fraction'; // shape of each newly added custom step
 }
 
 // Custom step token model

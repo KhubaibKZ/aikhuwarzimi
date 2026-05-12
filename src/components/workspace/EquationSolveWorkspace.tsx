@@ -565,7 +565,14 @@ export function EquationSolveWorkspace({
               >
                 {step.map((part, pi) => {
                   if (part.kind === 'txt') {
-                    return renderTxt(part.s, `cs:${si}:${pi}:txt`);
+                    return renderTxt(part.s, `cs:${si}:${pi}:txt`, 'min-w-[8rem]');
+                  }
+                  if (part.kind === 'sep') {
+                    return (
+                      <span key={`sep-${pi}`} className="font-mono text-base px-1">
+                        {part.v}
+                      </span>
+                    );
                   }
                   return renderFrac(
                     part.n,

@@ -15,11 +15,17 @@ const FRAC_MAP: Record<string, [string, string]> = {
   '⅛': ['1', '8'], '⅜': ['3', '8'], '⅝': ['5', '8'], '⅞': ['7', '8'],
 };
 
-// Vector token format: "<v>OA</v>" or contains a combining arrow char "⃗"
-const VEC_RE = /^<v>([A-Z]+)<\/v>$/;
+// Vector token: any uppercase letter + combining arrow (U+20D7) + more letters,
+// e.g. "O⃗A", "Y⃗X". Render as letters with a single arrow above the whole group.
+const COMBINING_ARROW = '\u20D7';
+function isVectorToken(key: string) {
+  return key.includes(COMBINING_ARROW);
+}
+function vectorLetters(key: string) {
+  return key.replace(new RegExp(COMBINING_ARROW, 'g'), '');
+}
 
 function renderKeyContent(key: string) {
-  // Stacked fraction display
   if (FRAC_MAP[key]) {
     const [n, d] = FRAC_MAP[key];
     return (
@@ -30,34 +36,28 @@ function renderKeyContent(key: string) {
       </span>
     );
   }
-  // Vector arrow tokens (e.g. "<v>OA</v>")
-  const m = key.match(VEC_RE);
-  if (m) {
+  if (isVectorToken(key)) {
     return (
       <span className="relative inline-block px-0.5 italic font-semibold">
-        <span className="absolute left-0 right-0 -top-2 text-[0.55em] leading-none text-center pointer-events-none select-none">⟶</span>
-        {m[1]}
+        <span className="absolute left-0 right-0 -top-1.5 text-[0.6em] leading-none text-center pointer-events-none select-none">⟶</span>
+        {vectorLetters(key)}
       </span>
     );
   }
-  // Fraction builder key
   if (key === 'a/b' || key === '□/□') {
     return (
       <span className="inline-flex flex-col items-center leading-none text-[0.78rem]">
-        <span className="px-1">▢</span>
+        <span className="px-1">a</span>
         <span className="border-t border-current w-full" />
-        <span className="px-1">▢</span>
+        <span className="px-1">b</span>
       </span>
     );
   }
   return key;
 }
 
-// What to insert when key pressed
 function keyInsertValue(key: string): string {
   if (key === 'a/b' || key === '□/□') return '/';
-  const m = key.match(VEC_RE);
-  if (m) return `<v>${m[1]}</v>`;
   return key;
 }
 

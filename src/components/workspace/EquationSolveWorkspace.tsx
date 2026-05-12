@@ -163,6 +163,7 @@ export function EquationSolveWorkspace({
     step
       .map((p) => {
         if (p.kind === 'txt') return p.s;
+        if (p.kind === 'sep') return ` ${p.v} `;
         const n = p.n || '?';
         const d = p.d || '?';
         return `(${n})/(${d})`;

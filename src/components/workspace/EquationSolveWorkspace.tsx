@@ -477,19 +477,21 @@ export function EquationSolveWorkspace({
     ]);
   };
 
+  const splitAfterKey = structuredExtraStep?.afterStepKey || customStepsAfterStepKey;
   const stagesBefore: EquationStage[] = [];
   const stagesAfter: EquationStage[] = [];
-  if (structuredExtraStep) {
+  if (splitAfterKey) {
     let crossed = false;
     stages.forEach((s) => {
       if (!crossed) {
         stagesBefore.push(s);
-        if (s.stepKey === structuredExtraStep.afterStepKey) crossed = true;
+        if (s.stepKey === splitAfterKey) crossed = true;
       } else {
         stagesAfter.push(s);
       }
     });
   }
+  const useSplit = !!splitAfterKey;
 
   return (
     <div className="space-y-5">

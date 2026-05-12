@@ -354,7 +354,7 @@ export function EquationSolveWorkspace({
     <span key={slot} className="relative inline-flex group/slot">
       <span
         className={slotClasses(slot, text, minW)}
-        onMouseDown={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           setFocusedSlot(slot);
           setFocusedInput(null);
@@ -365,14 +365,13 @@ export function EquationSolveWorkspace({
       {showClearButton && (
         <button
           type="button"
-          onMouseDown={(e) => {
+          onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
             clearSlot(slot);
           }}
           className={cn(
-            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center transition-opacity',
-            isFocused ? 'opacity-100' : 'opacity-0 group-hover/slot:opacity-100',
+            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground/90 hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-100 shadow-sm',
           )}
           title="Clear"
         >
@@ -394,14 +393,13 @@ export function EquationSolveWorkspace({
       {!isSubmitted && (
         <button
           type="button"
-          onMouseDown={(e) => {
+          onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
             removeFracPart(si, pi);
           }}
           className={cn(
-            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center transition-opacity',
-            isFocused ? 'opacity-100' : 'opacity-0 group-hover/frac:opacity-100',
+            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground/90 hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-100 shadow-sm',
           )}
           title="Remove fraction"
         >

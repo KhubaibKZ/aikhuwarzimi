@@ -483,7 +483,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         initialRows: 1,
       }
     },
-    parts: [{ label: 'y =', key: 'answer', marks: 2 }],
+    parts: [{ label: '', key: 'answer', marks: 2 }],
     answer: {
       answer: '2.5',
       answer_final_y: '2.5',

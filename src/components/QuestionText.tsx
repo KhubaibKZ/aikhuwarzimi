@@ -46,7 +46,7 @@ export function QuestionText({ text, className }: { text: string; className?: st
           lastIdx = m.index + m[0].length;
         }
         if (lastIdx < line.length) {
-          nodes.push(<span key={`t-${li}-end`}>{line.slice(lastIdx)}</span>);
+          nodes.push(<VecText key={`t-${li}-end`} value={line.slice(lastIdx)} />);
         }
         return (
           <React.Fragment key={`l-${li}`}>

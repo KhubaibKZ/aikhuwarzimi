@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
+import { VecText } from '@/components/VecText';
 
 export interface AnswerStep {
   key: string;

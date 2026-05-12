@@ -2147,7 +2147,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   return part ? (
                     <div key={partKey} className="space-y-2">
                       <label className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{part.label}</span>
+                        <VecText value={part.label} className="font-medium" />
                         <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
                       </label>
                       <FractionDivisionWorkspace

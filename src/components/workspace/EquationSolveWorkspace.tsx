@@ -414,8 +414,12 @@ export function EquationSolveWorkspace({
             </span>
           ) : null,
         )}
-        <span className="font-mono text-base">=</span>
-        {box(k(`extra_${rowIdx}_eq`), boxW)}
+        {!structuredExtraStep.noTrailingEquals && (
+          <>
+            <span className="font-mono text-base">=</span>
+            {box(k(`extra_${rowIdx}_eq`), boxW)}
+          </>
+        )}
         <Button
           type="button"
           variant="ghost"

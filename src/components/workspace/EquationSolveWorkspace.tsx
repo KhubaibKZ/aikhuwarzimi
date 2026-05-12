@@ -306,9 +306,9 @@ export function EquationSolveWorkspace({
 
   const renderFrac = (n: string, d: string, slotN: string, slotD: string) => (
     <span key={`${slotN}|${slotD}`} className="inline-flex flex-col items-center mx-1 align-middle">
-      {renderTxt(n, slotN, 'min-w-[2.5rem]')}
+      {renderTxt(n, slotN, 'min-w-[8rem]')}
       <span className="block w-full border-t border-foreground my-0.5" />
-      {renderTxt(d, slotD, 'min-w-[2.5rem]')}
+      {renderTxt(d, slotD, 'min-w-[8rem]')}
     </span>
   );
 
@@ -495,10 +495,8 @@ export function EquationSolveWorkspace({
 
   const customStepsBlock = allowCustomSteps ? (
     <div className="space-y-3 border-t pt-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground font-medium">
-          My working — build each step using the keyboard below
-        </span>
+      <div className="flex items-center justify-end">
+
         <Button
           type="button"
           variant="outline"

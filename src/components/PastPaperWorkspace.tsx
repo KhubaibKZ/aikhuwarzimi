@@ -2459,7 +2459,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                                 return (
                                   <div key={p.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                     {correct ? <CheckCircle2 className="h-3 w-3 text-green-500" /> : <XCircle className="h-3 w-3 text-destructive" />}
-                                    <span>{p.label}: {answers[p.key] || '—'}</span>
+                                    <span><VecText value={p.label} />: {answers[p.key] || '—'}</span>
                                     {!correct && correctVal && <span className="text-green-600 ml-1">(correct: {correctVal})</span>}
                                   </div>
                                 );

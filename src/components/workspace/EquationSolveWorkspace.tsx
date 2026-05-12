@@ -420,6 +420,8 @@ export function EquationSolveWorkspace({
             {box(k(`extra_${rowIdx}_eq`), boxW)}
           </>
         )}
+        {checkBtn(k(`extra_${rowIdx}`), `Step ${rowIdx + 1}`)}
+        {stepFeedbackIcon(k(`extra_${rowIdx}`))}
         <Button
           type="button"
           variant="ghost"
@@ -431,6 +433,7 @@ export function EquationSolveWorkspace({
         >
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
+        {renderAiResponse(k(`extra_${rowIdx}`))}
       </div>
     );
   };

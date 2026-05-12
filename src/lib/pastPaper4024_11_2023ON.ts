@@ -644,21 +644,20 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) 3(2a − 3)', '(b) (2b + 5)(2b − 5)', '(c) Factor: 2c(c−4)/((2c+3)(c−4)) = 2c/(2c+3)'],
     type: 'multi-part',
     equationSolveParts: ['c'],
+    allowCustomSteps: true,
     equationStagesMap: {
       'c': [
-        { label: 'Factorise num', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '(' },
-          { type: 'box', key: 's1_b', width: 'w-14' }, { type: 'text', value: ')' }
+        { label: 'Factorise (numerator / denominator)', stepKey: 's1', elements: [
+          { type: 'fraction',
+            numElements: [{ type: 'box', key: 's1_num', width: 'w-32' }],
+            denElements: [{ type: 'box', key: 's1_den', width: 'w-32' }]
+          }
         ]},
-        { label: 'Factorise den', stepKey: 's2', elements: [
-          { type: 'text', value: '(' }, { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: ')(' },
-          { type: 'box', key: 's2_b', width: 'w-14' }, { type: 'text', value: ')' }
-        ]},
-        { label: 'Simplify', stepKey: 's3', elements: [
+        { label: 'Final simplified answer', stepKey: 'final', elements: [
           { type: 'text', value: '=' },
           { type: 'fraction',
-            numElements: [{ type: 'box', key: 's3_a', width: 'w-14' }],
-            denElements: [{ type: 'box', key: 's3_b', width: 'w-14' }]
+            numElements: [{ type: 'box', key: 'final_num', width: 'w-24' }],
+            denElements: [{ type: 'box', key: 'final_den', width: 'w-24' }]
           }
         ]}
       ]
@@ -670,9 +669,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a: '3(2a-3)', b: '(2b+5)(2b-5)', c: '2c/(2c+3)',
-      c_s1_a: '2c', c_s1_b: 'c-4',
-      c_s2_a: '2c+3', c_s2_b: 'c-4',
-      c_s3_a: '2c', c_s3_b: '2c+3'
+      c_s1_num: '2c(c-4)', c_s1_den: '(2c+3)(c-4)',
+      c_final_num: '2c', c_final_den: '2c+3'
     },
     markingCriteria: { a: 'B1 for 3(2a − 3)', b: 'B1 for (2b + 5)(2b − 5)', c: 'B1 for numerator correctly factorised as 2c(c − 4). B1 for denominator correctly factorised as (2c + 3)(c − 4). B1 for simplified 2c/(2c + 3).' }
   },

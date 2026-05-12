@@ -55,6 +55,7 @@ import {
   SpeedTimeGraph2023ON,
   VectorParallelogram2023ON,
   VennDiagram3Set2023ON,
+  VennDiagramGHF_2023ON,
   ScatterDiagram2023ON,
   ScaleDrawing2023ON,
   RectangleSquares_4024_12_2023ON,

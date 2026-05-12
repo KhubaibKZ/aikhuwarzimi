@@ -685,66 +685,38 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
+    allowCustomSteps: true,
+    customStepsAfterStepKeyMap: { a_calc: 's1', b_calc: 's1', c_calc: 's1' },
+    customStepTemplateMap: { a_calc: 'fraction', b_calc: 'fraction', c_calc: 'fraction' },
     equationStagesMap: {
       'a_calc': [
         { label: 'Substitute', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(−8) =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's1_num', width: 'w-12' }],
-            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
-          },
-          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' }
+          { type: 'box', key: 's1_lhs', width: 'w-40' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_rhs', width: 'w-40' }
         ]},
-        { label: 'Answer', stepKey: 's2', elements: [
-          { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 's2', width: 'w-14' }
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: 'f(−8) =' }, { type: 'box', key: 'final', width: 'w-16' }
         ]}
       ],
       'b_calc': [
         { label: 'Let y = f(x)', stepKey: 's1', elements: [
-          { type: 'text', value: 'y =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
-            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
-          },
-          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' },
-          { type: 'text', value: '→ x =' }, { type: 'box', key: 's1_x', width: 'w-20' }
+          { type: 'box', key: 's1_lhs', width: 'w-40' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_rhs', width: 'w-40' }
         ]},
-        { label: 'f⁻¹(x)', stepKey: 's2', elements: [
-          { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 's2', width: 'w-20' }
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: 'f⁻¹(x) =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ],
       'c_calc': [
-        { label: 'f(p)', stepKey: 's1', elements: [
-          { type: 'text', value: 'f(p) =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's1_num', width: 'w-10' }],
-            denElements: [{ type: 'box', key: 's1_den', width: 'w-10' }]
-          },
-          { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' }
+        { label: 'Set f(p) = g(p+5)', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_lhs', width: 'w-40' },
+          { type: 'text', value: '=' },
+          { type: 'box', key: 's1_rhs', width: 'w-40' }
         ]},
-        { label: 'g(p+5)', stepKey: 's2', elements: [
-          { type: 'text', value: 'g(p+5) = 2(p+5−1) = 2(p+' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ')' }
-        ]},
-        { label: 'Equation', stepKey: 's3', elements: [
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's3_num', width: 'w-10' }],
-            denElements: [{ type: 'box', key: 's3_den', width: 'w-10' }]
-          },
-          { type: 'text', value: '+' }, { type: 'box', key: 's3_c', width: 'w-10' },
-          { type: 'text', value: '= 2(p +' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: ')' }
-        ]},
-        { label: 'Multiply by 4', stepKey: 's4', elements: [
-          { type: 'text', value: 'p + 12 =' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: 'p +' }, { type: 'box', key: 's4_b', width: 'w-10' }
-        ]},
-        { label: 'Solve', stepKey: 's5', elements: [
-          { type: 'box', key: 's5_a', width: 'w-10' }, { type: 'text', value: 'p =' }, { type: 'box', key: 's5_b', width: 'w-10' }
-        ]},
-        { label: 'Answer', stepKey: 's6', elements: [
-          { type: 'text', value: 'p =' },
-          { type: 'fraction',
-            numElements: [{ type: 'box', key: 's6_num', width: 'w-12' }],
-            denElements: [{ type: 'box', key: 's6_den', width: 'w-12' }]
-          }
+        { label: 'Answer', stepKey: 'final', elements: [
+          { type: 'text', value: 'p =' }, { type: 'box', key: 'final', width: 'w-20' }
         ]}
       ]
     },
@@ -755,16 +727,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a_calc: '1', b_calc: '4x-12', c_calc: '-20/7',
-      a_calc_s1_num: '-8', a_calc_s1_den: '4', a_calc_s1_c: '3',
-      a_calc_s2: '1',
-      b_calc_s1_num: 'x', b_calc_s1_den: '4', b_calc_s1_c: '3', b_calc_s1_x: '4(y-3)|4y-12',
-      b_calc_s2: '4x-12|4(x-3)',
-      c_calc_s1_num: 'p', c_calc_s1_den: '4', c_calc_s1_c: '3',
-      c_calc_s2_a: '4',
-      c_calc_s3_num: 'p', c_calc_s3_den: '4', c_calc_s3_c: '3', c_calc_s3_a: '4',
-      c_calc_s4_a: '8', c_calc_s4_b: '32',
-      c_calc_s5_a: '-7', c_calc_s5_b: '20',
-      c_calc_s6_num: '-20', c_calc_s6_den: '7'
+      a_calc_s1_lhs: 'f(-8)', a_calc_s1_rhs: '-8/4+3|-2+3',
+      a_calc_final: '1',
+      b_calc_s1_lhs: 'y|f(x)', b_calc_s1_rhs: 'x/4+3',
+      b_calc_final: '4x-12|4(x-3)',
+      c_calc_s1_lhs: 'f(p)|p/4+3', c_calc_s1_rhs: 'g(p+5)|2(p+4)|2p+8',
+      c_calc_final: '-20/7'
     },
     markingCriteria: { a_calc: 'B1 for 1', b_calc: 'B1 for y = x/4 + 3 rearranged to x = 4(y − 3) or x/4 = y − 3 or 4y = x + 12 or better. A1 for 4x − 12 or 4(x − 3).', c_calc: 'B1 for p/4 + 3 = 2(p + 5 − 1). M1 for expansion of brackets and isolation of terms in p. A1 for −20/7.' }
   },

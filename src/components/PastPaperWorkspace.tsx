@@ -1895,7 +1895,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             
             {/* Q18 - 3-set Venn diagram (interactive) */}
             {question.id === 'pp_4024_on23_11_q18' && (
-              <div className="mt-4">
+              <div className="mt-4 space-y-6">
                 <VennDiagram3Set2023ON
                   answers={answers}
                   onAnswerChange={handleAnswerChange}
@@ -1903,6 +1903,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   isSubmitted={isSubmitted}
                   correctAnswers={typeof question.answer === 'object' ? question.answer as Record<string, string> : undefined}
                 />
+                <div className="pt-4 border-t border-border/40">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    (b) Use set notation to describe the shaded subset in the Venn diagram below.
+                  </p>
+                  <VennDiagramGHF_2023ON />
+                </div>
               </div>
             )}
             

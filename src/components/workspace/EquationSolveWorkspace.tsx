@@ -306,6 +306,9 @@ export function EquationSolveWorkspace({
 
   const renderStage = (stage: EquationStage) => {
     const fullStepKey = k(stage.stepKey);
+    const hasCheckable = stage.elements.some(
+      (el) => el.type === 'box' || el.type === 'fraction' || el.type === 'sqrt',
+    );
     return (
       <div key={stage.stepKey} className="space-y-1">
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -368,8 +371,8 @@ export function EquationSolveWorkspace({
             }
             return null;
           })}
-          {checkBtn(fullStepKey, stage.label || stage.stepKey)}
-          {stepFeedbackIcon(fullStepKey)}
+          {hasCheckable && checkBtn(fullStepKey, stage.label || stage.stepKey)}
+          {hasCheckable && stepFeedbackIcon(fullStepKey)}
         </div>
         {renderAiResponse(fullStepKey)}
       </div>

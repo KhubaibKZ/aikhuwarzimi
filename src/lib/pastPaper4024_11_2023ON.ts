@@ -554,9 +554,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '2', b: '40',
       a_s1_a: '20', a_s1_b: '10', a_s2: '2',
-      b_s1_a: '700', b_s1_b: '10', b_s1_c: '20', b_s1_d: '20', b_s1_e: '10',
-      b_s2_a: '700', b_s2_b: '100', b_s2_c: '10',
-      b_s3: '40'
+      b_s1: '½ × 10 × 20 + 20(T − 10) = 700',
+      b_s2: '100 + 20(T − 10) = 700',
+      b_s3: '20(T − 10) = 600',
+      b_s4: '40'
     },
     markingCriteria: { a: 'B1 for 2', b: 'M2 for a correct equation in T, e.g. ½ × 10 × 20 + 20(T − 10) = 700. Or B2 for length of rectangle = 30 nfww. Or M1 for a correct method to find a relevant area under the graph e.g. ½ × 10 × 20. A1 for 40.' }
   },

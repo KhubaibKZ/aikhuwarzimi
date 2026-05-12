@@ -71,7 +71,14 @@ export function EquationSolveWorkspace({
 
   // Structured extra rows: each row is array of box counts. Boxes are removable individually.
   // Row state: array of arrays of boolean (true = present). Operator boxes mirror value-box presence.
-  const [extraRows, setExtraRows] = useState<boolean[][]>([]);
+  const [extraRows, setExtraRows] = useState<boolean[][]>(() => {
+    if (structuredExtraStep?.initialRows && structuredExtraStep.initialRows > 0) {
+      return Array.from({ length: structuredExtraStep.initialRows }, () =>
+        Array.from({ length: structuredExtraStep.initialBoxes }, () => true),
+      );
+    }
+    return [];
+  });
 
   // ===== Custom steps state =====
   const [customSteps, setCustomSteps] = useState<CustomStep[]>([]);

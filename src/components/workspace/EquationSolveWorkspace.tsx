@@ -371,8 +371,8 @@ export function EquationSolveWorkspace({
             }
             return null;
           })}
-          {checkBtn(fullStepKey, stage.label || stage.stepKey)}
-          {stepFeedbackIcon(fullStepKey)}
+          {hasCheckable && checkBtn(fullStepKey, stage.label || stage.stepKey)}
+          {hasCheckable && stepFeedbackIcon(fullStepKey)}
         </div>
         {renderAiResponse(fullStepKey)}
       </div>

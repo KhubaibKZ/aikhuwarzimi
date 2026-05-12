@@ -536,20 +536,17 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ],
       'b': [
-        { label: 'Area = distance', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-14' }, { type: 'text', value: '= ½ ×' },
-          { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '+' },
-          { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: '(T −' },
-          { type: 'box', key: 's1_e', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: 'Step 1', stepKey: 's1', elements: [
+          { type: 'box', key: 's1', width: 'w-full' }
         ]},
-        { label: 'Simplify', stepKey: 's2', elements: [
-          { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: '=' },
-          { type: 'box', key: 's2_b', width: 'w-12' }, { type: 'text', value: '+ 20(T −' },
-          { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: 'Step 2', stepKey: 's2', elements: [
+          { type: 'box', key: 's2', width: 'w-full' }
         ]},
-        { label: 'Solve', stepKey: 's3', elements: [
-          { type: 'text', value: 'T =' }, { type: 'box', key: 's3', width: 'w-12' }
+        { label: 'Step 3', stepKey: 's3', elements: [
+          { type: 'box', key: 's3', width: 'w-full' }
+        ]},
+        { label: 'T =', stepKey: 's4', elements: [
+          { type: 'text', value: 'T =' }, { type: 'box', key: 's4', width: 'w-16' }
         ]}
       ]
     },

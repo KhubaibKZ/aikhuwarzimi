@@ -455,6 +455,13 @@ export const KEYBOARD_CONFIGS = {
     ['T', '½', '(', ')', '+', '−', '×', '÷', '=', '.'],
     ['m/s²', '/', ',', '⌫', 'Clear'],
   ],
+
+  // Q21 (4024/11 Oct/Nov 2023) — Factorisation (parts a & b)
+  'pp_4024_on23_11_q21': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['a', 'b', 'c', '(', ')', '+', '−', '×', '=', '.'],
+    ['²', '³', '/', ',', '⌫', 'Clear'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;

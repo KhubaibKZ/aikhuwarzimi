@@ -306,25 +306,92 @@ export function EquationSolveWorkspace({
     );
   };
 
-  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]') => (
-    <span
-      key={slot}
-      className={slotClasses(slot, text, minW)}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        setFocusedSlot(slot);
-        setFocusedInput(null);
-      }}
-    >
-      {text || '\u200b'}
+  const clearSlot = (slot: string) => {
+    const f = parseSlot(slot);
+    if (!f) return;
+    setCustomSteps((prev) =>
+      prev.map((step, i) => {
+        if (i !== f.si) return step;
+        return step.map((p, j) => {
+          if (j !== f.pi) return p;
+          if (p.kind === 'txt' && f.slot === 'txt') return { ...p, s: '' };
+          if (p.kind === 'frac' && f.slot === 'n') return { ...p, n: '' };
+          if (p.kind === 'frac' && f.slot === 'd') return { ...p, d: '' };
+          return p;
+        });
+      }),
+    );
+    setFocusedSlot(slot);
+  };
+
+  const removeFracPart = (si: number, pi: number) => {
+    setCustomSteps((prev) =>
+      prev.map((step, i) => {
+        if (i !== si) return step;
+        const next = step.filter((_, j) => j !== pi);
+        // Collapse adjacent txt parts
+        const merged: CustomPart[] = [];
+        for (const p of next) {
+          const last = merged[merged.length - 1];
+          if (last && last.kind === 'txt' && p.kind === 'txt') {
+            merged[merged.length - 1] = { kind: 'txt', s: last.s + p.s };
+          } else {
+            merged.push(p);
+          }
+        }
+        if (merged.length === 0) merged.push({ kind: 'txt', s: '' });
+        return merged;
+      }),
+    );
+    setFocusedSlot(null);
+  };
+
+  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]', showClear = true) => (
+    <span key={slot} className="relative inline-flex group/slot">
+      <span
+        className={slotClasses(slot, text, minW)}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          setFocusedSlot(slot);
+          setFocusedInput(null);
+        }}
+      >
+        {text || '\u200b'}
+      </span>
+      {showClear && text && !isSubmitted && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            clearSlot(slot);
+          }}
+          className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover/slot:opacity-100 transition-opacity"
+          title="Clear"
+        >
+          <X className="h-2.5 w-2.5" />
+        </button>
+      )}
     </span>
   );
 
-  const renderFrac = (n: string, d: string, slotN: string, slotD: string) => (
-    <span key={`${slotN}|${slotD}`} className="inline-flex flex-col items-center mx-1 align-middle">
+  const renderFrac = (n: string, d: string, slotN: string, slotD: string, si: number, pi: number) => (
+    <span key={`${slotN}|${slotD}`} className="relative inline-flex flex-col items-center mx-1 align-middle group/frac">
       {renderTxt(n, slotN, 'min-w-[8rem]')}
       <span className="block w-full border-t border-foreground my-0.5" />
       {renderTxt(d, slotD, 'min-w-[8rem]')}
+      {!isSubmitted && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            removeFracPart(si, pi);
+          }}
+          className="absolute -top-2 -right-2 h-4 w-4 rounded-full bg-muted border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover/frac:opacity-100 transition-opacity"
+          title="Remove fraction"
+        >
+          <X className="h-2.5 w-2.5" />
+        </button>
+      )}
     </span>
   );
 

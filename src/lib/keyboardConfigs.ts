@@ -448,6 +448,13 @@ export const KEYBOARD_CONFIGS = {
     ['y', 'x', 'k', '∝', '=', '√', '²', '.', '/', '×'],
     ['(', ')', '+', '−', '÷', '½', '¼', '⌫', 'Clear'],
   ],
+
+  // Q19 (4024/11 Oct/Nov 2023) — Speed-time graph (area equation in T)
+  'pp_4024_on23_11_q19': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['T', '½', '(', ')', '+', '−', '×', '÷', '=', '.'],
+    ['m/s²', '/', ',', '⌫', 'Clear'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;

@@ -499,6 +499,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) R∩C∩S = 22 − 6 − 9 − 5 = 2', 'C only = 24 − 9 − 2 − 3 = 10', 'S only = 14 − 5 − 2 − 3 = 4', 'Outside = 40 − (6+9+5+2+10+3+4) = 1'],
     type: 'multi-part',
     parts: [
+      { label: 'R only', key: 'ronly', marks: 0 },
+      { label: 'R∩C only', key: 'rcOnly', marks: 0 },
+      { label: 'R∩S only', key: 'rsOnly', marks: 0 },
+      { label: 'C∩S only', key: 'csOnly', marks: 0 },
       { label: 'R∩C∩S (all three)', key: 'rcs', marks: 0 },
       { label: 'C only', key: 'conly', marks: 0 },
       { label: 'S only', key: 'sonly', marks: 0 },
@@ -506,7 +510,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(a) Venn complete', key: 'a', marks: 3 },
       { label: "(b) Set notation", key: 'b', marks: 1 }
     ],
-    answer: { rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'|G∩H∩F'|(G∩H)\\F|G and H not F" },
+    answer: { ronly: '6', rcOnly: '9', rsOnly: '5', csOnly: '3', rcs: '2', conly: '10', sonly: '4', outside: '1', a: 'done', b: "G ∩ H ∩ F'|G∩H∩F'|(G∩H)\\F|G and H not F" },
     markingCriteria: { a: 'B2 for Venn diagram with 6 or 7 correct values or B1 for Venn diagram with 4 or 5 correct values or for answer 2 in intersection.', b: "B1 for G ∩ H ∩ F' oe." }
   },
 

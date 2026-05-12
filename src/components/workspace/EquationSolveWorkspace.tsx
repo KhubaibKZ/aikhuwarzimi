@@ -579,7 +579,8 @@ export function EquationSolveWorkspace({
                   className="flex items-start gap-2 group"
                   onClick={() => {
                     if (!focusedSlot?.startsWith(`cs:${si}:`)) {
-                      setFocusedSlot(`cs:${si}:0:txt`);
+                      const initSlot = step[0]?.kind === 'frac' ? 'n' : 'txt';
+                      setFocusedSlot(`cs:${si}:0:${initSlot}`);
                       setFocusedInput(null);
                     }
                   }}

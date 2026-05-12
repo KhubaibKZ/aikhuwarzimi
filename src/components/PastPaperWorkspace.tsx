@@ -2488,7 +2488,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               {isPartCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> : 
                                isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
                                <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                              {part.label}
+                              <VecText value={part.label} />
                             </span>
                             <span className={cn(
                               "font-mono font-semibold text-xs",

@@ -437,9 +437,7 @@ export function EquationSolveWorkspace({
                   {elements?.map((subEl, j) => {
                     if (subEl.type === 'text')
                       return (
-                        <span key={j} className="font-mono text-sm">
-                          {subEl.value}
-                        </span>
+                        <VecText key={j} value={subEl.value} className="font-mono text-sm" />
                       );
                     if (subEl.type === 'box' && subEl.key)
                       return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;

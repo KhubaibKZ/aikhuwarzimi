@@ -462,6 +462,13 @@ export const KEYBOARD_CONFIGS = {
     ['a', 'b', 'c', '(', ')', '+', '−', '×', '÷', '='],
     ['²', '³', '√', '/', 'a/b', ',', '.', '⌫', 'Clear'],
   ],
+
+  // Q22 (4024/11 Oct/Nov 2023) — Functions (f(x), g(x), inverse, solve for p)
+  'pp_4024_on23_11_q22': [
+    ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    ['x', 'y', 'p', 'f', 'g', '(', ')', '+', '−', '='],
+    ['×', '÷', '/', 'a/b', '⁻¹', '²', ',', '.', '⌫', 'Clear'],
+  ],
 } as const;
 
 export type KeyboardConfigKey = keyof typeof KEYBOARD_CONFIGS;

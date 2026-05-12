@@ -47,7 +47,7 @@ export const FinalAnswerField = forwardRef<HTMLInputElement, FinalAnswerFieldPro
             <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
               {index + 1}
             </span>
-            {label}
+            <VecText value={label} />
           </span>
           <span className="text-xs text-muted-foreground">[{marks} mark{marks > 1 ? 's' : ''}]</span>
         </label>

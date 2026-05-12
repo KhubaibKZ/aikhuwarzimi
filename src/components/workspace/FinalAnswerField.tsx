@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { VecText } from '@/components/VecText';
 
 interface FinalAnswerFieldProps {
   partKey: string;

@@ -1918,7 +1918,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   </div>
                 </div>
                 <div className="pt-4 border-t border-border/40 space-y-2">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-foreground">
                     (b) Use set notation to describe the shaded subset in the Venn diagram below.
                   </p>
                   <VennDiagramGHF_2023ON />

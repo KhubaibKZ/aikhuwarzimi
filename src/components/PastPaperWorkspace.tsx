@@ -1896,39 +1896,31 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {/* Q18 - 3-set Venn diagram (interactive) */}
             {question.id === 'pp_4024_on23_11_q18' && (
               <div className="mt-4 space-y-6">
-                <VennDiagram3Set2023ON
-                  answers={answers}
-                  onAnswerChange={handleAnswerChange}
-                  feedback={feedback}
-                  isSubmitted={isSubmitted}
-                  correctAnswers={typeof question.answer === 'object' ? question.answer as Record<string, string> : undefined}
-                />
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={isSubmitted}
-                    onClick={() => {
-                      const correct = (typeof question.answer === 'object' ? question.answer : {}) as Record<string, string>;
-                      const keys = ['ronly','conly','sonly','rcOnly','rsOnly','csOnly','rcs','outside'];
-                      const next = { ...feedback };
-                      let right = 0;
-                      keys.forEach(k => {
-                        const v = (answers[k] || '').trim();
-                        if (!v) { next[k] = null; return; }
-                        const ok = v === String(correct[k] ?? '').trim();
-                        next[k] = ok ? 'correct' : 'incorrect';
-                        if (ok) right++;
-                      });
-                      setFeedback(next);
-                      toast({ title: 'Check Work', description: `${right}/${keys.length} regions correct.` });
-                    }}
-                  >
-                    Check Work
-                  </Button>
+                <div className="relative">
+                  <VennDiagram3Set2023ON
+                    answers={answers}
+                    onAnswerChange={handleAnswerChange}
+                    feedback={feedback}
+                    isSubmitted={isSubmitted}
+                    correctAnswers={typeof question.answer === 'object' ? question.answer as Record<string, string> : undefined}
+                  />
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCheckWorkForPart('a', '(a) Venn diagram')}
+                      disabled={isLoading || isSubmitted}
+                      className="shrink-0"
+                      title="Check Work"
+                    >
+                      {loadingPartKey === 'a' ? <span className="animate-pulse">...</span> : <BookOpen className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
-                <div className="pt-4 border-t border-border/40">
+                <div className="pt-4 border-t border-border/40 space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    (b) Use set notation to describe the shaded subset in the Venn diagram below.
+                  </p>
                   <VennDiagramGHF_2023ON />
                 </div>
               </div>

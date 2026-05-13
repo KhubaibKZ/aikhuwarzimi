@@ -102,7 +102,7 @@ export function FractionDivisionWorkspace({
     );
   };
 
-  const Frac = ({ nKey, dKey }: { nKey: string; dKey: string }) => (
+  const renderFrac = (nKey: string, dKey: string) => (
     <div className="inline-flex flex-col items-center gap-0.5">
       <Input ref={setRef(nKey)} value={answers[nKey] || ''} onChange={(e) => onAnswerChange(nKey, e.target.value)} onFocus={() => setFocusedInput(nKey)} disabled={isSubmitted} className={getBoxClass(nKey)} />
       <div className="w-12 h-px bg-foreground" />
@@ -125,9 +125,9 @@ export function FractionDivisionWorkspace({
       {showImproper && (
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <Frac nKey={s0_n1} dKey={s0_d1} />
+            {renderFrac(s0_n1, s0_d1)}
             <span className="text-lg font-mono">÷</span>
-            <Frac nKey={s0_n2} dKey={s0_d2} />
+            {renderFrac(s0_n2, s0_d2)}
             <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s0'), 'Convert to improper fractions')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
               {loadingStepKey === k('s0') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
             </Button>
@@ -140,11 +140,11 @@ export function FractionDivisionWorkspace({
       {/* Stage 1: Flip & multiply with result */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <Frac nKey={s1_n1} dKey={s1_d1} />
+          {renderFrac(s1_n1, s1_d1)}
           <span className="text-lg font-mono">×</span>
-          <Frac nKey={s1_n2} dKey={s1_d2} />
+          {renderFrac(s1_n2, s1_d2)}
           <span className="text-lg font-mono">=</span>
-          <Frac nKey={s1_rn} dKey={s1_rd} />
+          {renderFrac(s1_rn, s1_rd)}
           <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s1'), 'Multiply numerators and denominators')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
             {loadingStepKey === k('s1') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
           </Button>
@@ -171,7 +171,7 @@ export function FractionDivisionWorkspace({
               </div>
             </div>
             <span className="text-lg font-mono">=</span>
-            <Frac nKey={s2_fn} dKey={s2_fd} />
+            {renderFrac(s2_fn, s2_fd)}
             <Button variant="outline" size="sm" onClick={() => onCheckWork(k('s2'), 'Simplify the fraction')} disabled={isLoading || isSubmitted} className="shrink-0 h-7 w-7 p-0" title="Check this step">
               {loadingStepKey === k('s2') ? <span className="animate-pulse text-xs">...</span> : <BookOpen className="h-3.5 w-3.5" />}
             </Button>

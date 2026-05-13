@@ -102,7 +102,7 @@ export function FractionDivisionWorkspace({
     );
   };
 
-  const Frac = ({ nKey, dKey }: { nKey: string; dKey: string }) => (
+  const renderFrac = (nKey: string, dKey: string) => (
     <div className="inline-flex flex-col items-center gap-0.5">
       <Input ref={setRef(nKey)} value={answers[nKey] || ''} onChange={(e) => onAnswerChange(nKey, e.target.value)} onFocus={() => setFocusedInput(nKey)} disabled={isSubmitted} className={getBoxClass(nKey)} />
       <div className="w-12 h-px bg-foreground" />

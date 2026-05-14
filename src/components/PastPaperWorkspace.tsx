@@ -1044,9 +1044,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     }
     if (question.parts) {
       const eqParts = (question as any).equationSolveParts as string[] | undefined;
+      const fracParts = (question as any).fractionDivisionParts as string[] | undefined;
+      const correctAns = typeof question.answer === 'object' ? (question.answer as Record<string, string>) : undefined;
       return question.parts
         .filter(part => part.marks > 0)
         .every(part => {
+          // Fraction-division workspace: final answer lives in s2_fn/s2_fd or s1_rn/s1_rd
+          if (fracParts?.includes(part.key)) {
+            const hasSimplify = correctAns && (`${part.key}_s2_fn` in correctAns);
+            if (hasSimplify) {
+              return !!answers[`${part.key}_s2_fn`]?.trim() && !!answers[`${part.key}_s2_fd`]?.trim();
+            }
+            return !!answers[`${part.key}_s1_rn`]?.trim() && !!answers[`${part.key}_s1_rd`]?.trim();
+          }
           // If this part is rendered as an equation-solve workspace, check its stage boxes
           if (eqParts?.includes(part.key)) {
             const stagesMap = (question as any).equationStagesMap;

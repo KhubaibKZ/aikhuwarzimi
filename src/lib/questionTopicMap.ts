@@ -255,9 +255,9 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_w24_11_q21': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.9', subtopicTitle: 'Graphs in Practical Situations' },
   'pp_4024_w24_11_q22': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.12', subtopicTitle: 'Functions' },
   'pp_4024_w24_11_q23': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.10', subtopicTitle: 'Limits of Accuracy' },
-  'pp_4024_w24_11_q24': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_w24_11_q24': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
   'pp_4024_w24_11_q25': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.4', subtopicTitle: "Pythagoras' Theorem and Trigonometry in 3D" },
-  'pp_4024_w24_11_q26': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_w24_11_q26': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
 
   // =============================================
   // O LEVEL 4024 — Oct/Nov 2024 Paper 12

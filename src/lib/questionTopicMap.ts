@@ -657,7 +657,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on23_11_q21': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
   'pp_4024_on23_11_q22': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.12', subtopicTitle: 'Functions' },
   'pp_4024_on23_11_q23': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.2', subtopicTitle: 'Vectors' },
-  'pp_4024_on23_11_q24': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
+  'pp_4024_on23_11_q24': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
 
   // =============================================
   // 4024/12 Oct/Nov 2023

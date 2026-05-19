@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ZoomIn, ZoomOut, Move, RotateCcw } from 'lucide-react';
 
 // Q12 – Scale drawing for 4024/11 Oct/Nov 2023
@@ -6,7 +6,12 @@ import { Check, ZoomIn, ZoomOut, Move, RotateCcw } from 'lucide-react';
 type Arc = { cx: number; cy: number; r: number; from: 'A' | 'B' };
 const AB_CM = 8.8;
 
-export function ScaleDrawing2023ON() {
+export type ScaleDrawingScore = {
+  b: { marks: number; note: string };
+  c: { marks: number; note: string };
+};
+
+export function ScaleDrawing2023ON({ onScore }: { onScore?: (s: ScaleDrawingScore) => void } = {}) {
   const width = 520;
   const height = 360;
 

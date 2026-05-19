@@ -2259,7 +2259,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
               <StepWorkspace
-                steps={question.parts.filter(p => !(question.diagramParts || []).includes(p.key)).map(p => ({ ...p }))}
+                steps={question.parts.filter(p => !(question.diagramParts || []).includes(p.key) && !(p as any).diagramScored).map(p => ({ ...p }))}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}

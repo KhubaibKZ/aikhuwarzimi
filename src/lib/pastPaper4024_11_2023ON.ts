@@ -363,11 +363,8 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     primeFactorParts: { a: 36, b_ladder: 48 },
     equationSolveParts: ['b'],
     equationStages: [
-      { label: 'LCM (combine highest powers)', stepKey: 's_combine', elements: [
-        { type: 'text', value: 'LCM =' }, { type: 'box', key: 's_combine', width: 'w-64' }
-      ]},
       { label: 'LCM value', stepKey: 's3', elements: [
-        { type: 'text', value: '=' }, { type: 'box', key: 's3', width: 'w-20' }, { type: 'text', value: 'min' }
+        { type: 'text', value: 'LCM =' }, { type: 'box', key: 's3', width: 'w-20' }, { type: 'text', value: 'min' }
       ]},
       { label: 'Convert', stepKey: 's4', elements: [
         { type: 'text', value: '=' }, { type: 'box', key: 's4_a', width: 'w-12' }, { type: 'text', value: 'h' },
@@ -376,21 +373,20 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: 'Add to 09:30', stepKey: 's5', elements: [
         { type: 'text', value: '09:30 +' }, { type: 'box', key: 's5_a', width: 'w-12' }, { type: 'text', value: 'h' },
         { type: 'box', key: 's5_b', width: 'w-12' }, { type: 'text', value: 'min =' },
-        { type: 'box', key: 's5_c', width: 'w-20' }
+        { type: 'box', key: 's5_c_h', width: 'w-12' }, { type: 'text', value: ':' }, { type: 'box', key: 's5_c_m', width: 'w-12' }
       ]}
     ],
     parts: [
       { label: '(a) Prime factors of 36', key: 'a', marks: 2 },
-      { label: '(b) Next time', key: 'b', marks: 3 }
+      { label: '(b)', key: 'b', marks: 3 }
     ],
     answer: {
       a: '2² × 3²|2^2 × 3^2|2x2x3x3|2 × 2 × 3 × 3|2*2*3*3',
       b: '11:54|11 54|1154',
       b_ladder: '2⁴ × 3|2^4 × 3|2x2x2x2x3|2 × 2 × 2 × 2 × 3',
-      b_s_combine: '2⁴ × 3²|2^4 × 3^2|16 × 9|2×2×2×2×3×3',
       b_s3: '144',
       b_s4_a: '2', b_s4_b: '24',
-      b_s5_a: '2', b_s5_b: '24', b_s5_c: '11:54'
+      b_s5_a: '2', b_s5_b: '24', b_s5_c_h: '11', b_s5_c_m: '54'
     },
     markingCriteria: { a: 'B1 for 2, 2, 3, 3 not as product or M1 for any two stages correct in factor tree or ladder method. B1 for 2² × 3² in index form.', b: 'B2 for 144 or 2 h 24 m. M1 for 36 × 48 / 12 oe or for listing multiples of both to at least 144. A1 for 11:54.' }
   },

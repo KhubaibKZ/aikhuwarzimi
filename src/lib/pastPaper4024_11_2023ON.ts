@@ -307,32 +307,28 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   'pp_4024_on23_11_q12': {
     id: 'pp_4024_on23_11_q12', questionNumber: '12', title: 'Scale drawing and bearings',
     question: 'A scale drawing shows boats A and B. Scale is 1 : 20 000.\n(a) Find the actual distance of A from B in kilometres.\n(b) Using compasses and a straight edge only, construct the locus of points that are equidistant from A and B. [2]\n(c) A ship, S, is equidistant from A and B. S is on a bearing of 105° from A. Mark and label the position of S on the scale drawing. [1]',
-    marks: 6,
+    marks: 5,
     hints: [
       '(a) Measure AB on the diagram (≈ 8.8 cm), then × 20 000 ÷ 100 000 = 1.76 km',
-      '(b) The locus of points equidistant from A and B is the perpendicular bisector of AB. Open compasses to more than ½AB, draw arcs from A and from B on both sides, then join the two intersection points with a straight edge.',
-      '(c) Bearings are measured clockwise from North. From A, draw a line on bearing 105°. S is where this line meets the perpendicular bisector of AB.',
-      '(c) Name of the locus in (b): perpendicular bisector of AB.'
+      '(b) The locus of points equidistant from A and B is the perpendicular bisector of AB. Open compasses to more than ½AB, draw arcs from A and from B on both sides, then join the two intersection points with a straight edge. (Done on the diagram — checked from the construction.)',
+      '(c) Bearings are measured clockwise from North. From A, draw a line on bearing 105°. S is where this line meets the perpendicular bisector of AB. (Marked on the diagram.)'
     ],
     type: 'multi-part',
     parts: [
       { label: '(a) AB on map (cm)', key: 'map', marks: 0 },
-      { label: '(a) AB actual distance (km)', key: 'a', marks: 2 },
-      { label: '(b) Name of the locus constructed', key: 'b', marks: 2 },
-      { label: '(c) Distance AS on the scale drawing (cm)', key: 'c', marks: 1 }
+      { label: '(a) AB actual distance (km)', key: 'a', marks: 2 }
     ],
     answer: {
       map: '8.8|8.9|9.0|9.1|9.2',
-      a: '1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84',
-      b: 'perpendicular bisector of AB|perpendicular bisector|Perpendicular bisector|Perpendicular bisector of AB',
-      c: '4.4|4.5|4.6|4.7|4.8'
+      a: '1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84'
     },
     markingCriteria: {
       a: 'B1 for line measured as 8.8 to 9.2 cm or M1 for their distance in cm × 0.2. SC1 for 176000 to 184000. A1 for 1.76 to 1.84.',
-      b: 'B1 correct arcs from A and from B with equal radius greater than ½AB. B1 perpendicular bisector drawn through the arc intersections.',
-      c: 'B1 S marked on the perpendicular bisector along the 105° bearing from A (≈ 4.5 cm from A on the drawing).'
+      b: 'B1 acceptable bisector of AB with correct arcs. (B1 for acceptable bisector with no/incorrect arcs.) — Checked on the diagram.',
+      c: 'B1 S marked on a bearing of 105° from A and on their bisector (dependent on their attempt at bisector crossing AB). — Checked on the diagram.'
     }
   },
+
 
   // ========== Question 13 ==========
   'pp_4024_on23_11_q13': {

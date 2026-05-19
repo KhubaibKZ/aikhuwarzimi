@@ -422,6 +422,16 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     if (question.parts) {
       question.parts.forEach(part => {
+        // Diagram-scored parts: handled after the loop using diagramScores state
+        if ((part as any).diagramScored) {
+          const ds = diagramScores[part.key];
+          const earned = ds?.marks ?? 0;
+          marksEarned[part.key] = earned;
+          if (ds?.note) markingNotes[part.key] = ds.note;
+          newFeedback[part.key] = earned === part.marks ? 'correct' : 'incorrect';
+          if (earned < part.marks) allCorrect = false;
+          return;
+        }
         const isStructuredPart = eqParts?.includes(part.key) || fractionParts?.includes(part.key);
 
         if (isStructuredPart) {

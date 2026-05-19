@@ -452,7 +452,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     ],
     answer: {
       a: '71', b: '142', c: '71',
-      a_s1_d: '71', a_s2: '71',
+      a_s1_d: '71|180|142', a_s2: '71',
       b_s1_d: '142', b_s2: '142',
       c_s1_n: '142', c_s1_d: '2', c_s2: '71'
     },

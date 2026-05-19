@@ -101,6 +101,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [feedback, setFeedback] = useState<Record<string, 'correct' | 'incorrect' | null>>({});
   const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
   const [storedMarkingNotes, setStoredMarkingNotes] = useState<Record<string, string>>({});
+  const [diagramScores, setDiagramScores] = useState<Record<string, { marks: number; note: string }>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
@@ -421,6 +422,16 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
     if (question.parts) {
       question.parts.forEach(part => {
+        // Diagram-scored parts: handled after the loop using diagramScores state
+        if ((part as any).diagramScored) {
+          const ds = diagramScores[part.key];
+          const earned = ds?.marks ?? 0;
+          marksEarned[part.key] = earned;
+          if (ds?.note) markingNotes[part.key] = ds.note;
+          newFeedback[part.key] = earned === part.marks ? 'correct' : 'incorrect';
+          if (earned < part.marks) allCorrect = false;
+          return;
+        }
         const isStructuredPart = eqParts?.includes(part.key) || fractionParts?.includes(part.key);
 
         if (isStructuredPart) {
@@ -1049,6 +1060,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       return question.parts
         .filter(part => part.marks > 0)
         .every(part => {
+          // Diagram-scored parts have no text inputs to fill — completion is implicit
+          if ((part as any).diagramScored) return true;
           // Fraction-division workspace: final answer lives in s2_fn/s2_fd or s1_rn/s1_rd
           if (fracParts?.includes(part.key)) {
             const hasSimplify = correctAns && (`${part.key}_s2_fn` in correctAns);
@@ -1852,7 +1865,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {/* Q12 - Scale drawing & bearings */}
             {question.id === 'pp_4024_on23_11_q12' && (
               <div className="mt-4">
-                <ScaleDrawing2023ON />
+                <ScaleDrawing2023ON onScore={(s) => setDiagramScores({ b: s.b, c: s.c })} />
               </div>
             )}
             
@@ -2246,7 +2259,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */
               <StepWorkspace
-                steps={question.parts.filter(p => !(question.diagramParts || []).includes(p.key)).map(p => ({ ...p }))}
+                steps={question.parts.filter(p => !(question.diagramParts || []).includes(p.key) && !(p as any).diagramScored).map(p => ({ ...p }))}
                 answers={answers}
                 feedback={feedback}
                 onAnswerChange={handleAnswerChange}

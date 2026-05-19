@@ -316,8 +316,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     parts: [
       { label: '(a) AB on map (cm)', key: 'map', marks: 0 },
-      { label: '(a) AB actual distance (km)', key: 'a', marks: 2 }
+      { label: '(a) AB actual distance (km)', key: 'a', marks: 2 },
+      { label: '(b) Perpendicular bisector of AB (on diagram)', key: 'b', marks: 2, diagramScored: true } as any,
+      { label: '(c) Mark S on bearing 105° from A (on diagram)', key: 'c', marks: 1, diagramScored: true } as any
     ],
+
     answer: {
       map: '8.8|8.9|9.0|9.1|9.2',
       a: '1.76|1.77|1.78|1.79|1.80|1.81|1.82|1.83|1.84'

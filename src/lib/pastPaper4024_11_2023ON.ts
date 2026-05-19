@@ -396,7 +396,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_11_q15', questionNumber: '15', title: 'Circle theorems with tangents',
     question: 'B, C and D are on a circle, centre O. AB and AC are tangents. Angle BAC = 38°.\n(a) Find angle ABC.\n(b) Find angle BOC.\n(c) Find angle BDC.',
     marks: 4,
-    hints: ['(a) Tangent ⊥ radius: angle ABO = 90°; triangle ABO → angle BAO = 19°; angle ABC = 90 − 19 = 71', '(b) 360 − 38 − 90 − 90 = 142', '(c) Angle at centre = 2 × angle at circumference'],
+    hints: ['(a) Method 1 — Tangent ⊥ radius: angle ABO = 90°; triangle ABO → angle BAO = 19°; angle ABC = 90 − 19 = 71. Method 2 — Isosceles triangle ABC (AB = AC, two tangents from a point): angle ABC = angle ACB; 38 + x + x = 180, 2x = 142, x = 71.', '(b) 360 − 38 − 90 − 90 = 142', '(c) Angle at centre = 2 × angle at circumference'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b', 'c'],
     structuredExtraStepMap: {

@@ -1853,7 +1853,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {/* Q12 - Scale drawing & bearings */}
             {question.id === 'pp_4024_on23_11_q12' && (
               <div className="mt-4">
-                <ScaleDrawing2023ON />
+                <ScaleDrawing2023ON onScore={(s) => setDiagramScores({ b: s.b, c: s.c })} />
               </div>
             )}
             

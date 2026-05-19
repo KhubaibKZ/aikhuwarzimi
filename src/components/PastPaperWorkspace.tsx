@@ -570,6 +570,46 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       });
 
+      // === Q15 (4024/11 ON 2023) part (c) follow-through: B1 ft for their (b) ÷ 2 ===
+      if (question.id === 'pp_4024_on23_11_q15') {
+        const cPart = question.parts.find(p => p.key === 'c');
+        if (cPart && (marksEarned['c'] ?? 0) < cPart.marks) {
+          // Pull the user's part (b) final answer — prefer b_s2, fallback to b_s1_d
+          const bAnsStr = (currentAnswers['b_s2'] || currentAnswers['b_s1_d'] || '').trim();
+          const bAns = parseFloat(normalizeAnswer(bAnsStr));
+          // Pull the user's part (c) final answer (s2) or numerator (s1_n) / explicit fraction
+          const cFinalStr = (currentAnswers['c_s2'] || '').trim();
+          const cFinal = parseFloat(normalizeAnswer(cFinalStr));
+          const cNumStr = (currentAnswers['c_s1_n'] || '').trim();
+          const cDenStr = (currentAnswers['c_s1_d'] || '').trim();
+          const cNum = parseFloat(normalizeAnswer(cNumStr));
+          const cDen = parseFloat(normalizeAnswer(cDenStr));
+
+          let ftCorrect = false;
+          if (!isNaN(bAns) && !isNaN(cFinal) && Math.abs(cFinal - bAns / 2) < 1e-6) {
+            ftCorrect = true;
+          }
+          // Also accept the fraction stage: their (b) / 2
+          if (!ftCorrect && !isNaN(bAns) && !isNaN(cNum) && !isNaN(cDen) && cDen !== 0
+              && Math.abs(cNum - bAns) < 1e-6 && Math.abs(cDen - 2) < 1e-6 && !isNaN(cFinal)
+              && Math.abs(cFinal - bAns / 2) < 1e-6) {
+            ftCorrect = true;
+          }
+
+          if (ftCorrect) {
+            marksEarned['c'] = cPart.marks;
+            newFeedback['c'] = 'correct';
+            if (cFinalStr) newFeedback['c_s2'] = 'correct';
+            // Mark FT note only if their (b) wasn't the exact correct 142
+            if (Math.abs(bAns - 142) > 1e-6) {
+              markingNotes['c'] = `B1 follow-through awarded: your answer equals your part (b) ÷ 2 (${bAns} ÷ 2 = ${bAns / 2}).`;
+            }
+            // Recompute allCorrect
+            allCorrect = question.parts.every(p => (marksEarned[p.key] ?? 0) >= p.marks);
+          }
+        }
+      }
+
       // === Post-pass: Composite scoring for ordering/grouped questions ===
       // For questions with helper parts (marks=0) that feed into a scored part,
       // count how many helpers are correct and award partial marks on the scored part

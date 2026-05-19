@@ -119,7 +119,37 @@ export function ScaleDrawing2023ON({ onScore }: { onScore?: (s: ScaleDrawingScor
     else setAngleCheck({ ok: false, msg: `Bearing should be 105° at A. You set ${bearingNum}°.` });
   };
 
+  // ----- Diagram-derived marks for parts (b) and (c) -----
+  const arcA = arcs.find(a => a.from === 'A');
+  const arcB = arcs.find(a => a.from === 'B');
+  const sameRadius = !!arcA && !!arcB && Math.abs(arcA.r - arcB.r) <= 1;
+  const radiusOk = !!arcA && arcA.r > ABlen / 2;
+  const bScore: { marks: number; note: string } = (() => {
+    if (showBisector && intersections && sameRadius && radiusOk) {
+      return { marks: 2, note: 'B2 — acceptable bisector of AB with correct arcs.' };
+    }
+    if (showBisector && intersections) {
+      return { marks: 1, note: 'B1 — acceptable bisector but arcs missing/incorrect (different radii or radius ≤ ½ AB).' };
+    }
+    return { marks: 0, note: 'Construct the perpendicular bisector of AB on the diagram.' };
+  })();
+  const bearingOk = showBearingLine && bearing !== '' && protractorAt === 'A' && Math.abs(bearingNum - 105) <= 2;
+  const cScore: { marks: number; note: string } = (() => {
+    if (bearingOk && bScore.marks >= 1) {
+      return { marks: 1, note: 'B1 — S marked on a bearing of 105° from A and on their bisector (dependent on bisector crossing AB).' };
+    }
+    if (bearingOk && bScore.marks === 0) {
+      return { marks: 0, note: 'Bearing 105° drawn, but dependent on a bisector crossing AB — construct the bisector first.' };
+    }
+    return { marks: 0, note: 'Place the protractor at A, set bearing 105°, and mark S on the bisector.' };
+  })();
+
+  useEffect(() => {
+    onScore?.({ b: bScore, c: cScore });
+  }, [bScore.marks, cScore.marks, onScore]);
+
   // Working steps with fraction support
+
   type Step = { type: 'text'; value: string } | { type: 'frac'; num: string; den: string };
   const [steps, setSteps] = useState<Step[]>([{ type: 'text', value: '' }]);
   const [focused, setFocused] = useState<{ i: number; field: 'value' | 'num' | 'den' }>({ i: 0, field: 'value' });

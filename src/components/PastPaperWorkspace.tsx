@@ -1060,6 +1060,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       return question.parts
         .filter(part => part.marks > 0)
         .every(part => {
+          // Diagram-scored parts have no text inputs to fill — completion is implicit
+          if ((part as any).diagramScored) return true;
           // Fraction-division workspace: final answer lives in s2_fn/s2_fd or s1_rn/s1_rd
           if (fracParts?.includes(part.key)) {
             const hasSimplify = correctAns && (`${part.key}_s2_fn` in correctAns);

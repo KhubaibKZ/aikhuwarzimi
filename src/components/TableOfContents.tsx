@@ -28,13 +28,31 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onPaperOpen, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
-  const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
-  const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
-  const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [expandedYear, setExpandedYear] = useState<string | null>(null);
+  const navKey = `toc-nav:${courseId}:${studentMode ? 'student' : 'general'}`;
+  const initialNav = (() => {
+    try {
+      const raw = sessionStorage.getItem(navKey);
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  })();
+  const [expandedTopic, setExpandedTopic] = useState<number | null>(initialNav.topic ?? null);
+  const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(initialNav.subtopic ?? null);
+  const [expandedPaper, setExpandedPaper] = useState<string | null>(initialNav.paper ?? null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(initialNav.category ?? null);
+  const [expandedYear, setExpandedYear] = useState<string | null>(initialNav.year ?? null);
   const [resettingPaper, setResettingPaper] = useState<string | null>(null);
-  const [expandedSession, setExpandedSession] = useState<string | null>(null);
+  const [expandedSession, setExpandedSession] = useState<string | null>(initialNav.session ?? null);
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers'>(initialNav.tab ?? 'syllabus');
+
+  // Persist nav state so returning from a paper restores the same view
+  if (typeof window !== 'undefined') {
+    try {
+      sessionStorage.setItem(navKey, JSON.stringify({
+        topic: expandedTopic, subtopic: expandedSubtopic, paper: expandedPaper,
+        category: expandedCategory, year: expandedYear, session: expandedSession, tab: activeTab,
+      }));
+    } catch {}
+  }
   const { isCompleted } = useProgress();
   const { user } = useAuth();
   const { isAdmin } = useAdminRole();
@@ -95,7 +113,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   };
 
   return (
-    <Tabs defaultValue="syllabus" className="w-full" onValueChange={(v) => onTabChange?.(v as 'syllabus' | 'pastpapers')}>
+    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { const t = v as 'syllabus' | 'pastpapers'; setActiveTab(t); onTabChange?.(t); }}>
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="syllabus" className="flex items-center gap-2">
           <BookOpen className="h-4 w-4" />

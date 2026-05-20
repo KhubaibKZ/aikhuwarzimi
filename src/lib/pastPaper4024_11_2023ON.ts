@@ -532,7 +532,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 19 ==========
   'pp_4024_on23_11_q19': {
     id: 'pp_4024_on23_11_q19', questionNumber: '19', title: 'Speed-time graph',
-    question: '(a) Calculate the acceleration of the car in the first 10 seconds.\n(b) The car travels 700 m in T seconds. Find the value of T.',
+    question: '(a) Calculate the acceleration of the car in the first 10 seconds of the journey.\n(b) The car travels 700 m in T seconds. Find the value of T.',
     marks: 4,
     hints: ['(a) Acceleration = change in speed / time = 20/10', '(b) Area under graph = distance = 700'],
     type: 'multi-part',

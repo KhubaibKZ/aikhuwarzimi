@@ -213,13 +213,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .trim();
   };
 
+  const isPureNumber = (s: string): boolean => /^-?\d+(\.\d+)?$/.test(s);
   const isNumericallyEqual = (a: string, b: string): boolean => {
+    if (!isPureNumber(a) || !isPureNumber(b)) return false;
     const numA = parseFloat(a);
     const numB = parseFloat(b);
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return Math.abs(numA - numB) < 1e-9;
-    }
-    return false;
+    return Math.abs(numA - numB) < 1e-9;
   };
 
   const evaluateFraction = (s: string): number | null => {
@@ -261,8 +260,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     const cFrac = evaluateFraction(c);
     if (uFrac !== null && cFrac !== null && Math.abs(uFrac - cFrac) < 1e-9) return true;
     // Mixed: one is fraction, other is decimal
-    if (uFrac !== null && !isNaN(parseFloat(c)) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
-    if (cFrac !== null && !isNaN(parseFloat(u)) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
+    if (uFrac !== null && isPureNumber(c) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
+    if (cFrac !== null && isPureNumber(u) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
     return false;
   };
 
@@ -512,6 +511,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               }
             } else {
               marksEarned[part.key] = fractionCorrect ? part.marks : 0;
+            }
+
+            // === Q21(c) override: count B1 per criterion (num factorisation, den factorisation, simplified) ===
+            if (question.id === 'pp_4024_on23_11_q21' && part.key === 'c') {
+              const numOk = newFeedback['c_s1_num'] === 'correct';
+              const denOk = newFeedback['c_s1_den'] === 'correct';
+              const finalOk = newFeedback['c_final_num'] === 'correct' && newFeedback['c_final_den'] === 'correct';
+              marksEarned['c'] = (numOk ? 1 : 0) + (denOk ? 1 : 0) + (finalOk ? 1 : 0);
             }
 
             if (!markingNotes[part.key] && marksEarned[part.key] > 0 && marksEarned[part.key] < part.marks) {

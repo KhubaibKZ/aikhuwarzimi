@@ -2,15 +2,8 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   CheckCircle2,
-  FileText,
-  BarChart3,
-  Clock,
-  Target,
-  Brain,
-  Award,
   RotateCcw,
   ArrowLeft,
   Lock,

@@ -25,13 +25,6 @@ interface PaperOverviewProps {
   enforceAssignments?: boolean;
 }
 
-function fmtTime(secs: number) {
-  if (!secs || secs < 1) return '—';
-  if (secs < 60) return `${Math.round(secs)}s`;
-  const m = Math.floor(secs / 60);
-  const s = Math.round(secs % 60);
-  return `${m}m ${s}s`;
-}
 
 export function PaperOverview({
   paperId,

@@ -207,7 +207,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .replace(/\s+/g, '')
       .replace(/[²³]/g, (match) => match === '²' ? '^2' : '^3')
       .replace(/×/g, '*')
+      .replace(/·/g, '*')
       .replace(/÷/g, '/')
+      .replace(/[−–—]/g, '-')
       .trim();
   };
 

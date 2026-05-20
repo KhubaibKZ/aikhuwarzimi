@@ -685,11 +685,14 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       { label: '(c) Simplified', key: 'c', marks: 3 }
     ],
     answer: {
-      a: '3(2a-3)', b: '(2b+5)(2b-5)', c: '2c/(2c+3)',
-      c_s1_num: '2c(c-4)', c_s1_den: '(2c+3)(c-4)',
+      a: '3(2a-3)|(2a-3)3|(2a-3)*3|3*(2a-3)',
+      b: '(2b+5)(2b-5)|(2b-5)(2b+5)|(2b+5)*(2b-5)|(2b-5)*(2b+5)',
+      c: '2c/(2c+3)',
+      c_s1_num: '2c(c-4)|(c-4)2c|2c*(c-4)|(c-4)*2c',
+      c_s1_den: '(2c+3)(c-4)|(c-4)(2c+3)|(2c+3)*(c-4)|(c-4)*(2c+3)',
       c_final_num: '2c', c_final_den: '2c+3'
     },
-    markingCriteria: { a: 'B1 for 3(2a − 3)', b: 'B1 for (2b + 5)(2b − 5)', c: 'B1 for numerator correctly factorised as 2c(c − 4). B1 for denominator correctly factorised as (2c + 3)(c − 4). B1 for simplified 2c/(2c + 3).' }
+    markingCriteria: { a: 'B1 for 3(2a − 3)', b: 'B1 for (2b + 5)(2b − 5) — order of factors does not matter.', c: '3 marks total: B1 for numerator factorised as 2c(c − 4) seen (any order, e.g. (c − 4)·2c). B1 for denominator factorised as (2c + 3)(c − 4) seen (any order). B1 for simplified final answer 2c/(2c + 3). Accept equivalent forms throughout.' }
   },
 
   // ========== Question 22 ==========

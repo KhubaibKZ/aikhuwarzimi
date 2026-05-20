@@ -81,8 +81,6 @@ export function PaperOverview({
   const quota = studentMode ? getPaperQuota(paperId) : null;
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
-  const quota = studentMode ? getPaperQuota(paperId) : null;
-  const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
   const handleReset = async () => {
     if (!user) {

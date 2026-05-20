@@ -990,6 +990,50 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       } // end else (has sub-keys)
     }
 
+    // ===== Q18 (4024/11 ON 2023) — Venn diagram part (a) special check =====
+    if (question.id === 'pp_4024_on23_11_q18' && partKey === 'a' && typeof question.answer === 'object') {
+      const regionKeys = ['ronly', 'conly', 'sonly', 'rcOnly', 'rsOnly', 'csOnly', 'rcs', 'outside'];
+      const correctMap = question.answer as Record<string, string>;
+      const newFeedback = { ...feedback };
+      let correctCount = 0;
+      let hasEmpty = false;
+      for (const k of regionKeys) {
+        const u = answers[k] || '';
+        if (!normalizeAnswer(u)) hasEmpty = true;
+        const ok = answersMatch(u, correctMap[k] || '');
+        newFeedback[k] = u ? (ok ? 'correct' : 'incorrect') : null;
+        if (ok) correctCount++;
+      }
+      if (hasEmpty) {
+        setAiResponse({ type: 'guidance', content: 'Fill in every region of the Venn diagram before checking.', partKey });
+        return;
+      }
+      const rcsCorrect = answersMatch(answers['rcs'] || '', correctMap['rcs'] || '');
+      let earned = 0;
+      let msg = '';
+      if (correctCount === 8) {
+        earned = 3; msg = 'Excellent — all 8 regions are correct (3 marks).';
+        newFeedback['a'] = 'correct';
+      } else if (correctCount >= 6) {
+        earned = 2; msg = `B2 awarded: ${correctCount} of 8 regions correct.`;
+        newFeedback['a'] = 'incorrect';
+      } else if (correctCount >= 4) {
+        earned = 1; msg = `B1 awarded: ${correctCount} of 8 regions correct.`;
+        newFeedback['a'] = 'incorrect';
+      } else if (rcsCorrect) {
+        earned = 1; msg = 'B1 awarded for the correct value 2 in the R∩C∩S intersection.';
+        newFeedback['a'] = 'incorrect';
+      } else {
+        msg = 'No marks yet — carefully recount the members in each region.';
+        newFeedback['a'] = 'incorrect';
+      }
+      setFeedback(newFeedback);
+      setIsChecked(true);
+      setAttemptCount(prev => ({ ...prev, a: (prev.a || 0) + 1 }));
+      setAiResponse({ type: 'guidance', content: `${msg} (Provisional — final marks confirmed on submit.)`, partKey });
+      return;
+    }
+
     // ===== Custom student-built step (My working) =====
     // partKey looks like `${rootPart}_custom_${i}` — there is no expected answer for it,
     // so we send rich context (original question, ALL reference answers, marking criteria,

@@ -503,7 +503,7 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
       answer_k: '0.5|1/2',
       answer_final_y: '2.5',
     },
-    markingCriteria: { answer: 'B1 for k = ½ if y = k√x used. Or M1 for 2 × √25 = y × √16 oe. A1 for 2.5.' }
+    markingCriteria: { answer: 'B1 for k = ½ (enter in the k box). B1 for the final answer y = 2.5. Follow-through: if k is wrong, the final answer mark is still awarded when y equals your k × √25.' }
   },
 
   // ========== Question 18 ==========

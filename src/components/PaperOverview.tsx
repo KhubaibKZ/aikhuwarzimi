@@ -2,15 +2,8 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   CheckCircle2,
-  FileText,
-  BarChart3,
-  Clock,
-  Target,
-  Brain,
-  Award,
   RotateCcw,
   ArrowLeft,
   Lock,
@@ -32,13 +25,6 @@ interface PaperOverviewProps {
   enforceAssignments?: boolean;
 }
 
-function fmtTime(secs: number) {
-  if (!secs || secs < 1) return '—';
-  if (secs < 60) return `${Math.round(secs)}s`;
-  const m = Math.floor(secs / 60);
-  const s = Math.round(secs % 60);
-  return `${m}m ${s}s`;
-}
 
 export function PaperOverview({
   paperId,
@@ -53,7 +39,6 @@ export function PaperOverview({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [openQid, setOpenQid] = useState<string | null>(null);
-  const [tab, setTab] = useState<'paper' | 'learning'>('paper');
   const [resetting, setResetting] = useState(false);
 
   if (!paper) {
@@ -86,17 +71,9 @@ export function PaperOverview({
       }, 0),
     [paperRows]
   );
-  const marksAvailableSolved = paperRows.reduce(
-    (sum: number, r: any) => sum + sectionMarks(r.question_id),
-    0
-  );
-  const accuracyPct = marksAvailableSolved > 0 ? Math.round((marksObtained / marksAvailableSolved) * 100) : 0;
-  const totalTime = paperRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
-  const totalAi = paperRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
-  const aiIndependence = Math.max(0, Math.round(100 - totalAi * 5));
-
   const quota = studentMode ? getPaperQuota(paperId) : null;
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
+
 
   const handleReset = async () => {
     if (!user) {
@@ -122,10 +99,6 @@ export function PaperOverview({
     }
   };
 
-  const sortedRecords = useMemo(
-    () => [...paperRows].sort((a: any, b: any) => a.submitted_at.localeCompare(b.submitted_at)),
-    [paperRows]
-  );
 
   return (
     <div>
@@ -148,20 +121,7 @@ export function PaperOverview({
         )}
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as 'paper' | 'learning')} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="paper" className="gap-2">
-            <FileText className="h-4 w-4" />
-            Paper
-          </TabsTrigger>
-          <TabsTrigger value="learning" className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Learning Analytics
-          </TabsTrigger>
-        </TabsList>
-
-        {/* ── Paper ── */}
-        <TabsContent value="paper" className="mt-6">
+      <div>
           <Card className="mb-6">
             <CardContent className="pt-6 pb-5">
               <div className="flex items-start justify-between mb-3 gap-4">
@@ -242,102 +202,7 @@ export function PaperOverview({
               );
             })}
           </div>
-        </TabsContent>
-
-        {/* ── Learning analytics ── */}
-        <TabsContent value="learning" className="mt-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-            <StatCard
-              icon={<Target className="h-5 w-5" />}
-              label="Progress"
-              value={`${completionPct}%`}
-              sub={`${solvedQs}/${totalQs} questions`}
-            />
-            <StatCard
-              icon={<Award className="h-5 w-5" />}
-              label="Marks"
-              value={`${Math.round(marksObtained)}/${paper.totalMarks}`}
-              sub={`${accuracyPct}% accuracy on solved`}
-            />
-            <StatCard
-              icon={<Brain className="h-5 w-5" />}
-              label="AI Independence"
-              value={`${aiIndependence}%`}
-              sub={`${totalAi} AI hints used`}
-            />
-            <StatCard
-              icon={<Clock className="h-5 w-5" />}
-              label="Time on Paper"
-              value={fmtTime(totalTime)}
-              sub={`avg ${solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question`}
-            />
-          </div>
-
-          <Card>
-            <CardContent className="p-0">
-              <div className="px-4 py-3 border-b border-border">
-                <h3 className="text-sm font-bold text-foreground">Question breakdown</h3>
-                <p className="text-xs text-muted-foreground">Live results for this paper</p>
-              </div>
-              {sortedRecords.length === 0 ? (
-                <div className="p-8 text-center text-sm text-muted-foreground">
-                  No questions solved yet. Open the <strong>Paper</strong> tab to start.
-                </div>
-              ) : (
-                <div className="divide-y divide-border">
-                  <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/30">
-                    <div className="col-span-4">Question</div>
-                    <div className="col-span-2 text-center">Marks</div>
-                    <div className="col-span-2 text-center">Accuracy</div>
-                    <div className="col-span-2 text-center">AI used</div>
-                    <div className="col-span-2 text-right">Time</div>
-                  </div>
-                  {sortedRecords.map((rec: any) => {
-                    const q = getPastPaperQuestion(rec.question_id);
-                    const sMarks = sectionMarks(rec.question_id);
-                    const earned = Math.round((Number(rec.accuracy_score) / 100) * sMarks);
-                    const acc = Math.round(Number(rec.accuracy_score));
-                    return (
-                      <div
-                        key={rec.question_id}
-                        className="grid grid-cols-12 gap-2 px-4 py-2.5 text-xs items-center"
-                      >
-                        <div className="col-span-4">
-                          <p className="font-semibold text-foreground">Q{q?.questionNumber}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{q?.title}</p>
-                        </div>
-                        <div className="col-span-2 text-center font-semibold text-foreground">
-                          {earned}/{sMarks}
-                        </div>
-                        <div className="col-span-2 text-center">
-                          <span
-                            className={cn(
-                              'px-1.5 py-0.5 rounded text-[10px] font-semibold',
-                              acc >= 80
-                                ? 'bg-success/20 text-success'
-                                : acc >= 50
-                                  ? 'bg-warning/20 text-warning'
-                                  : 'bg-destructive/20 text-destructive'
-                            )}
-                          >
-                            {acc}%
-                          </span>
-                        </div>
-                        <div className="col-span-2 text-center text-muted-foreground">
-                          {rec.ai_usage_count || 0}
-                        </div>
-                        <div className="col-span-2 text-right text-muted-foreground">
-                          {fmtTime(rec.time_spent_seconds || 0)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
 
       {currentQuestion && (
         <PastPaperWorkspace
@@ -351,27 +216,3 @@ export function PaperOverview({
   );
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="pt-5 pb-4">
-        <div className="flex items-center gap-2 text-muted-foreground mb-2">
-          {icon}
-          <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
-        </div>
-        <p className="text-2xl font-bold text-foreground">{value}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>
-      </CardContent>
-    </Card>
-  );
-}

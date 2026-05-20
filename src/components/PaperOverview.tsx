@@ -74,20 +74,22 @@ export function PaperOverview({
   const solvedQs = paperRows.length;
   const completionPct = totalQs ? Math.round((solvedQs / totalQs) * 100) : 0;
 
-  // marks (sum of section marks × accuracy)
+  const sectionMarks = (questionId: string) =>
+    getPastPaperQuestion(questionId)?.marks || 0;
+
+  // marks (sum of question marks × accuracy)
   const marksObtained = useMemo(
     () =>
       paperRows.reduce((sum: number, r: any) => {
-        const section = paper.sections.find((s) => s.questionId === r.question_id);
-        const m = section?.marks || 0;
+        const m = sectionMarks(r.question_id);
         return sum + (Number(r.accuracy_score) / 100) * m;
       }, 0),
-    [paperRows, paper]
+    [paperRows]
   );
-  const marksAvailableSolved = paperRows.reduce((sum: number, r: any) => {
-    const section = paper.sections.find((s) => s.questionId === r.question_id);
-    return sum + (section?.marks || 0);
-  }, 0);
+  const marksAvailableSolved = paperRows.reduce(
+    (sum: number, r: any) => sum + sectionMarks(r.question_id),
+    0
+  );
   const accuracyPct = marksAvailableSolved > 0 ? Math.round((marksObtained / marksAvailableSolved) * 100) : 0;
   const totalTime = paperRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
   const totalAi = paperRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
@@ -223,11 +225,14 @@ export function PaperOverview({
                     ) : null}
                   </div>
                   <p className="text-[11px] text-muted-foreground line-clamp-2 min-h-[28px]">{qSub}</p>
-                  {done && rec && (
-                    <p className="text-[10px] mt-2 font-semibold text-success">
-                      {Math.round((Number(rec.accuracy_score) / 100) * (section.marks || 0))}/{section.marks} marks
-                    </p>
-                  )}
+                  {done && rec && (() => {
+                    const m = sectionMarks(section.questionId);
+                    return (
+                      <p className="text-[10px] mt-2 font-semibold text-success">
+                        {Math.round((Number(rec.accuracy_score) / 100) * m)}/{m} marks
+                      </p>
+                    );
+                  })()}
                   {sectionLocked && (
                     <p className="text-[10px] mt-2 italic text-muted-foreground">
                       {section.lockedReason || 'Locked'}
@@ -289,8 +294,7 @@ export function PaperOverview({
                   </div>
                   {sortedRecords.map((rec: any) => {
                     const q = getPastPaperQuestion(rec.question_id);
-                    const section = paper.sections.find((s) => s.questionId === rec.question_id);
-                    const sMarks = section?.marks || 0;
+                    const sMarks = sectionMarks(rec.question_id);
                     const earned = Math.round((Number(rec.accuracy_score) / 100) * sMarks);
                     const acc = Math.round(Number(rec.accuracy_score));
                     return (

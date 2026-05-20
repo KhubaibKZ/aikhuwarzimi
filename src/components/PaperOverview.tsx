@@ -46,7 +46,6 @@ export function PaperOverview({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [openQid, setOpenQid] = useState<string | null>(null);
-  const [tab, setTab] = useState<'paper' | 'learning'>('paper');
   const [resetting, setResetting] = useState(false);
 
   if (!paper) {

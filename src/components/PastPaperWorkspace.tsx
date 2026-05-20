@@ -627,6 +627,48 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
 
+      // === Q17 (4024/11 ON 2023) — k box + follow-through final answer ===
+      if (question.id === 'pp_4024_on23_11_q17') {
+        const ansPart = question.parts.find(p => p.key === 'answer');
+        if (ansPart) {
+          const userK = (currentAnswers['answer_k'] || '').trim();
+          const userFinal = (currentAnswers['answer_final_y'] || '').trim();
+          const kCorrect = answersMatch(userK, '0.5') || answersMatch(userK, '1/2');
+          const finalCorrect = answersMatch(userFinal, '2.5');
+          const kNum = parseFloat(normalizeAnswer(userK));
+          const finalNum = parseFloat(normalizeAnswer(userFinal));
+          let earned = 0;
+          const notes: string[] = [];
+          if (kCorrect) {
+            earned += 1;
+            newFeedback['answer_k'] = 'correct';
+          } else if (userK) {
+            newFeedback['answer_k'] = 'incorrect';
+          }
+          if (finalCorrect) {
+            earned += 1;
+            newFeedback['answer_final_y'] = 'correct';
+          } else if (!isNaN(kNum) && !isNaN(finalNum) && !kCorrect &&
+                     Math.abs(finalNum - kNum * 5) < 1e-6) {
+            // Follow-through: final = (their k) × √25
+            earned += 1;
+            newFeedback['answer_final_y'] = 'correct';
+            notes.push(`B1 follow-through awarded for the final answer using your k = ${userK} (${userK} × √25 = ${kNum * 5}).`);
+          } else if (userFinal) {
+            newFeedback['answer_final_y'] = 'incorrect';
+          }
+          marksEarned['answer'] = earned;
+          newFeedback['answer'] = earned === ansPart.marks ? 'correct' : 'incorrect';
+          if (earned < ansPart.marks) {
+            allCorrect = false;
+            if (notes.length === 0 && earned > 0) {
+              notes.push(`Partial marks awarded: ${question.markingCriteria?.answer || ''}`);
+            }
+          }
+          if (notes.length) markingNotes['answer'] = notes.join(' ');
+        }
+      }
+
       // === Post-pass: Composite scoring for ordering/grouped questions ===
       // For questions with helper parts (marks=0) that feed into a scored part,
       // count how many helpers are correct and award partial marks on the scored part

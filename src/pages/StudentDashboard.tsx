@@ -6,6 +6,7 @@ import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
 import { SubTopicContent } from '@/components/SubTopicContent';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { PaperOverview } from '@/components/PaperOverview';
 import { CourseSelection } from '@/components/CourseSelection';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { igcseMathsSyllabus, SubTopic, SyllabusData } from '@/lib/syllabusData';
@@ -16,7 +17,8 @@ import { Loader2 } from 'lucide-react';
 type ViewState =
   | { type: 'courses' }
   | { type: 'toc'; courseId: string }
-  | { type: 'subtopic'; courseId: string; topicId: number; subtopicId: string };
+  | { type: 'subtopic'; courseId: string; topicId: number; subtopicId: string }
+  | { type: 'paper'; courseId: string; paperId: string };
 
 function StudentDashboardContent() {
   const [view, setView] = useState<ViewState>({ type: 'courses' });
@@ -35,7 +37,7 @@ function StudentDashboardContent() {
   };
 
   const handleSubTopicSelect = (topicId: number, subtopic: SubTopic) => {
-    if (view.type !== 'toc' && view.type !== 'subtopic') return;
+    if (view.type === 'courses') return;
     const courseId = view.courseId;
     setView({ type: 'subtopic', courseId, topicId, subtopicId: subtopic.id });
   };
@@ -44,8 +46,13 @@ function StudentDashboardContent() {
     setPastPaperModal({ isOpen: true, questionId: section.questionId });
   };
 
+  const handlePaperOpen = (paperId: string) => {
+    if (view.type === 'courses') return;
+    setView({ type: 'paper', courseId: view.courseId, paperId });
+  };
+
   const handleBackToToc = () => {
-    if (view.type === 'subtopic') {
+    if (view.type === 'subtopic' || view.type === 'paper') {
       setView({ type: 'toc', courseId: view.courseId });
     }
   };
@@ -90,9 +97,17 @@ function StudentDashboardContent() {
                   courseId={view.courseId}
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
+                  onPaperOpen={handlePaperOpen}
                   onTabChange={setActiveTab}
                   enforceAssignments={true}
                   studentMode={true}
+                />
+              ) : view.type === 'paper' ? (
+                <PaperOverview
+                  paperId={view.paperId}
+                  onBack={handleBackToToc}
+                  studentMode={true}
+                  enforceAssignments={true}
                 />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent

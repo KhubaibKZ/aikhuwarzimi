@@ -223,27 +223,5 @@ export function PaperOverview({
   );
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="pt-5 pb-4">
-        <div className="flex items-center gap-2 text-muted-foreground mb-2">
-          {icon}
-          <span className="text-[10px] font-semibold uppercase tracking-wider">{label}</span>
-        </div>
-        <p className="text-2xl font-bold text-foreground">{value}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>
-      </CardContent>
-    </Card>
-  );
 }
+

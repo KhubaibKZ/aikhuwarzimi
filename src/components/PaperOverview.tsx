@@ -148,20 +148,7 @@ export function PaperOverview({
         )}
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as 'paper' | 'learning')} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="paper" className="gap-2">
-            <FileText className="h-4 w-4" />
-            Paper
-          </TabsTrigger>
-          <TabsTrigger value="learning" className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Learning Analytics
-          </TabsTrigger>
-        </TabsList>
-
-        {/* ── Paper ── */}
-        <TabsContent value="paper" className="mt-6">
+      <div>
           <Card className="mb-6">
             <CardContent className="pt-6 pb-5">
               <div className="flex items-start justify-between mb-3 gap-4">
@@ -242,102 +229,7 @@ export function PaperOverview({
               );
             })}
           </div>
-        </TabsContent>
-
-        {/* ── Learning analytics ── */}
-        <TabsContent value="learning" className="mt-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-            <StatCard
-              icon={<Target className="h-5 w-5" />}
-              label="Progress"
-              value={`${completionPct}%`}
-              sub={`${solvedQs}/${totalQs} questions`}
-            />
-            <StatCard
-              icon={<Award className="h-5 w-5" />}
-              label="Marks"
-              value={`${Math.round(marksObtained)}/${paper.totalMarks}`}
-              sub={`${accuracyPct}% accuracy on solved`}
-            />
-            <StatCard
-              icon={<Brain className="h-5 w-5" />}
-              label="AI Independence"
-              value={`${aiIndependence}%`}
-              sub={`${totalAi} AI hints used`}
-            />
-            <StatCard
-              icon={<Clock className="h-5 w-5" />}
-              label="Time on Paper"
-              value={fmtTime(totalTime)}
-              sub={`avg ${solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question`}
-            />
-          </div>
-
-          <Card>
-            <CardContent className="p-0">
-              <div className="px-4 py-3 border-b border-border">
-                <h3 className="text-sm font-bold text-foreground">Question breakdown</h3>
-                <p className="text-xs text-muted-foreground">Live results for this paper</p>
-              </div>
-              {sortedRecords.length === 0 ? (
-                <div className="p-8 text-center text-sm text-muted-foreground">
-                  No questions solved yet. Open the <strong>Paper</strong> tab to start.
-                </div>
-              ) : (
-                <div className="divide-y divide-border">
-                  <div className="grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted/30">
-                    <div className="col-span-4">Question</div>
-                    <div className="col-span-2 text-center">Marks</div>
-                    <div className="col-span-2 text-center">Accuracy</div>
-                    <div className="col-span-2 text-center">AI used</div>
-                    <div className="col-span-2 text-right">Time</div>
-                  </div>
-                  {sortedRecords.map((rec: any) => {
-                    const q = getPastPaperQuestion(rec.question_id);
-                    const sMarks = sectionMarks(rec.question_id);
-                    const earned = Math.round((Number(rec.accuracy_score) / 100) * sMarks);
-                    const acc = Math.round(Number(rec.accuracy_score));
-                    return (
-                      <div
-                        key={rec.question_id}
-                        className="grid grid-cols-12 gap-2 px-4 py-2.5 text-xs items-center"
-                      >
-                        <div className="col-span-4">
-                          <p className="font-semibold text-foreground">Q{q?.questionNumber}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{q?.title}</p>
-                        </div>
-                        <div className="col-span-2 text-center font-semibold text-foreground">
-                          {earned}/{sMarks}
-                        </div>
-                        <div className="col-span-2 text-center">
-                          <span
-                            className={cn(
-                              'px-1.5 py-0.5 rounded text-[10px] font-semibold',
-                              acc >= 80
-                                ? 'bg-success/20 text-success'
-                                : acc >= 50
-                                  ? 'bg-warning/20 text-warning'
-                                  : 'bg-destructive/20 text-destructive'
-                            )}
-                          >
-                            {acc}%
-                          </span>
-                        </div>
-                        <div className="col-span-2 text-center text-muted-foreground">
-                          {rec.ai_usage_count || 0}
-                        </div>
-                        <div className="col-span-2 text-right text-muted-foreground">
-                          {fmtTime(rec.time_spent_seconds || 0)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
 
       {currentQuestion && (
         <PastPaperWorkspace

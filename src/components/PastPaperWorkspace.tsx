@@ -513,6 +513,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               marksEarned[part.key] = fractionCorrect ? part.marks : 0;
             }
 
+            // === Q21(c) override: count B1 per criterion (num factorisation, den factorisation, simplified) ===
+            if (question.id === 'pp_4024_on23_11_q21' && part.key === 'c') {
+              const numOk = newFeedback['c_s1_num'] === 'correct';
+              const denOk = newFeedback['c_s1_den'] === 'correct';
+              const finalOk = newFeedback['c_final_num'] === 'correct' && newFeedback['c_final_den'] === 'correct';
+              marksEarned['c'] = (numOk ? 1 : 0) + (denOk ? 1 : 0) + (finalOk ? 1 : 0);
+            }
+
             if (!markingNotes[part.key] && marksEarned[part.key] > 0 && marksEarned[part.key] < part.marks) {
               markingNotes[part.key] = `Partial marks awarded using the specimen rule: ${partCriteria}`;
             }

@@ -78,14 +78,8 @@ export function PaperOverview({
       }, 0),
     [paperRows]
   );
-  const marksAvailableSolved = paperRows.reduce(
-    (sum: number, r: any) => sum + sectionMarks(r.question_id),
-    0
-  );
-  const accuracyPct = marksAvailableSolved > 0 ? Math.round((marksObtained / marksAvailableSolved) * 100) : 0;
-  const totalTime = paperRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
-  const totalAi = paperRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
-  const aiIndependence = Math.max(0, Math.round(100 - totalAi * 5));
+  const quota = studentMode ? getPaperQuota(paperId) : null;
+  const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
   const quota = studentMode ? getPaperQuota(paperId) : null;
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;

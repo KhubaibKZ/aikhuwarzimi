@@ -800,10 +800,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       toast({ title: 'No check work remaining', description: 'You have used all your check work quota for this paper.', variant: 'destructive' });
       return;
     }
-    // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers
+    // Detect structured step keys (e.g. c_s1, c_s2, answer_s1) — collect all sub-field answers.
+    // Also handle named stages (e.g. answer_final, b_final) that have sub-field boxes like answer_final_y.
     const isStructuredStep = /^[a-z]+_s\d+$/.test(partKey);
-    
-    if (isStructuredStep && typeof question.answer === 'object') {
+    const hasSubFieldsInAnswers = typeof question.answer === 'object' &&
+      Object.keys(question.answer).some(k => k.startsWith(partKey + '_'));
+    const hasSubFieldsInState = Object.keys(answers).some(k => k.startsWith(partKey + '_'));
+    const treatAsMultiField = isStructuredStep || hasSubFieldsInAnswers || hasSubFieldsInState;
+
+    if (treatAsMultiField && typeof question.answer === 'object') {
       // Gather all sub-keys for this step (e.g. c_s1_n1, c_s1_n2, ...)
       const subKeys = Object.keys(question.answer).filter(k => k.startsWith(partKey + '_'));
       

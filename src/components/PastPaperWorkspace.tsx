@@ -192,7 +192,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setFeedback(prev => ({ ...prev, [key]: null }));
     setIsChecked(false);
     // Clear AI response only if it's for this part
-    if (aiResponse?.partKey === key) {
+    const q18RegionKeys = ['ronly', 'conly', 'sonly', 'rcOnly', 'rsOnly', 'csOnly', 'rcs', 'outside'];
+    if (
+      aiResponse?.partKey === key ||
+      (question.id === 'pp_4024_on23_11_q18' && aiResponse?.partKey === 'a' && q18RegionKeys.includes(key))
+    ) {
       setAiResponse(null);
     }
   };
@@ -1234,6 +1238,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       return question.parts
         .filter(part => part.marks > 0)
         .every(part => {
+          if (question.id === 'pp_4024_on23_11_q18' && part.key === 'a') {
+            const regionKeys = ['ronly', 'conly', 'sonly', 'rcOnly', 'rsOnly', 'csOnly', 'rcs', 'outside'];
+            return regionKeys.every(regionKey => !!answers[regionKey]?.trim());
+          }
           // Diagram-scored parts have no text inputs to fill — completion is implicit
           if ((part as any).diagramScored) return true;
           // Fraction-division workspace: final answer lives in s2_fn/s2_fd or s1_rn/s1_rd
@@ -2114,6 +2122,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       {loadingPartKey === 'a' ? <span className="animate-pulse">...</span> : <BookOpen className="h-4 w-4" />}
                     </Button>
                   </div>
+                  {aiResponse?.partKey === 'a' && (
+                    <div className={cn(
+                      "mt-3 rounded-lg border p-3 text-sm",
+                      aiResponse.type === 'hint'
+                        ? "border-amber-500/30 bg-amber-500/10"
+                        : "border-blue-500/30 bg-blue-500/10"
+                    )}>
+                      <div className="flex items-start gap-2">
+                        <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                        <p className="whitespace-pre-line"><VecText value={aiResponse.content} /></p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="pt-4 border-t border-border/40 space-y-2">
                   <p className="text-foreground">

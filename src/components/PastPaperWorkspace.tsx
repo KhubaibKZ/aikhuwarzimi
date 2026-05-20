@@ -570,6 +570,23 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       });
 
+      // === Q15 (4024/11 ON 2023) part (b) SC1: answer = 2 × their (a) when 0 scored ===
+      if (question.id === 'pp_4024_on23_11_q15') {
+        const bPart = question.parts.find(p => p.key === 'b');
+        if (bPart && (marksEarned['b'] ?? 0) === 0) {
+          const aAnsStr = (currentAnswers['a_s2'] || currentAnswers['a_s1_d'] || '').trim();
+          const aAns = parseFloat(normalizeAnswer(aAnsStr));
+          const bFinalStr = (currentAnswers['b_s2'] || currentAnswers['b_s1_d'] || '').trim();
+          const bFinal = parseFloat(normalizeAnswer(bFinalStr));
+          if (!isNaN(aAns) && !isNaN(bFinal) && Math.abs(bFinal - 2 * aAns) < 1e-6 && Math.abs(aAns - 71) > 1e-6) {
+            marksEarned['b'] = 1;
+            newFeedback['b'] = 'partial';
+            markingNotes['b'] = `SC1 awarded: your answer equals 2 × your part (a) (2 × ${aAns} = ${2 * aAns}). The correct answer is 142° (angle at centre = 360 − 38 − 90 − 90).`;
+            allCorrect = false;
+          }
+        }
+      }
+
       // === Q15 (4024/11 ON 2023) part (c) follow-through: B1 ft for their (b) ÷ 2 ===
       if (question.id === 'pp_4024_on23_11_q15') {
         const cPart = question.parts.find(p => p.key === 'c');

@@ -21,12 +21,13 @@ interface TableOfContentsProps {
   courseId: string;
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
+  onPaperOpen?: (paperId: string) => void;
   onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
   enforceAssignments?: boolean;
   studentMode?: boolean;
 }
 
-export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
+export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onPaperOpen, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
   const [expandedTopic, setExpandedTopic] = useState<number | null>(null);
   const [expandedSubtopic, setExpandedSubtopic] = useState<string | null>(null);
   const [expandedPaper, setExpandedPaper] = useState<string | null>(null);
@@ -381,7 +382,11 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                                     <div key={paper.id} className={cn("rounded-lg overflow-hidden", paperLocked && "opacity-60")}>
                                       {/* Level 3: Individual Paper */}
                                       <button
-                                        onClick={() => !paperLocked && setExpandedPaper(expandedPaper === paper.id ? null : paper.id)}
+                                        onClick={() => {
+                                          if (paperLocked) return;
+                                          if (onPaperOpen) onPaperOpen(paper.id);
+                                          else setExpandedPaper(expandedPaper === paper.id ? null : paper.id);
+                                        }}
                                         className={cn(
                                           "flex w-full items-center justify-between p-3 text-left transition-colors rounded-lg",
                                           paperLocked ? "cursor-not-allowed" : "hover:bg-card hover:shadow-sm"

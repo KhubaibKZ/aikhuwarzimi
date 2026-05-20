@@ -4,16 +4,18 @@ import { ProgressSidebar } from '@/components/ProgressSidebar';
 import { TableOfContents } from '@/components/TableOfContents';
 import { SubTopicContent } from '@/components/SubTopicContent';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { PaperOverview } from '@/components/PaperOverview';
 import { CourseSelection } from '@/components/CourseSelection';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { igcseMathsSyllabus, SubTopic, SyllabusData } from '@/lib/syllabusData';
 import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { PastPaperSection, getPastPaperQuestion } from '@/lib/pastPaperData';
 
-type ViewState = 
+type ViewState =
   | { type: 'courses' }
   | { type: 'toc'; courseId: string }
-  | { type: 'subtopic'; courseId: string; topicId: number; subtopicId: string };
+  | { type: 'subtopic'; courseId: string; topicId: number; subtopicId: string }
+  | { type: 'paper'; courseId: string; paperId: string };
 
 function Dashboard() {
   const [view, setView] = useState<ViewState>({ type: 'courses' });
@@ -32,7 +34,7 @@ function Dashboard() {
   };
 
   const handleSubTopicSelect = (topicId: number, subtopic: SubTopic) => {
-    if (view.type !== 'toc' && view.type !== 'subtopic') return;
+    if (view.type === 'courses') return;
     const courseId = view.courseId;
     setView({ type: 'subtopic', courseId, topicId, subtopicId: subtopic.id });
   };
@@ -41,8 +43,13 @@ function Dashboard() {
     setPastPaperModal({ isOpen: true, questionId: section.questionId });
   };
 
+  const handlePaperOpen = (paperId: string) => {
+    if (view.type === 'courses') return;
+    setView({ type: 'paper', courseId: view.courseId, paperId });
+  };
+
   const handleBackToToc = () => {
-    if (view.type === 'subtopic') {
+    if (view.type === 'subtopic' || view.type === 'paper') {
       setView({ type: 'toc', courseId: view.courseId });
     }
   };
@@ -55,26 +62,26 @@ function Dashboard() {
   const getCurrentSubTopic = () => {
     if (view.type !== 'subtopic') return null;
     const syllabus = getSyllabusForCourse(view.courseId);
-    const topic = syllabus.topics.find(t => t.id === view.topicId);
-    const subtopic = topic?.subtopics.find(s => s.id === view.subtopicId);
+    const topic = syllabus.topics.find((t) => t.id === view.topicId);
+    const subtopic = topic?.subtopics.find((s) => s.id === view.subtopicId);
     return { topic, subtopic };
   };
 
   const currentData = getCurrentSubTopic();
-  const currentPastPaperQuestion = pastPaperModal.questionId 
-    ? getPastPaperQuestion(pastPaperModal.questionId) 
+  const currentPastPaperQuestion = pastPaperModal.questionId
+    ? getPastPaperQuestion(pastPaperModal.questionId)
     : null;
 
   const currentCourseId = view.type !== 'courses' ? view.courseId : undefined;
 
   return (
     <div className="min-h-screen bg-background">
-      <Header 
-        currentCourseId={currentCourseId} 
+      <Header
+        currentCourseId={currentCourseId}
         onBackToCourses={view.type !== 'courses' ? handleBackToCourses : undefined}
         publicMode={true}
       />
-      
+
       <main className="container px-4 py-8 md:px-6">
         {view.type === 'courses' ? (
           <CourseSelection onSelectCourse={handleCourseSelect} />
@@ -83,13 +90,16 @@ function Dashboard() {
             {/* Main Content Area */}
             <div>
               {view.type === 'toc' ? (
-                <TableOfContents 
+                <TableOfContents
                   courseId={view.courseId}
                   onSubTopicSelect={handleSubTopicSelect}
                   onPastPaperSelect={handlePastPaperSelect}
+                  onPaperOpen={handlePaperOpen}
                   onTabChange={setActiveTab}
                   studentMode={false}
                 />
+              ) : view.type === 'paper' ? (
+                <PaperOverview paperId={view.paperId} onBack={handleBackToToc} studentMode={false} />
               ) : currentData?.topic && currentData?.subtopic ? (
                 <SubTopicContent
                   topicId={currentData.topic.id}
@@ -110,7 +120,7 @@ function Dashboard() {
         )}
       </main>
 
-      {/* Past Paper Modal */}
+      {/* Past Paper Modal (sub-topic syllabus link path) */}
       {currentPastPaperQuestion && (
         <PastPaperWorkspace
           question={currentPastPaperQuestion}

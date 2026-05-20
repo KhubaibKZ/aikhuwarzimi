@@ -213,13 +213,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       .trim();
   };
 
+  const isPureNumber = (s: string): boolean => /^-?\d+(\.\d+)?$/.test(s);
   const isNumericallyEqual = (a: string, b: string): boolean => {
+    if (!isPureNumber(a) || !isPureNumber(b)) return false;
     const numA = parseFloat(a);
     const numB = parseFloat(b);
-    if (!isNaN(numA) && !isNaN(numB)) {
-      return Math.abs(numA - numB) < 1e-9;
-    }
-    return false;
+    return Math.abs(numA - numB) < 1e-9;
   };
 
   const evaluateFraction = (s: string): number | null => {

@@ -113,7 +113,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   };
 
   return (
-    <Tabs defaultValue="syllabus" className="w-full" onValueChange={(v) => onTabChange?.(v as 'syllabus' | 'pastpapers')}>
+    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { const t = v as 'syllabus' | 'pastpapers'; setActiveTab(t); onTabChange?.(t); }}>
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="syllabus" className="flex items-center gap-2">
           <BookOpen className="h-4 w-4" />

@@ -260,8 +260,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     const cFrac = evaluateFraction(c);
     if (uFrac !== null && cFrac !== null && Math.abs(uFrac - cFrac) < 1e-9) return true;
     // Mixed: one is fraction, other is decimal
-    if (uFrac !== null && !isNaN(parseFloat(c)) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
-    if (cFrac !== null && !isNaN(parseFloat(u)) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
+    if (uFrac !== null && isPureNumber(c) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
+    if (cFrac !== null && isPureNumber(u) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
     return false;
   };
 

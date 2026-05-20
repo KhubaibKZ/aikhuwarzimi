@@ -580,7 +580,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           const bFinal = parseFloat(normalizeAnswer(bFinalStr));
           if (!isNaN(aAns) && !isNaN(bFinal) && Math.abs(bFinal - 2 * aAns) < 1e-6 && Math.abs(aAns - 71) > 1e-6) {
             marksEarned['b'] = 1;
-            newFeedback['b'] = 'partial';
+            newFeedback['b'] = 'incorrect';
             markingNotes['b'] = `SC1 awarded: your answer equals 2 × your part (a) (2 × ${aAns} = ${2 * aAns}). The correct answer is 142° (angle at centre = 360 − 38 − 90 − 90).`;
             allCorrect = false;
           }

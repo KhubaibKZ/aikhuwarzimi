@@ -106,10 +106,6 @@ export function PaperOverview({
     }
   };
 
-  const sortedRecords = useMemo(
-    () => [...paperRows].sort((a: any, b: any) => a.submitted_at.localeCompare(b.submitted_at)),
-    [paperRows]
-  );
 
   return (
     <div>

@@ -703,10 +703,12 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) f(−8) = −8/4 + 3 = −2 + 3 = 1', '(b) y = x/4 + 3, x/4 = y−3, x = 4(y−3) = 4y−12, f⁻¹(x) = 4x−12', '(c) p/4+3 = 2(p+5−1) = 2(p+4)'],
     type: 'multi-part',
     equationSolveParts: ['a_calc', 'b_calc', 'c_calc'],
-    allowCustomSteps: true,
+    allowCustomStepsMap: { a_calc: false, b_calc: true, c_calc: true },
+    customStepsBeforeMap: { b_calc: true, c_calc: true },
+    singleKeyboard: true,
     customStepsAfterStepKeyMap: {},
-    customStepTemplateMap: { a_calc: 'lhs_rhs', b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
-    initialCustomStepsMap: { a_calc: 1, b_calc: 1, c_calc: 1 },
+    customStepTemplateMap: { b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
+    initialCustomStepsMap: { b_calc: 1, c_calc: 1 },
     equationStagesMap: {
       'a_calc': [
         { label: 'Answer', stepKey: 'final', elements: [

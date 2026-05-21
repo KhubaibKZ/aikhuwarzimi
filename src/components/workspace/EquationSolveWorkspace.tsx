@@ -747,8 +747,18 @@ export function EquationSolveWorkspace({
 
   const customStepsInline = allowCustomSteps && !!customStepsAfterStepKey;
 
+  // Publish/unpublish the active key-press handler so a parent can render a single shared keyboard.
+  useEffect(() => {
+    if (!hideOwnKeyboard || !onActiveKeyHandler) return;
+    if (focusedInput || focusedSlot) {
+      onActiveKeyHandler(handleKeyPress);
+    }
+  }, [focusedInput, focusedSlot, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
+
   return (
     <div className="space-y-5">
+      {customStepsBefore && allowCustomSteps && customStepsBlock}
+
       {(useSplit ? stagesBefore : stages).map(renderStage)}
 
       {structuredExtraStep && (
@@ -788,15 +798,17 @@ export function EquationSolveWorkspace({
         </div>
       )}
 
-      {!customStepsInline && customStepsBlock}
+      {!customStepsInline && !customStepsBefore && customStepsBlock}
 
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || (!focusedInput && !focusedSlot)}
-        />
-      </div>
+      {!hideOwnKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted || (!focusedInput && !focusedSlot)}
+          />
+        </div>
+      )}
     </div>
   );
 }

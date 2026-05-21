@@ -1591,11 +1591,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
   // For equationSolveParts, check the last box of the last stage instead of the part key
   const areAllPartsCompleted = (): boolean => {
-    // Q16: requires region bounds filled in builder
+    // Q16: requires a point placed on the diagram to mark region R
     if (question.id === 'pp_4024_on23_11_q16') {
       try {
         const d = JSON.parse(answers['q16_data'] || '{}');
-        return !!(d?.region?.x1 && d?.region?.x2 && d?.region?.y1 && d?.region?.y2);
+        return !!d?.point && typeof d.point.x === 'number' && typeof d.point.y === 'number';
       } catch { return false; }
     }
     if (question.parts) {

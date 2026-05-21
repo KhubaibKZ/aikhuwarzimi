@@ -753,20 +753,29 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           return ratio !== null && Math.abs(ratio) > 1e-9;
         };
 
-        // (b) — B1 for any rearrangement step equivalent to y = x/4 + 3
+        // (b) — B1 per MS for any of: x = y/4 + 3, y − 3 = x/4, 4y = x + 12 (or better/equivalent)
         const bPart = question.parts.find(p => p.key === 'b_calc');
         if (bPart && (marksEarned['b_calc'] ?? 0) < bPart.marks) {
-          const target = 'y = x/4 + 3';
-          const testVars = [{ x: 2, y: 3 }, { x: 5, y: -1.7 }, { x: -3, y: 4.2 }];
+          const acceptableTargets = [
+            'x = y/4 + 3',
+            'y - 3 = x/4',
+            '4*y = x + 12',
+            '4*(x - 3) = y',
+            'y = 4*x - 12',
+            'y = 4*(x - 3)',
+          ];
+          const testVars = [{ x: 2, y: 3 }, { x: 5, y: -1.7 }, { x: -3, y: 4.2 }, { x: 1.1, y: 2.4 }];
           let awarded = false;
-          for (let i = 0; i < 12; i++) {
+          for (let i = 0; i < 12 && !awarded; i++) {
             const v = (currentAnswers[`b_calc_custom_${i}`] || '').trim();
             if (!v || !v.includes('=')) continue;
-            if (isEquivEquation(v, target, testVars)) { awarded = true; break; }
+            for (const target of acceptableTargets) {
+              if (isEquivEquation(v, target, testVars)) { awarded = true; break; }
+            }
           }
           if (awarded) {
             marksEarned['b_calc'] = Math.max(marksEarned['b_calc'] ?? 0, 1);
-            markingNotes['b_calc'] = 'B1 awarded for a correct rearrangement step (e.g. x = y/4 + 3, y − 3 = x/4, or 4y = x + 12).';
+            markingNotes['b_calc'] = 'B1 (MS): correct rearrangement seen — e.g. x = y/4 + 3, y − 3 = x/4, or 4y = x + 12 (or better).';
           }
         }
 

@@ -115,7 +115,7 @@ ${!evaluateNeutral && hasWrong && hasMissing ? "They have errors and missing par
 
 ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Be gentle but specific about the error." : (attemptCount || 1) <= 4 ? "Be more direct about which step went wrong." : "Give a stronger methodological hint."}
 
-CRITICAL: 2 sentences max. Plain text only. NEVER mention ANY numbers from the calculation. Always start by identifying the error.${partContext}
+CRITICAL: 2 sentences max. Plain text only. ${evaluateNeutral ? "If the step is correct, say so plainly and briefly explain why it follows from the previous step. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
 
 ${markingCriteria ? `MARKING SCHEME CRITERIA (use to understand what earns marks — do NOT reveal to student):
 ${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;

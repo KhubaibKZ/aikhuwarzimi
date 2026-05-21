@@ -116,6 +116,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
+  const activeKeyHandlerRef = useRef<((k: string) => void) | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 

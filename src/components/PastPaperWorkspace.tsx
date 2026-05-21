@@ -1100,6 +1100,61 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         if (answers[k]) previousSteps[`step_${i + 1}`] = answers[k];
       }
 
+      // ===== Deterministic algebraic verification =====
+      // A valid algebraic step must produce an equation EQUIVALENT to the previous line.
+      // We test by computing f(x) = lhs - rhs at multiple values of the variable for
+      // both the previous line and the student's line, and check that f_prev = k * f_stud
+      // for some constant k (i.e. the equations have the same solution set).
+      let deterministicVerdict: 'correct' | 'wrong' | 'unknown' = 'unknown';
+      let deterministicNote = '';
+      try {
+        const prevLine = idx > 0 ? answers[`${rootPart}_custom_${idx - 1}`] : '';
+        if (prevLine && studentExpression.includes('=') && prevLine.includes('=')) {
+          const toJs = (expr: string) => {
+            let s = expr.replace(/\s+/g, '');
+            // Insert * for implicit multiplication: 2p -> 2*p, 2( -> 2*(, )( -> )*(, )p -> )*p, p( -> p*(
+            s = s.replace(/(\d)([a-zA-Z(])/g, '$1*$2');
+            s = s.replace(/\)([a-zA-Z0-9(])/g, ')*$1');
+            s = s.replace(/([a-zA-Z])\(/g, '$1*(');
+            return s;
+          };
+          // Detect variable (first letter found)
+          const varMatch = (prevLine + studentExpression).match(/[a-zA-Z]/);
+          const varName = varMatch ? varMatch[0] : 'x';
+          const splitEq = (eq: string) => {
+            const [l, r] = eq.split('=');
+            return [toJs(l), toJs(r)];
+          };
+          const [pl, pr] = splitEq(prevLine);
+          const [sl, sr] = splitEq(studentExpression);
+          // eslint-disable-next-line no-new-func
+          const fPrev = new Function(varName, `return (${pl}) - (${pr});`) as (v: number) => number;
+          // eslint-disable-next-line no-new-func
+          const fStud = new Function(varName, `return (${sl}) - (${sr});`) as (v: number) => number;
+          const testVals = [1.7, 2.3, -1.5, 4.1, 0.6];
+          const ratios: number[] = [];
+          let valid = true;
+          for (const v of testVals) {
+            const a = fPrev(v);
+            const b = fStud(v);
+            if (!isFinite(a) || !isFinite(b)) { valid = false; break; }
+            if (Math.abs(b) < 1e-9 && Math.abs(a) < 1e-9) continue;
+            if (Math.abs(b) < 1e-9) { valid = false; break; }
+            ratios.push(a / b);
+          }
+          if (valid && ratios.length > 0) {
+            const k0 = ratios[0];
+            const equivalent = Math.abs(k0) > 1e-9 && ratios.every(r => Math.abs(r - k0) < 1e-6);
+            deterministicVerdict = equivalent ? 'correct' : 'wrong';
+            deterministicNote = equivalent
+              ? `Verified: this line is algebraically equivalent to the previous line (multiplier ≈ ${k0.toFixed(3)}).`
+              : `Verified: this line is NOT algebraically equivalent to the previous line. The transformation introduces an error.`;
+          }
+        }
+      } catch (e) {
+        console.warn('Deterministic check failed, falling back to AI only:', e);
+      }
+
       // Reference: full correct answer map for this question (gives AI the target form
       // and any predefined-stage answers like "3x", "x", "1", "2", etc.)
       const referenceAnswers = typeof question.answer === 'object' ? question.answer : { answer: question.answer };
@@ -1118,7 +1173,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           body: {
             question: question.question,
             actionType: 'checkWork',
-            evaluateNeutral: true,
+            evaluateNeutral: deterministicVerdict === 'unknown',
             userAnswers: {
               [`student_step_${idx + 1}`]: studentExpression,
               ...previousSteps,
@@ -1128,8 +1183,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             hints: question.hints,
             attemptCount: (attemptCount[partKey] || 0) + 1,
             hasMissing: false,
-            hasWrong: false,
-            specificPart: `Student's working line ${idx + 1}: "${studentExpression}". First, VERIFY the algebra of THIS line yourself: compute whether it follows correctly from the previous line shown (if any) and whether both sides are equivalent. If it is mathematically correct, confirm it briefly and warmly. If it is wrong, point out the specific error in THIS line. Do NOT assume it is wrong by default. Do NOT suggest, hint at, or guide toward the next step.`,
+            hasWrong: deterministicVerdict === 'wrong',
+            specificPart: deterministicVerdict === 'correct'
+              ? `DETERMINISTIC VERIFICATION: ${deterministicNote} The student's line "${studentExpression}" is CORRECT. Give a brief warm confirmation (1-2 sentences) explaining what they did right (e.g. multiplied both sides, distributed, combined like terms). Do NOT hint at the next step. Do NOT contradict this verdict.`
+              : deterministicVerdict === 'wrong'
+              ? `DETERMINISTIC VERIFICATION: ${deterministicNote} The student's line "${studentExpression}" is WRONG — it is not equivalent to the previous line "${idx > 0 ? answers[`${rootPart}_custom_${idx - 1}`] : ''}". Identify the specific arithmetic/algebraic error (e.g. forgot to multiply a term on one side, wrong distribution, sign error) WITHOUT revealing the corrected value or final answer. Do NOT mark it as correct. Do NOT contradict this verdict.`
+              : `Student's working line ${idx + 1}: "${studentExpression}". First, VERIFY the algebra of THIS line yourself: compute whether it follows correctly from the previous line shown (if any) and whether both sides are equivalent. If it is mathematically correct, confirm it briefly and warmly. If it is wrong, point out the specific error in THIS line. Do NOT assume it is wrong by default. Do NOT suggest, hint at, or guide toward the next step.`,
             workingContent: '',
             markingCriteria: question.markingCriteria,
             previousFeedback: previousFeedbackRef.current[partKey] || []

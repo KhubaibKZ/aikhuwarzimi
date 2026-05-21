@@ -917,6 +917,117 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         allCorrect = question.parts.every(p => (marksEarned[p.key] ?? 0) >= p.marks);
       }
 
+      // === Q24 (4024/11 ON 2023) — Algebraic fractions equation: MS-aligned partial marks ===
+      // MS: M2 elimination of fractions / common denominator (LHS may be two fractions)
+      //     OR M1 for 3x(x−1) − 2(x+1) or denominator (x+1)(x−1) soi
+      //     AND M1 for expansion of all brackets in clearing fractions
+      //     A1 for x = 1/5 (oe 0.2)
+      if (question.id === 'pp_4024_on23_11_q24') {
+        const ansPart = question.parts.find(p => p.key === 'answer');
+        if (ansPart) {
+          const toJs = (s: string) => s
+            .replace(/\s+/g, '')
+            .replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/')
+            .replace(/²/g, '**2').replace(/³/g, '**3').replace(/\^/g, '**')
+            .replace(/(\d)([a-z(])/gi, '$1*$2')
+            .replace(/([a-z)])\(/gi, '$1*(')
+            .replace(/\)([a-z(])/gi, ')*$1');
+          const evalSide = (expr: string, vars: Record<string, number>): number | null => {
+            try {
+              const keys = Object.keys(vars);
+              const fn = new Function(...keys, `return ${toJs(expr)};`);
+              const v = fn(...keys.map(k => vars[k]));
+              return typeof v === 'number' && isFinite(v) ? v : null;
+            } catch { return null; }
+          };
+          const evalEq = (eq: string, vars: Record<string, number>): number | null => {
+            const [l, r] = eq.split('=').map(s => s.trim());
+            if (!l || !r) return null;
+            const lv = evalSide(l, vars);
+            const rv = evalSide(r, vars);
+            if (lv === null || rv === null) return null;
+            return lv - rv;
+          };
+          // Algebraic equivalence allowing polynomial multipliers (zero-set match)
+          const sameZeroSet = (lineA: string, lineB: string, testVars: Record<string, number>[]) => {
+            let sawA = false, sawB = false;
+            for (const v of testVars) {
+              const a = evalEq(lineA, v);
+              const b = evalEq(lineB, v);
+              if (a === null || b === null) return false;
+              // Generic test points should not zero either side for a valid equation
+              if (Math.abs(a) > 1e-9) sawA = true;
+              if (Math.abs(b) > 1e-9) sawB = true;
+              // If one is ~0 but the other isn't, they aren't equivalent
+              if (Math.abs(a) < 1e-9 && Math.abs(b) > 1e-6) return false;
+              if (Math.abs(b) < 1e-9 && Math.abs(a) > 1e-6) return false;
+            }
+            return sawA && sawB;
+          };
+          const testVars = [{ x: 2 }, { x: 3 }, { x: -1.5 }, { x: 0.7 }, { x: 4.3 }];
+          // Cleared form: 3x(x-1) - 2(x+1) = 3(x+1)(x-1)  (i.e. 3x² - 5x - 2 = 3x² - 3)
+          const clearedTargets = [
+            '3*x*(x-1) - 2*(x+1) = 3*(x+1)*(x-1)',
+            '3*x**2 - 5*x - 2 = 3*x**2 - 3',
+            '-5*x - 2 = -3',
+            '-5*x = -1',
+            '5*x = 1',
+            'x = 1/5',
+          ];
+
+          let m2 = false;       // full elimination of fractions
+          let m1Combine = false; // M1 alternative: combined numerator / common denominator seen
+          let m1Expand = false;  // M1 expansion of all brackets after clearing
+
+          for (let i = 0; i < 12; i++) {
+            const raw = (currentAnswers[`answer_custom_${i}`] || '').trim();
+            if (!raw || !raw.includes('=')) continue;
+
+            // M2: fraction-free line equivalent to the cleared equation
+            const noFraction = !/\/\s*[a-z(]/i.test(raw);
+            if (noFraction) {
+              for (const t of clearedTargets) {
+                if (sameZeroSet(raw, t, testVars)) { m2 = true; break; }
+              }
+            }
+            // M1 (combine): numerator-combined fraction, e.g. "(3x(x-1) - 2(x+1))/((x+1)(x-1)) = 3"
+            //   Detect mention of both 3x(x-1) and 2(x+1), or the expanded numerator 3x²-5x-2,
+            //   together with denominator (x+1)(x-1) or x²-1.
+            const r = raw.replace(/\s+/g, '');
+            const numOK = /3\*?x\(x-1\)/.test(r) && /2\(x\+1\)/.test(r);
+            const numExpanded = /3x[²^]?2?-5x-2/.test(r) || /3\*?x\*\*2-5\*?x-2/.test(r);
+            const denOK = /\(x\+1\)\(x-1\)/.test(r) || /\(x-1\)\(x\+1\)/.test(r) || /x[²^]?2?-1/.test(r);
+            if (denOK && (numOK || numExpanded)) m1Combine = true;
+
+            // M1 (expand): bracket-free line equivalent to cleared form
+            if (noFraction && !raw.includes('(') && !raw.includes(')')) {
+              for (const t of clearedTargets) {
+                if (sameZeroSet(raw, t, testVars)) { m1Expand = true; break; }
+              }
+            }
+          }
+
+          const finalStr = (currentAnswers['answer_final'] || '').trim();
+          const a1 = answersMatch(finalStr, '1/5') || answersMatch(finalStr, '0.2');
+
+          let earned = 0;
+          const notes: string[] = [];
+          if (m2) { earned += 2; notes.push('M2 awarded for elimination of fractions (correct cleared equation seen).'); }
+          else if (m1Combine) { earned += 1; notes.push('M1 awarded for the combined numerator / correct common denominator (no full elimination shown).'); }
+          if (m1Expand) { earned += 1; notes.push('M1 awarded for expansion of all brackets after clearing the fractions.'); }
+          if (a1) { earned += 1; notes.push('A1 awarded for the final answer x = 1/5.'); newFeedback['answer_final'] = 'correct'; }
+          else if (finalStr) { newFeedback['answer_final'] = 'incorrect'; }
+
+          earned = Math.min(earned, ansPart.marks);
+          marksEarned['answer'] = earned;
+          newFeedback['answer'] = earned >= ansPart.marks ? 'correct' : 'incorrect';
+          if (notes.length) markingNotes['answer'] = notes.join(' ');
+          if (earned < ansPart.marks) allCorrect = false;
+        }
+        allCorrect = question.parts.every(p => (marksEarned[p.key] ?? 0) >= p.marks);
+      }
+
+
 
 
       // === Post-pass: Composite scoring for ordering/grouped questions ===

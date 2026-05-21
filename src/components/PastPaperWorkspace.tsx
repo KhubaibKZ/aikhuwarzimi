@@ -19,6 +19,7 @@ import { QuestionText } from '@/components/QuestionText';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { StepWorkspace, FractionDivisionWorkspace, EquationSolveWorkspace } from '@/components/workspace';
+import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 
@@ -115,6 +116,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
+  const activeKeyHandlerRef = useRef<((k: string) => void) | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 
@@ -2427,38 +2429,65 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     </div>
                   );
                 })}
-                {(question as any).equationSolveParts?.map((partKey: string) => {
-                  const part = question.parts?.find(p => p.key === partKey);
-                  const stagesMap = (question as any).equationStagesMap;
-                  const stages = stagesMap?.[partKey] || (question as any).equationStages;
-                  return part && stages ? (
-                    <div key={partKey} className="space-y-2">
-                      <label className="flex items-center justify-between text-sm">
-                        <VecText value={part.label} className="font-medium" />
-                        <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
-                      </label>
-                      <EquationSolveWorkspace
-                        questionKey={partKey}
-                        stages={stages}
-                        answers={answers}
-                        feedback={feedback}
-                        onAnswerChange={handleAnswerChange}
-                        onCheckWork={handleCheckWorkForPart}
-                        isLoading={isLoading}
-                        loadingStepKey={loadingPartKey}
-                        isSubmitted={isSubmitted}
-                        correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
-                        aiResponse={aiResponse}
-                        keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
-                        allowCustomSteps={(question as any).allowCustomSteps}
-                        structuredExtraStep={((question as any).structuredExtraStepMap || {})[partKey]}
-                        customStepsAfterStepKey={((question as any).customStepsAfterStepKeyMap || {})[partKey]}
-                        customStepTemplate={((question as any).customStepTemplateMap || {})[partKey]}
-                        initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
-                      />
-                    </div>
-                  ) : null;
-                })}
+                {(() => {
+                  const eqParts: string[] | undefined = (question as any).equationSolveParts;
+                  if (!eqParts) return null;
+                  const allowMap = (question as any).allowCustomStepsMap as Record<string, boolean> | undefined;
+                  const beforeMap = (question as any).customStepsBeforeMap as Record<string, boolean> | undefined;
+                  const useSingleKeyboard: boolean = !!(question as any).singleKeyboard;
+                  return (
+                    <>
+                      {eqParts.map((partKey: string) => {
+                        const part = question.parts?.find(p => p.key === partKey);
+                        const stagesMap = (question as any).equationStagesMap;
+                        const stages = stagesMap?.[partKey] || (question as any).equationStages;
+                        if (!part || !stages) return null;
+                        const partAllowCustom = allowMap
+                          ? !!allowMap[partKey]
+                          : !!(question as any).allowCustomSteps;
+                        return (
+                          <div key={partKey} className="space-y-2">
+                            <label className="flex items-center justify-between text-sm">
+                              <VecText value={part.label} className="font-medium" />
+                              <span className="text-xs text-muted-foreground">[{part.marks} mark{part.marks > 1 ? 's' : ''}]</span>
+                            </label>
+                            <EquationSolveWorkspace
+                              questionKey={partKey}
+                              stages={stages}
+                              answers={answers}
+                              feedback={feedback}
+                              onAnswerChange={handleAnswerChange}
+                              onCheckWork={handleCheckWorkForPart}
+                              isLoading={isLoading}
+                              loadingStepKey={loadingPartKey}
+                              isSubmitted={isSubmitted}
+                              correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
+                              aiResponse={aiResponse}
+                              keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                              allowCustomSteps={partAllowCustom}
+                              structuredExtraStep={((question as any).structuredExtraStepMap || {})[partKey]}
+                              customStepsAfterStepKey={((question as any).customStepsAfterStepKeyMap || {})[partKey]}
+                              customStepTemplate={((question as any).customStepTemplateMap || {})[partKey]}
+                              initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
+                              customStepsBefore={!!(beforeMap && beforeMap[partKey])}
+                              hideOwnKeyboard={useSingleKeyboard}
+                              onActiveKeyHandler={useSingleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
+                            />
+                          </div>
+                        );
+                      })}
+                      {useSingleKeyboard && (
+                        <div className="border-t pt-3">
+                          <HorizontalKeyboard
+                            keys={getKeyboardConfig(question.id, question.type, question.title)}
+                            onKeyPress={(k) => activeKeyHandlerRef.current?.(k)}
+                            disabled={isSubmitted}
+                          />
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             ) : question.parts ? (
               /* Generic parts - use StepWorkspace for consistency */

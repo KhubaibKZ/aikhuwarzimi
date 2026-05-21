@@ -36,6 +36,9 @@ interface EquationSolveWorkspaceProps {
   customStepsAfterStepKey?: string; // insert "My working" block right after this stage
   customStepTemplate?: 'text' | 'fraction' | 'lhs_rhs'; // shape of each newly added custom step
   initialCustomSteps?: number; // pre-seed N custom-step rows on mount
+  customStepsBefore?: boolean; // if true, render the custom steps block BEFORE the predefined stages
+  hideOwnKeyboard?: boolean; // suppress this workspace's bottom keyboard (use shared one)
+  onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
 }
 
 // Custom step token model
@@ -81,6 +84,9 @@ export function EquationSolveWorkspace({
   customStepsAfterStepKey,
   customStepTemplate = 'text',
   initialCustomSteps = 0,
+  customStepsBefore = false,
+  hideOwnKeyboard = false,
+  onActiveKeyHandler,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -386,39 +392,45 @@ export function EquationSolveWorkspace({
     setFocusedSlot(null);
   };
 
-  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]', showClear = true) => {
-    const isFocused = focusedSlot === slot;
-    const showClearButton = showClear && !isSubmitted && (isFocused || !!text);
+  const writeSlot = (slot: string, value: string) => {
+    const f = parseSlot(slot);
+    if (!f) return;
+    setCustomSteps((prev) =>
+      prev.map((step, i) => {
+        if (i !== f.si) return step;
+        return step.map((p, j) => {
+          if (j !== f.pi) return p;
+          if (p.kind === 'txt' && f.slot === 'txt') return { ...p, s: value };
+          if (p.kind === 'frac' && f.slot === 'n') return { ...p, n: value };
+          if (p.kind === 'frac' && f.slot === 'd') return { ...p, d: value };
+          return p;
+        });
+      }),
+    );
+  };
 
+  const renderTxt = (text: string, slot: string, minW = 'min-w-[2rem]', _showClear = true) => {
+    const isFocused = focusedSlot === slot;
+    const widthCh = Math.max(2, text.length + 1);
     return (
-    <span key={slot} className="relative inline-flex group/slot">
-      <span
-        className={slotClasses(slot, text, minW)}
-        onPointerDown={(e) => {
-          e.preventDefault();
-          setFocusedSlot(slot);
-          setFocusedInput(null);
-        }}
-      >
-        {text || '\u200b'}
-      </span>
-      {showClearButton && (
-        <button
-          type="button"
-          onPointerDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            clearSlot(slot);
+      <span key={slot} className="relative inline-flex group/slot">
+        <input
+          type="text"
+          value={text}
+          disabled={isSubmitted}
+          onChange={(e) => writeSlot(slot, e.target.value)}
+          onFocus={() => {
+            setFocusedSlot(slot);
+            setFocusedInput(null);
           }}
+          style={{ width: `${widthCh}ch` }}
           className={cn(
-            'absolute -top-2 -right-2 z-10 h-5 w-5 rounded-full bg-muted border border-border text-muted-foreground/90 hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-100 shadow-sm',
+            minW,
+            'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base bg-transparent text-foreground text-center outline-none',
+            isFocused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
           )}
-          title="Clear"
-        >
-          <X className="h-3 w-3" />
-        </button>
-      )}
-    </span>
+        />
+      </span>
     );
   };
 
@@ -735,8 +747,18 @@ export function EquationSolveWorkspace({
 
   const customStepsInline = allowCustomSteps && !!customStepsAfterStepKey;
 
+  // Publish/unpublish the active key-press handler so a parent can render a single shared keyboard.
+  useEffect(() => {
+    if (!hideOwnKeyboard || !onActiveKeyHandler) return;
+    if (focusedInput || focusedSlot) {
+      onActiveKeyHandler(handleKeyPress);
+    }
+  }, [focusedInput, focusedSlot, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
+
   return (
     <div className="space-y-5">
+      {customStepsBefore && allowCustomSteps && customStepsBlock}
+
       {(useSplit ? stagesBefore : stages).map(renderStage)}
 
       {structuredExtraStep && (
@@ -776,15 +798,17 @@ export function EquationSolveWorkspace({
         </div>
       )}
 
-      {!customStepsInline && customStepsBlock}
+      {!customStepsInline && !customStepsBefore && customStepsBlock}
 
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || (!focusedInput && !focusedSlot)}
-        />
-      </div>
+      {!hideOwnKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted || (!focusedInput && !focusedSlot)}
+          />
+        </div>
+      )}
     </div>
   );
 }

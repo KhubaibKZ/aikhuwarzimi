@@ -84,6 +84,9 @@ export interface PastPaperQuestion {
   equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
   allowCustomSteps?: boolean; // Lets students add their own equation lines under equation stages
+  allowCustomStepsMap?: Record<string, boolean>; // Per-part override of allowCustomSteps
+  customStepsBeforeMap?: Record<string, boolean>; // Per-part: render custom steps BEFORE the predefined answer stages
+  singleKeyboard?: boolean; // Render a single shared on-screen keyboard for the whole question's equationSolveParts
   structuredExtraStepMap?: Record<string, { afterStepKey: string; initialBoxes: number; boxWidth?: string; opWidth?: string; hasOperators?: boolean; noTrailingEquals?: boolean; initialRows?: number }>;
   customStepsAfterStepKeyMap?: Record<string, string>; // Per-part: render "My working" block right after this stage
   customStepTemplateMap?: Record<string, 'text' | 'fraction' | 'lhs_rhs'>; // Per-part: shape of each newly added custom step

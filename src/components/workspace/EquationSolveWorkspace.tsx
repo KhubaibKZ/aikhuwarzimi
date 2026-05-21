@@ -84,6 +84,9 @@ export function EquationSolveWorkspace({
   customStepsAfterStepKey,
   customStepTemplate = 'text',
   initialCustomSteps = 0,
+  customStepsBefore = false,
+  hideOwnKeyboard = false,
+  onActiveKeyHandler,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});

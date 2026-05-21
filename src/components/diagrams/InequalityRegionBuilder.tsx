@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Trash2, CheckCircle2, XCircle, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -10,9 +10,9 @@ export type LineSpec = {
   b?: string;
 };
 
-export type RegionSpec = { x1: string; x2: string; y1: string; y2: string };
+export type RegionPoint = { x: number; y: number } | null;
 
-export type Q16Data = { lines: LineSpec[]; region: RegionSpec };
+export type Q16Data = { lines: LineSpec[]; point: RegionPoint };
 
 interface Props {
   data: Q16Data;
@@ -24,10 +24,32 @@ interface Props {
 
 export const EMPTY_Q16: Q16Data = {
   lines: [{ kind: 'x', a: '' }],
-  region: { x1: '', x2: '', y1: '', y2: '' },
+  point: null,
 };
 
 const LINE_COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#a855f7'];
+
+// Correct region polygon vertices (in plot coords), ordered around the perimeter.
+// Vertices: (1,2), (2,2), (3,2.5), (3,3), (1,3)
+export const REGION_POLYGON: Array<[number, number]> = [
+  [1, 2],
+  [2, 2],
+  [3, 2.5],
+  [3, 3],
+  [1, 3],
+];
+
+export function pointInRegion(px: number, py: number, poly = REGION_POLYGON): boolean {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i];
+    const [xj, yj] = poly[j];
+    const intersect = ((yi > py) !== (yj > py)) &&
+      (px < ((xj - xi) * (py - yi)) / (yj - yi + 1e-12) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
 
 export function InequalityRegionBuilder({
   data,
@@ -44,6 +66,8 @@ export function InequalityRegionBuilder({
   const gh = height - 2 * padding;
   const sx = (x: number) => padding + ((x - xMin) / (xMax - xMin)) * gw;
   const sy = (y: number) => padding + ((yMax - y) / (yMax - yMin)) * gh;
+  const unsx = (px: number) => xMin + ((px - padding) / gw) * (xMax - xMin);
+  const unsy = (py: number) => yMax - ((py - padding) / gh) * (yMax - yMin);
 
   const updateLine = (i: number, patch: Partial<LineSpec>) => {
     const lines = data.lines.map((l, j) => (j === i ? { ...l, ...patch } : l));
@@ -56,8 +80,20 @@ export function InequalityRegionBuilder({
   const removeLine = (i: number) => {
     onChange({ ...data, lines: data.lines.filter((_, j) => j !== i) });
   };
-  const updateRegion = (patch: Partial<RegionSpec>) => {
-    onChange({ ...data, region: { ...data.region, ...patch } });
+  const clearPoint = () => onChange({ ...data, point: null });
+
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (disabled) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) * (width / rect.width);
+    const py = (e.clientY - rect.top) * (height / rect.height);
+    let xv = unsx(px);
+    let yv = unsy(py);
+    if (xv < xMin || xv > xMax || yv < yMin || yv > yMax) return;
+    // Snap to nearest 0.1 for precision
+    xv = Math.round(xv * 10) / 10;
+    yv = Math.round(yv * 10) / 10;
+    onChange({ ...data, point: { x: xv, y: yv } });
   };
 
   const renderLine = (l: LineSpec, idx: number) => {
@@ -71,24 +107,31 @@ export function InequalityRegionBuilder({
     if (l.kind === 'y') {
       return <line key={idx} x1={sx(xMin)} y1={sy(a)} x2={sx(xMax)} y2={sy(a)} stroke={color} strokeWidth={2.2} />;
     }
-    // linear y = a*x + b
     if (isNaN(b)) return null;
     const y1 = a * xMin + b;
     const y2 = a * xMax + b;
     return <line key={idx} x1={sx(xMin)} y1={sy(y1)} x2={sx(xMax)} y2={sy(y2)} stroke={color} strokeWidth={2.2} />;
   };
 
-  // Region rectangle
-  const rx1 = parseFloat(data.region.x1);
-  const rx2 = parseFloat(data.region.x2);
-  const ry1 = parseFloat(data.region.y1);
-  const ry2 = parseFloat(data.region.y2);
-  const regionValid = !isNaN(rx1) && !isNaN(rx2) && !isNaN(ry1) && !isNaN(ry2);
+  const polyPoints = REGION_POLYGON.map(([x, y]) => `${sx(x)},${sy(y)}`).join(' ');
+  const pt = data.point;
+  const showRegionOverlay = regionFeedback !== null; // reveal correct region after Check Work / submission
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center">
-        <svg width={width} height={height} className="bg-card rounded-lg border">
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-xs text-muted-foreground text-center">
+          Click on the grid to place a point inside the region <span className="font-semibold text-foreground">R</span>.
+        </p>
+        <svg
+          width={width}
+          height={height}
+          className={cn(
+            "bg-card rounded-lg border",
+            !disabled && "cursor-crosshair",
+          )}
+          onClick={handleSvgClick}
+        >
           {/* grid */}
           {Array.from({ length: xMax - xMin + 1 }, (_, i) => xMin + i).map(x => (
             <line key={`vx${x}`} x1={sx(x)} y1={padding} x2={sx(x)} y2={height - padding}
@@ -108,33 +151,79 @@ export function InequalityRegionBuilder({
           <text x={width - padding + 8} y={sy(0) + 4} fontSize={12} fill="hsl(var(--foreground))">x</text>
           <text x={sx(0) - 4} y={padding - 8} fontSize={12} fill="hsl(var(--foreground))">y</text>
 
-          {/* region */}
-          {regionValid && (
-            <rect
-              x={sx(Math.min(rx1, rx2))}
-              y={sy(Math.max(ry1, ry2))}
-              width={Math.abs(sx(rx2) - sx(rx1))}
-              height={Math.abs(sy(ry2) - sy(ry1))}
-              fill="hsl(var(--primary) / 0.25)"
-              stroke="hsl(var(--primary))"
-              strokeWidth={1.5}
-              strokeDasharray="4,3"
-            />
-          )}
-          {regionValid && (
-            <text
-              x={(sx(rx1) + sx(rx2)) / 2}
-              y={(sy(ry1) + sy(ry2)) / 2 + 4}
-              textAnchor="middle"
-              fontSize={16}
-              fontWeight="bold"
-              fill="hsl(var(--primary))"
-            >R</text>
-          )}
-
           {/* user lines */}
           {data.lines.map((l, i) => renderLine(l, i))}
+
+          {/* Correct region overlay — only shown after feedback */}
+          {showRegionOverlay && (
+            <>
+              <polygon
+                points={polyPoints}
+                fill="hsl(var(--primary) / 0.22)"
+                stroke="hsl(var(--primary))"
+                strokeWidth={1.5}
+                strokeDasharray="4,3"
+                pointerEvents="none"
+              />
+              <text
+                x={(sx(1) + sx(3)) / 2}
+                y={(sy(2) + sy(3)) / 2 + 4}
+                textAnchor="middle"
+                fontSize={16}
+                fontWeight="bold"
+                fill="hsl(var(--primary))"
+                pointerEvents="none"
+              >R</text>
+            </>
+          )}
+
+          {/* User-placed point */}
+          {pt && (
+            <g pointerEvents="none">
+              <circle
+                cx={sx(pt.x)}
+                cy={sy(pt.y)}
+                r={6}
+                fill={
+                  regionFeedback === 'correct' ? '#10b981'
+                    : regionFeedback === 'incorrect' ? 'hsl(var(--destructive))'
+                    : 'hsl(var(--primary))'
+                }
+                stroke="white"
+                strokeWidth={2}
+              />
+              <text
+                x={sx(pt.x) + 10}
+                y={sy(pt.y) - 8}
+                fontSize={11}
+                fontWeight={600}
+                fill="hsl(var(--foreground))"
+              >R ({pt.x}, {pt.y})</text>
+            </g>
+          )}
         </svg>
+
+        <div className="flex items-center gap-2 text-xs">
+          {pt ? (
+            <span className="inline-flex items-center gap-1 text-foreground">
+              <MapPin className="h-3.5 w-3.5" /> Point placed at ({pt.x}, {pt.y})
+            </span>
+          ) : (
+            <span className="text-muted-foreground">No point placed yet.</span>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={clearPoint}
+            disabled={disabled || !pt}
+            className="h-7 px-2"
+          >
+            Clear point
+          </Button>
+          {regionFeedback === 'correct' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+          {regionFeedback === 'incorrect' && <XCircle className="h-4 w-4 text-destructive" />}
+        </div>
       </div>
 
       {/* Lines editor */}
@@ -190,36 +279,13 @@ export function InequalityRegionBuilder({
           );
         })}
       </div>
-
-      {/* Region editor */}
-      <div className={cn(
-        "space-y-2 rounded-md border p-3",
-        regionFeedback === 'correct' && 'border-green-500/60 bg-green-500/10',
-        regionFeedback === 'incorrect' && 'border-destructive/50 bg-destructive/10',
-      )}>
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-medium">Region R (rectangle bounds)</p>
-          {regionFeedback === 'correct' && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-          {regionFeedback === 'incorrect' && <XCircle className="h-4 w-4 text-destructive" />}
-        </div>
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Input value={data.region.x1} onChange={(e) => updateRegion({ x1: e.target.value })} disabled={disabled} placeholder="x₁" className="w-16 h-8" />
-          <span>≤ x ≤</span>
-          <Input value={data.region.x2} onChange={(e) => updateRegion({ x2: e.target.value })} disabled={disabled} placeholder="x₂" className="w-16 h-8" />
-          <span className="mx-2">|</span>
-          <Input value={data.region.y1} onChange={(e) => updateRegion({ y1: e.target.value })} disabled={disabled} placeholder="y₁" className="w-16 h-8" />
-          <span>≤ y ≤</span>
-          <Input value={data.region.y2} onChange={(e) => updateRegion({ y2: e.target.value })} disabled={disabled} placeholder="y₂" className="w-16 h-8" />
-        </div>
-      </div>
     </div>
   );
 }
 
 // ---------- Validation helpers (exported) ----------
 
-export type ExpectedLine = LineSpec; // same shape
-export type ExpectedRegion = { x1: number; x2: number; y1: number; y2: number };
+export type ExpectedLine = LineSpec;
 
 export function lineMatches(user: LineSpec, expected: ExpectedLine): boolean {
   if (user.kind !== expected.kind) return false;
@@ -236,7 +302,7 @@ export function lineMatches(user: LineSpec, expected: ExpectedLine): boolean {
 
 export function evaluateQ16(
   data: Q16Data,
-  expected: { lines: ExpectedLine[]; region: ExpectedRegion }
+  expected: { lines: ExpectedLine[] }
 ): {
   lineFeedback: Array<'correct' | 'incorrect' | null>;
   regionFeedback: 'correct' | 'incorrect' | null;
@@ -256,16 +322,9 @@ export function evaluateQ16(
     return 'incorrect' as const;
   });
 
-  const rx1 = parseFloat(data.region.x1);
-  const rx2 = parseFloat(data.region.x2);
-  const ry1 = parseFloat(data.region.y1);
-  const ry2 = parseFloat(data.region.y2);
-  const regionFilled = !isNaN(rx1) && !isNaN(rx2) && !isNaN(ry1) && !isNaN(ry2);
-  const regionCorrect = regionFilled &&
-    Math.abs(Math.min(rx1, rx2) - expected.region.x1) < 1e-6 &&
-    Math.abs(Math.max(rx1, rx2) - expected.region.x2) < 1e-6 &&
-    Math.abs(Math.min(ry1, ry2) - expected.region.y1) < 1e-6 &&
-    Math.abs(Math.max(ry1, ry2) - expected.region.y2) < 1e-6;
+  const pt = data.point;
+  const regionFilled = !!pt;
+  const regionCorrect = !!pt && pointInRegion(pt.x, pt.y);
 
   return {
     lineFeedback,
@@ -283,5 +342,4 @@ export const Q16_EXPECTED = {
     { kind: 'y', a: '3' },
     { kind: 'linear', a: '0.5', b: '1' },
   ] as ExpectedLine[],
-  region: { x1: 1, x2: 3, y1: 2, y2: 3 } as ExpectedRegion,
 };

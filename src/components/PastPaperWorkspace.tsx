@@ -323,9 +323,23 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     const k0 = ratios[0];
     const equivalent = Math.abs(k0) > 1e-9 && ratios.every((ratio) => Math.abs(ratio - k0) < 1e-6);
 
-    return equivalent
-      ? { verdict: 'correct', ratio: k0 }
-      : { verdict: 'wrong' };
+    if (equivalent) return { verdict: 'correct', ratio: k0 };
+
+    // Try the reverse direction (in case studentDiff is a polynomial multiple
+    // of previousDiff rather than the other way around).
+    const invRatios = ratios.map((r) => (Math.abs(r) > 1e-9 ? 1 / r : NaN)).filter((r) => Number.isFinite(r));
+    if (invRatios.length === ratios.length && invRatios.length > 0) {
+      const i0 = invRatios[0];
+      const invEquivalent = Math.abs(i0) > 1e-9 && invRatios.every((r) => Math.abs(r - i0) < 1e-6);
+      if (invEquivalent) return { verdict: 'correct', ratio: 1 / i0 };
+    }
+
+    // Ratio is non-constant. This is legitimate when the student multiplied
+    // both sides by a polynomial (e.g. clearing a fractional denominator like
+    // (x²-1) — a valid algebraic move). We cannot reliably distinguish this
+    // from a real error using a constant-ratio test, so defer to the AI tutor
+    // instead of false-flagging the line as wrong.
+    return { verdict: 'unknown' };
   };
 
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {

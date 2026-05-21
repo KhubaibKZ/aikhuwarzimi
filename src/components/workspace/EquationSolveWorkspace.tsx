@@ -36,6 +36,9 @@ interface EquationSolveWorkspaceProps {
   customStepsAfterStepKey?: string; // insert "My working" block right after this stage
   customStepTemplate?: 'text' | 'fraction' | 'lhs_rhs'; // shape of each newly added custom step
   initialCustomSteps?: number; // pre-seed N custom-step rows on mount
+  customStepsBefore?: boolean; // if true, render the custom steps block BEFORE the predefined stages
+  hideOwnKeyboard?: boolean; // suppress this workspace's bottom keyboard (use shared one)
+  onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
 }
 
 // Custom step token model

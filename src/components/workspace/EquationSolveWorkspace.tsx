@@ -817,13 +817,15 @@ export function EquationSolveWorkspace({
 
       {!customStepsInline && customStepsBlock}
 
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || (!focusedInput && !focusedSlot)}
-        />
-      </div>
+      {!hideKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted}
+          />
+        </div>
+      )}
     </div>
   );
 }

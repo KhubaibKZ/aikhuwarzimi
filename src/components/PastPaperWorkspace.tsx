@@ -710,6 +710,97 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
 
+      // === Q22 (4024/11 ON 2023) — Functions: per-step partial marks per MS ===
+      if (question.id === 'pp_4024_on23_11_q22') {
+        const toJs = (s: string) => s
+          .replace(/\s+/g, '')
+          .replace(/−/g, '-')
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/')
+          .replace(/(\d)([a-z(])/gi, '$1*$2')
+          .replace(/([a-z)])\(/gi, '$1*(')
+          .replace(/\)([a-z(])/gi, ')*$1');
+        const evalSide = (expr: string, vars: Record<string, number>): number | null => {
+          try {
+            const keys = Object.keys(vars);
+            const fn = new Function(...keys, `return ${toJs(expr)};`);
+            const v = fn(...keys.map(k => vars[k]));
+            return typeof v === 'number' && isFinite(v) ? v : null;
+          } catch { return null; }
+        };
+        const evalEq = (eq: string, vars: Record<string, number>): number | null => {
+          const [l, r] = eq.split('=').map(s => s.trim());
+          if (!l || !r) return null;
+          const lv = evalSide(l, vars);
+          const rv = evalSide(r, vars);
+          if (lv === null || rv === null) return null;
+          return lv - rv;
+        };
+        const isEquivEquation = (eq: string, target: string, testVars: Record<string, number>[]) => {
+          let ratio: number | null = null;
+          for (const v of testVars) {
+            const a = evalEq(eq, v);
+            const b = evalEq(target, v);
+            if (a === null || b === null) return false;
+            if (Math.abs(b) < 1e-9) {
+              if (Math.abs(a) > 1e-6) return false;
+              continue;
+            }
+            const r = a / b;
+            if (ratio === null) ratio = r;
+            else if (Math.abs(r - ratio) > 1e-6) return false;
+          }
+          return ratio !== null && Math.abs(ratio) > 1e-9;
+        };
+
+        // (b) — B1 for any rearrangement step equivalent to y = x/4 + 3
+        const bPart = question.parts.find(p => p.key === 'b_calc');
+        if (bPart && (marksEarned['b_calc'] ?? 0) < bPart.marks) {
+          const target = 'y = x/4 + 3';
+          const testVars = [{ x: 2, y: 3 }, { x: 5, y: -1.7 }, { x: -3, y: 4.2 }];
+          let awarded = false;
+          for (let i = 0; i < 12; i++) {
+            const v = (currentAnswers[`b_calc_custom_${i}`] || '').trim();
+            if (!v || !v.includes('=')) continue;
+            if (isEquivEquation(v, target, testVars)) { awarded = true; break; }
+          }
+          if (awarded) {
+            marksEarned['b_calc'] = Math.max(marksEarned['b_calc'] ?? 0, 1);
+            markingNotes['b_calc'] = 'B1 awarded for a correct rearrangement step (e.g. x = y/4 + 3, y − 3 = x/4, or 4y = x + 12).';
+          }
+        }
+
+        // (c) — B1 for original equation; M1 for expansion + isolation of p
+        const cPart = question.parts.find(p => p.key === 'c_calc');
+        if (cPart && (marksEarned['c_calc'] ?? 0) < cPart.marks) {
+          const target = 'p/4 + 3 = 2*(p + 5 - 1)';
+          const testVars = [{ p: 2 }, { p: -1.5 }, { p: 3.7 }];
+          let b1 = false, m1 = false;
+          for (let i = 0; i < 12; i++) {
+            const v = (currentAnswers[`c_calc_custom_${i}`] || '').trim();
+            if (!v || !v.includes('=')) continue;
+            if (!isEquivEquation(v, target, testVars)) continue;
+            b1 = true;
+            // M1: brackets expanded (no parens) — line still equivalent to original
+            if (!v.includes('(') && !v.includes(')')) m1 = true;
+          }
+          let earned = marksEarned['c_calc'] ?? 0;
+          if (b1) earned = Math.max(earned, 1);
+          if (m1) earned = Math.max(earned, 2);
+          if (earned > (marksEarned['c_calc'] ?? 0)) {
+            marksEarned['c_calc'] = Math.min(cPart.marks, earned);
+            const parts: string[] = [];
+            if (b1) parts.push('B1 for the correct equation p/4 + 3 = 2(p + 5 − 1)');
+            if (m1) parts.push('M1 for expansion of brackets and isolation of terms in p');
+            markingNotes['c_calc'] = `Partial marks awarded — ${parts.join('; ')}.`;
+          }
+        }
+
+        allCorrect = question.parts.every(p => (marksEarned[p.key] ?? 0) >= p.marks);
+      }
+
+
+
       // === Post-pass: Composite scoring for ordering/grouped questions ===
       // For questions with helper parts (marks=0) that feed into a scored part,
       // count how many helpers are correct and award partial marks on the scored part

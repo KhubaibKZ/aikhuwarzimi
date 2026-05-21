@@ -25,6 +25,7 @@ export interface StepWorkspaceProps {
   correctAnswers?: Record<string, string>;
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
+  hideKeyboard?: boolean;
 }
 
 export function StepWorkspace({
@@ -38,7 +39,8 @@ export function StepWorkspace({
   isSubmitted,
   correctAnswers,
   aiResponse,
-  keyboardKeys
+  keyboardKeys,
+  hideKeyboard = false,
 }: StepWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(steps[0]?.key);
   
@@ -177,13 +179,15 @@ export function StepWorkspace({
       ))}
 
       {/* Horizontal Keyboard */}
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || !focusedInput}
-        />
-      </div>
+      {!hideKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted || !focusedInput}
+          />
+        </div>
+      )}
     </div>
   );
 }

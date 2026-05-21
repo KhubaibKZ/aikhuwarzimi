@@ -2451,7 +2451,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
                         const regionMsg = r.regionCorrect
                           ? 'Region R is in the right place.'
-                          : (r.regionFeedback === null ? 'Region R bounds not yet entered.' : 'Region R is not in the right place yet.');
+                          : (r.regionFeedback === null ? 'No point placed for region R yet.' : 'The point you marked is not inside region R.');
                         toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
                         // surface visual feedback by marking checked
                         setIsChecked(true);

@@ -24,7 +24,8 @@ serve(async (req) => {
       specificPart,
       workingContent,
       markingCriteria,
-      previousFeedback
+      previousFeedback,
+      evaluateNeutral
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

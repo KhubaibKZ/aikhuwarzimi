@@ -785,8 +785,10 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['answer'],
     allowCustomSteps: true,
+    customStepsBeforeMap: { answer: true },
+    singleKeyboard: true,
     customStepTemplateMap: { answer: 'lhs_rhs' },
-    initialCustomStepsMap: { answer: 2 },
+    initialCustomStepsMap: { answer: 3 },
     equationStagesMap: {
       'answer': [
         { label: 'Answer', stepKey: 'final', elements: [

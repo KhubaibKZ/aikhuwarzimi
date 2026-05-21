@@ -241,17 +241,32 @@ export function EquationSolveWorkspace({
       }
 
       // Predefined-stage <Input> editing path
-      if (!focusedInput) return;
-      const input = inputRefs.current[focusedInput];
+      let input: HTMLInputElement | null = focusedInput ? inputRefs.current[focusedInput] : null;
+      let useActiveElementFallback = false;
+      if (!input) {
+        // Fallback to whatever native input is currently focused on the page
+        const ae = document.activeElement;
+        if (ae && ae instanceof HTMLInputElement && !ae.disabled) {
+          input = ae;
+          useActiveElementFallback = true;
+        }
+      }
       if (!input) return;
       const start = input.selectionStart || 0;
       const end = input.selectionEnd || 0;
-      const cur = answers[focusedInput] || '';
+      const cur = useActiveElementFallback ? input.value : (answers[focusedInput!] || '');
       const apply = (v: string, caret: number) => {
-        onAnswerChange(focusedInput, v);
+        if (useActiveElementFallback) {
+          // Use the native value setter so React picks up the change
+          const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+          setter?.call(input!, v);
+          input!.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+          onAnswerChange(focusedInput!, v);
+        }
         setTimeout(() => {
-          input.focus();
-          input.setSelectionRange(caret, caret);
+          input!.focus();
+          input!.setSelectionRange(caret, caret);
         }, 0);
       };
       if (key === '⌫') {

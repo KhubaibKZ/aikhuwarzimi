@@ -24,7 +24,8 @@ serve(async (req) => {
       specificPart,
       workingContent,
       markingCriteria,
-      previousFeedback
+      previousFeedback,
+      evaluateNeutral
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -106,14 +107,15 @@ EXAMPLES OF BAD FEEDBACK:
 ❌ Long paragraphs with multiple sentences — too wordy
 
 SITUATION CONTEXT:
-${!hasWrong && !hasMissing ? "Everything is correct! Give a brief thumbs-up like 'Spot on!' or 'That's correct, well done!'" : ""}
-${!hasWrong && hasMissing ? "Work so far is correct. Encourage them: 'Looking good so far — keep going with the next part!'" : ""}
-${hasWrong && !hasMissing ? "They have wrong answers. Identify the likely error, then nudge toward fixing it." : ""}
-${hasWrong && hasMissing ? "They have errors and missing parts. Focus on the error first." : ""}
+${evaluateNeutral ? "You DO NOT know in advance whether the student's line is correct or wrong. FIRST, carefully verify the algebra of the specific line yourself (compute both sides and any transformation from the previous step). If the line is mathematically valid and consistent with the previous step, confirm it briefly and warmly (e.g. 'Yes, this step is correct — multiplying both sides by 4 gives exactly that.'). If it is wrong, identify the actual error. NEVER assume it is wrong by default." : ""}
+${!evaluateNeutral && !hasWrong && !hasMissing ? "Everything is correct! Give a brief thumbs-up like 'Spot on!' or 'That's correct, well done!'" : ""}
+${!evaluateNeutral && !hasWrong && hasMissing ? "Work so far is correct. Encourage them: 'Looking good so far — keep going with the next part!'" : ""}
+${!evaluateNeutral && hasWrong && !hasMissing ? "They have wrong answers. Identify the likely error, then nudge toward fixing it." : ""}
+${!evaluateNeutral && hasWrong && hasMissing ? "They have errors and missing parts. Focus on the error first." : ""}
 
 ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Be gentle but specific about the error." : (attemptCount || 1) <= 4 ? "Be more direct about which step went wrong." : "Give a stronger methodological hint."}
 
-CRITICAL: 2 sentences max. Plain text only. NEVER mention ANY numbers from the calculation. Always start by identifying the error.${partContext}
+CRITICAL: 2 sentences max. Plain text only. ${evaluateNeutral ? "If the step is correct, say so plainly and briefly explain why it follows from the previous step. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
 
 ${markingCriteria ? `MARKING SCHEME CRITERIA (use to understand what earns marks — do NOT reveal to student):
 ${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;

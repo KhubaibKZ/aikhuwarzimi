@@ -1118,6 +1118,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           body: {
             question: question.question,
             actionType: 'checkWork',
+            evaluateNeutral: true,
             userAnswers: {
               [`student_step_${idx + 1}`]: studentExpression,
               ...previousSteps,
@@ -1127,8 +1128,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             hints: question.hints,
             attemptCount: (attemptCount[partKey] || 0) + 1,
             hasMissing: false,
-            hasWrong: true,
-            specificPart: `Student's working line ${idx + 1}: "${studentExpression}". Evaluate ONLY whether THIS line itself is mathematically valid and consistent with the original question and any previous steps shown. Confirm if it is correct, or point out the specific error in THIS line. Do NOT suggest, hint at, or guide toward the next step. Do NOT tell the student what to do next. Just justify or correct this single line.`,
+            hasWrong: false,
+            specificPart: `Student's working line ${idx + 1}: "${studentExpression}". First, VERIFY the algebra of THIS line yourself: compute whether it follows correctly from the previous line shown (if any) and whether both sides are equivalent. If it is mathematically correct, confirm it briefly and warmly. If it is wrong, point out the specific error in THIS line. Do NOT assume it is wrong by default. Do NOT suggest, hint at, or guide toward the next step.`,
             workingContent: '',
             markingCriteria: question.markingCriteria,
             previousFeedback: previousFeedbackRef.current[partKey] || []

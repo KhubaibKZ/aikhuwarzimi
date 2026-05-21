@@ -2368,7 +2368,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                   aiResponse={aiResponse}
                   keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
-                  hideKeyboard={question.id === 'pp_4024_on23_11_q21'}
                 />
                 {(question as any).fractionDivisionParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);
@@ -2428,13 +2427,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     </div>
                   );
                 })}
-                {(question as any).equationSolveParts?.map((partKey: string, idx: number, arr: string[]) => {
+                {(question as any).equationSolveParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);
                   const stagesMap = (question as any).equationStagesMap;
                   const stages = stagesMap?.[partKey] || (question as any).equationStages;
-                  // For Q21, render a single shared keyboard only on the last EquationSolveWorkspace.
-                  const isQ21 = question.id === 'pp_4024_on23_11_q21';
-                  const hideKb = isQ21 && idx !== arr.length - 1;
                   return part && stages ? (
                     <div key={partKey} className="space-y-2">
                       <label className="flex items-center justify-between text-sm">
@@ -2459,7 +2455,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         customStepsAfterStepKey={((question as any).customStepsAfterStepKeyMap || {})[partKey]}
                         customStepTemplate={((question as any).customStepTemplateMap || {})[partKey]}
                         initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
-                        hideKeyboard={hideKb}
                       />
                     </div>
                   ) : null;

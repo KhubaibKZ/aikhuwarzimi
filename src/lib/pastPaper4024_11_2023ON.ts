@@ -658,18 +658,11 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     marks: 5,
     hints: ['(a) 3(2a − 3)', '(b) (2b + 5)(2b − 5)', '(c) Factor: 2c(c−4)/((2c+3)(c−4)) = 2c/(2c+3)'],
     type: 'multi-part',
-    equationSolveParts: ['b', 'c'],
+    equationSolveParts: ['c'],
     allowCustomSteps: true,
-    customStepsAfterStepKeyMap: { b: 'work', c: 's1' },
-    customStepTemplateMap: { b: 'text', c: 'fraction' },
+    customStepsAfterStepKeyMap: { c: 's1' },
+    customStepTemplateMap: { c: 'fraction' },
     equationStagesMap: {
-      'b': [
-        { label: 'Working (show your factorisation steps)', stepKey: 'work', elements: [] },
-        { label: 'Final factorised answer', stepKey: 'final', elements: [
-          { type: 'text', value: '=' },
-          { type: 'box', key: 'final', width: 'w-48' }
-        ]}
-      ],
       'c': [
         { label: 'Factorise', stepKey: 's1', elements: [
           { type: 'fraction',
@@ -694,7 +687,6 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '3(2a-3)|(2a-3)3|(2a-3)*3|3*(2a-3)',
       b: '(2b+5)(2b-5)|(2b-5)(2b+5)|(2b+5)*(2b-5)|(2b-5)*(2b+5)',
-      b_final: '(2b+5)(2b-5)|(2b-5)(2b+5)|(2b+5)*(2b-5)|(2b-5)*(2b+5)',
       c: '2c/(2c+3)',
       c_s1_num: '2c(c-4)|(c-4)2c|2c*(c-4)|(c-4)*2c',
       c_s1_den: '(2c+3)(c-4)|(c-4)(2c+3)|(2c+3)*(c-4)|(c-4)*(2c+3)',

@@ -1591,11 +1591,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
   // For equationSolveParts, check the last box of the last stage instead of the part key
   const areAllPartsCompleted = (): boolean => {
-    // Q16: requires region bounds filled in builder
+    // Q16: requires a point placed on the diagram to mark region R
     if (question.id === 'pp_4024_on23_11_q16') {
       try {
         const d = JSON.parse(answers['q16_data'] || '{}');
-        return !!(d?.region?.x1 && d?.region?.x2 && d?.region?.y1 && d?.region?.y2);
+        return !!d?.point && typeof d.point.x === 'number' && typeof d.point.y === 'number';
       } catch { return false; }
     }
     if (question.parts) {
@@ -2451,7 +2451,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
                         const regionMsg = r.regionCorrect
                           ? 'Region R is in the right place.'
-                          : (r.regionFeedback === null ? 'Region R bounds not yet entered.' : 'Region R is not in the right place yet.');
+                          : (r.regionFeedback === null ? 'No point placed for region R yet.' : 'The point you marked is not inside region R.');
                         toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
                         // surface visual feedback by marking checked
                         setIsChecked(true);

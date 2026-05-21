@@ -233,6 +233,101 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return null;
   };
 
+  const toEvaluableMath = (expr: string): string => {
+    let s = expr
+      .replace(/\s+/g, '')
+      .replace(/[−–—]/g, '-')
+      .replace(/[×·]/g, '*')
+      .replace(/÷/g, '/')
+      .replace(/π/g, 'Math.PI')
+      .replace(/²/g, '**2')
+      .replace(/³/g, '**3')
+      .replace(/\^/g, '**');
+
+    s = s
+      .replace(/(\d)([a-zA-Z(])/g, '$1*$2')
+      .replace(/([a-zA-Z])\(/g, '$1*(')
+      .replace(/\)([a-zA-Z0-9(])/g, ')*$1');
+
+    return s;
+  };
+
+  const evaluateMathExpression = (expr: string, vars: Record<string, number>): number | null => {
+    try {
+      const keys = Object.keys(vars);
+      const fn = new Function(...keys, `return ${toEvaluableMath(expr)};`);
+      const value = fn(...keys.map((key) => vars[key]));
+      return typeof value === 'number' && Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const evaluateEquationDifference = (equation: string, vars: Record<string, number>): number | null => {
+    const parts = equation.split('=').map((part) => part.trim());
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+    const left = evaluateMathExpression(parts[0], vars);
+    const right = evaluateMathExpression(parts[1], vars);
+    if (left === null || right === null) return null;
+    return left - right;
+  };
+
+  const compareEquationFlow = (
+    previousLine: string,
+    studentLine: string,
+    variableNames: string[],
+  ): { verdict: 'correct' | 'wrong' | 'unknown'; ratio?: number } => {
+    if (!previousLine.includes('=') || !studentLine.includes('=')) {
+      return { verdict: 'unknown' };
+    }
+
+    const seeds = [1.7, 2.3, -1.5, 4.1, 0.6];
+    const testVars = seeds.map((seed, idx) =>
+      Object.fromEntries(
+        variableNames.map((name, varIdx) => [name, seeds[(idx + varIdx) % seeds.length] + varIdx * 0.37]),
+      ) as Record<string, number>,
+    );
+
+    const ratios: number[] = [];
+    let sawComparablePoint = false;
+
+    for (const vars of testVars) {
+      const previousDiff = evaluateEquationDifference(previousLine, vars);
+      const studentDiff = evaluateEquationDifference(studentLine, vars);
+
+      if (previousDiff === null || studentDiff === null) {
+        return { verdict: 'unknown' };
+      }
+
+      if (Math.abs(studentDiff) < 1e-9 && Math.abs(previousDiff) < 1e-9) {
+        continue;
+      }
+
+      sawComparablePoint = true;
+
+      if (Math.abs(studentDiff) < 1e-9) {
+        return { verdict: 'wrong' };
+      }
+
+      ratios.push(previousDiff / studentDiff);
+    }
+
+    if (!sawComparablePoint) {
+      return { verdict: 'correct', ratio: 1 };
+    }
+
+    if (ratios.length === 0) {
+      return { verdict: 'unknown' };
+    }
+
+    const k0 = ratios[0];
+    const equivalent = Math.abs(k0) > 1e-9 && ratios.every((ratio) => Math.abs(ratio - k0) < 1e-6);
+
+    return equivalent
+      ? { verdict: 'correct', ratio: k0 }
+      : { verdict: 'wrong' };
+  };
+
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {
     const u = normalizeAnswer(userRaw);
     const c = normalizeAnswer(correctRaw);

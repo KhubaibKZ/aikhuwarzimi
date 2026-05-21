@@ -233,6 +233,101 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     return null;
   };
 
+  const toEvaluableMath = (expr: string): string => {
+    let s = expr
+      .replace(/\s+/g, '')
+      .replace(/[−–—]/g, '-')
+      .replace(/[×·]/g, '*')
+      .replace(/÷/g, '/')
+      .replace(/π/g, 'Math.PI')
+      .replace(/²/g, '**2')
+      .replace(/³/g, '**3')
+      .replace(/\^/g, '**');
+
+    s = s
+      .replace(/(\d)([a-zA-Z(])/g, '$1*$2')
+      .replace(/([a-zA-Z])\(/g, '$1*(')
+      .replace(/\)([a-zA-Z0-9(])/g, ')*$1');
+
+    return s;
+  };
+
+  const evaluateMathExpression = (expr: string, vars: Record<string, number>): number | null => {
+    try {
+      const keys = Object.keys(vars);
+      const fn = new Function(...keys, `return ${toEvaluableMath(expr)};`);
+      const value = fn(...keys.map((key) => vars[key]));
+      return typeof value === 'number' && Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const evaluateEquationDifference = (equation: string, vars: Record<string, number>): number | null => {
+    const parts = equation.split('=').map((part) => part.trim());
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+    const left = evaluateMathExpression(parts[0], vars);
+    const right = evaluateMathExpression(parts[1], vars);
+    if (left === null || right === null) return null;
+    return left - right;
+  };
+
+  const compareEquationFlow = (
+    previousLine: string,
+    studentLine: string,
+    variableNames: string[],
+  ): { verdict: 'correct' | 'wrong' | 'unknown'; ratio?: number } => {
+    if (!previousLine.includes('=') || !studentLine.includes('=')) {
+      return { verdict: 'unknown' };
+    }
+
+    const seeds = [1.7, 2.3, -1.5, 4.1, 0.6];
+    const testVars = seeds.map((seed, idx) =>
+      Object.fromEntries(
+        variableNames.map((name, varIdx) => [name, seeds[(idx + varIdx) % seeds.length] + varIdx * 0.37]),
+      ) as Record<string, number>,
+    );
+
+    const ratios: number[] = [];
+    let sawComparablePoint = false;
+
+    for (const vars of testVars) {
+      const previousDiff = evaluateEquationDifference(previousLine, vars);
+      const studentDiff = evaluateEquationDifference(studentLine, vars);
+
+      if (previousDiff === null || studentDiff === null) {
+        return { verdict: 'unknown' };
+      }
+
+      if (Math.abs(studentDiff) < 1e-9 && Math.abs(previousDiff) < 1e-9) {
+        continue;
+      }
+
+      sawComparablePoint = true;
+
+      if (Math.abs(studentDiff) < 1e-9) {
+        return { verdict: 'wrong' };
+      }
+
+      ratios.push(previousDiff / studentDiff);
+    }
+
+    if (!sawComparablePoint) {
+      return { verdict: 'correct', ratio: 1 };
+    }
+
+    if (ratios.length === 0) {
+      return { verdict: 'unknown' };
+    }
+
+    const k0 = ratios[0];
+    const equivalent = Math.abs(k0) > 1e-9 && ratios.every((ratio) => Math.abs(ratio - k0) < 1e-6);
+
+    return equivalent
+      ? { verdict: 'correct', ratio: k0 }
+      : { verdict: 'wrong' };
+  };
+
   const answersMatch = (userRaw: string, correctRaw: string): boolean => {
     const u = normalizeAnswer(userRaw);
     const c = normalizeAnswer(correctRaw);
@@ -1208,48 +1303,24 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       let deterministicVerdict: 'correct' | 'wrong' | 'unknown' = 'unknown';
       let deterministicNote = '';
       try {
-        const prevLine = idx > 0 ? answers[`${rootPart}_custom_${idx - 1}`] : '';
+        let prevLine = '';
+        for (let i = idx - 1; i >= 0; i--) {
+          const candidate = (answers[`${rootPart}_custom_${i}`] || '').trim();
+          if (candidate) {
+            prevLine = candidate;
+            break;
+          }
+        }
+
         if (prevLine && studentExpression.includes('=') && prevLine.includes('=')) {
-          const toJs = (expr: string) => {
-            let s = expr.replace(/\s+/g, '');
-            // Insert * for implicit multiplication: 2p -> 2*p, 2( -> 2*(, )( -> )*(, )p -> )*p, p( -> p*(
-            s = s.replace(/(\d)([a-zA-Z(])/g, '$1*$2');
-            s = s.replace(/\)([a-zA-Z0-9(])/g, ')*$1');
-            s = s.replace(/([a-zA-Z])\(/g, '$1*(');
-            return s;
-          };
-          // Detect variable (first letter found)
-          const varMatch = (prevLine + studentExpression).match(/[a-zA-Z]/);
-          const varName = varMatch ? varMatch[0] : 'x';
-          const splitEq = (eq: string) => {
-            const [l, r] = eq.split('=');
-            return [toJs(l), toJs(r)];
-          };
-          const [pl, pr] = splitEq(prevLine);
-          const [sl, sr] = splitEq(studentExpression);
-          // eslint-disable-next-line no-new-func
-          const fPrev = new Function(varName, `return (${pl}) - (${pr});`) as (v: number) => number;
-          // eslint-disable-next-line no-new-func
-          const fStud = new Function(varName, `return (${sl}) - (${sr});`) as (v: number) => number;
-          const testVals = [1.7, 2.3, -1.5, 4.1, 0.6];
-          const ratios: number[] = [];
-          let valid = true;
-          for (const v of testVals) {
-            const a = fPrev(v);
-            const b = fStud(v);
-            if (!isFinite(a) || !isFinite(b)) { valid = false; break; }
-            if (Math.abs(b) < 1e-9 && Math.abs(a) < 1e-9) continue;
-            if (Math.abs(b) < 1e-9) { valid = false; break; }
-            ratios.push(a / b);
-          }
-          if (valid && ratios.length > 0) {
-            const k0 = ratios[0];
-            const equivalent = Math.abs(k0) > 1e-9 && ratios.every(r => Math.abs(r - k0) < 1e-6);
-            deterministicVerdict = equivalent ? 'correct' : 'wrong';
-            deterministicNote = equivalent
-              ? `Verified: this line is algebraically equivalent to the previous line (multiplier ≈ ${k0.toFixed(3)}).`
-              : `Verified: this line is NOT algebraically equivalent to the previous line. The transformation introduces an error.`;
-          }
+          const variableNames = Array.from(new Set((prevLine + studentExpression).match(/[a-zA-Z]/g) || ['x']));
+          const flowCheck = compareEquationFlow(prevLine, studentExpression, variableNames);
+          deterministicVerdict = flowCheck.verdict;
+          deterministicNote = flowCheck.verdict === 'correct'
+            ? `Verified: this line follows correctly from the previous line (equivalent equation${typeof flowCheck.ratio === 'number' ? `, multiplier ≈ ${flowCheck.ratio.toFixed(3)}` : ''}).`
+            : flowCheck.verdict === 'wrong'
+            ? 'Verified: this line does NOT follow logically from the previous line; the equations are not equivalent.'
+            : '';
         }
       } catch (e) {
         console.warn('Deterministic check failed, falling back to AI only:', e);
@@ -1287,7 +1358,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             specificPart: deterministicVerdict === 'correct'
               ? `DETERMINISTIC VERIFICATION: ${deterministicNote} The student's line "${studentExpression}" is CORRECT. Give a brief warm confirmation (1-2 sentences) explaining what they did right (e.g. multiplied both sides, distributed, combined like terms). Do NOT hint at the next step. Do NOT contradict this verdict.`
               : deterministicVerdict === 'wrong'
-              ? `DETERMINISTIC VERIFICATION: ${deterministicNote} The student's line "${studentExpression}" is WRONG — it is not equivalent to the previous line "${idx > 0 ? answers[`${rootPart}_custom_${idx - 1}`] : ''}". Identify the specific arithmetic/algebraic error (e.g. forgot to multiply a term on one side, wrong distribution, sign error) WITHOUT revealing the corrected value or final answer. Do NOT mark it as correct. Do NOT contradict this verdict.`
+              ? `DETERMINISTIC VERIFICATION: ${deterministicNote} The student's line "${studentExpression}" is WRONG — it is not equivalent to the previous non-empty line in their working. Identify the specific arithmetic/algebraic error (e.g. forgot to multiply a term on one side, wrong distribution, sign error) WITHOUT revealing the corrected value or final answer. Do NOT mark it as correct. Do NOT contradict this verdict.`
               : `Student's working line ${idx + 1}: "${studentExpression}". First, VERIFY the algebra of THIS line yourself: compute whether it follows correctly from the previous line shown (if any) and whether both sides are equivalent. If it is mathematically correct, confirm it briefly and warmly. If it is wrong, point out the specific error in THIS line. Do NOT assume it is wrong by default. Do NOT suggest, hint at, or guide toward the next step.`,
             workingContent: '',
             markingCriteria: question.markingCriteria,

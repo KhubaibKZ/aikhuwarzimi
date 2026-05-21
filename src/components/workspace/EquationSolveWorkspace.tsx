@@ -409,16 +409,38 @@ export function EquationSolveWorkspace({
 
     return (
     <span key={slot} className="relative inline-flex group/slot">
-      <span
-        className={slotClasses(slot, text, minW)}
-        onPointerDown={(e) => {
-          e.preventDefault();
+      <input
+        type="text"
+        value={text}
+        disabled={isSubmitted}
+        onFocus={() => {
           setFocusedSlot(slot);
           setFocusedInput(null);
         }}
-      >
-        {text || '\u200b'}
-      </span>
+        onChange={(e) => {
+          const v = e.target.value;
+          const f = parseSlot(slot);
+          if (!f) return;
+          setCustomSteps((prev) =>
+            prev.map((step, i) => {
+              if (i !== f.si) return step;
+              return step.map((p, j) => {
+                if (j !== f.pi) return p;
+                if (p.kind === 'txt' && f.slot === 'txt') return { ...p, s: v };
+                if (p.kind === 'frac' && f.slot === 'n') return { ...p, n: v };
+                if (p.kind === 'frac' && f.slot === 'd') return { ...p, d: v };
+                return p;
+              });
+            }),
+          );
+        }}
+        className={cn(
+          minW,
+          'inline-flex items-center justify-center px-1.5 h-7 rounded border bg-background font-mono text-base text-center',
+          isFocused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
+          'focus:outline-none',
+        )}
+      />
       {showClearButton && (
         <button
           type="button"

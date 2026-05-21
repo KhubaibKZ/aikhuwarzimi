@@ -19,6 +19,7 @@ import { QuestionText } from '@/components/QuestionText';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { StepWorkspace, FractionDivisionWorkspace, EquationSolveWorkspace } from '@/components/workspace';
+import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { getKeyboardConfig } from '@/lib/keyboardConfigs';
 import { 
   CoordinateGrid, 

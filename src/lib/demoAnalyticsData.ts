@@ -2,6 +2,7 @@
 // Shows realistic mock data for 10 papers across 4 years (2021-2024)
 
 import type { PastPaperResult, TopicMastery, PaperScore } from './analyticsData';
+import { olevelMathsSyllabus } from './olevelSyllabusData';
 
 // ── Demo Progress Rows (simulating student_paper_progress rows) ──
 

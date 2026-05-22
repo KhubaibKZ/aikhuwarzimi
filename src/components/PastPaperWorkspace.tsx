@@ -187,6 +187,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         setFinalTime(null);
         startTimeRef.current = Date.now();
         aiUsageRef.current = 0;
+        checkworkUsageRef.current = 0;
       }
     };
     checkExistingSubmission();

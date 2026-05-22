@@ -1722,6 +1722,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         accuracy_score: accuracyScore,
         speed_score: speedScore,
         ai_usage_count: aiUsageRef.current,
+        checkwork_count: checkworkUsageRef.current,
         time_spent_seconds: timeSpent,
         total_steps: totalCount,
         completed_steps: correctCount,

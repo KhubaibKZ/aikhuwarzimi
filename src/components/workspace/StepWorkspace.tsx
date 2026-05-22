@@ -40,7 +40,9 @@ export function StepWorkspace({
   isSubmitted,
   correctAnswers,
   aiResponse,
-  keyboardKeys
+  keyboardKeys,
+  hideOwnKeyboard = false,
+  onActiveKeyHandler,
 }: StepWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(steps[0]?.key);
   

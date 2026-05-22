@@ -1496,7 +1496,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       setIsLoading(true);
       setLoadingType('check');
       setLoadingPartKey(partKey);
-      aiUsageRef.current += 1;
+      checkworkUsageRef.current += 1;
       if (user && matchedPaper && paperQuota) {
         await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
         refetchAssignments();

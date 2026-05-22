@@ -1788,6 +1788,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setElapsedSeconds(0);
     startTimeRef.current = Date.now();
     aiUsageRef.current = 0;
+    checkworkUsageRef.current = 0;
   };
 
   // Reset individual question (dashboard/general mode only)

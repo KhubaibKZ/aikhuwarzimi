@@ -89,8 +89,14 @@ export function VectorParallelogram2023ON() {
         {/* Y point (only after student places it) */}
         {showY && Y && (
           <>
+            {matchX && (
+              <line x1={X.x} y1={X.y} x2={Y.x} y2={Y.y}
+                stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="3 2" />
+            )}
             <circle cx={Y.x} cy={Y.y} r="4" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="1" />
-            <text x={Y.x + 6} y={Y.y - 6} className="text-[12px] fill-primary font-bold italic">Y</text>
+            <text x={Y.x + 6} y={Y.y - 6} className="text-[12px] fill-primary font-bold italic">
+              {matchX ? 'Y ≡ X' : 'Y'}
+            </text>
           </>
         )}
 

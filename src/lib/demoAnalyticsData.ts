@@ -2,6 +2,7 @@
 // Shows realistic mock data for 10 papers across 4 years (2021-2024)
 
 import type { PastPaperResult, TopicMastery, PaperScore } from './analyticsData';
+import { olevelMathsSyllabus } from './olevelSyllabusData';
 
 // ── Demo Progress Rows (simulating student_paper_progress rows) ──
 
@@ -117,17 +118,27 @@ function generateDemoRows(): DemoRow[] {
   return rows;
 }
 
+// Pick a subtopic for a given topic + question index, deterministically
+function pickSubtopic(topicId: number, qNum: number): { code: string; title: string } {
+  const t = olevelMathsSyllabus.topics.find(tp => tp.id === topicId);
+  if (!t || t.subtopics.length === 0) return { code: '', title: '' };
+  const sub = t.subtopics[(qNum - 1) % t.subtopics.length];
+  return { code: sub.code, title: sub.title };
+}
+
 // Build a topic map for demo questions
 function buildDemoTopicMap(rows: DemoRow[]) {
-  const map: Record<string, { topicId: number; topicTitle: string }> = {};
+  const map: Record<string, { topicId: number; topicTitle: string; subtopicCode: string; subtopicTitle: string }> = {};
   for (const r of rows) {
     const match = r.question_id.match(/_q(\d+)$/);
     const qNum = match ? parseInt(match[1]) : 1;
     const topic = topics[(qNum - 1) % 9];
-    map[r.question_id] = { topicId: topic.id, topicTitle: topic.name };
+    const sub = pickSubtopic(topic.id, qNum);
+    map[r.question_id] = { topicId: topic.id, topicTitle: topic.name, subtopicCode: sub.code, subtopicTitle: sub.title };
   }
   return map;
 }
+
 
 // Pre-generate
 const demoRows = generateDemoRows();
@@ -262,12 +273,13 @@ export const demoTopicMastery: TopicMastery[] = (() => {
 
 // Build FULL topic map (all questions including unsolved) for correct progress denominator
 function buildFullDemoTopicMap() {
-  const map: Record<string, { topicId: number; topicTitle: string; paperId: string }> = {};
+  const map: Record<string, { topicId: number; topicTitle: string; subtopicCode: string; subtopicTitle: string; paperId: string }> = {};
   for (const paper of demoPapers) {
     for (let q = 0; q < paper.totalQuestions; q++) {
       const topic = topics[q % 9];
       const questionId = `demo_${paper.id}_q${q + 1}`;
-      map[questionId] = { topicId: topic.id, topicTitle: topic.name, paperId: paper.id };
+      const sub = pickSubtopic(topic.id, q + 1);
+      map[questionId] = { topicId: topic.id, topicTitle: topic.name, subtopicCode: sub.code, subtopicTitle: sub.title, paperId: paper.id };
     }
   }
   return map;

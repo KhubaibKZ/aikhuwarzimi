@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { Fragment, useState, useMemo } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -211,6 +211,9 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
       const qNo = demoMode
         ? r.question_id.replace(/^demo_.*_q/, 'Q')
         : (pastPaperQuestions[r.question_id]?.questionNumber || r.question_id);
+      const ref: any = activeTopicMap[r.question_id];
+      const subtopicCode = ref?.subtopicCode || '';
+      const subtopicTitle = ref?.subtopicTitle || 'Other';
       return {
         paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
         questionNo: qNo,
@@ -218,9 +221,28 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
         checkWorkUsed: r.checkwork_count || 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),
+        subtopicCode,
+        subtopicTitle,
       };
     });
-  }, [topicRows, demoMode]);
+  }, [topicRows, demoMode, activeTopicMap]);
+
+  // Group breakdown rows by subtopic (preserve first-seen order)
+  const subtopicGroups = useMemo(() => {
+    const groups = new Map<string, { code: string; title: string; items: typeof questionBreakdown }>();
+    questionBreakdown.forEach(q => {
+      const key = q.subtopicCode || q.subtopicTitle;
+      if (!groups.has(key)) groups.set(key, { code: q.subtopicCode, title: q.subtopicTitle, items: [] });
+      groups.get(key)!.items.push(q);
+    });
+    // sort by subtopic code numerically when possible
+    return Array.from(groups.values()).sort((a, b) => {
+      const an = parseFloat(a.code) || 999;
+      const bn = parseFloat(b.code) || 999;
+      return an - bn;
+    });
+  }, [questionBreakdown]);
+
 
   return (
     <div
@@ -273,7 +295,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
             </div>
           </div>
 
-          {/* Question-wise breakdown table */}
+          {/* Question-wise breakdown table — grouped by subtopic */}
           <div className="overflow-x-auto border-t border-border/30">
             <table className="w-full text-xs">
               <thead>
@@ -287,21 +309,37 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
                 </tr>
               </thead>
               <tbody>
-                {questionBreakdown.map((q, i) => (
-                  <tr key={i} className="border-b border-border/30 last:border-0">
-                    <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
-                    <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
-                    <td className="py-2 px-2 text-center">{q.marks}</td>
-                    <td className="py-2 px-2 text-center">
-                      <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
-                    </td>
-                    <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
-                    <td className="py-2 px-2 text-center">{q.timeTaken}</td>
-                  </tr>
+                {subtopicGroups.map((group, gi) => (
+                  <Fragment key={`g-${gi}`}>
+                    <tr className="bg-primary/10 border-b border-border/50">
+                      <td colSpan={6} className="py-1.5 px-4">
+                        <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
+                          {group.code ? `${group.code} · ` : ''}{group.title}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground ml-2">
+                          {group.items.length} {group.items.length === 1 ? 'question' : 'questions'}
+                        </span>
+                      </td>
+                    </tr>
+                    {group.items.map((q, i) => (
+                      <tr key={`q-${i}`} className="border-b border-border/30">
+                        <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
+                        <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
+                        <td className="py-2 px-2 text-center">{q.marks}</td>
+                        <td className="py-2 px-2 text-center">
+                          <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                        </td>
+                        <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
+                        <td className="py-2 px-2 text-center">{q.timeTaken}</td>
+                      </tr>
+                    ))}
+                  </Fragment>
                 ))}
+
               </tbody>
             </table>
           </div>
+
         </div>
       )}
     </div>

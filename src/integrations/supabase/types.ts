@@ -159,6 +159,7 @@ export type Database = {
         Row: {
           accuracy_score: number | null
           ai_usage_count: number | null
+          checkwork_count: number
           completed_steps: number | null
           created_at: string
           id: string
@@ -177,6 +178,7 @@ export type Database = {
         Insert: {
           accuracy_score?: number | null
           ai_usage_count?: number | null
+          checkwork_count?: number
           completed_steps?: number | null
           created_at?: string
           id?: string
@@ -195,6 +197,7 @@ export type Database = {
         Update: {
           accuracy_score?: number | null
           ai_usage_count?: number | null
+          checkwork_count?: number
           completed_steps?: number | null
           created_at?: string
           id?: string

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen } from 'lucide-react';
@@ -25,6 +25,8 @@ export interface StepWorkspaceProps {
   correctAnswers?: Record<string, string>;
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
+  hideOwnKeyboard?: boolean;
+  onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
 }
 
 export function StepWorkspace({
@@ -38,7 +40,9 @@ export function StepWorkspace({
   isSubmitted,
   correctAnswers,
   aiResponse,
-  keyboardKeys
+  keyboardKeys,
+  hideOwnKeyboard = false,
+  onActiveKeyHandler,
 }: StepWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(steps[0]?.key);
   
@@ -86,6 +90,12 @@ export function StepWorkspace({
   const setInputRef = useCallback((key: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
     inputRefs.current[key] = el;
   }, []);
+
+  // Publish active key handler when this workspace is focused (for shared keyboard)
+  useEffect(() => {
+    if (!hideOwnKeyboard || !onActiveKeyHandler) return;
+    if (focusedInput) onActiveKeyHandler(handleKeyPress);
+  }, [focusedInput, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
 
   // Don't render anything if there are no steps
   if (steps.length === 0) return null;
@@ -177,13 +187,15 @@ export function StepWorkspace({
       ))}
 
       {/* Horizontal Keyboard */}
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || !focusedInput}
-        />
-      </div>
+      {!hideOwnKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted || !focusedInput}
+          />
+        </div>
+      )}
     </div>
   );
 }

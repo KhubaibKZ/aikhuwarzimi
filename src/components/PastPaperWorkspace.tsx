@@ -2760,6 +2760,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                   aiResponse={aiResponse}
                   keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
+                  hideOwnKeyboard={!!(question as any).singleKeyboard}
+                  onActiveKeyHandler={!!(question as any).singleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
                 />
                 {(question as any).fractionDivisionParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);

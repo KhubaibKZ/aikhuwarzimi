@@ -525,7 +525,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         allCorrect: total === question.marks,
         newFeedback,
         marksEarned: { answer: total },
-        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.regionCorrect ? 'correct' : 'incorrect'} (${regionB} mark).` },
+        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.matchedVertexCount}/${r.totalExpectedVertices} vertices${r.hasExtraPoints ? ' + extra points' : ''} (${regionB} mark).` },
       };
     }
 

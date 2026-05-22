@@ -295,7 +295,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
             </div>
           </div>
 
-          {/* Question-wise breakdown table */}
+          {/* Question-wise breakdown table — grouped by subtopic */}
           <div className="overflow-x-auto border-t border-border/30">
             <table className="w-full text-xs">
               <thead>
@@ -309,21 +309,36 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
                 </tr>
               </thead>
               <tbody>
-                {questionBreakdown.map((q, i) => (
-                  <tr key={i} className="border-b border-border/30 last:border-0">
-                    <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
-                    <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
-                    <td className="py-2 px-2 text-center">{q.marks}</td>
-                    <td className="py-2 px-2 text-center">
-                      <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
-                    </td>
-                    <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
-                    <td className="py-2 px-2 text-center">{q.timeTaken}</td>
-                  </tr>
+                {subtopicGroups.map((group, gi) => (
+                  <>
+                    <tr key={`g-${gi}`} className="bg-primary/10 border-b border-border/50">
+                      <td colSpan={6} className="py-1.5 px-4">
+                        <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
+                          {group.code ? `${group.code} · ` : ''}{group.title}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground ml-2">
+                          {group.items.length} {group.items.length === 1 ? 'question' : 'questions'}
+                        </span>
+                      </td>
+                    </tr>
+                    {group.items.map((q, i) => (
+                      <tr key={`g-${gi}-q-${i}`} className="border-b border-border/30">
+                        <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
+                        <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
+                        <td className="py-2 px-2 text-center">{q.marks}</td>
+                        <td className="py-2 px-2 text-center">
+                          <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                        </td>
+                        <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
+                        <td className="py-2 px-2 text-center">{q.timeTaken}</td>
+                      </tr>
+                    ))}
+                  </>
                 ))}
               </tbody>
             </table>
           </div>
+
         </div>
       )}
     </div>

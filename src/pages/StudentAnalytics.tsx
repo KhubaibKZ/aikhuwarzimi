@@ -211,6 +211,9 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
       const qNo = demoMode
         ? r.question_id.replace(/^demo_.*_q/, 'Q')
         : (pastPaperQuestions[r.question_id]?.questionNumber || r.question_id);
+      const ref: any = activeTopicMap[r.question_id];
+      const subtopicCode = ref?.subtopicCode || '';
+      const subtopicTitle = ref?.subtopicTitle || 'Other';
       return {
         paper: paper ? `${paper.code} ${paper.session.substring(0, 2)}${String(paper.year).substring(2)}` : r.paper_id,
         questionNo: qNo,
@@ -218,9 +221,28 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
         hintUsed: r.ai_usage_count > 0 ? 'Yes' : 'No',
         checkWorkUsed: r.checkwork_count || 0,
         timeTaken: formatTimeSec(r.time_spent_seconds || 0),
+        subtopicCode,
+        subtopicTitle,
       };
     });
-  }, [topicRows, demoMode]);
+  }, [topicRows, demoMode, activeTopicMap]);
+
+  // Group breakdown rows by subtopic (preserve first-seen order)
+  const subtopicGroups = useMemo(() => {
+    const groups = new Map<string, { code: string; title: string; items: typeof questionBreakdown }>();
+    questionBreakdown.forEach(q => {
+      const key = q.subtopicCode || q.subtopicTitle;
+      if (!groups.has(key)) groups.set(key, { code: q.subtopicCode, title: q.subtopicTitle, items: [] });
+      groups.get(key)!.items.push(q);
+    });
+    // sort by subtopic code numerically when possible
+    return Array.from(groups.values()).sort((a, b) => {
+      const an = parseFloat(a.code) || 999;
+      const bn = parseFloat(b.code) || 999;
+      return an - bn;
+    });
+  }, [questionBreakdown]);
+
 
   return (
     <div

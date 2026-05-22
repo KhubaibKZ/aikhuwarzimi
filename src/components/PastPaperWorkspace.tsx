@@ -2867,7 +2867,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
                               customStepsBefore={!!(beforeMap && beforeMap[partKey])}
                               hideOwnKeyboard={useSingleKeyboard}
-                              onActiveKeyHandler={useSingleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
+                              onActiveKeyHandler={useSingleKeyboard ? publishActiveKeyHandler : undefined}
+
                             />
                           </div>
                         );

@@ -2439,6 +2439,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     onChange={(d) => handleAnswerChange('q16_data', JSON.stringify(d))}
                     disabled={isSubmitted}
                     lineFeedback={showFeedback ? evalRes.lineFeedback : []}
+                    pointFeedback={showFeedback ? evalRes.pointFeedback : []}
                     regionFeedback={showFeedback ? evalRes.regionFeedback : null}
                   />
                   <div className="mt-3 flex justify-end">
@@ -2449,11 +2450,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       onClick={() => {
                         const r = evaluateQ16(data, Q16_EXPECTED);
                         const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
+                        const vertexMsg = `${r.matchedVertexCount}/${r.totalExpectedVertices} region vertices marked` +
+                          (r.hasExtraPoints ? ' (some marked points are not vertices of R)' : '');
                         const regionMsg = r.regionCorrect
-                          ? 'Region R is in the right place.'
-                          : (r.regionFeedback === null ? 'No point placed for region R yet.' : 'The point you marked is not inside region R.');
+                          ? 'Region R is fully marked correctly.'
+                          : (r.regionFeedback === null ? 'No points placed for region R yet.' : vertexMsg);
                         toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
-                        // surface visual feedback by marking checked
                         setIsChecked(true);
                       }}
                       disabled={isSubmitted}

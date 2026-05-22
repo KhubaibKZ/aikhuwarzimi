@@ -20,6 +20,7 @@ export function VectorParallelogram2023ON() {
   const [side, setSide] = useState<Side>('');
   const [num, setNum] = useState<string>('');
   const [den, setDen] = useState<string>('');
+  const [matchX, setMatchX] = useState<boolean>(false);
 
   const endpoints: Record<Exclude<Side, ''>, [{ x: number; y: number }, { x: number; y: number }, string]> = {
     OA: [O, A, 'OY:YA'],

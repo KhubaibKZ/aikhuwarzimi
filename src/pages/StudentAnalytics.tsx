@@ -310,8 +310,8 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
               </thead>
               <tbody>
                 {subtopicGroups.map((group, gi) => (
-                  <>
-                    <tr key={`g-${gi}`} className="bg-primary/10 border-b border-border/50">
+                  <Fragment key={`g-${gi}`}>
+                    <tr className="bg-primary/10 border-b border-border/50">
                       <td colSpan={6} className="py-1.5 px-4">
                         <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
                           {group.code ? `${group.code} · ` : ''}{group.title}
@@ -322,7 +322,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
                       </td>
                     </tr>
                     {group.items.map((q, i) => (
-                      <tr key={`g-${gi}-q-${i}`} className="border-b border-border/30">
+                      <tr key={`q-${i}`} className="border-b border-border/30">
                         <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
                         <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
                         <td className="py-2 px-2 text-center">{q.marks}</td>
@@ -333,8 +333,9 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
                         <td className="py-2 px-2 text-center">{q.timeTaken}</td>
                       </tr>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
+
               </tbody>
             </table>
           </div>

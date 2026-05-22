@@ -187,13 +187,15 @@ export function StepWorkspace({
       ))}
 
       {/* Horizontal Keyboard */}
-      <div className="border-t pt-3">
-        <HorizontalKeyboard
-          keys={keyboardKeys}
-          onKeyPress={handleKeyPress}
-          disabled={isSubmitted || !focusedInput}
-        />
-      </div>
+      {!hideOwnKeyboard && (
+        <div className="border-t pt-3">
+          <HorizontalKeyboard
+            keys={keyboardKeys}
+            onKeyPress={handleKeyPress}
+            disabled={isSubmitted || !focusedInput}
+          />
+        </div>
+      )}
     </div>
   );
 }

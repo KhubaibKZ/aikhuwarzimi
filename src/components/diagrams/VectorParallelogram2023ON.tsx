@@ -20,6 +20,7 @@ export function VectorParallelogram2023ON() {
   const [side, setSide] = useState<Side>('');
   const [num, setNum] = useState<string>('');
   const [den, setDen] = useState<string>('');
+  const [matchX, setMatchX] = useState<boolean>(false);
 
   const endpoints: Record<Exclude<Side, ''>, [{ x: number; y: number }, { x: number; y: number }, string]> = {
     OA: [O, A, 'OY:YA'],
@@ -88,8 +89,14 @@ export function VectorParallelogram2023ON() {
         {/* Y point (only after student places it) */}
         {showY && Y && (
           <>
+            {matchX && (
+              <line x1={X.x} y1={X.y} x2={Y.x} y2={Y.y}
+                stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="3 2" />
+            )}
             <circle cx={Y.x} cy={Y.y} r="4" fill="hsl(var(--primary))" stroke="hsl(var(--background))" strokeWidth="1" />
-            <text x={Y.x + 6} y={Y.y - 6} className="text-[12px] fill-primary font-bold italic">Y</text>
+            <text x={Y.x + 6} y={Y.y - 6} className="text-[12px] fill-primary font-bold italic">
+              {matchX ? 'Y ≡ X' : 'Y'}
+            </text>
           </>
         )}
 
@@ -129,11 +136,17 @@ export function VectorParallelogram2023ON() {
           onChange={(e) => setDen(e.target.value)}
           className="w-14 bg-background border border-border rounded px-2 py-1 text-foreground" />
         {showY && (
-          <button type="button"
-            onClick={() => { setSide(''); setNum(''); setDen(''); }}
-            className="ml-1 px-2 py-1 rounded border border-border bg-background hover:bg-muted text-foreground">
-            Reset
-          </button>
+          <>
+            <label className="flex items-center gap-1 ml-1 cursor-pointer select-none">
+              <input type="checkbox" checked={matchX} onChange={(e) => setMatchX(e.target.checked)} />
+              <span className="text-foreground">Match Y with X</span>
+            </label>
+            <button type="button"
+              onClick={() => { setSide(''); setNum(''); setDen(''); setMatchX(false); }}
+              className="ml-1 px-2 py-1 rounded border border-border bg-background hover:bg-muted text-foreground">
+              Reset
+            </button>
+          </>
         )}
       </div>
     </div>

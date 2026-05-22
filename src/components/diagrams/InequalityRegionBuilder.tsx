@@ -127,7 +127,7 @@ export function InequalityRegionBuilder({
       <div className="flex flex-col items-center gap-2">
         <p className="text-xs text-muted-foreground text-center max-w-md">
           Click on the grid to mark each <span className="font-semibold text-foreground">vertex</span> of region R.
-          Points snap to the nearest 0.5. You need to mark all 5 corners.
+          After that, click the submit button.
         </p>
         <svg
           width={width}

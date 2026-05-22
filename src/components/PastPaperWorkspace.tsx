@@ -513,19 +513,51 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       let data: Q16Data = EMPTY_Q16;
       try { data = JSON.parse(currentAnswers['q16_data'] || ''); } catch { /* ignore */ }
       const r = evaluateQ16(data, Q16_EXPECTED);
-      const lineMarks = Math.min(3, Math.floor(r.correctLineCount * 3 / 5)); // up to B3 for lines (5 lines map to 3 marks: 0,1,2,3 thresholds)
-      // Map: 5/5 -> 3, 4/5 -> 2, 3/5 -> 2, 2/5 -> 1, 1/5 -> 0
-      const linesB = r.correctLineCount >= 5 ? 3 : r.correctLineCount >= 4 ? 2 : r.correctLineCount >= 2 ? 1 : 0;
+      // Expected line order: 0:x=1, 1:x=3, 2:y=2, 3:y=3, 4:y=x/2+1
+      // To award B marks for line PAIRS, recompute matches against expected indices directly.
+      const lf = r.lineFeedback;
+      // r.lineFeedback is indexed by user-line order; instead reuse correctLineCount per expected slot by re-evaluating:
+      // Build a per-expected-index correctness map by replaying lineMatches.
+      const expectedHit = [false, false, false, false, false];
+      const used = new Set<number>();
+      for (const ul of data.lines) {
+        if (!ul.a) continue;
+        for (let i = 0; i < Q16_EXPECTED.lines.length; i++) {
+          if (used.has(i)) continue;
+          // inline match
+          const e = Q16_EXPECTED.lines[i];
+          if (ul.kind !== e.kind) continue;
+          const ua = parseFloat(ul.a), ea = parseFloat(e.a);
+          if (isNaN(ua) || isNaN(ea) || Math.abs(ua - ea) > 1e-6) continue;
+          if (e.kind === 'linear') {
+            const ub = parseFloat(ul.b || '0'), eb = parseFloat(e.b || '0');
+            if (isNaN(ub) || isNaN(eb) || Math.abs(ub - eb) > 1e-6) continue;
+          }
+          used.add(i); expectedHit[i] = true; break;
+        }
+      }
+      const xPairMark = (expectedHit[0] && expectedHit[1]) ? 1 : 0;
+      const yPairMark = (expectedHit[2] && expectedHit[3]) ? 1 : 0;
+      const linearMark = expectedHit[4] ? 1 : 0;
+      const allLines = xPairMark === 1 && yPairMark === 1 && linearMark === 1;
       const regionB = r.regionCorrect ? 1 : 0;
-      const total = Math.min(question.marks, linesB + regionB);
+      const total = (allLines && r.regionCorrect)
+        ? question.marks
+        : Math.min(question.marks, xPairMark + yPairMark + linearMark + regionB);
       const newFeedback: Record<string, 'correct' | 'incorrect' | null> = {
         answer: total === question.marks ? 'correct' : 'incorrect',
       };
+      const noteParts = [
+        `x = 1 and x = 3: ${xPairMark ? 'B1 awarded' : 'not awarded'}`,
+        `y = 2 and y = 3: ${yPairMark ? 'B1 awarded' : 'not awarded'}`,
+        `y = x/2 + 1: ${linearMark ? 'B1 awarded' : 'not awarded'}`,
+        `Region R: ${r.regionCorrect ? 'correctly labelled (B1)' : `${r.matchedVertexCount}/${r.totalExpectedVertices} vertices${r.hasExtraPoints ? ' + extra points' : ''}`}`,
+      ];
       return {
         allCorrect: total === question.marks,
         newFeedback,
         marksEarned: { answer: total },
-        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.matchedVertexCount}/${r.totalExpectedVertices} vertices${r.hasExtraPoints ? ' + extra points' : ''} (${regionB} mark).` },
+        markingNotes: { answer: `${noteParts.join('. ')}. Total: ${total}/${question.marks}.` },
       };
     }
 

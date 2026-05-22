@@ -464,9 +464,13 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_11_q16', questionNumber: '16', title: 'Region defined by inequalities',
     question: 'The region R is defined by: 1 ≤ x ≤ 3, 2 ≤ y ≤ 3, y ≥ [[x/2]] + 1. Find and label region R.',
     marks: 4,
-    hints: ['Draw vertical lines x = 1, x = 3', 'Draw horizontal lines y = 2, y = 3', 'Draw line y = x/2 + 1 and shade above'],
+    hints: [
+      'To define region R, start by drawing the boundary lines x = 1, x = 3, y = 2, and y = 3 to create a rectangular box.',
+      'Next, plot the line y = x/2 + 1 by finding two points, such as (0, 1) and (2, 2).',
+      'After that, label the region that is satisfied by all the inequalities.'
+    ],
     type: 'short', answer: 'Region R correctly identified',
-    markingCriteria: { _question: 'B1 for x = 1. B1 for x = 3. B1 for y = 2 and y = 3. B1 for y = x/2 + 1 and R correctly labelled.' }
+    markingCriteria: { _question: 'B1 for x = 1 and x = 3 correctly drawn. B1 for y = 2 and y = 3 correctly drawn. B1 for y = x/2 + 1 correctly drawn. B1 for region R correctly labelled (all 4 marks if all 3 lines and region are correct).' }
   },
 
   // ========== Question 17 ==========

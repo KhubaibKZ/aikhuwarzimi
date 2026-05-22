@@ -118,17 +118,27 @@ function generateDemoRows(): DemoRow[] {
   return rows;
 }
 
+// Pick a subtopic for a given topic + question index, deterministically
+function pickSubtopic(topicId: number, qNum: number): { code: string; title: string } {
+  const t = olevelMathsSyllabus.topics.find(tp => tp.id === topicId);
+  if (!t || t.subtopics.length === 0) return { code: '', title: '' };
+  const sub = t.subtopics[(qNum - 1) % t.subtopics.length];
+  return { code: sub.code, title: sub.title };
+}
+
 // Build a topic map for demo questions
 function buildDemoTopicMap(rows: DemoRow[]) {
-  const map: Record<string, { topicId: number; topicTitle: string }> = {};
+  const map: Record<string, { topicId: number; topicTitle: string; subtopicCode: string; subtopicTitle: string }> = {};
   for (const r of rows) {
     const match = r.question_id.match(/_q(\d+)$/);
     const qNum = match ? parseInt(match[1]) : 1;
     const topic = topics[(qNum - 1) % 9];
-    map[r.question_id] = { topicId: topic.id, topicTitle: topic.name };
+    const sub = pickSubtopic(topic.id, qNum);
+    map[r.question_id] = { topicId: topic.id, topicTitle: topic.name, subtopicCode: sub.code, subtopicTitle: sub.title };
   }
   return map;
 }
+
 
 // Pre-generate
 const demoRows = generateDemoRows();

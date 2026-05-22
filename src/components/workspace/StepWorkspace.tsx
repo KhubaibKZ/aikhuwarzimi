@@ -91,6 +91,12 @@ export function StepWorkspace({
     inputRefs.current[key] = el;
   }, []);
 
+  // Publish active key handler when this workspace is focused (for shared keyboard)
+  useEffect(() => {
+    if (!hideOwnKeyboard || !onActiveKeyHandler) return;
+    if (focusedInput) onActiveKeyHandler(handleKeyPress);
+  }, [focusedInput, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
+
   // Don't render anything if there are no steps
   if (steps.length === 0) return null;
 

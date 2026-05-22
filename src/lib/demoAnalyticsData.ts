@@ -290,10 +290,3 @@ export const demoRows_ = demoRows;
 export const demoPapers_ = demoPapers;
 export const demoTopicMap_ = demoTopicMap;
 export const demoFullTopicMap_ = buildFullDemoTopicMap();
-
-
-// Export rows for question breakdown
-export const demoRows_ = demoRows;
-export const demoPapers_ = demoPapers;
-export const demoTopicMap_ = demoTopicMap;
-export const demoFullTopicMap_ = buildFullDemoTopicMap();

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -117,6 +117,9 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const aiUsageRef = useRef(0);
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const activeKeyHandlerRef = useRef<((k: string) => void) | null>(null);
+  const publishActiveKeyHandler = useCallback((h: ((k: string) => void) | null) => {
+    activeKeyHandlerRef.current = h;
+  }, []);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [finalTime, setFinalTime] = useState<number | null>(null);
 
@@ -2761,7 +2764,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   aiResponse={aiResponse}
                   keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                   hideOwnKeyboard={!!(question as any).singleKeyboard}
-                  onActiveKeyHandler={!!(question as any).singleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
+                  onActiveKeyHandler={!!(question as any).singleKeyboard ? publishActiveKeyHandler : undefined}
+
                 />
                 {(question as any).fractionDivisionParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);
@@ -2863,7 +2867,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
                               customStepsBefore={!!(beforeMap && beforeMap[partKey])}
                               hideOwnKeyboard={useSingleKeyboard}
-                              onActiveKeyHandler={useSingleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
+                              onActiveKeyHandler={useSingleKeyboard ? publishActiveKeyHandler : undefined}
+
                             />
                           </div>
                         );

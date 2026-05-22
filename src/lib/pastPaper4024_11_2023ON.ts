@@ -747,37 +747,45 @@ export const questions4024_11_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 23 ==========
   'pp_4024_on23_11_q23': {
     id: 'pp_4024_on23_11_q23', questionNumber: '23', title: 'Vectors in parallelogram',
-    question: 'OABC is a parallelogram. <v>OA</v> = a, <v>OC</v> = c. X is the midpoint of AC. Y is the point on AB where AY:YB = 2:1.\n(a) Find <v>AC</v>.\n(b) Find the position vector <v>OX</v>.\n(c) Find <v>YX</v>.',
+    question: 'OABC is a parallelogram. <v>OA</v> = a, <v>OC</v> = c. X is the midpoint of AC. Y is the point on AB where AY:YB = 2:1.\n(a) Find <v>AC</v>.\n(b) Find position vector of X.\n(c) Find <v>YX</v>.',
     marks: 5,
     hints: ['(a) <v>AC</v> = <v>AO</v> + <v>OC</v> = −a + c = c − a', '(b) <v>OX</v> = <v>OA</v> + ½<v>AC</v> = a + ½(c−a) = ½a + ½c', '(c) <v>AY</v> = ⅔<v>AB</v> = ⅔c, <v>OY</v> = a + ⅔c, <v>YX</v> = <v>OX</v> − <v>OY</v>'],
     type: 'multi-part',
     equationSolveParts: ['b_calc', 'c_calc'],
     allowCustomSteps: true,
+    singleKeyboard: true,
+    customStepsBeforeMap: { b_calc: true, c_calc: true },
     customStepTemplateMap: { b_calc: 'lhs_rhs', c_calc: 'lhs_rhs' },
-    initialCustomStepsMap: { b_calc: 1, c_calc: 1 },
+    initialCustomStepsMap: { b_calc: 2, c_calc: 2 },
     equationStagesMap: {
       'b_calc': [
-        { label: 'Answer', stepKey: 'final', elements: [
+        { label: 'Final answer', stepKey: 'final', elements: [
           { type: 'text', value: '<v>OX</v> =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ],
       'c_calc': [
-        { label: 'Answer', stepKey: 'final', elements: [
+        { label: 'Final answer', stepKey: 'final', elements: [
           { type: 'text', value: '<v>YX</v> =' }, { type: 'box', key: 'final', width: 'w-28' }
         ]}
       ]
     },
     parts: [
       { label: '(a) <v>AC</v>', key: 'a', marks: 1 },
-      { label: '(b) Position vector <v>OX</v>', key: 'b_calc', marks: 2 },
+      { label: '(b) Position vector of X', key: 'b_calc', marks: 2 },
       { label: '(c) <v>YX</v>', key: 'c_calc', marks: 2 }
     ],
     answer: {
-      a: 'c-a', b_calc: '½a+½c', c_calc: '-½a-⅙c',
-      b_calc_final: '½a+½c|(a+c)/2|½(a+c)',
-      c_calc_final: '-½a-⅙c|-(3a+c)/6'
+      a: 'c-a',
+      b_calc: '½a+½c|(a+c)/2|½(a+c)|½(c+a)|0.5a+0.5c',
+      c_calc: '-½a-⅙c|-(3a+c)/6|-½a-c/6|-(a/2)-(c/6)',
+      b_calc_final: '½a+½c|(a+c)/2|½(a+c)|½(c+a)|0.5a+0.5c',
+      c_calc_final: '-½a-⅙c|-(3a+c)/6|-½a-c/6|-(a/2)-(c/6)'
     },
-    markingCriteria: { a: 'B1 for c − a', b_calc: 'M1 for a correct route along the lines of the diagram. A1 for ½a + ½c oe simplified.', c_calc: 'M1 for a correct route for <v>YX</v> along the lines of the diagram (can include correct <v>OX</v>). A1 for −½a − ⅙c oe simplified.' }
+    markingCriteria: {
+      a: 'B1 for c − a',
+      b_calc: 'M1 for a correct route along the lines of the diagram (e.g. <v>OX</v> = <v>OA</v> + ½<v>AC</v>, or <v>OX</v> = <v>OC</v> + ½<v>CA</v>); or B1FT for <v>AX</v> = ½(c−a) or <v>CX</v> = ½(a−c). A1 for ½a + ½c oe simplified.',
+      c_calc: 'M1 for a correct route for <v>YX</v> along the lines of the diagram (can include correct <v>OX</v>); or B1 for <v>AY</v> = ⅔c or <v>BY</v> = −⅓c. A1 for −½a − ⅙c oe simplified.'
+    }
   },
 
   // ========== Question 24 ==========

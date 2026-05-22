@@ -525,7 +525,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         allCorrect: total === question.marks,
         newFeedback,
         marksEarned: { answer: total },
-        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.regionCorrect ? 'correct' : 'incorrect'} (${regionB} mark).` },
+        markingNotes: { answer: `Lines correct: ${r.correctLineCount}/5 (${linesB} marks). Region R: ${r.matchedVertexCount}/${r.totalExpectedVertices} vertices${r.hasExtraPoints ? ' + extra points' : ''} (${regionB} mark).` },
       };
     }
 
@@ -1591,11 +1591,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   // Check if all marking-scheme parts have answers (only parts with marks > 0 are required)
   // For equationSolveParts, check the last box of the last stage instead of the part key
   const areAllPartsCompleted = (): boolean => {
-    // Q16: requires a point placed on the diagram to mark region R
+    // Q16: requires at least one point placed on the diagram to mark region R
     if (question.id === 'pp_4024_on23_11_q16') {
       try {
         const d = JSON.parse(answers['q16_data'] || '{}');
-        return !!d?.point && typeof d.point.x === 'number' && typeof d.point.y === 'number';
+        return Array.isArray(d?.points) && d.points.length > 0;
       } catch { return false; }
     }
     if (question.parts) {
@@ -2439,6 +2439,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     onChange={(d) => handleAnswerChange('q16_data', JSON.stringify(d))}
                     disabled={isSubmitted}
                     lineFeedback={showFeedback ? evalRes.lineFeedback : []}
+                    pointFeedback={showFeedback ? evalRes.pointFeedback : []}
                     regionFeedback={showFeedback ? evalRes.regionFeedback : null}
                   />
                   <div className="mt-3 flex justify-end">
@@ -2449,11 +2450,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                       onClick={() => {
                         const r = evaluateQ16(data, Q16_EXPECTED);
                         const lineMsg = `${r.correctLineCount}/5 lines correctly placed`;
+                        const vertexMsg = `${r.matchedVertexCount}/${r.totalExpectedVertices} region vertices marked` +
+                          (r.hasExtraPoints ? ' (some marked points are not vertices of R)' : '');
                         const regionMsg = r.regionCorrect
-                          ? 'Region R is in the right place.'
-                          : (r.regionFeedback === null ? 'No point placed for region R yet.' : 'The point you marked is not inside region R.');
+                          ? 'Region R is fully marked correctly.'
+                          : (r.regionFeedback === null ? 'No points placed for region R yet.' : vertexMsg);
                         toast({ title: 'Check Work', description: `${lineMsg}. ${regionMsg}` });
-                        // surface visual feedback by marking checked
                         setIsChecked(true);
                       }}
                       disabled={isSubmitted}

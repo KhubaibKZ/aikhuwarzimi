@@ -273,16 +273,24 @@ export const demoTopicMastery: TopicMastery[] = (() => {
 
 // Build FULL topic map (all questions including unsolved) for correct progress denominator
 function buildFullDemoTopicMap() {
-  const map: Record<string, { topicId: number; topicTitle: string; paperId: string }> = {};
+  const map: Record<string, { topicId: number; topicTitle: string; subtopicCode: string; subtopicTitle: string; paperId: string }> = {};
   for (const paper of demoPapers) {
     for (let q = 0; q < paper.totalQuestions; q++) {
       const topic = topics[q % 9];
       const questionId = `demo_${paper.id}_q${q + 1}`;
-      map[questionId] = { topicId: topic.id, topicTitle: topic.name, paperId: paper.id };
+      const sub = pickSubtopic(topic.id, q + 1);
+      map[questionId] = { topicId: topic.id, topicTitle: topic.name, subtopicCode: sub.code, subtopicTitle: sub.title, paperId: paper.id };
     }
   }
   return map;
 }
+
+// Export rows for question breakdown
+export const demoRows_ = demoRows;
+export const demoPapers_ = demoPapers;
+export const demoTopicMap_ = demoTopicMap;
+export const demoFullTopicMap_ = buildFullDemoTopicMap();
+
 
 // Export rows for question breakdown
 export const demoRows_ = demoRows;

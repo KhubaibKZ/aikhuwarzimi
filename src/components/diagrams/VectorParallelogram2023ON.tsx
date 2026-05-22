@@ -136,11 +136,17 @@ export function VectorParallelogram2023ON() {
           onChange={(e) => setDen(e.target.value)}
           className="w-14 bg-background border border-border rounded px-2 py-1 text-foreground" />
         {showY && (
-          <button type="button"
-            onClick={() => { setSide(''); setNum(''); setDen(''); }}
-            className="ml-1 px-2 py-1 rounded border border-border bg-background hover:bg-muted text-foreground">
-            Reset
-          </button>
+          <>
+            <label className="flex items-center gap-1 ml-1 cursor-pointer select-none">
+              <input type="checkbox" checked={matchX} onChange={(e) => setMatchX(e.target.checked)} />
+              <span className="text-foreground">Match Y with X</span>
+            </label>
+            <button type="button"
+              onClick={() => { setSide(''); setNum(''); setDen(''); setMatchX(false); }}
+              className="ml-1 px-2 py-1 rounded border border-border bg-background hover:bg-muted text-foreground">
+              Reset
+            </button>
+          </>
         )}
       </div>
     </div>

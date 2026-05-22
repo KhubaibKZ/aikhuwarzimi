@@ -2764,7 +2764,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   aiResponse={aiResponse}
                   keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                   hideOwnKeyboard={!!(question as any).singleKeyboard}
-                  onActiveKeyHandler={!!(question as any).singleKeyboard ? (h) => { activeKeyHandlerRef.current = h; } : undefined}
+                  onActiveKeyHandler={!!(question as any).singleKeyboard ? publishActiveKeyHandler : undefined}
+
                 />
                 {(question as any).fractionDivisionParts?.map((partKey: string) => {
                   const part = question.parts?.find(p => p.key === partKey);

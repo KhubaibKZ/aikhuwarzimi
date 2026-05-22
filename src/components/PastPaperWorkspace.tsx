@@ -115,6 +115,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const { getPaperQuota, refetch: refetchAssignments } = useStudentAssignments();
   const startTimeRef = useRef(Date.now());
   const aiUsageRef = useRef(0);
+  const checkworkUsageRef = useRef(0);
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const activeKeyHandlerRef = useRef<((k: string) => void) | null>(null);
   const publishActiveKeyHandler = useCallback((h: ((k: string) => void) | null) => {
@@ -186,6 +187,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         setFinalTime(null);
         startTimeRef.current = Date.now();
         aiUsageRef.current = 0;
+        checkworkUsageRef.current = 0;
       }
     };
     checkExistingSubmission();
@@ -1346,7 +1348,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       setIsLoading(true);
       setLoadingType('check');
       setLoadingPartKey(partKey);
-      aiUsageRef.current += 1;
+      checkworkUsageRef.current += 1;
       if (user && matchedPaper && paperQuota) {
         await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
         refetchAssignments();
@@ -1494,7 +1496,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       setIsLoading(true);
       setLoadingType('check');
       setLoadingPartKey(partKey);
-      aiUsageRef.current += 1;
+      checkworkUsageRef.current += 1;
       if (user && matchedPaper && paperQuota) {
         await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
         refetchAssignments();
@@ -1580,7 +1582,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setIsLoading(true);
     setLoadingType('check');
     setLoadingPartKey(partKey);
-    aiUsageRef.current += 1;
+    checkworkUsageRef.current += 1;
     if (user && matchedPaper && paperQuota) {
       await supabase.rpc('decrement_checkwork', { p_student_id: user.id, p_paper_id: matchedPaper.id });
       refetchAssignments();
@@ -1720,6 +1722,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         accuracy_score: accuracyScore,
         speed_score: speedScore,
         ai_usage_count: aiUsageRef.current,
+        checkwork_count: checkworkUsageRef.current,
         time_spent_seconds: timeSpent,
         total_steps: totalCount,
         completed_steps: correctCount,
@@ -1785,6 +1788,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     setElapsedSeconds(0);
     startTimeRef.current = Date.now();
     aiUsageRef.current = 0;
+    checkworkUsageRef.current = 0;
   };
 
   // Reset individual question (dashboard/general mode only)

@@ -1,0 +1,1 @@
+ALTER TABLE public.student_paper_progress ADD COLUMN IF NOT EXISTS checkwork_count integer NOT NULL DEFAULT 0;

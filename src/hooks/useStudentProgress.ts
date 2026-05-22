@@ -17,6 +17,7 @@ interface ProgressRow {
   accuracy_score: number;
   speed_score: number;
   ai_usage_count: number;
+  checkwork_count: number;
   time_spent_seconds: number;
   total_steps: number;
   completed_steps: number;

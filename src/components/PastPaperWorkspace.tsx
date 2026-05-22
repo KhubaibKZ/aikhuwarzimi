@@ -3160,6 +3160,44 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                   </div>
                 </div>
               )}
+              {/* Q16 custom marks breakdown (no parts array) */}
+              {!question.parts && question.id === 'pp_4024_on23_11_q16' && (
+                <div className="border-t pt-2 space-y-1">
+                  {(() => {
+                    const earned = storedMarksEarned['answer'] ?? 0;
+                    const total = question.marks;
+                    const isCorrect = earned === total;
+                    const isPartial = earned > 0 && earned < total;
+                    return (
+                      <>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="flex items-center gap-1.5">
+                            {isCorrect ? <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> :
+                             isPartial ? <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> :
+                             <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                            Region R
+                          </span>
+                          <span className={cn(
+                            "font-mono font-semibold text-xs",
+                            isCorrect ? "text-green-600" : isPartial ? "text-amber-600" : "text-destructive"
+                          )}>
+                            {earned}/{total}
+                          </span>
+                        </div>
+                        {storedMarkingNotes['answer'] && (
+                          <p className="ml-5 text-xs text-muted-foreground">
+                            <VecText value={storedMarkingNotes['answer']} />
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-sm font-semibold border-t pt-1">
+                          <span>Total</span>
+                          <span className="font-mono">{earned}/{total}</span>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           )}
 

@@ -25,6 +25,8 @@ export interface StepWorkspaceProps {
   correctAnswers?: Record<string, string>;
   aiResponse?: { type: 'hint' | 'guidance'; content: string; partKey?: string } | null;
   keyboardKeys: string[][];
+  hideOwnKeyboard?: boolean;
+  onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
 }
 
 export function StepWorkspace({

@@ -567,12 +567,13 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a) CF diagram', key: 'a', marks: 2 }, { label: '(b) IQR (cm)', key: 'b', marks: 2 }, { label: '(c) H', key: 'c', marks: 2 }],
     answer: {
-      a: 'Correct CF diagram', b: '3.8|4', c: '7',
+      a: 'Correct CF diagram', b: '3.8|3.6|3.7|3.9|4|4.0', c: '7|7.1|7.2|7.0',
       b_s1_a: '20', b_s1_b: '4.2',
       b_s2_a: '60', b_s2_b: '8',
       b_s3_a: '8', b_s3_b: '4.2', b_s3_c: '3.8',
-      c_s1_a: '28', c_s1_b: '52', c_s2_a: '7'
-    }
+      c_s1_a: '28', c_s1_b: '52', c_s2_a: '7|7.1|7.2|7.0'
+    },
+    markingCriteria: { a: 'B2 for a correct cumulative frequency diagram (curve or polygon). B1 for at least 5 points plotted correctly at the upper class boundaries.', b: 'B2 (FT their increasing curve/polygon) for strict FT their UQ − their LQ evaluated. B1 dep for their UQ or their LQ written, dependent on an increasing curve/polygon. Accept IQR ≈ 3.6 to 4.', c: 'B2 (FT their increasing curve/polygon) for a correct reading of H when CF = 52. M1 for 52 (= 80 − 28) soi. Accept H ≈ 7 to 7.2.' }
   },
 
   // ========== Question 18 ==========

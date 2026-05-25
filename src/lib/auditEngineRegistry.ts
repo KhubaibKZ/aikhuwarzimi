@@ -13,6 +13,16 @@ export const EXTERNAL_DIAGRAM_QUESTIONS = new Set<string>([
   'pp_4024_on23_11_q18',
   'pp_4024_on23_11_q19',
   'pp_4024_on23_11_q23',
+  // 4024/12 Oct/Nov 2023
+  'pp_4024_on23_12_q2',
+  'pp_4024_on23_12_q6',
+  'pp_4024_on23_12_q7',
+  'pp_4024_on23_12_q14',
+  'pp_4024_on23_12_q17',
+  'pp_4024_on23_12_q18',
+  'pp_4024_on23_12_q21',
+  'pp_4024_on23_12_q23',
+  'pp_4024_on23_12_q24',
 ]);
 
 // A box "key" is treated as an intermediate working step (not a graded final

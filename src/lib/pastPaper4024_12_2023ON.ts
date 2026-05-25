@@ -41,7 +41,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '0.05', a_s1_b: '0.3', a_s1_c: '0.015',
       b_s1_a: '600', b_s1_b: '0.2', b_s1_c: '3000',
       c_s1_a: '2', c_s2_a: '2', c_s2_b: '6', c_s3_a: '6', c_s3_b: '14'
-    }
+    },
+    markingCriteria: { a: 'B1 cao for 0.015.', b: 'B1 cao for 3000.', c: 'B1 cao for 14.' }
   },
 
   // ========== Question 2 ==========
@@ -50,7 +51,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     question: 'A rectangle is split into squares of two different sizes. Find the fraction of the rectangle that is shaded grey.',
     marks: 1,
     hints: ['Count shaded squares as fraction of total area'],
-    type: 'short', answer: '5/21'
+    type: 'short', answer: '5/21',
+    markingCriteria: { _question: 'B1 cao for 5/21.' }
   },
 
   // ========== Question 3 ==========
@@ -91,7 +93,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s2_a: '0.6', a_s2_b: '0.68', a_s2_c: '0.64',
       b_s1_a: '4.074',
       c_s1_a: '4', c_s1_b: '4'
-    }
+    },
+    markingCriteria: { a: 'B1 cao for 0.64.', b: 'B1 cao for 4.074.', c: 'B1 cao for 4.' }
   },
 
   // ========== Question 4 ==========
@@ -125,7 +128,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a: '13', b: '3',
       a_s1_a: '7', a_s1_b: '-6', a_s1_c: '13',
       b_s1_a: '-1', b_s2_a: '-1', b_s3_a: '3'
-    }
+    },
+    markingCriteria: { a: 'B1 for 13.', b: 'B1 for T = 3 (median of 12 values is mean of 6th and 7th: (−1 + T)/2 = 1).' }
   },
 
   // ========== Question 5 ==========
@@ -155,7 +159,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '9', answer_s1_b: '5', answer_s1_c: '4',
       answer_s2_a: '4', answer_s2_b: '2',
       answer_s3_a: '14', answer_s3_b: '14', answer_s3_c: '2', answer_s3_d: '28'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 8 ÷ (9 − 5) × k where k = 1, 5, 9 or (5 + 9) oe, or for x/(x + 8) = 5/9 oe, or for (x − 8)/x = 5/9 oe, or for 5y + 8 = 9y oe. A1 for 28.' }
   },
 
   // ========== Question 6 ==========
@@ -186,7 +191,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a: '73', b: '107',
       a_s1_a: '73',
       b_s1_a: '180', b_s1_b: '73', b_s2_a: '107'
-    }
+    },
+    markingCriteria: { a: 'B1 for 73 (alternate angles, AB ∥ CD).', b: 'B1 FT 180 − their 73 (dependent on 0 < their 73 < 180 and their 73 ≠ 90). Accept y = 107 from co-interior angles since EC ∥ FB.' }
   },
 
   // ========== Question 7 ==========
@@ -223,7 +229,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a: 'Rotation, 90° clockwise, centre (0,0)', b: '3',
       a_s1_a: 'Rotation', a_s2_a: '90', a_s2_b: 'clockwise', a_s3_a: '0', a_s3_b: '0',
       b_s1_a: '27', b_s1_b: '3', b_s1_c: '9', b_s2_a: '9', b_s2_b: '3'
-    }
+    },
+    markingCriteria: { a: '3 marks: B1 for "Rotation", B1 for "90° clockwise" oe, B1 for centre (0, 0). Lose all 3 if more than one transformation given.', b: 'B3 for shape drawn at correct vertices. B2 for correct size and orientation but wrong centre, or for 5 correct vertices plotted. B1 for length scale factor = 3 soi, or for a correct enlargement from centre (5, 5) with scale factor 2 or 0.5.' }
   },
 
   // ========== Question 8 ==========
@@ -259,7 +266,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '4', b_s1_b: '2', b_s1_c: '8',
       b_s2_a: '9', b_s2_b: '-2', b_s2_c: '7',
       b_s3_a: '8', b_s3_b: '7'
-    }
+    },
+    markingCriteria: { a: 'B1 cao for 4.93 × 10⁻³.', b: 'B1 cao for 8 × 10⁷.' }
   },
 
   // ========== Question 9 ==========
@@ -295,7 +303,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s1_a: '2', a_s1_b: '2', a_s1_c: '3', a_s1_d: '3', a_s1_e: '5',
       a_s2_a: '2² × 3² × 5',
       b_s1_a: '5', b_s1_b: '5'
-    }
+    },
+    markingCriteria: { a: 'B2 for 2² × 3² × 5 or 2 × 2 × 3 × 3 × 5. B1 for list 2, 2, 3, 3, 5 not as product, or M1 for any two stages correct in a factor tree or ladder method.', b: 'B1 cao for k = 5.' }
   },
 
   // ========== Question 10 ==========
@@ -338,7 +347,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '1000', answer_s1_b: '4', answer_s1_c: '10',
       answer_s2_a: '400',
       answer_s3_a: '20',
-    }
+    },
+    markingCriteria: { answer: 'Full marks for 1000, 4 and 10 all seen as rounded values and final answer 20. B1 for two of 1000, 4 or 10 seen as rounded values.' }
   },
 
   // ========== Question 11 ==========
@@ -366,7 +376,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '8', answer_s1_b: '13',
       answer_s2_a: '21',
       answer_s3_a: '3'
-    }
+    },
+    markingCriteria: { answer: 'M1 for isolating the term in m, e.g. 7m ≤ 8 + 13 oe (or 7m ≤ 21). A1 for m ≤ 3 (or 3 ≥ m) as final answer.' }
   },
 
   // ========== Question 12 ==========
@@ -406,7 +417,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       x_s3_a: '4',
       y_s1_a: '4',
       y_s2_a: '-6', y_s2_b: '-3/2'
-    }
+    },
+    markingCriteria: { x: 'M1 for a correct method to eliminate one variable (e.g. doubling eq2 to get 6x − 4y = 30, then adding to eq1). A1 for x = 4.', y: 'A1 for y = −3/2. SC1 (after A0 on the pair) for a pair of values that satisfy either original equation, or for correct answers with no working.' }
   },
 
   // ========== Question 13 ==========
@@ -434,7 +446,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '8', answer_s1_b: '12', answer_s1_c: '96',
       answer_s2_a: '5', answer_s2_b: '9', answer_s2_c: '45',
       answer_s3_a: '96', answer_s3_b: '45', answer_s3_c: '51'
-    }
+    },
+    markingCriteria: { answer: 'M1 for 12 × 8 (= 96) soi, or for 5 × 9 (= 45) soi. A1 for 51.' }
   },
 
   // ========== Question 14 ==========
@@ -445,7 +458,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) Use protractor — answer between 47° and 51°', '(b) Use compasses and straight edge', '(c) Intersection of perpendicular bisector side (nearer A) and outside arc of 6 cm from B'],
     type: 'multi-part',
     parts: [{ label: '(a) Angle ABC (°)', key: 'a', marks: 1 }, { label: '(b) Construction', key: 'b', marks: 2 }, { label: '(c) Shaded region', key: 'c', marks: 2 }],
-    answer: { a: '49', b: 'Perpendicular bisector drawn', c: 'Correct region shaded' }
+    answer: { a: '49', b: 'Perpendicular bisector drawn', c: 'Correct region shaded' },
+    markingCriteria: { a: 'B1 for any value 47 to 51 inclusive.', b: 'B2 for an acceptable perpendicular bisector of AC with correct arcs. B1 for an acceptable bisector without (or with incorrect) construction arcs.', c: 'B1 for an arc of radius 6 cm centred at B drawn within the triangle. B1 (dep on a correct bisector and 6 cm arc) for the correct region (closer to A AND further than 6 cm from B) clearly shaded.' }
   },
 
   // ========== Question 15 ==========
@@ -483,7 +497,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s2_a: '32', a_s2_b: '24', a_s2_c: '20',
       b_s1_a: '4', b_s1_b: '2',
       b_s2_a: '2', b_s2_b: '1'
-    }
+    },
+    markingCriteria: { a: 'M1 for d = (16 − 28)/3 = −4 soi, or for first term = 32 soi. A1 for all three: 32, 24, 20.', b: 'M1 for a quadratic expression in n as answer, or for the correct answer seen in working, or for at least two second differences of 4 seen. A1 for 2n² + 1 oe as final answer.' }
   },
 
   // ========== Question 16 ==========
@@ -517,7 +532,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a: '6', b: 'T²+4',
       a_s1_a: '40', a_s1_b: '36', a_s2_a: '6',
       b_s1_a: 'P − 4', b_s2_a: 'T² + 4'
-    }
+    },
+    markingCriteria: { a: 'B1 cao for T = 6.', b: 'M1 for T² = P − 4 or better. A1 for P = T² + 4 as final answer.' }
   },
 
   // ========== Question 17 ==========
@@ -551,12 +567,13 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a) CF diagram', key: 'a', marks: 2 }, { label: '(b) IQR (cm)', key: 'b', marks: 2 }, { label: '(c) H', key: 'c', marks: 2 }],
     answer: {
-      a: 'Correct CF diagram', b: '3.8|4', c: '7',
+      a: 'Correct CF diagram', b: '3.8|3.6|3.7|3.9|4|4.0', c: '7|7.1|7.2|7.0',
       b_s1_a: '20', b_s1_b: '4.2',
       b_s2_a: '60', b_s2_b: '8',
       b_s3_a: '8', b_s3_b: '4.2', b_s3_c: '3.8',
-      c_s1_a: '28', c_s1_b: '52', c_s2_a: '7'
-    }
+      c_s1_a: '28', c_s1_b: '52', c_s2_a: '7|7.1|7.2|7.0'
+    },
+    markingCriteria: { a: 'B2 for a correct cumulative frequency diagram (curve or polygon). B1 for at least 5 points plotted correctly at the upper class boundaries.', b: 'B2 (FT their increasing curve/polygon) for strict FT their UQ − their LQ evaluated. B1 dep for their UQ or their LQ written, dependent on an increasing curve/polygon. Accept IQR ≈ 3.6 to 4.', c: 'B2 (FT their increasing curve/polygon) for a correct reading of H when CF = 52. M1 for 52 (= 80 − 28) soi. Accept H ≈ 7 to 7.2.' }
   },
 
   // ========== Question 18 ==========
@@ -592,7 +609,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       b_s1_a: '20', b_s1_b: '6', b_s1_c: '60',
       b_s2_a: '1', b_s2_b: '7', b_s2_c: '20', b_s2_d: '80',
       b_s3_a: 'B', b_s3_b: '20'
-    }
+    },
+    markingCriteria: { a: 'B1 for 6/20 oe (= 0.3 m/s²).', b: 'M1 for distance B = 5 × 20 oe. M1 for distance A = ½(1 + 7) × 20 oe. OR M2 for 4 × 20 − ½(7 − 1) × 20 oe. A1 for "B, 20" nfww.' }
   },
 
   // ========== Question 19 ==========
@@ -620,7 +638,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       answer_s1_a: '16',
       answer_s2_a: '2(x+1)', answer_s2_b: '12x', answer_s2_c: '5x',
       answer_s3_a: '9x+2'
-    }
+    },
+    markingCriteria: { answer: 'M1 for (2(x + 1) + 4 · 3x − 5x)/16 oe (any equivalent correct combined numerator over a common denominator of 16). A1 for (9x + 2)/16 as final answer.' }
   },
 
   // ========== Question 20 ==========
@@ -656,7 +675,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s2_a: 'c−3', a_s2_b: '2d+e',
       b_s1_a: '3', b_s1_b: 'v²−9t²',
       b_s2_a: '3', b_s2_b: 'v+3t', b_s2_c: 'v−3t'
-    }
+    },
+    markingCriteria: { a: 'B1 for one correct partial factorisation seen, e.g. c(2d + e) − 3(2d + e), or for correct answer seen anywhere. A1 for (c − 3)(2d + e) as final answer (order of factors interchangeable).', b: 'B1 for (3v − 9t)(v + 3t), or (v − 3t)(3v + 9t), or 3(v² − 9t²) seen, or for the correct answer seen. A1 for 3(v − 3t)(v + 3t) as final answer (order interchangeable).' }
   },
 
   // ========== Question 21 ==========
@@ -700,7 +720,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       a_s3_a: '1', a_s3_b: '3',
       a_s4_a: '6x', a_s4_b: '12x', a_s4_c: '18', a_s4_d: '20',
       b_s1_a: '20', b_s2_a: '36', b_s2_b: '6'
-    }
+    },
+    markingCriteria: { a: 'M2 for a fully correct equation linking the two arc lengths, e.g. ((360 − 6x)/360) × 2π × (3y/4) = 9 × (x/360) × 2πy. M1 for (x/360) × 2πy oe for arc QR, or for (6x/360) × 2π × (3y/4) oe, or for (360 − 6x) seen as the reflex/major angle. A1 for at least one extra step of rearrangement leading to x = 20 (A0 if any errors or omissions).', b: 'M1 for (20 × π × y²)/360 = 2π oe or better. A1 for y = 6.' }
   },
 
   // ========== Question 22 ==========
@@ -746,7 +767,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       bi_s1_a: 'x', bi_s1_b: 'x−3',
       bi_s2_a: '0', bi_s2_b: '3',
       bii_s1_a: '3', bii_s1_b: '12'
-    }
+    },
+    markingCriteria: { a: 'M1 for x(x − 1) + 3 × 2 [= 2x + 6]. A1 for x² − x + 6 = 2x + 6 with brackets expanded and no errors/omissions, leading to x² − 3x = 0.', bi: 'M1 for x(x − 3) [= 0] seen (or 3/2 ± √(9/4) seen). A1 for both roots 0 and 3.', bii: 'M1 for 2(x − 1) + 2(x + 1) [= y] oe or better, or for 2(their x − 1) + 2(their x + 1) [= y]. A1 for y = 12 (using x = 3).' }
   },
 
   // ========== Question 23 ==========
@@ -757,7 +779,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) H∩S∩G = 2, H∩S only = 0, exactly two = 4 means H∩G only + S∩G only = 4', '(b) S only = people in S but not H or G = 10'],
     type: 'multi-part',
     parts: [{ label: '(a) Venn diagram', key: 'a', marks: 2 }, { label: '(b) n(S ∩ (H∪G)′)', key: 'b', marks: 1 }],
-    answer: { a: 'Completed correctly', b: '10' }
+    answer: { a: 'Completed correctly', b: '10' },
+    markingCriteria: { a: 'B2 for a correctly completed Venn diagram (H∩S∩G = 2, H∩S only = 0, H∩G only and S∩G only sum to 4 with H∩G only = 0 and S∩G only = 4 from the given clues, H only = 3, S only = 10, G only = 5, outside = 16). B1 for at least 2 region values correct in the correct position.', b: 'B1 cao for n(S ∩ (H ∪ G)′) = 10 (S only).' }
   },
 
   // ========== Question 24 ==========
@@ -801,7 +824,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       aii_s1_a: '5', aii_s1_b: '2', aii_s2_a: '5b−5a/2',
       aii_s3_a: '(3/2)a+5b',
       b_s1_a: '(3/5)a+2b'
-    }
+    },
+    markingCriteria: { ai: 'B1 for AP = 2b − a as final answer (from AP = OP − OA).', aii: 'M1 for a correct vector route for OB along the lines of the diagram, or for [AB =] (5/2) AP or 2 AB = 5 AP oe stated, or for [PB =] (3/2) AP or 2 PB = 3 AP oe stated. B1 FT for AB = (5/2) × their (2b − a) oe, or PB = (3/2) × their (2b − a) oe. A1 for OB = (3/2)a + 5b (or equivalent (3a + 10b)/2) as final answer.', b: 'B1 (FT (2/5) × their OB, or (2/their 5) × their OB) for QP = (3/5)a + 2b oe.' }
   },
 };
 

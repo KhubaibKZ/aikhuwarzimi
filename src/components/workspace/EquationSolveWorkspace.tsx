@@ -699,7 +699,20 @@ export function EquationSolveWorkspace({
                   feedback[customKey] === 'incorrect' && 'border-destructive bg-destructive/5',
                 )}
               >
-                {step.map((part, pi) => {
+                {step.length === 1 && step[0].kind === 'txt' ? (
+                  <input
+                    type="text"
+                    value={step[0].s}
+                    disabled={isSubmitted}
+                    onChange={(e) => writeSlot(`cs:${si}:0:txt`, e.target.value)}
+                    onFocus={() => {
+                      setFocusedSlot(`cs:${si}:0:txt`);
+                      setFocusedInput(null);
+                    }}
+                    placeholder="Write your step here..."
+                    className="flex-1 w-full min-h-[1.75rem] bg-transparent font-mono text-base text-foreground outline-none border-0 px-1"
+                  />
+                ) : step.map((part, pi) => {
                   if (part.kind === 'txt') {
                     return renderTxt(part.s, `cs:${si}:${pi}:txt`, 'min-w-[8rem]');
                   }
@@ -719,6 +732,7 @@ export function EquationSolveWorkspace({
                     pi,
                   );
                 })}
+
               </div>
               {checkBtn(customKey, `My step ${si + 1}`)}
               {stepFeedbackIcon(customKey)}

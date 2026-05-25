@@ -10,32 +10,51 @@ const ac = "hsl(var(--accent))";
 // Big rectangle is 3 large squares wide × 2 large squares tall (each large = 4 small units).
 // Some squares of two sizes; 5 small units shaded out of 21 small units total area equivalent.
 export function RectangleSquares_4024_12_2023ON() {
-  // Layout: large square (4×4 small) on left occupies whole height.
-  // Right side: 4×4 area split into smaller squares.
-  const u = 26; // unit
-  const W = 7 * u, H = 4 * u;
+  // 7 unit cols × 3 unit rows. Composition (matches QP figure):
+  //  Row 0: [1×1][1×1][--2×2 white--][1×1 SHADED][1×1][1×1]
+  //  Row 1: [--2×2 SHADED--][ 2×2 white cont. ][1×1 white][--2×2 white--]
+  //  Row 2: [  2×2 SHADED cont.  ][1×1][1×1][1×1][ 2×2 white cont. ]
+  // Total small-unit area = 21. Shaded units = 5 (grey 1×1 + shaded 2×2). Answer = 5/21.
+  const u = 38;
+  const W = 7 * u, H = 3 * u;
+  const sw = 1.6;
+  const shade = "hsl(var(--muted-foreground) / 0.55)";
   return (
     <svg viewBox={`0 0 ${W + 20} ${H + 20}`} className="w-full max-w-md mx-auto">
       <g transform="translate(10,10)">
-        {/* Outer rectangle */}
-        <rect x={0} y={0} width={W} height={H} fill="none" stroke={fg} strokeWidth={1.5} />
-        {/* Big square 4×4 on left */}
-        <line x1={4 * u} y1={0} x2={4 * u} y2={H} stroke={fg} strokeWidth={1.5} />
-        {/* Right 3×4 area split into a 2×2 small squares grid + smaller cells */}
-        {/* 2x2 squares of side 2u in upper right */}
-        <line x1={4 * u} y1={2 * u} x2={W} y2={2 * u} stroke={fg} strokeWidth={1.2} />
-        <line x1={5 * u} y1={0} x2={5 * u} y2={2 * u} stroke={fg} strokeWidth={1.2} />
-        <line x1={6 * u} y1={0} x2={6 * u} y2={2 * u} stroke={fg} strokeWidth={1.2} />
-        <line x1={5 * u} y1={2 * u} x2={5 * u} y2={H} stroke={fg} strokeWidth={1.2} />
-        <line x1={6 * u} y1={2 * u} x2={6 * u} y2={H} stroke={fg} strokeWidth={1.2} />
-        <line x1={4 * u} y1={3 * u} x2={W} y2={3 * u} stroke={fg} strokeWidth={1.2} />
+        {/* Shaded cells first (so borders sit on top) */}
+        {/* Top single grey square (col 4, row 0) */}
+        <rect x={4 * u} y={0} width={u} height={u} fill={shade} />
+        {/* Big 2×2 shaded square (cols 0-1, rows 1-2) */}
+        <rect x={0} y={u} width={2 * u} height={2 * u} fill={shade} />
 
-        {/* Shaded cells (5 small unit squares) */}
-        <rect x={4 * u} y={2 * u} width={u} height={u} fill={pr} fillOpacity={0.45} />
-        <rect x={5 * u} y={2 * u} width={u} height={u} fill={pr} fillOpacity={0.45} />
-        <rect x={6 * u} y={2 * u} width={u} height={u} fill={pr} fillOpacity={0.45} />
-        <rect x={4 * u} y={3 * u} width={u} height={u} fill={pr} fillOpacity={0.45} />
-        <rect x={5 * u} y={3 * u} width={u} height={u} fill={pr} fillOpacity={0.45} />
+        {/* Outer rectangle */}
+        <rect x={0} y={0} width={W} height={H} fill="none" stroke={fg} strokeWidth={sw} />
+
+        {/* Row 0 dividers between the two 1×1 squares on the left */}
+        <line x1={u} y1={0} x2={u} y2={u} stroke={fg} strokeWidth={sw} />
+        {/* divider between second small square and the 2×2 white */}
+        <line x1={2 * u} y1={0} x2={2 * u} y2={u} stroke={fg} strokeWidth={sw} />
+        {/* divider between 2×2 white and grey square (top) */}
+        <line x1={4 * u} y1={0} x2={4 * u} y2={u} stroke={fg} strokeWidth={sw} />
+        {/* divider between grey square and the two small squares on the right */}
+        <line x1={5 * u} y1={0} x2={5 * u} y2={u} stroke={fg} strokeWidth={sw} />
+        {/* divider between the two top-right small squares */}
+        <line x1={6 * u} y1={0} x2={6 * u} y2={u} stroke={fg} strokeWidth={sw} />
+        {/* horizontal line under the row of small squares (cols 0-1 and 4-6) */}
+        <line x1={0} y1={u} x2={2 * u} y2={u} stroke={fg} strokeWidth={sw} />
+        <line x1={4 * u} y1={u} x2={W} y2={u} stroke={fg} strokeWidth={sw} />
+
+        {/* 2×2 white top-middle: outline (cols 2-3, rows 0-1) — already implied by outer + above lines */}
+        {/* Right side: separator between the small 1×1 (col 4 row 1) and the right 2×2 white */}
+        <line x1={5 * u} y1={u} x2={5 * u} y2={H} stroke={fg} strokeWidth={sw} />
+        {/* boundary of top 2×2 white at bottom (y = 2u, cols 2-5) */}
+        <line x1={2 * u} y1={2 * u} x2={5 * u} y2={2 * u} stroke={fg} strokeWidth={sw} />
+        {/* bottom row 1×1 dividers (cols 2,3,4 row 2): vertical lines at x=3u and x=4u from 2u to 3u */}
+        <line x1={3 * u} y1={2 * u} x2={3 * u} y2={H} stroke={fg} strokeWidth={sw} />
+        <line x1={4 * u} y1={2 * u} x2={4 * u} y2={H} stroke={fg} strokeWidth={sw} />
+        {/* divider between shaded 2×2 (cols 0-1) and the column-2 small square (also defines top 2×2 left edge) */}
+        <line x1={2 * u} y1={u} x2={2 * u} y2={H} stroke={fg} strokeWidth={sw} />
       </g>
     </svg>
   );

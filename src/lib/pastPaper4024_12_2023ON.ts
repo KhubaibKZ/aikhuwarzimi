@@ -12,35 +12,32 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) 0.05 × 0.3 = 0.015', '(b) 600 ÷ 0.2 = 3000', '(c) 8−6=2, 12÷2=6, 20−6=14'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b', 'c'],
+    allowCustomStepsMap: { a: true, b: true, c: true },
+    customStepsBeforeMap: { a: true, b: true, c: true },
+    customStepTemplateMap: { a: 'text', b: 'text', c: 'text' },
     equationStagesMap: {
       'a': [
-        { label: 'Multiply', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-14' }, { type: 'text', value: '×' }, { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_c', width: 'w-16' }
+        { label: 'Answer', stepKey: 'sFinal', elements: [
+          { type: 'text', value: '=' }, { type: 'box', key: 'sFinal_a', width: 'w-24' }
         ]}
       ],
       'b': [
-        { label: 'Divide', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '÷' }, { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_c', width: 'w-14' }
+        { label: 'Answer', stepKey: 'sFinal', elements: [
+          { type: 'text', value: '=' }, { type: 'box', key: 'sFinal_a', width: 'w-24' }
         ]}
       ],
       'c': [
-        { label: 'Bracket first', stepKey: 's1', elements: [
-          { type: 'text', value: '8 − 6 =' }, { type: 'box', key: 's1_a', width: 'w-10' }
-        ]},
-        { label: 'Division', stepKey: 's2', elements: [
-          { type: 'text', value: '12 ÷' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-10' }
-        ]},
-        { label: 'Subtract', stepKey: 's3', elements: [
-          { type: 'text', value: '20 −' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_b', width: 'w-10' }
+        { label: 'Answer', stepKey: 'sFinal', elements: [
+          { type: 'text', value: '=' }, { type: 'box', key: 'sFinal_a', width: 'w-24' }
         ]}
       ]
     },
     parts: [{ label: '(a) 0.05 × 0.3', key: 'a', marks: 1 }, { label: '(b) 600 ÷ 0.2', key: 'b', marks: 1 }, { label: '(c) 20 − 12 ÷ (8−6)', key: 'c', marks: 1 }],
     answer: {
       a: '0.015', b: '3000', c: '14',
-      a_s1_a: '0.05', a_s1_b: '0.3', a_s1_c: '0.015',
-      b_s1_a: '600', b_s1_b: '0.2', b_s1_c: '3000',
-      c_s1_a: '2', c_s2_a: '2', c_s2_b: '6', c_s3_a: '6', c_s3_b: '14'
+      a_sFinal_a: '0.015',
+      b_sFinal_a: '3000',
+      c_sFinal_a: '14'
     },
     markingCriteria: { a: 'B1 cao for 0.015.', b: 'B1 cao for 3000.', c: 'B1 cao for 14.' }
   },

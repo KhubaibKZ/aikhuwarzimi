@@ -3235,8 +3235,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               className={cn("flex items-center gap-2", isSubmitted && "bg-green-600 hover:bg-green-600 text-white")}
             >
 
-              className={cn("flex items-center gap-2", isSubmitted && "bg-green-600 hover:bg-green-600 text-white")}
-            >
               {isSubmitted ? (
                 <>
                   <CheckCircle2 className="h-4 w-4" />

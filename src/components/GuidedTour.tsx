@@ -66,13 +66,13 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   }, [active, step]);
 
   useEffect(() => {
-    if (!active || !step || step.interaction !== 'input') return;
+    if (!active || !step) return;
 
     let timeout = 0;
     let cleanupListener: (() => void) | null = null;
 
     const attachListener = () => {
-      const el = document.querySelector(step.selector) as HTMLInputElement | HTMLTextAreaElement | null;
+      const el = document.querySelector(step.selector) as HTMLElement | null;
       if (!el) {
         timeout = window.setTimeout(attachListener, 200) as unknown as number;
         return;
@@ -82,15 +82,27 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       const handleAdvance = () => {
         if (advanced) return;
         advanced = true;
-        window.setTimeout(goToNextStep, 180);
+        window.setTimeout(goToNextStep, step.interaction === 'input' ? 150 : 220);
       };
 
-      el.addEventListener('input', handleAdvance);
-      el.addEventListener('change', handleAdvance);
-      cleanupListener = () => {
-        el.removeEventListener('input', handleAdvance);
-        el.removeEventListener('change', handleAdvance);
-      };
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        el.focus();
+        el.select?.();
+      }
+
+      if (step.interaction === 'input') {
+        el.addEventListener('input', handleAdvance);
+        el.addEventListener('change', handleAdvance);
+        cleanupListener = () => {
+          el.removeEventListener('input', handleAdvance);
+          el.removeEventListener('change', handleAdvance);
+        };
+      } else {
+        el.addEventListener('click', handleAdvance);
+        cleanupListener = () => {
+          el.removeEventListener('click', handleAdvance);
+        };
+      }
     };
 
     attachListener();
@@ -100,27 +112,6 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       cleanupListener?.();
     };
   }, [active, goToNextStep, step]);
-
-  const advance = useCallback(() => {
-    const el = document.querySelector(step?.selector ?? '') as HTMLElement | null;
-    if (el) {
-      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-        el.focus();
-        el.select?.();
-      }
-
-      if (step?.interaction !== 'input') {
-        // Forward a real click to the underlying target so the app actually reacts
-        // (e.g. opens Q1 or opens the hint) before we move the spotlight.
-        el.click();
-      }
-    }
-
-    if (step?.interaction !== 'input') {
-      // Give the app a moment to mount the next target (modals, inputs, etc.).
-      setTimeout(goToNextStep, 250);
-    }
-  }, [goToNextStep, step]);
 
 
   if (!active || !step) return null;
@@ -187,21 +178,12 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       />
 
       {/* Highlighted target area */}
-      {spotlight && step.interaction === 'input' ? (
+      {spotlight ? (
         <div
           className="absolute rounded-xl border-2 border-primary animate-pulse pointer-events-none"
           style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }}
           aria-hidden="true"
         />
-      ) : spotlight ? (
-        <button
-          onClick={advance}
-          className="absolute rounded-xl border-2 border-primary animate-pulse cursor-pointer pointer-events-auto flex items-center justify-center"
-          style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }}
-          aria-label="Click to continue"
-        >
-          <MousePointerClick className="h-6 w-6 text-primary opacity-60" />
-        </button>
       ) : null}
 
       {/* Bouncing arrow pointing at the target */}

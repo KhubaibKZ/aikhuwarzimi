@@ -193,8 +193,9 @@ export default function AdminPanel() {
               <Settings className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-bold text-foreground">Admin Panel</h1>
-              <p className="text-xs text-muted-foreground">Manage Students & Assignments</p>
+              <h1 className="text-lg font-bold text-foreground">Super Admin</h1>
+              <p className="text-xs text-muted-foreground">Manage Students, Assignments & Usage</p>
+
             </div>
           </div>
           <div className="flex items-center gap-2">

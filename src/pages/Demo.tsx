@@ -109,9 +109,9 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
             </div>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
+              <Sparkles className="h-3 w-3" /> Research & Demo
+            </span>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
 
           </div>
         </div>

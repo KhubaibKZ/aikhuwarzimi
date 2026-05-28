@@ -30,6 +30,7 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     selector: '[data-tour="hint-feedback"]',
+    advanceSelector: '[data-tour="hint-ok-btn"]',
     title: 'Read the hint',
     body: 'The hint now appears inside the workspace so the student can read it before moving on.',
     placement: 'top',
@@ -64,7 +65,8 @@ const TOUR_STEPS: TourStep[] = [
     interaction: 'appear',
   },
   {
-    selector: '[data-tour="try-again-btn-a"]',
+    selector: '[data-tour="guidance-feedback-a"]',
+    advanceSelector: '[data-tour="try-again-btn-a"]',
     title: 'Try again',
     body: 'Click Try again so the student can re-enter part (a) with the correct answer.',
     placement: 'top',
@@ -86,13 +88,15 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     selector: '[data-tour="guidance-feedback-correct-a"]',
+    advanceSelector: '[data-tour="continue-btn-a"]',
     title: 'Successful feedback',
     body: 'This confirms part (a) is now correct before moving on to part (b).',
     placement: 'top',
     interaction: 'appear',
   },
   {
-    selector: '[data-tour="continue-btn-a"]',
+    selector: '[data-tour="guidance-feedback-correct-a"]',
+    advanceSelector: '[data-tour="continue-btn-a"]',
     title: 'Continue to part (b)',
     body: 'Click Continue to move forward once part (a) is done correctly.',
     placement: 'top',
@@ -114,13 +118,15 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     selector: '[data-tour="guidance-feedback-correct-b"]',
+    advanceSelector: '[data-tour="continue-btn-b"]',
     title: 'Part (b) feedback',
     body: 'The student can see the confirmation for part (b) before submitting.',
     placement: 'top',
     interaction: 'appear',
   },
   {
-    selector: '[data-tour="continue-btn-b"]',
+    selector: '[data-tour="guidance-feedback-correct-b"]',
+    advanceSelector: '[data-tour="continue-btn-b"]',
     title: 'Go to submit',
     body: 'Click Continue and then submit the full question.',
     placement: 'top',

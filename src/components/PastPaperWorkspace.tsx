@@ -61,7 +61,6 @@ import {
   ScatterDiagram2023ON,
   ScaleDrawing2023ON,
   RectangleSquares_4024_12_2023ON,
-  ParallelLines_4024_12_2023ON,
   TransformGrid_4024_12_2023ON,
   TriangleConstruct_4024_12_2023ON,
   CumulativeFrequency_4024_12_2023ON,
@@ -2569,7 +2568,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             
             {/* ========== 4024/12 Oct/Nov 2023 Diagrams ========== */}
             {question.id === 'pp_4024_on23_12_q2' && (<div className="mt-4"><RectangleSquares_4024_12_2023ON /></div>)}
-            {question.id === 'pp_4024_on23_12_q6' && (<div className="mt-4"><ParallelLines_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q6' && (<div className="mt-4"><ParallelLines2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q7' && (<div className="mt-4"><TransformGrid_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q14' && (<div className="mt-4"><TriangleConstruct_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q17' && (<div className="mt-4"><CumulativeFrequency_4024_12_2023ON /></div>)}

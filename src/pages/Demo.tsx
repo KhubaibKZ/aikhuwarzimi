@@ -11,10 +11,6 @@ import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/Pas
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
-import StudentAnalytics from './StudentAnalytics';
-
-const PAPER_ID = 'pp_4024_on23_11';
-
 
 const PAPER_ID = 'pp_4024_on23_11';
 const STORAGE_KEY = 'demo_progress_v1';

@@ -56,6 +56,7 @@ export const FinalAnswerField = forwardRef<HTMLInputElement, FinalAnswerFieldPro
           <div className="relative flex-1">
             <Input
               ref={ref}
+              data-tour={index === 0 ? 'answer-input' : undefined}
               value={value}
               onChange={(e) => onChange(e.target.value)}
               onFocus={onFocus}
@@ -83,6 +84,7 @@ export const FinalAnswerField = forwardRef<HTMLInputElement, FinalAnswerFieldPro
           <Button
             variant="outline"
             size="sm"
+            data-tour={index === 0 ? 'checkwork-btn' : undefined}
             onClick={onCheckWork}
             disabled={isLoading || isSubmitted}
             className="shrink-0"
@@ -94,6 +96,7 @@ export const FinalAnswerField = forwardRef<HTMLInputElement, FinalAnswerFieldPro
               <BookOpen className="h-4 w-4" />
             )}
           </Button>
+
         </div>
         
         {aiResponse && (

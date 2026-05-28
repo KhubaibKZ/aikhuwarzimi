@@ -3056,26 +3056,27 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             <div
               data-tour={aiResponse.type === 'hint' ? 'hint-feedback' : undefined}
               className={cn(
-              "rounded-lg border p-4",
-              aiResponse.type === 'hint' 
-                ? "border-amber-500/30 bg-amber-500/10" 
-                : "border-blue-500/30 bg-blue-500/10"
-            )}>
+                "rounded-lg border p-4 shadow-sm",
+                aiResponse.type === 'hint'
+                  ? "border-warning/50 bg-warning/18 text-foreground"
+                  : "border-primary/50 bg-primary/12 text-foreground"
+              )}
+            >
 
               <div className="flex items-start gap-3">
                 {aiResponse.type === 'hint' ? (
-                  <Lightbulb className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+                  <Lightbulb className="h-5 w-5 text-warning mt-0.5 shrink-0" />
                 ) : (
-                  <BookOpen className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
+                  <BookOpen className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                 )}
                 <div className="flex-1">
                   <p className={cn(
                     "font-medium mb-2",
-                    aiResponse.type === 'hint' ? "text-amber-600" : "text-blue-600"
+                    aiResponse.type === 'hint' ? "text-warning" : "text-primary"
                   )}>
                     {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
                   </p>
-                  <p className="text-sm whitespace-pre-line">{aiResponse.content}</p>
+                  <p className="text-sm whitespace-pre-line leading-relaxed text-foreground">{aiResponse.content}</p>
                   {feedbackAction && (
                     <div className="mt-3 flex justify-end">
                       <Button

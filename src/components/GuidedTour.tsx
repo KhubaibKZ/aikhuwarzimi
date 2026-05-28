@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 
 export interface TourStep {
   selector: string;
+  /** Optional separate selector used only for advancing the step. */
+  advanceSelector?: string;
   title: string;
   body: string;
   /** Where to place the callout relative to the target. Defaults to auto. */
@@ -19,6 +21,7 @@ interface GuidedTourProps {
 }
 
 interface Rect { top: number; left: number; width: number; height: number; }
+type Placement = NonNullable<TourStep['placement']>;
 
 export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const [index, setIndex] = useState(0);
@@ -38,12 +41,17 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
   // Reset to first step whenever the tour (re)starts.
   useEffect(() => {
-    if (active) setIndex(0);
+    if (active) {
+      setIndex(0);
+      lastScrolledStepRef.current = null;
+    }
   }, [active]);
 
   // Track the target element's position (it may mount later when a modal opens).
   useEffect(() => {
     if (!active || !step) return;
+
+    let retryTimeout = 0;
 
     const isSameRect = (next: Rect | null, current: Rect | null) => {
       if (!next || !current) return next === current;
@@ -59,7 +67,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       const el = document.querySelector(step.selector) as HTMLElement | null;
       if (el) {
         if (lastScrolledStepRef.current !== step.selector) {
-          el.scrollIntoView({ block: 'center' });
+          el.scrollIntoView({ block: 'center', behavior: 'smooth' });
           lastScrolledStepRef.current = step.selector;
         }
         const r = el.getBoundingClientRect();
@@ -67,6 +75,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         setRect((current) => (isSameRect(nextRect, current) ? current : nextRect));
       } else {
         setRect((current) => (current ? null : current));
+        retryTimeout = window.setTimeout(measure, 120) as unknown as number;
       }
     };
 
@@ -79,6 +88,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     window.addEventListener('scroll', measure, true);
 
     return () => {
+      clearTimeout(retryTimeout);
       observer?.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
@@ -92,7 +102,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     let cleanupListener: (() => void) | null = null;
 
     const attachListener = () => {
-      const el = document.querySelector(step.selector) as HTMLElement | null;
+      const el = document.querySelector(step.advanceSelector ?? step.selector) as HTMLElement | null;
       if (!el) {
         timeout = window.setTimeout(attachListener, 200) as unknown as number;
         return;

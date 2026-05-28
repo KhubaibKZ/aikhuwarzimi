@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { X, ArrowRight } from 'lucide-react';
+import { X, ArrowRight, MousePointerClick } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface TourStep {
@@ -55,7 +54,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     };
   }, [active, step]);
 
-  const next = useCallback(() => {
+  const advance = useCallback(() => {
     if (index >= steps.length - 1) {
       onFinish();
     } else {
@@ -66,7 +65,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
   if (!active || !step) return null;
 
-  const pad = 8;
+  const pad = 10;
   const spotlight = rect
     ? {
         top: rect.top - pad,
@@ -81,10 +80,10 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const vh = window.innerHeight;
   let placement = step.placement;
   if (!placement && spotlight) {
-    placement = spotlight.top + spotlight.height + 180 < vh ? 'bottom' : 'top';
+    placement = spotlight.top + spotlight.height + 200 < vh ? 'bottom' : 'top';
   }
 
-  const calloutWidth = Math.min(320, vw - 24);
+  const calloutWidth = Math.min(340, vw - 24);
   let calloutStyle: React.CSSProperties = {
     width: calloutWidth,
     left: vw / 2 - calloutWidth / 2,
@@ -95,13 +94,13 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     let left = cx - calloutWidth / 2;
     left = Math.max(12, Math.min(left, vw - calloutWidth - 12));
     if (placement === 'bottom') {
-      calloutStyle = { width: calloutWidth, left, top: spotlight.top + spotlight.height + 16 };
+      calloutStyle = { width: calloutWidth, left, top: spotlight.top + spotlight.height + 20 };
     } else if (placement === 'top') {
-      calloutStyle = { width: calloutWidth, left, top: Math.max(12, spotlight.top - 16 - 150) };
+      calloutStyle = { width: calloutWidth, left, top: Math.max(12, spotlight.top - 20 - 160) };
     } else if (placement === 'right') {
-      calloutStyle = { width: calloutWidth, left: Math.min(spotlight.left + spotlight.width + 16, vw - calloutWidth - 12), top: spotlight.top };
+      calloutStyle = { width: calloutWidth, left: Math.min(spotlight.left + spotlight.width + 20, vw - calloutWidth - 12), top: spotlight.top };
     } else if (placement === 'left') {
-      calloutStyle = { width: calloutWidth, left: Math.max(12, spotlight.left - calloutWidth - 16), top: spotlight.top };
+      calloutStyle = { width: calloutWidth, left: Math.max(12, spotlight.left - calloutWidth - 20), top: spotlight.top };
     }
   }
 
@@ -112,46 +111,50 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         className="absolute inset-0 transition-all duration-300"
         style={{
           boxShadow: spotlight
-            ? `0 0 0 9999px hsl(var(--background) / 0.78)`
-            : `inset 0 0 0 9999px hsl(var(--background) / 0.78)`,
+            ? `0 0 0 9999px hsl(var(--background) / 0.82)`
+            : `inset 0 0 0 9999px hsl(var(--background) / 0.82)`,
           ...(spotlight
             ? {
                 top: spotlight.top,
                 left: spotlight.left,
                 width: spotlight.width,
                 height: spotlight.height,
-                borderRadius: 12,
+                borderRadius: 14,
               }
             : { top: 0, left: 0, right: 0, bottom: 0 }),
           position: 'absolute',
         }}
       />
 
-      {/* Animated ring around the target */}
+      {/* Clickable pulse ring around the target — clicking this advances the tour */}
       {spotlight && (
-        <div
-          className="absolute rounded-xl border-2 border-primary animate-pulse"
+        <button
+          onClick={advance}
+          className="absolute rounded-xl border-2 border-primary animate-pulse cursor-pointer pointer-events-auto flex items-center justify-center"
           style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }}
-        />
+          aria-label="Click to continue"
+        >
+          <MousePointerClick className="h-6 w-6 text-primary opacity-60" />
+        </button>
       )}
 
       {/* Bouncing arrow pointing at the target */}
       {spotlight && (
         <div
-          className="absolute text-primary drop-shadow-lg"
+          className="absolute text-primary drop-shadow-lg pointer-events-none"
           style={
             placement === 'top'
-              ? { top: spotlight.top + spotlight.height + 2, left: spotlight.left + spotlight.width / 2 - 14 }
-              : { top: spotlight.top - 34, left: spotlight.left + spotlight.width / 2 - 14 }
+              ? { top: spotlight.top + spotlight.height + 4, left: spotlight.left + spotlight.width / 2 - 16 }
+              : { top: spotlight.top - 38, left: spotlight.left + spotlight.width / 2 - 16 }
           }
         >
           <ArrowRight
-            className={cn('h-7 w-7 animate-bounce', placement === 'top' ? '-rotate-90' : 'rotate-90')}
+            className={cn('h-8 w-8 animate-bounce', placement === 'top' ? '-rotate-90' : 'rotate-90')}
           />
         </div>
       )}
 
-      {/* Callout card */}
+      {/* Callout card — informational only, no Next button */}
       <div
         className="absolute pointer-events-auto rounded-xl border border-primary/40 bg-card shadow-2xl p-4 animate-scale-in"
         style={calloutStyle}
@@ -168,16 +171,12 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         </p>
         <h4 className="text-sm font-bold text-foreground mb-1">{step.title}</h4>
         <p className="text-xs text-muted-foreground leading-relaxed">{step.body}</p>
-        <div className="flex items-center justify-between mt-3">
-          <button onClick={onFinish} className="text-xs text-muted-foreground hover:text-foreground">
-            Skip
-          </button>
-          <Button size="sm" className="gap-1" onClick={next}>
-            {index >= steps.length - 1 ? 'Finish' : 'Next'}
-            {index < steps.length - 1 && <ArrowRight className="h-3.5 w-3.5" />}
-          </Button>
+        <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-primary">
+          <MousePointerClick className="h-3.5 w-3.5" />
+          <span>Click the highlighted area to continue</span>
         </div>
       </div>
     </div>
   );
 }
+

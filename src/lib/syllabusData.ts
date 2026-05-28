@@ -482,7 +482,7 @@ export const igcseMathsSyllabus: SyllabusData = {
         {
           id: '9-3',
           code: '9.3',
-          title: 'Averages and Range',
+          title: 'Averages and measures of spread',
           description: 'Calculate mean, median, mode and range.',
           locked: true,
           questionIds: []

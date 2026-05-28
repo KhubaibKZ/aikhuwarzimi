@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2, History, Clock } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -22,6 +22,27 @@ interface Profile {
   full_name: string;
   created_at: string;
 }
+
+interface UsageSession {
+  id: string;
+  user_id: string | null;
+  display_name: string | null;
+  email: string | null;
+  account_type: string;
+  started_at: string;
+  last_active_at: string;
+  duration_seconds: number;
+}
+
+function fmtDuration(secs: number) {
+  if (secs < 60) return `${secs}s`;
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+}
+
 
 // Helper to call the admin-api edge function
 async function adminApi(action: string, params: Record<string, unknown> = {}) {

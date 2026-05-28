@@ -195,14 +195,16 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             </Card>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {paper.sections.map(section => {
+              {paper.sections.map((section, sectionIndex) => {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 return (
                   <button
                     key={section.id}
+                    data-tour={sectionIndex === 0 ? 'demo-q1' : undefined}
                     onClick={() => setOpenQid(section.questionId)}
                     className={`text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
+
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-foreground">{section.title.split('–')[0].trim()}</span>

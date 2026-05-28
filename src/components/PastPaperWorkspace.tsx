@@ -1791,6 +1791,31 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     checkworkUsageRef.current = 0;
   };
 
+  const dismissAiResponse = useCallback(() => {
+    setAiResponse(null);
+  }, []);
+
+  const feedbackAction = aiResponse
+    ? {
+        label: aiResponse.type === 'hint' ? 'OK' : feedback[aiResponse.partKey || ''] === 'incorrect' ? 'Try again' : 'Continue',
+        onClick: dismissAiResponse,
+        tourData:
+          aiResponse.type === 'hint'
+            ? 'hint-ok-btn'
+            : feedback[aiResponse.partKey || ''] === 'incorrect'
+              ? aiResponse.partKey === 'a'
+                ? 'try-again-btn-a'
+                : aiResponse.partKey === 'b'
+                  ? 'try-again-btn-b'
+                  : 'try-again-btn'
+              : aiResponse.partKey === 'a'
+                ? 'continue-btn-a'
+                : aiResponse.partKey === 'b'
+                  ? 'continue-btn-b'
+                  : 'continue-btn',
+      }
+    : undefined;
+
   // Reset individual question (dashboard/general mode only)
   const handleResetQuestion = async () => {
     if (!user || workspaceMode !== 'general') return;
@@ -2720,6 +2745,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
+                feedbackAction={feedbackAction}
                 keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'calculation' && question.parts ? (
@@ -2743,6 +2769,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
+                feedbackAction={feedbackAction}
                 keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'multi-part' && question.parts ? (
@@ -2903,6 +2930,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                 aiResponse={aiResponse}
+                feedbackAction={feedbackAction}
                 keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
               />
             ) : question.type === 'prime-factor' && question.targetNumber ? (
@@ -3017,6 +3045,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                 isSubmitted={isSubmitted}
                 correctAnswers={typeof question.answer === 'string' ? { answer: question.answer } : question.answer}
                 aiResponse={aiResponse}
+                feedbackAction={feedbackAction}
                 keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                 />
             )}
@@ -3044,6 +3073,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
                   </p>
                   <p className="text-sm whitespace-pre-line">{aiResponse.content}</p>
+                  {feedbackAction && (
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        data-tour={feedbackAction.tourData}
+                        onClick={feedbackAction.onClick}
+                      >
+                        {feedbackAction.label}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -3054,7 +3096,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             <div className={cn(
               "rounded-lg border p-4 space-y-3",
               allCorrect ? "border-green-500/50 bg-green-500/10" : "border-primary/30 bg-primary/5"
-            )}>
+            )}
+            data-tour="submit-feedback">
               <div className="flex items-center gap-3">
                 {allCorrect ? <Award className="h-6 w-6 text-green-500" /> : <Clock className="h-6 w-6 text-primary" />}
                 <div className="flex-1">

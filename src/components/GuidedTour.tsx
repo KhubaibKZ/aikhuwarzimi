@@ -9,7 +9,7 @@ export interface TourStep {
   /** Where to place the callout relative to the target. Defaults to auto. */
   placement?: 'top' | 'bottom' | 'left' | 'right';
   /** How the user should progress this step. Defaults to click. */
-  interaction?: 'click' | 'input';
+  interaction?: 'click' | 'input' | 'appear';
 }
 
 interface GuidedTourProps {
@@ -108,6 +108,12 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
         el.focus();
         el.select?.();
+      }
+
+      if (step.interaction === 'appear') {
+        handleAdvance();
+        cleanupListener = null;
+        return;
       }
 
       if (step.interaction === 'input') {
@@ -241,7 +247,13 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         <p className="text-xs text-muted-foreground leading-relaxed">{step.body}</p>
         <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-primary">
           <MousePointerClick className="h-3.5 w-3.5" />
-          <span>{step.interaction === 'input' ? 'Type in the highlighted box to continue' : 'Click the highlighted area to continue'}</span>
+          <span>
+            {step.interaction === 'input'
+              ? 'Type in the highlighted box to continue'
+              : step.interaction === 'appear'
+                ? 'Review the highlighted feedback'
+                : 'Click the highlighted area to continue'}
+          </span>
         </div>
       </div>
     </div>

@@ -27,6 +27,11 @@ export interface StepWorkspaceProps {
   keyboardKeys: string[][];
   hideOwnKeyboard?: boolean;
   onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
+  feedbackAction?: {
+    label: string;
+    onClick: () => void;
+    tourData?: string;
+  };
 }
 
 export function StepWorkspace({
@@ -43,6 +48,7 @@ export function StepWorkspace({
   keyboardKeys,
   hideOwnKeyboard = false,
   onActiveKeyHandler,
+  feedbackAction,
 }: StepWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(steps[0]?.key);
   
@@ -172,10 +178,36 @@ export function StepWorkspace({
               aiResponse.type === 'hint' 
                 ? "border-amber-500/30 bg-amber-500/10" 
                 : "border-blue-500/30 bg-blue-500/10"
-            )}>
+            )}
+            data-tour={
+              step.key === 'a'
+                ? aiResponse.type === 'hint'
+                  ? 'hint-feedback'
+                  : feedback[step.key] === 'correct'
+                    ? 'guidance-feedback-correct-a'
+                    : 'guidance-feedback-a'
+                : step.key === 'b' && feedback[step.key] === 'correct'
+                  ? 'guidance-feedback-correct-b'
+                  : undefined
+            }>
               <div className="flex items-start gap-2">
                 <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
-                <p className="whitespace-pre-line">{aiResponse.content}</p>
+                <div className="flex-1 space-y-3">
+                  <p className="whitespace-pre-line">{aiResponse.content}</p>
+                  {feedbackAction && (
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        data-tour={feedbackAction.tourData}
+                        onClick={feedbackAction.onClick}
+                      >
+                        {feedbackAction.label}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}

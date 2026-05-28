@@ -2817,7 +2817,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                         isSubmitted={isSubmitted}
                         correctAnswers={typeof question.answer === 'object' ? question.answer : undefined}
                         aiResponse={aiResponse}
-                  feedbackAction={feedbackAction}
                         keyboardKeys={getKeyboardConfig(question.id, question.type, question.title)}
                       />
                     </div>

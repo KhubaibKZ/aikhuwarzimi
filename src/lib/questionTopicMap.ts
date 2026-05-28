@@ -59,10 +59,10 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_0580_s21_q2c': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
   'pp_0580_s21_q2d': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
   'pp_0580_s21_q2e': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
-  'pp_0580_s21_q3a': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_0580_s21_q3a': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_0580_s21_q3b': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.4', subtopicTitle: 'Statistical Charts and Diagrams' },
-  'pp_0580_s21_q3c': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
-  'pp_0580_s21_q3d': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_0580_s21_q3c': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
+  'pp_0580_s21_q3d': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_0580_s21_q4a': { topicId: 3, topicTitle: 'Coordinate Geometry', subtopicCode: '3.4', subtopicTitle: 'Equations of Linear Graphs' },
   'pp_0580_s21_q4b': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
   'pp_0580_s21_q4c': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
@@ -91,7 +91,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // 0580/11 May/June 2020 (Core Paper 1)
   // =============================================
   'pp_0580_s20_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
-  'pp_0580_s20_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_0580_s20_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_0580_s20_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.5', subtopicTitle: 'Ordering' },
   'pp_0580_s20_q4a': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
   'pp_0580_s20_q4b': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
@@ -175,7 +175,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // =============================================
   'pp_4024_s24_12_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.5', subtopicTitle: 'Ordering' },
   'pp_4024_s24_12_q2': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
-  'pp_4024_s24_12_q3': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_s24_12_q3': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_s24_12_q4': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.1', subtopicTitle: 'Units of Measure' },
   'pp_4024_s24_12_q5': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.2', subtopicTitle: 'Area and Perimeter' },
   'pp_4024_s24_12_q6': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
@@ -234,7 +234,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // =============================================
   'pp_4024_w24_11_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
   'pp_4024_w24_11_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.11', subtopicTitle: 'Ratio and Proportion' },
-  'pp_4024_w24_11_q3': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_w24_11_q3': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_w24_11_q4': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.5', subtopicTitle: 'Symmetry' },
   'pp_4024_w24_11_q5': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
   'pp_4024_w24_11_q6': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.5', subtopicTitle: 'Scatter Diagrams' },
@@ -420,7 +420,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_s25_23_q13': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.8', subtopicTitle: 'Standard Form' },
   'pp_4024_s25_23_q14': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.2', subtopicTitle: 'Algebraic Manipulation' },
   'pp_4024_s25_23_q15': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.6', subtopicTitle: 'Inequalities' },
-  'pp_4024_s25_23_q16': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_s25_23_q16': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_s25_23_q17': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.7', subtopicTitle: 'Circle Theorems I' },
   'pp_4024_s25_23_q18': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
   'pp_4024_s25_23_q19': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.3', subtopicTitle: 'Non-Right-Angled Triangles' },
@@ -433,7 +433,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // O LEVEL 4024 — Oct/Nov 2025 Paper 11
   // =============================================
   'pp_4024_on25_11_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
-  'pp_4024_on25_11_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on25_11_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on25_11_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.13', subtopicTitle: 'Percentages' },
   'pp_4024_on25_11_q4': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },
   'pp_4024_on25_11_q5': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.4', subtopicTitle: 'Statistical Charts and Diagrams' },
@@ -442,7 +442,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on25_11_q8': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
   'pp_4024_on25_11_q9': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.9', subtopicTitle: 'Estimation' },
   'pp_4024_on25_11_q10': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.3', subtopicTitle: 'Circles, Arcs and Sectors' },
-  'pp_4024_on25_11_q11': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on25_11_q11': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on25_11_q12': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
   'pp_4024_on25_11_q13': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.4', subtopicTitle: 'Fractions, Decimals and Percentages' },
   'pp_4024_on25_11_q14': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.9', subtopicTitle: 'Graphs in Practical Situations' },
@@ -505,7 +505,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on25_21_q14': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.17', subtopicTitle: 'Exponential Growth and Decay' },
   'pp_4024_on25_21_q15': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.1', subtopicTitle: 'Types of Number' },
   'pp_4024_on25_21_q16': { topicId: 3, topicTitle: 'Coordinate Geometry', subtopicCode: '3.5', subtopicTitle: 'Equations of Linear Graphs' },
-  'pp_4024_on25_21_q17': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on25_21_q17': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on25_21_q18': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.3', subtopicTitle: 'Algebraic Fractions' },
   'pp_4024_on25_21_q19': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.10', subtopicTitle: 'Limits of Accuracy' },
   'pp_4024_on25_21_q20': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.3', subtopicTitle: 'Non-Right-Angled Triangles' },
@@ -519,7 +519,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // O LEVEL 4024 — Oct/Nov 2025 Paper 22
   // =============================================
   'pp_4024_on25_22_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.14', subtopicTitle: 'Using a Calculator' },
-  'pp_4024_on25_22_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on25_22_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on25_22_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
   'pp_4024_on25_22_q4': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.2', subtopicTitle: 'Geometrical Constructions' },
   'pp_4024_on25_22_q5': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.13', subtopicTitle: 'Percentages' },
@@ -665,7 +665,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on23_12_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.6', subtopicTitle: 'The Four Operations' },
   'pp_4024_on23_12_q2': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.4', subtopicTitle: 'Fractions, Decimals and Percentages' },
   'pp_4024_on23_12_q3': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.4', subtopicTitle: 'Fractions, Decimals and Percentages' },
-  'pp_4024_on23_12_q4': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on23_12_q4': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on23_12_q5': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.11', subtopicTitle: 'Ratio and Proportion' },
   'pp_4024_on23_12_q6': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.6', subtopicTitle: 'Angles' },
   'pp_4024_on23_12_q7': { topicId: 7, topicTitle: 'Transformations and Vectors', subtopicCode: '7.1', subtopicTitle: 'Transformations' },
@@ -674,7 +674,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on23_12_q10': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.9', subtopicTitle: 'Estimation' },
   'pp_4024_on23_12_q11': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.6', subtopicTitle: 'Inequalities' },
   'pp_4024_on23_12_q12': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
-  'pp_4024_on23_12_q13': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on23_12_q13': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on23_12_q14': { topicId: 4, topicTitle: 'Geometry', subtopicCode: '4.2', subtopicTitle: 'Geometrical Constructions' },
   'pp_4024_on23_12_q15': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.7', subtopicTitle: 'Sequences' },
   'pp_4024_on23_12_q16': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
@@ -879,7 +879,7 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   // 4024/22 Oct/Nov 2022
   // =============================================
   'pp_4024_on22_22_q1': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.15', subtopicTitle: 'Time' },
-  'pp_4024_on22_22_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and Range' },
+  'pp_4024_on22_22_q2': { topicId: 9, topicTitle: 'Statistics', subtopicCode: '9.3', subtopicTitle: 'Averages and measures of spread' },
   'pp_4024_on22_22_q3': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
   'pp_4024_on22_22_q4': { topicId: 1, topicTitle: 'Number', subtopicCode: '1.2', subtopicTitle: 'Sets' },
   'pp_4024_on22_22_q5': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },

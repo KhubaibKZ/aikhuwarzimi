@@ -27,6 +27,9 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
   const lastScrolledStepRef = useRef<string | null>(null);
+  const rectRef = useRef<Rect | null>(null);
+  const clearRectTimeoutRef = useRef<number | null>(null);
+  const advanceTimeoutRef = useRef<number | null>(null);
 
   const step = steps[index];
 
@@ -34,7 +37,6 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     if (index >= steps.length - 1) {
       onFinish();
     } else {
-      setRect(null);
       setIndex((i) => i + 1);
     }
   }, [index, onFinish, steps.length]);
@@ -43,6 +45,8 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   useEffect(() => {
     if (active) {
       setIndex(0);
+      setRect(null);
+      rectRef.current = null;
       lastScrolledStepRef.current = null;
     }
   }, [active]);
@@ -66,15 +70,26 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     const measure = () => {
       const el = document.querySelector(step.selector) as HTMLElement | null;
       if (el) {
+        if (clearRectTimeoutRef.current) {
+          clearTimeout(clearRectTimeoutRef.current);
+          clearRectTimeoutRef.current = null;
+        }
         if (lastScrolledStepRef.current !== step.selector) {
           el.scrollIntoView({ block: 'center', behavior: 'smooth' });
           lastScrolledStepRef.current = step.selector;
         }
         const r = el.getBoundingClientRect();
         const nextRect = { top: r.top, left: r.left, width: r.width, height: r.height };
+        rectRef.current = nextRect;
         setRect((current) => (isSameRect(nextRect, current) ? current : nextRect));
       } else {
-        setRect((current) => (current ? null : current));
+        if (!clearRectTimeoutRef.current && rectRef.current) {
+          clearRectTimeoutRef.current = window.setTimeout(() => {
+            rectRef.current = null;
+            setRect(null);
+            clearRectTimeoutRef.current = null;
+          }, 500) as unknown as number;
+        }
         retryTimeout = window.setTimeout(measure, 120) as unknown as number;
       }
     };
@@ -89,6 +104,10 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
     return () => {
       clearTimeout(retryTimeout);
+      if (clearRectTimeoutRef.current) {
+        clearTimeout(clearRectTimeoutRef.current);
+        clearRectTimeoutRef.current = null;
+      }
       observer?.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
@@ -112,7 +131,10 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       const handleAdvance = () => {
         if (advanced) return;
         advanced = true;
-        window.setTimeout(goToNextStep, step.interaction === 'input' ? 150 : 220);
+        advanceTimeoutRef.current = window.setTimeout(
+          goToNextStep,
+          step.interaction === 'input' ? 150 : 220,
+        ) as unknown as number;
       };
 
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
@@ -121,7 +143,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       if (step.interaction === 'appear') {
-        handleAdvance();
+        timeout = window.setTimeout(handleAdvance, 1100) as unknown as number;
         cleanupListener = null;
         return;
       }
@@ -145,6 +167,10 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
     return () => {
       clearTimeout(timeout);
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+        advanceTimeoutRef.current = null;
+      }
       cleanupListener?.();
     };
   }, [active, goToNextStep, step]);

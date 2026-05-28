@@ -97,7 +97,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 4 ==========
   'pp_4024_on23_12_q4': {
     id: 'pp_4024_on23_12_q4', questionNumber: '4', title: 'Temperature statistics',
-    question: 'Sonu records temperatures for 12 days: −6, −5, −3, −2, −1, −1, T, 5, 5, 6, 6, 7.\n(a) Find the range.\n(b) The median is 1°C. Find T.',
+    question: 'Sonu records the temperature, in °C, at midnight every day for 12 days.\nHere are the results in order, starting with the coldest.\n−6  −5  −3  −2  −1  −1  T  5  5  6  6  7\n(a) Find the range.\n(b) The median is 1 °C.\nFind T.',
     marks: 2,
     hints: ['(a) Range = 7 − (−6) = 13', '(b) Median of 12 values is average of 6th and 7th: (−1+T)/2 = 1, T = 3'],
     type: 'multi-part',

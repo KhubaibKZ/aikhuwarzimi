@@ -121,7 +121,8 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     let cleanupListener: (() => void) | null = null;
 
     const attachListener = () => {
-      const el = document.querySelector(step.advanceSelector ?? step.selector) as HTMLElement | null;
+      const interactionSelector = step.advanceSelector ?? step.selector;
+      const el = document.querySelector(interactionSelector) as HTMLElement | null;
       if (!el) {
         timeout = window.setTimeout(attachListener, 200) as unknown as number;
         return;
@@ -143,22 +144,36 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       if (step.interaction === 'appear') {
-        timeout = window.setTimeout(handleAdvance, 1100) as unknown as number;
+        timeout = window.setTimeout(handleAdvance, 1400) as unknown as number;
         cleanupListener = null;
         return;
       }
 
       if (step.interaction === 'input') {
-        el.addEventListener('input', handleAdvance);
-        el.addEventListener('change', handleAdvance);
+        const handleInputAdvance = (event: Event) => {
+          const target = event.target as HTMLElement | null;
+          if (target?.closest(interactionSelector)) {
+            handleAdvance();
+          }
+        };
+
+        document.addEventListener('input', handleInputAdvance, true);
+        document.addEventListener('change', handleInputAdvance, true);
         cleanupListener = () => {
-          el.removeEventListener('input', handleAdvance);
-          el.removeEventListener('change', handleAdvance);
+          document.removeEventListener('input', handleInputAdvance, true);
+          document.removeEventListener('change', handleInputAdvance, true);
         };
       } else {
-        el.addEventListener('click', handleAdvance);
+        const handleClickAdvance = (event: MouseEvent) => {
+          const target = event.target as HTMLElement | null;
+          if (target?.closest(interactionSelector)) {
+            handleAdvance();
+          }
+        };
+
+        document.addEventListener('click', handleClickAdvance, true);
         cleanupListener = () => {
-          el.removeEventListener('click', handleAdvance);
+          document.removeEventListener('click', handleClickAdvance, true);
         };
       }
     };

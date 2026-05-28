@@ -160,7 +160,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
-            </Button>
           </div>
         </div>
       </header>

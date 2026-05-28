@@ -177,10 +177,10 @@ export function StepWorkspace({
               className={cn(
                 "rounded-lg border p-3 text-sm ml-7 shadow-sm",
                 aiResponse.type === 'hint'
-                  ? "border-warning/50 bg-warning/18 text-foreground"
+                  ? "border-warning/50 bg-warning/20 text-foreground"
                   : feedback[step.key] === 'correct'
-                    ? "border-success/50 bg-success/12 text-foreground"
-                    : "border-primary/50 bg-primary/12 text-foreground"
+                    ? "border-success/50 bg-success/10 text-foreground"
+                    : "border-primary/50 bg-primary/10 text-foreground"
               )}
               data-tour={
               step.key === 'a'

@@ -3058,8 +3058,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               className={cn(
                 "rounded-lg border p-4 shadow-sm",
                 aiResponse.type === 'hint'
-                  ? "border-warning/50 bg-warning/18 text-foreground"
-                  : "border-primary/50 bg-primary/12 text-foreground"
+                  ? "border-warning/50 bg-warning/20 text-foreground"
+                  : "border-primary/50 bg-primary/10 text-foreground"
               )}
             >
 

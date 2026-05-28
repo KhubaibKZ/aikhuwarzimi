@@ -59,12 +59,14 @@ function DemoInner() {
   const aiIndependence = Math.max(0, Math.round(100 - totalAi * 5));
 
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
-
-  const handleSubmitProgress = (payload: SubmitProgressPayload) => {
-    setProgress(prev => ({ ...prev, [payload.questionId]: payload }));
+  const resetAll = () => {
+    if (confirm('Reset all demo progress?')) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+      setProgress({});
+    }
   };
 
-  const resetAll = () => {
     if (confirm('Reset all demo progress?')) {
       localStorage.removeItem(STORAGE_KEY);
       setProgress({});

@@ -3053,12 +3053,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
 
           {/* AI Response (Hint or Guidance) - only show global responses (no partKey) */}
           {aiResponse && !aiResponse.partKey && (
-            <div className={cn(
+            <div
+              data-tour={aiResponse.type === 'hint' ? 'hint-feedback' : undefined}
+              className={cn(
               "rounded-lg border p-4",
               aiResponse.type === 'hint' 
                 ? "border-amber-500/30 bg-amber-500/10" 
                 : "border-blue-500/30 bg-blue-500/10"
             )}>
+
               <div className="flex items-start gap-3">
                 {aiResponse.type === 'hint' ? (
                   <Lightbulb className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />

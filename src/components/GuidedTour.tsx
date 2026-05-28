@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { X, ArrowRight, MousePointerClick } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +23,7 @@ interface Rect { top: number; left: number; width: number; height: number; }
 export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
+  const lastScrolledStepRef = useRef<string | null>(null);
 
   const step = steps[index];
 
@@ -43,23 +44,42 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   // Track the target element's position (it may mount later when a modal opens).
   useEffect(() => {
     if (!active || !step) return;
-    let raf = 0;
+
+    const isSameRect = (next: Rect | null, current: Rect | null) => {
+      if (!next || !current) return next === current;
+      return (
+        Math.abs(next.top - current.top) < 1 &&
+        Math.abs(next.left - current.left) < 1 &&
+        Math.abs(next.width - current.width) < 1 &&
+        Math.abs(next.height - current.height) < 1
+      );
+    };
+
     const measure = () => {
       const el = document.querySelector(step.selector) as HTMLElement | null;
       if (el) {
+        if (lastScrolledStepRef.current !== step.selector) {
+          el.scrollIntoView({ block: 'center' });
+          lastScrolledStepRef.current = step.selector;
+        }
         const r = el.getBoundingClientRect();
-        setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-        el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        const nextRect = { top: r.top, left: r.left, width: r.width, height: r.height };
+        setRect((current) => (isSameRect(nextRect, current) ? current : nextRect));
       } else {
-        setRect(null);
+        setRect((current) => (current ? null : current));
       }
-      raf = window.setTimeout(measure, 350) as unknown as number;
     };
+
     measure();
+    const el = document.querySelector(step.selector) as HTMLElement | null;
+    const observer = el ? new ResizeObserver(measure) : null;
+    if (el && observer) observer.observe(el);
+
     window.addEventListener('resize', measure);
     window.addEventListener('scroll', measure, true);
+
     return () => {
-      clearTimeout(raf);
+      observer?.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
     };
@@ -159,7 +179,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     <div className="fixed inset-0 z-[300] pointer-events-none">
       {/* Dimmed backdrop with a cut-out spotlight */}
       <div
-        className="absolute inset-0 transition-all duration-300"
+        className="absolute inset-0"
         style={{
           boxShadow: spotlight
             ? `0 0 0 9999px hsl(var(--background) / 0.82)`
@@ -180,7 +200,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       {/* Highlighted target area */}
       {spotlight ? (
         <div
-          className="absolute rounded-xl border-2 border-primary animate-pulse pointer-events-none"
+          className="absolute rounded-xl border-2 border-primary pointer-events-none"
           style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }}
           aria-hidden="true"
         />

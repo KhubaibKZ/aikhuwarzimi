@@ -307,8 +307,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   );
 }
 
-  );
-}
 
 function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub: string }) {
   return (

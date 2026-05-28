@@ -254,7 +254,15 @@ export default function AdminPanel() {
       </header>
 
       <main className="container px-4 py-8 md:px-6 max-w-5xl">
+        <Tabs defaultValue="students" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="students" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Students</TabsTrigger>
+            <TabsTrigger value="usage" className="gap-1.5"><History className="h-3.5 w-3.5" /> Usage History</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="students">
         {/* Search */}
+
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

@@ -3073,6 +3073,19 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                     {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
                   </p>
                   <p className="text-sm whitespace-pre-line">{aiResponse.content}</p>
+                  {feedbackAction && (
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        data-tour={feedbackAction.tourData}
+                        onClick={feedbackAction.onClick}
+                      >
+                        {feedbackAction.label}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

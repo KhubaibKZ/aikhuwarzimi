@@ -2,16 +2,20 @@ import { useState, useEffect, useMemo } from 'react';
 import logoImg from '@/assets/logo.png';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
+import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
 
 const PAPER_ID = 'pp_4024_on23_11';
 const STORAGE_KEY = 'demo_progress_v1';
+const NAME_KEY = 'demo_visitor_name';
+
 
 interface DemoRecord extends SubmitProgressPayload {}
 
@@ -35,16 +39,21 @@ function fmtTime(secs: number) {
   return `${m}m ${s}s`;
 }
 
-function DemoInner() {
+function DemoInner({ visitorName }: { visitorName: string }) {
   const paper = pastPapers.find(p => p.id === PAPER_ID);
   const [progress, setProgress] = useState<Record<string, DemoRecord>>(loadProgress());
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
+  // Track this demo visit (who, when, how long).
+  useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
+
   useEffect(() => { saveProgress(progress); }, [progress]);
 
   if (!paper) return <div className="p-8">Paper not found.</div>;
+
+
 
   const totalQs = paper.sections.length;
   const solvedQs = Object.keys(progress).length;
@@ -260,10 +269,51 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
   );
 }
 
+function DemoGate() {
+  const [visitorName, setVisitorName] = useState<string>(() => sessionStorage.getItem(NAME_KEY) || '');
+  const [nameInput, setNameInput] = useState('');
+
+  const submitName = () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed) return;
+    sessionStorage.setItem(NAME_KEY, trimmed);
+    setVisitorName(trimmed);
+  };
+
+  if (!visitorName) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-8 pb-7 text-center">
+            <img src={logoImg} alt="AI Khuwarizmi" className="h-14 w-14 rounded-xl object-contain mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-foreground">Welcome to the Demo</h2>
+            <p className="text-sm text-muted-foreground mt-1 mb-5">Enter your name to begin.</p>
+            <Input
+              autoFocus
+              placeholder="Your name"
+              value={nameInput}
+              maxLength={60}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
+              className="mb-3"
+            />
+            <Button className="w-full" onClick={submitName} disabled={!nameInput.trim()}>
+              Start Demo
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <DemoInner visitorName={visitorName} />;
+}
+
 const Demo = () => (
   <ProgressProvider>
-    <DemoInner />
+    <DemoGate />
   </ProgressProvider>
 );
 
 export default Demo;
+

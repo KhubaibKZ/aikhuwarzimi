@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2 } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, FileText, Search, Settings, Save, Loader2, Moon, Sun, Trash2, History, Clock } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -22,6 +22,27 @@ interface Profile {
   full_name: string;
   created_at: string;
 }
+
+interface UsageSession {
+  id: string;
+  user_id: string | null;
+  display_name: string | null;
+  email: string | null;
+  account_type: string;
+  started_at: string;
+  last_active_at: string;
+  duration_seconds: number;
+}
+
+function fmtDuration(secs: number) {
+  if (secs < 60) return `${secs}s`;
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m ${s}s`;
+}
+
 
 // Helper to call the admin-api edge function
 async function adminApi(action: string, params: Record<string, unknown> = {}) {
@@ -52,9 +73,31 @@ export default function AdminPanel() {
   const [defaultHints, setDefaultHints] = useState(3);
   const [defaultCheckwork, setDefaultCheckwork] = useState(3);
 
+  const [sessions, setSessions] = useState<UsageSession[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+
   useEffect(() => {
     loadStudents();
+    loadSessions();
   }, []);
+
+  const loadSessions = async () => {
+    setLoadingSessions(true);
+    try {
+      const { data, error } = await supabase
+        .from('usage_sessions')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      setSessions((data as UsageSession[]) || []);
+    } catch (err) {
+      console.error('Failed to load usage sessions:', err);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
+
 
   const loadStudents = async () => {
     setLoadingStudents(true);
@@ -193,8 +236,9 @@ export default function AdminPanel() {
               <Settings className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-bold text-foreground">Admin Panel</h1>
-              <p className="text-xs text-muted-foreground">Manage Students & Assignments</p>
+              <h1 className="text-lg font-bold text-foreground">Super Admin</h1>
+              <p className="text-xs text-muted-foreground">Manage Students, Assignments & Usage</p>
+
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -210,7 +254,15 @@ export default function AdminPanel() {
       </header>
 
       <main className="container px-4 py-8 md:px-6 max-w-5xl">
+        <Tabs defaultValue="students" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="students" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Students</TabsTrigger>
+            <TabsTrigger value="usage" className="gap-1.5"><History className="h-3.5 w-3.5" /> Usage History</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="students">
         {/* Search */}
+
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -287,7 +339,67 @@ export default function AdminPanel() {
             </Table>
           </div>
         )}
+          </TabsContent>
+
+          <TabsContent value="usage">
+            <p className="text-xs text-muted-foreground mb-3">
+              Sessions for logged-in students and demo visitors — who used the app, when, and for how long.
+            </p>
+            {loadingSessions ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border bg-card">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="hidden sm:table-cell">Started</TableHead>
+                      <TableHead className="hidden md:table-cell">Last active</TableHead>
+                      <TableHead className="text-right">Time spent</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sessions.map(s => (
+                      <TableRow key={s.id}>
+                        <TableCell>
+                          <p className="font-medium text-foreground text-sm">{s.display_name || 'Unknown'}</p>
+                          {s.email && <p className="text-xs text-muted-foreground">{s.email}</p>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={s.account_type === 'demo' ? 'secondary' : 'default'} className="text-[10px]">
+                            {s.account_type === 'demo' ? 'Demo' : 'Student'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                          {new Date(s.started_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                          {new Date(s.last_active_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-medium text-foreground">
+                          <span className="inline-flex items-center gap-1 justify-end">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            {fmtDuration(s.duration_seconds)}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {sessions.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No usage recorded yet</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
+
 
       {/* Student Management Modal */}
       <Dialog open={!!selectedStudent} onOpenChange={(open) => !open && setSelectedStudent(null)}>

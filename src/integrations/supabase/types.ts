@@ -215,6 +215,42 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_sessions: {
+        Row: {
+          account_type: string
+          created_at: string
+          display_name: string | null
+          duration_seconds: number
+          email: string | null
+          id: string
+          last_active_at: string
+          started_at: string
+          user_id: string | null
+        }
+        Insert: {
+          account_type?: string
+          created_at?: string
+          display_name?: string | null
+          duration_seconds?: number
+          email?: string | null
+          id?: string
+          last_active_at?: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          account_type?: string
+          created_at?: string
+          display_name?: string | null
+          duration_seconds?: number
+          email?: string | null
+          id?: string
+          last_active_at?: string
+          started_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

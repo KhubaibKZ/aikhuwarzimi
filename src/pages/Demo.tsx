@@ -39,55 +39,20 @@ function fmtTime(secs: number) {
   return `${m}m ${s}s`;
 }
 
-function DemoInner() {
+function DemoInner({ visitorName }: { visitorName: string }) {
   const paper = pastPapers.find(p => p.id === PAPER_ID);
   const [progress, setProgress] = useState<Record<string, DemoRecord>>(loadProgress());
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
-  const [visitorName, setVisitorName] = useState<string>(() => sessionStorage.getItem(NAME_KEY) || '');
-  const [nameInput, setNameInput] = useState('');
 
-  // Track this demo visit (who, when, how long) once a name is provided.
-  useUsageTracker({ enabled: !!visitorName, accountType: 'demo', displayName: visitorName });
+  // Track this demo visit (who, when, how long).
+  useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
 
   useEffect(() => { saveProgress(progress); }, [progress]);
 
-
   if (!paper) return <div className="p-8">Paper not found.</div>;
 
-  const submitName = () => {
-    const trimmed = nameInput.trim();
-    if (!trimmed) return;
-    sessionStorage.setItem(NAME_KEY, trimmed);
-    setVisitorName(trimmed);
-  };
-
-  if (!visitorName) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-8 pb-7 text-center">
-            <img src={logoImg} alt="AI Khuwarizmi" className="h-14 w-14 rounded-xl object-contain mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-foreground">Welcome to the Demo</h2>
-            <p className="text-sm text-muted-foreground mt-1 mb-5">Enter your name to begin.</p>
-            <Input
-              autoFocus
-              placeholder="Your name"
-              value={nameInput}
-              maxLength={60}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
-              className="mb-3"
-            />
-            <Button className="w-full" onClick={submitName} disabled={!nameInput.trim()}>
-              Start Demo
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
 
   const totalQs = paper.sections.length;

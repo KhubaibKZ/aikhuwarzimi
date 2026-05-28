@@ -3216,6 +3216,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           <div className={cn("grid gap-3", isSubmitted && workspaceMode === 'general' ? "grid-cols-3" : "grid-cols-2")}>
             <Button
               variant="outline"
+              data-tour="hint-btn"
               onClick={handleHint}
               disabled={isLoading || isSubmitted || (paperQuota !== null && paperQuota.hints <= 0)}
               className="flex items-center gap-2"
@@ -3229,7 +3230,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             </Button>
             <Button
               onClick={handleSubmit}
+              data-tour="submit-btn"
               disabled={isSubmitted}
+              className={cn("flex items-center gap-2", isSubmitted && "bg-green-600 hover:bg-green-600 text-white")}
+            >
+
               className={cn("flex items-center gap-2", isSubmitted && "bg-green-600 hover:bg-green-600 text-white")}
             >
               {isSubmitted ? (

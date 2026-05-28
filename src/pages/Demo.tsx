@@ -5,122 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun, Compass } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
-import { GuidedTour, type TourStep } from '@/components/GuidedTour';
+import StudentAnalytics from './StudentAnalytics';
 import StudentAnalytics from './StudentAnalytics';
 
-const TOUR_STEPS: TourStep[] = [
-  {
-    selector: '[data-tour="demo-q1"]',
-    title: 'Open Question 1',
-    body: 'Click on Question 1 to open the interactive workspace and begin solving.',
-    placement: 'bottom',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="hint-btn"]',
-    title: 'Ask for a Hint',
-    body: 'Stuck on what the question is asking? Tap Hint and the AI tutor will explain the idea.',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    // Highlight the whole hint card; advance only when the student clicks OK.
-    selector: '[data-tour="hint-feedback"]',
-    advanceSelector: '[data-tour="hint-ok-btn"]',
-    title: 'Read the hint, then click OK',
-    body: 'The hint appears inside the workspace. Read it, then click OK to start part (a).',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="answer-input-a"]',
-    title: 'Part (a): enter a wrong answer first',
-    body: 'Type an incorrect answer on purpose so you can see how Check Work gives AI guidance.',
-    placement: 'bottom',
-    interaction: 'input',
-  },
-  {
-    selector: '[data-tour="checkwork-btn-a"]',
-    title: 'Check part (a)',
-    body: 'Tap Check Work to trigger the AI guidance for the wrong answer.',
-    placement: 'left',
-    interaction: 'click',
-  },
-  {
-    // Highlight the full incorrect-feedback card; advance only on Try again.
-    selector: '[data-tour="guidance-feedback-a"]',
-    advanceSelector: '[data-tour="try-again-btn-a"]',
-    title: 'Read the feedback, then Try again',
-    body: 'This explains what went wrong and nudges you in the right direction. Click Try again to re-enter part (a).',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="answer-input-a"]',
-    title: 'Part (a): now enter the correct answer',
-    body: 'Now type the correct answer, 8, to complete part (a).',
-    placement: 'bottom',
-    interaction: 'input',
-  },
-  {
-    selector: '[data-tour="checkwork-btn-a"]',
-    title: 'Check the correct answer',
-    body: 'Tap Check Work again so you see the successful AI feedback too.',
-    placement: 'left',
-    interaction: 'click',
-  },
-  {
-    // Highlight the full success card; advance only on Continue.
-    selector: '[data-tour="guidance-feedback-correct-a"]',
-    advanceSelector: '[data-tour="continue-btn-a"]',
-    title: 'Part (a) is correct — Continue',
-    body: 'This confirms part (a) is correct. Click Continue to move on to part (b).',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="answer-input-b"]',
-    title: 'Answer part (b)',
-    body: 'Now type the answer for 40 × 0.3, which is 12, in the second box.',
-    placement: 'bottom',
-    interaction: 'input',
-  },
-  {
-    selector: '[data-tour="checkwork-btn-b"]',
-    title: 'Check part (b)',
-    body: 'Tap Check Work so the demo shows the feedback for part (b) as well.',
-    placement: 'left',
-    interaction: 'click',
-  },
-  {
-    // Highlight the full part (b) success card; advance only on Continue.
-    selector: '[data-tour="guidance-feedback-correct-b"]',
-    advanceSelector: '[data-tour="continue-btn-b"]',
-    title: 'Part (b) is correct — Continue',
-    body: 'Part (b) is confirmed. Click Continue, then submit the full question.',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="submit-btn"]',
-    title: 'Submit your answer',
-    body: 'Finally, tap Submit to record the completed answer.',
-    placement: 'top',
-    interaction: 'click',
-  },
-  {
-    selector: '[data-tour="submit-feedback"]',
-    title: 'Submission feedback',
-    body: 'This final message confirms the answer has been submitted and recorded.',
-    placement: 'top',
-    interaction: 'appear',
-  },
-];
+const PAPER_ID = 'pp_4024_on23_11';
 
 
 const PAPER_ID = 'pp_4024_on23_11';
@@ -156,7 +49,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
-  const [tourActive, setTourActive] = useState(false);
 
 
   // Track this demo visit (who, when, how long).
@@ -216,14 +108,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
               <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
             </div>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => { setTab('paper'); setTourActive(true); }}
-              className="gap-1.5"
-            >
-              <Compass className="h-4 w-4" /> Guided tour
-            </Button>
+            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo
             </span>
@@ -373,7 +258,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
         />
       )}
 
-      <GuidedTour steps={TOUR_STEPS} active={tourActive} onFinish={() => setTourActive(false)} />
     </div>
   );
 }

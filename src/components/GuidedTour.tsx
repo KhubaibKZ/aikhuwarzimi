@@ -165,12 +165,14 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   // Decide callout placement.
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  let placement = step.placement;
+  let placement: Placement | undefined = step.placement;
   if (!placement && spotlight) {
     placement = spotlight.top + spotlight.height + 200 < vh ? 'bottom' : 'top';
   }
 
   const calloutWidth = Math.min(340, vw - 24);
+  const calloutHeight = 160;
+  const gap = 18;
   let calloutStyle: React.CSSProperties = {
     width: calloutWidth,
     left: vw / 2 - calloutWidth / 2,
@@ -180,16 +182,51 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     const cx = spotlight.left + spotlight.width / 2;
     let left = cx - calloutWidth / 2;
     left = Math.max(12, Math.min(left, vw - calloutWidth - 12));
+    const topSpot = Math.max(12, spotlight.top - gap - calloutHeight);
+    const bottomSpot = Math.min(vh - calloutHeight - 12, spotlight.top + spotlight.height + gap);
+    const rightSpot = Math.min(spotlight.left + spotlight.width + gap, vw - calloutWidth - 12);
+    const leftSpot = Math.max(12, spotlight.left - calloutWidth - gap);
+    const alignedTop = Math.max(12, Math.min(spotlight.top, vh - calloutHeight - 12));
+
     if (placement === 'bottom') {
-      calloutStyle = { width: calloutWidth, left, top: spotlight.top + spotlight.height + 20 };
+      calloutStyle = { width: calloutWidth, left, top: bottomSpot };
     } else if (placement === 'top') {
-      calloutStyle = { width: calloutWidth, left, top: Math.max(12, spotlight.top - 20 - 160) };
+      calloutStyle = { width: calloutWidth, left, top: topSpot };
     } else if (placement === 'right') {
-      calloutStyle = { width: calloutWidth, left: Math.min(spotlight.left + spotlight.width + 20, vw - calloutWidth - 12), top: spotlight.top };
+      calloutStyle = { width: calloutWidth, left: rightSpot, top: alignedTop };
     } else if (placement === 'left') {
-      calloutStyle = { width: calloutWidth, left: Math.max(12, spotlight.left - calloutWidth - 20), top: spotlight.top };
+      calloutStyle = { width: calloutWidth, left: leftSpot, top: alignedTop };
     }
   }
+
+  const getArrowStyle = (currentPlacement: Placement | undefined): React.CSSProperties | null => {
+    if (!spotlight) return null;
+    const centerX = spotlight.left + spotlight.width / 2 - 16;
+    const centerY = spotlight.top + spotlight.height / 2 - 16;
+
+    if (currentPlacement === 'top') {
+      return { top: spotlight.top + spotlight.height + 4, left: centerX };
+    }
+    if (currentPlacement === 'bottom') {
+      return { top: spotlight.top - 38, left: centerX };
+    }
+    if (currentPlacement === 'left') {
+      return { top: centerY, left: spotlight.left + spotlight.width + 4 };
+    }
+    if (currentPlacement === 'right') {
+      return { top: centerY, left: spotlight.left - 38 };
+    }
+    return { top: spotlight.top - 38, left: centerX };
+  };
+
+  const getArrowClassName = (currentPlacement: Placement | undefined) => {
+    if (currentPlacement === 'top') return '-rotate-90';
+    if (currentPlacement === 'bottom') return 'rotate-90';
+    if (currentPlacement === 'left') return 'rotate-180';
+    return 'rotate-0';
+  };
+
+  const arrowStyle = getArrowStyle(placement);
 
   return (
     <div className="fixed inset-0 z-[300] pointer-events-none">
@@ -223,17 +260,13 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       ) : null}
 
       {/* Bouncing arrow pointing at the target */}
-      {spotlight && (
+      {spotlight && arrowStyle && (
         <div
           className="absolute text-primary drop-shadow-lg pointer-events-none"
-          style={
-            placement === 'top'
-              ? { top: spotlight.top + spotlight.height + 4, left: spotlight.left + spotlight.width / 2 - 16 }
-              : { top: spotlight.top - 38, left: spotlight.left + spotlight.width / 2 - 16 }
-          }
+          style={arrowStyle}
         >
           <ArrowRight
-            className={cn('h-8 w-8 animate-bounce', placement === 'top' ? '-rotate-90' : 'rotate-90')}
+            className={cn('h-8 w-8 animate-bounce', getArrowClassName(placement))}
           />
         </div>
       )}

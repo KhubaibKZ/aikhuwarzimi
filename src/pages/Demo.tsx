@@ -85,6 +85,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const [tourActive, setTourActive] = useState(false);
+
 
   // Track this demo visit (who, when, how long).
   useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });

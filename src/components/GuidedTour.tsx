@@ -27,6 +27,9 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const [index, setIndex] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
   const lastScrolledStepRef = useRef<string | null>(null);
+  const rectRef = useRef<Rect | null>(null);
+  const clearRectTimeoutRef = useRef<number | null>(null);
+  const advanceTimeoutRef = useRef<number | null>(null);
 
   const step = steps[index];
 
@@ -34,7 +37,6 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     if (index >= steps.length - 1) {
       onFinish();
     } else {
-      setRect(null);
       setIndex((i) => i + 1);
     }
   }, [index, onFinish, steps.length]);
@@ -43,6 +45,8 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   useEffect(() => {
     if (active) {
       setIndex(0);
+      setRect(null);
+      rectRef.current = null;
       lastScrolledStepRef.current = null;
     }
   }, [active]);
@@ -66,15 +70,26 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     const measure = () => {
       const el = document.querySelector(step.selector) as HTMLElement | null;
       if (el) {
+        if (clearRectTimeoutRef.current) {
+          clearTimeout(clearRectTimeoutRef.current);
+          clearRectTimeoutRef.current = null;
+        }
         if (lastScrolledStepRef.current !== step.selector) {
           el.scrollIntoView({ block: 'center', behavior: 'smooth' });
           lastScrolledStepRef.current = step.selector;
         }
         const r = el.getBoundingClientRect();
         const nextRect = { top: r.top, left: r.left, width: r.width, height: r.height };
+        rectRef.current = nextRect;
         setRect((current) => (isSameRect(nextRect, current) ? current : nextRect));
       } else {
-        setRect((current) => (current ? null : current));
+        if (!clearRectTimeoutRef.current && rectRef.current) {
+          clearRectTimeoutRef.current = window.setTimeout(() => {
+            rectRef.current = null;
+            setRect(null);
+            clearRectTimeoutRef.current = null;
+          }, 500) as unknown as number;
+        }
         retryTimeout = window.setTimeout(measure, 120) as unknown as number;
       }
     };
@@ -89,6 +104,10 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
     return () => {
       clearTimeout(retryTimeout);
+      if (clearRectTimeoutRef.current) {
+        clearTimeout(clearRectTimeoutRef.current);
+        clearRectTimeoutRef.current = null;
+      }
       observer?.disconnect();
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
@@ -99,21 +118,52 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     if (!active || !step) return;
 
     let timeout = 0;
+    let fallbackInterval = 0;
     let cleanupListener: (() => void) | null = null;
 
     const attachListener = () => {
-      const el = document.querySelector(step.advanceSelector ?? step.selector) as HTMLElement | null;
+      const interactionSelector = step.advanceSelector ?? step.selector;
+      const el = document.querySelector(interactionSelector) as HTMLElement | null;
       if (!el) {
         timeout = window.setTimeout(attachListener, 200) as unknown as number;
         return;
       }
 
       let advanced = false;
+      const nextStep = steps[index + 1];
+      const baselineInteractionPresent = !!document.querySelector(interactionSelector);
+      const baselineNextPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
       const handleAdvance = () => {
         if (advanced) return;
         advanced = true;
-        window.setTimeout(goToNextStep, step.interaction === 'input' ? 150 : 220);
+        if (fallbackInterval) {
+          clearInterval(fallbackInterval);
+          fallbackInterval = 0;
+        }
+        advanceTimeoutRef.current = window.setTimeout(
+          goToNextStep,
+          step.interaction === 'input' ? 150 : 220,
+        ) as unknown as number;
       };
+
+      if (step.interaction !== 'appear') {
+        fallbackInterval = window.setInterval(() => {
+          if (advanced) return;
+
+          const interactionStillPresent = !!document.querySelector(interactionSelector);
+          const nextNowPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
+          if (baselineInteractionPresent && !interactionStillPresent) {
+            handleAdvance();
+            return;
+          }
+
+          if (nextStep?.selector && !baselineNextPresent && nextNowPresent) {
+            handleAdvance();
+          }
+        }, 180) as unknown as number;
+      }
 
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
         el.focus();
@@ -121,22 +171,36 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       if (step.interaction === 'appear') {
-        handleAdvance();
+        timeout = window.setTimeout(handleAdvance, 1500) as unknown as number;
         cleanupListener = null;
         return;
       }
 
       if (step.interaction === 'input') {
-        el.addEventListener('input', handleAdvance);
-        el.addEventListener('change', handleAdvance);
+        const handleInputAdvance = (event: Event) => {
+          const target = event.target as HTMLElement | null;
+          if (target?.closest(interactionSelector)) {
+            handleAdvance();
+          }
+        };
+
+        document.addEventListener('input', handleInputAdvance, true);
+        document.addEventListener('change', handleInputAdvance, true);
         cleanupListener = () => {
-          el.removeEventListener('input', handleAdvance);
-          el.removeEventListener('change', handleAdvance);
+          document.removeEventListener('input', handleInputAdvance, true);
+          document.removeEventListener('change', handleInputAdvance, true);
         };
       } else {
-        el.addEventListener('click', handleAdvance);
+        const handleClickAdvance = (event: MouseEvent) => {
+          const target = event.target as HTMLElement | null;
+          if (target?.closest(interactionSelector)) {
+            handleAdvance();
+          }
+        };
+
+        document.addEventListener('click', handleClickAdvance, true);
         cleanupListener = () => {
-          el.removeEventListener('click', handleAdvance);
+          document.removeEventListener('click', handleClickAdvance, true);
         };
       }
     };
@@ -145,9 +209,16 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
     return () => {
       clearTimeout(timeout);
+      if (fallbackInterval) {
+        clearInterval(fallbackInterval);
+      }
+      if (advanceTimeoutRef.current) {
+        clearTimeout(advanceTimeoutRef.current);
+        advanceTimeoutRef.current = null;
+      }
       cleanupListener?.();
     };
-  }, [active, goToNextStep, step]);
+  }, [active, goToNextStep, index, step, steps]);
 
 
   if (!active || !step) return null;

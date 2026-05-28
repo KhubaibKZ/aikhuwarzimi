@@ -118,6 +118,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     if (!active || !step) return;
 
     let timeout = 0;
+    let fallbackInterval = 0;
     let cleanupListener: (() => void) | null = null;
 
     const attachListener = () => {
@@ -129,14 +130,40 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       let advanced = false;
+      const nextStep = steps[index + 1];
+      const baselineInteractionPresent = !!document.querySelector(interactionSelector);
+      const baselineNextPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
       const handleAdvance = () => {
         if (advanced) return;
         advanced = true;
+        if (fallbackInterval) {
+          clearInterval(fallbackInterval);
+          fallbackInterval = 0;
+        }
         advanceTimeoutRef.current = window.setTimeout(
           goToNextStep,
           step.interaction === 'input' ? 150 : 220,
         ) as unknown as number;
       };
+
+      if (step.interaction !== 'appear') {
+        fallbackInterval = window.setInterval(() => {
+          if (advanced) return;
+
+          const interactionStillPresent = !!document.querySelector(interactionSelector);
+          const nextNowPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
+          if (baselineInteractionPresent && !interactionStillPresent) {
+            handleAdvance();
+            return;
+          }
+
+          if (nextStep?.selector && !baselineNextPresent && nextNowPresent) {
+            handleAdvance();
+          }
+        }, 180) as unknown as number;
+      }
 
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
         el.focus();
@@ -144,7 +171,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       if (step.interaction === 'appear') {
-        timeout = window.setTimeout(handleAdvance, 1400) as unknown as number;
+        timeout = window.setTimeout(handleAdvance, 1500) as unknown as number;
         cleanupListener = null;
         return;
       }
@@ -182,13 +209,16 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
     return () => {
       clearTimeout(timeout);
+      if (fallbackInterval) {
+        clearInterval(fallbackInterval);
+      }
       if (advanceTimeoutRef.current) {
         clearTimeout(advanceTimeoutRef.current);
         advanceTimeoutRef.current = null;
       }
       cleanupListener?.();
     };
-  }, [active, goToNextStep, step]);
+  }, [active, goToNextStep, index, step, steps]);
 
 
   if (!active || !step) return null;

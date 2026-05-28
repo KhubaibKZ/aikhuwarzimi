@@ -16,12 +16,17 @@ const STORAGE_KEY = 'demo_progress_v1';
 interface DemoRecord extends SubmitProgressPayload {}
 
 function loadProgress(): Record<string, DemoRecord> {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-  catch { return {}; }
+  // Use sessionStorage so progress only lives for the current visit.
+  // Clear any legacy persisted progress so questions are never green by default.
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
+  } catch { return {}; }
 }
 function saveProgress(map: Record<string, DemoRecord>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(map));
 }
+
 
 function fmtTime(secs: number) {
   if (secs < 60) return `${Math.round(secs)}s`;
@@ -61,10 +66,12 @@ function DemoInner() {
 
   const resetAll = () => {
     if (confirm('Reset all demo progress?')) {
+      sessionStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
       setProgress({});
     }
   };
+
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

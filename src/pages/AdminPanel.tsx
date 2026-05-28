@@ -339,7 +339,67 @@ export default function AdminPanel() {
             </Table>
           </div>
         )}
+          </TabsContent>
+
+          <TabsContent value="usage">
+            <p className="text-xs text-muted-foreground mb-3">
+              Sessions for logged-in students and demo visitors — who used the app, when, and for how long.
+            </p>
+            {loadingSessions ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border bg-card">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="hidden sm:table-cell">Started</TableHead>
+                      <TableHead className="hidden md:table-cell">Last active</TableHead>
+                      <TableHead className="text-right">Time spent</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sessions.map(s => (
+                      <TableRow key={s.id}>
+                        <TableCell>
+                          <p className="font-medium text-foreground text-sm">{s.display_name || 'Unknown'}</p>
+                          {s.email && <p className="text-xs text-muted-foreground">{s.email}</p>}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={s.account_type === 'demo' ? 'secondary' : 'default'} className="text-[10px]">
+                            {s.account_type === 'demo' ? 'Demo' : 'Student'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                          {new Date(s.started_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                          {new Date(s.last_active_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-medium text-foreground">
+                          <span className="inline-flex items-center gap-1 justify-end">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            {fmtDuration(s.duration_seconds)}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {sessions.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No usage recorded yet</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
+
 
       {/* Student Management Modal */}
       <Dialog open={!!selectedStudent} onOpenChange={(open) => !open && setSelectedStudent(null)}>

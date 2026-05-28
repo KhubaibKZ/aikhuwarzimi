@@ -45,8 +45,14 @@ function DemoInner() {
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const [visitorName, setVisitorName] = useState<string>(() => sessionStorage.getItem(NAME_KEY) || '');
+  const [nameInput, setNameInput] = useState('');
+
+  // Track this demo visit (who, when, how long) once a name is provided.
+  useUsageTracker({ enabled: !!visitorName, accountType: 'demo', displayName: visitorName });
 
   useEffect(() => { saveProgress(progress); }, [progress]);
+
 
   if (!paper) return <div className="p-8">Paper not found.</div>;
 

@@ -3,7 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { useUsageTracker } from "@/hooks/useUsageTracker";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Demo from "./pages/Demo";
@@ -14,6 +15,20 @@ import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// Logs a usage session for any logged-in (student) account.
+const StudentSessionTracker = () => {
+  const { user } = useAuth();
+  useUsageTracker({
+    enabled: !!user,
+    accountType: 'student',
+    userId: user?.id ?? null,
+    displayName: (user?.user_metadata?.full_name as string) || user?.email || null,
+    email: user?.email ?? null,
+  });
+  return null;
+};
+
 
 const AppRoutes = () => (
   <BrowserRouter>

@@ -145,13 +145,21 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
               <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => { setTab('paper'); setTourActive(true); }}
+              className="gap-1.5"
+            >
+              <Compass className="h-4 w-4" /> Guided tour
+            </Button>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo
             </span>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+
             </Button>
           </div>
         </div>

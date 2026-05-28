@@ -124,6 +124,7 @@ export function StepWorkspace({
             <div className="relative flex-1">
               <Input
                 ref={setInputRef(step.key) as any}
+                data-tour={index === 0 ? 'answer-input-a' : index === 1 ? 'answer-input-b' : undefined}
                 value={answers[step.key] || ''}
                 onChange={(e) => onAnswerChange(step.key, e.target.value)}
                 onFocus={() => setFocusedInput(step.key)}
@@ -151,6 +152,7 @@ export function StepWorkspace({
             <Button
               variant="outline"
               size="sm"
+              data-tour={index === 0 ? 'checkwork-btn-a' : index === 1 ? 'checkwork-btn-b' : undefined}
               onClick={() => onCheckWork(step.key, step.label)}
               disabled={isLoading || isSubmitted}
               className="shrink-0"

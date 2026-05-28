@@ -62,35 +62,76 @@ export function RectangleSquares_4024_12_2023ON() {
 
 // ───────────────────────────── Q6: Parallel lines ABF=73° ─────────────────────────────
 export function ParallelLines_4024_12_2023ON() {
+  // Layout matching QP figure:
+  //   AB (lower parallel, slopes slightly up to the right) with double-arrow mid-segment
+  //   CD (upper parallel) with double-arrow mid-segment
+  //   EC transversal: E (bottom) → through AB at point P → up to C, single arrow on PC
+  //   FB transversal (parallel to EC): F (bottom) → B, single arrow
+  //   Angles: x° at P (between PA and PE, below AB),
+  //           y° at C (between CP and CD, on lower-right of C),
+  //           73° at B (between BA and BF)
+  const A = { x: 30, y: 178 };
+  const B = { x: 565, y: 150 };
+  const P = { x: 200, y: 162 };   // intersection of AB and EC
+  const E = { x: 175, y: 255 };
+  const C = { x: 245, y: 70 };
+  const D = { x: 615, y: 25 };
+  const F = { x: 460, y: 248 };
+
+  // Helper: midpoint
+  const mid = (p: {x:number;y:number}, q: {x:number;y:number}) => ({ x: (p.x+q.x)/2, y: (p.y+q.y)/2 });
+  // Helper: arrow marker (chevron) along a segment at point m, rotated to match direction
+  const chevron = (m: {x:number;y:number}, from: {x:number;y:number}, to: {x:number;y:number}, double = false, key = '') => {
+    const ang = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
+    const s = 8;
+    const path = double
+      ? `M ${-s} ${-s} L 0 0 L ${-s} ${s} M 0 ${-s} L ${s} 0 L 0 ${s}`
+      : `M ${-s} ${-s} L 0 0 L ${-s} ${s}`;
+    return <path key={key} d={path} transform={`translate(${m.x} ${m.y}) rotate(${ang})`} stroke={fg} strokeWidth={1.4} fill="none" />;
+  };
+
   return (
-    <svg viewBox="0 0 320 220" className="w-full max-w-md mx-auto">
+    <svg viewBox="0 0 660 300" className="w-full max-w-2xl mx-auto">
       {/* AB line */}
-      <line x1={20} y1={60} x2={300} y2={60} stroke={fg} strokeWidth={1.5} />
-      {/* CD line (parallel) */}
-      <line x1={20} y1={170} x2={300} y2={170} stroke={fg} strokeWidth={1.5} />
-      {/* Transversal FB */}
-      <line x1={80} y1={20} x2={240} y2={210} stroke={fg} strokeWidth={1.3} />
-      {/* Transversal EC (parallel to FB) */}
-      <line x1={170} y1={20} x2={50} y2={210} stroke={fg} strokeWidth={1.3} />
+      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={fg} strokeWidth={1.4} />
+      {/* CD line */}
+      <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke={fg} strokeWidth={1.4} />
+      {/* EC transversal (E → P → C) */}
+      <line x1={E.x} y1={E.y} x2={C.x} y2={C.y} stroke={fg} strokeWidth={1.4} />
+      {/* FB transversal */}
+      <line x1={F.x} y1={F.y} x2={B.x} y2={B.y} stroke={fg} strokeWidth={1.4} />
 
-      {/* Labels */}
-      <text x={8} y={64} fontSize={12} fill={fg} fontWeight="bold">A</text>
-      <text x={304} y={64} fontSize={12} fill={fg} fontWeight="bold">B</text>
-      <text x={8} y={174} fontSize={12} fill={fg} fontWeight="bold">C</text>
-      <text x={304} y={174} fontSize={12} fill={fg} fontWeight="bold">D</text>
-      <text x={76} y={16} fontSize={12} fill={fg} fontWeight="bold">F</text>
-      <text x={166} y={16} fontSize={12} fill={fg} fontWeight="bold">E</text>
+      {/* Parallel double-chevron markers on AB (between P and B) and on CD (between C and D) */}
+      {chevron(mid(P, B), A, B, true, 'ab')}
+      {chevron(mid(C, D), C, D, true, 'cd')}
+      {/* Single chevrons on the two transversals */}
+      {chevron(mid(P, C), E, C, false, 'ec')}
+      {chevron(mid(F, B), F, B, false, 'fb')}
 
-      {/* Angle ABF = 73° */}
-      <text x={195} y={80} fontSize={12} fill={pr} fontWeight="bold">73°</text>
-      {/* x at C */}
-      <text x={70} y={188} fontSize={12} fill={pr} fontWeight="bold">x°</text>
-      {/* y at D */}
-      <text x={210} y={158} fontSize={12} fill={pr} fontWeight="bold">y°</text>
+      {/* Angle arcs */}
+      {/* x° at P: between PA (toward A, left) and PE (down-left toward E) */}
+      <path d={`M ${P.x - 22} ${P.y + 2} A 22 22 0 0 0 ${P.x - 8} ${P.y + 22}`} stroke={fg} strokeWidth={1.2} fill="none" />
+      {/* y° at C: between CP (down toward P) and CD (right toward D) */}
+      <path d={`M ${C.x + 6} ${C.y + 24} A 26 26 0 0 0 ${C.x + 26} ${C.y + 6}`} stroke={fg} strokeWidth={1.2} fill="none" />
+      {/* 73° at B: between BA (left along AB) and BF (down toward F) */}
+      <path d={`M ${B.x - 28} ${B.y + 1} A 28 28 0 0 0 ${B.x - 10} ${B.y + 26}`} stroke={fg} strokeWidth={1.2} fill="none" />
 
-      {/* Parallel arrows */}
-      <text x={160} y={54} fontSize={12} fill={mu}>›</text>
-      <text x={160} y={164} fontSize={12} fill={mu}>›</text>
+      {/* Vertex labels */}
+      <text x={A.x - 14} y={A.y + 4} fontSize={15} fill={fg} fontStyle="italic">A</text>
+      <text x={B.x + 6} y={B.y + 4} fontSize={15} fill={fg} fontStyle="italic">B</text>
+      <text x={C.x - 4} y={C.y - 6} fontSize={15} fill={fg} fontStyle="italic">C</text>
+      <text x={D.x + 4} y={D.y + 4} fontSize={15} fill={fg} fontStyle="italic">D</text>
+      <text x={E.x - 4} y={E.y + 16} fontSize={15} fill={fg} fontStyle="italic">E</text>
+      <text x={F.x - 4} y={F.y + 16} fontSize={15} fill={fg} fontStyle="italic">F</text>
+
+      {/* Angle labels */}
+      <text x={P.x - 24} y={P.y + 22} fontSize={13} fill={fg} fontStyle="italic">x°</text>
+      <text x={C.x + 8} y={C.y + 22} fontSize={13} fill={fg} fontStyle="italic">y°</text>
+      <text x={B.x - 30} y={B.y + 22} fontSize={13} fill={fg}>73°</text>
+
+      {/* NOT TO SCALE */}
+      <text x={620} y={120} fontSize={11} fill={mu} textAnchor="end">NOT TO</text>
+      <text x={620} y={134} fontSize={11} fill={mu} textAnchor="end">SCALE</text>
     </svg>
   );
 }

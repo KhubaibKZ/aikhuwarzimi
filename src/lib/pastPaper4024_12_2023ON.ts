@@ -165,21 +165,18 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_12_q6', questionNumber: '6', title: 'Parallel lines angles',
     question: 'AB and CD are parallel. EC and FB are parallel. Angle ABF = 73°.\n(a) Find x.\n(b) Find y.',
     marks: 2,
-    hints: ['(a) Alternate angles: x = 73', '(b) Co-interior angles: y = 180 − 73 = 107'],
+    hints: [],
     type: 'multi-part',
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Alternate angles', stepKey: 's1', elements: [
-          { type: 'text', value: 'x =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '° (alternate angles)' }
+        { label: 'Answer', stepKey: 's1', elements: [
+          { type: 'text', value: 'x =' }, { type: 'box', key: 's1_a', width: 'w-16' }
         ]}
       ],
       'b': [
-        { label: 'Co-interior angles', stepKey: 's1', elements: [
-          { type: 'text', value: 'y =' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-12' }
-        ]},
-        { label: 'Answer', stepKey: 's2', elements: [
-          { type: 'text', value: 'y =' }, { type: 'box', key: 's2_a', width: 'w-12' }
+        { label: 'Answer', stepKey: 's1', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's1_a', width: 'w-16' }
         ]}
       ]
     },
@@ -187,7 +184,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '73', b: '107',
       a_s1_a: '73',
-      b_s1_a: '180', b_s1_b: '73', b_s2_a: '107'
+      b_s1_a: '107'
     },
     markingCriteria: { a: 'B1 for 73 (alternate angles, AB ∥ CD).', b: 'B1 FT 180 − their 73 (dependent on 0 < their 73 < 180 and their 73 ≠ 90). Accept y = 107 from co-interior angles since EC ∥ FB.' }
   },

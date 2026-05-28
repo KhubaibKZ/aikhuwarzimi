@@ -44,6 +44,8 @@ const AppRoutes = () => (
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -59,8 +61,5 @@ const App = () => (
 
 export default App;
 
-    </AuthProvider>
-  </QueryClientProvider>
-);
 
 export default App;

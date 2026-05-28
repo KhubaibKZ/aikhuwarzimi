@@ -5,12 +5,52 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun, Compass } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
+import { GuidedTour, type TourStep } from '@/components/GuidedTour';
 import StudentAnalytics from './StudentAnalytics';
+
+const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="demo-q1"]',
+    title: 'Open Question 1',
+    body: 'Click on Question 1 to open the interactive workspace and begin solving.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="hint-btn"]',
+    title: 'Ask for a Hint',
+    body: 'Stuck on what the question is asking? Tap Hint and the AI tutor will explain the idea.',
+    placement: 'top',
+  },
+  {
+    selector: '[data-tour="answer-input"]',
+    title: 'Write your answer',
+    body: 'Type your attempt into this answer box.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="checkwork-btn"]',
+    title: 'Check your work',
+    body: 'Tap Check Work to get instant feedback on your attempt without revealing the answer.',
+    placement: 'left',
+  },
+  {
+    selector: '[data-tour="answer-input"]',
+    title: 'Enter the correct answer',
+    body: 'Refine your working and enter the correct final answer in the box.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="submit-btn"]',
+    title: 'Submit your answer',
+    body: 'Finally, tap Submit to record your result. Your progress and analytics update instantly.',
+    placement: 'top',
+  },
+];
 
 const PAPER_ID = 'pp_4024_on23_11';
 const STORAGE_KEY = 'demo_progress_v1';
@@ -45,6 +85,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
+  const [tourActive, setTourActive] = useState(false);
+
 
   // Track this demo visit (who, when, how long).
   useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
@@ -103,14 +145,21 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
               <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => { setTab('paper'); setTourActive(true); }}
+              className="gap-1.5"
+            >
+              <Compass className="h-4 w-4" /> Guided tour
+            </Button>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo
             </span>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+
           </div>
         </div>
       </header>
@@ -146,14 +195,16 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             </Card>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {paper.sections.map(section => {
+              {paper.sections.map((section, sectionIndex) => {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 return (
                   <button
                     key={section.id}
+                    data-tour={sectionIndex === 0 ? 'demo-q1' : undefined}
                     onClick={() => setOpenQid(section.questionId)}
                     className={`text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
+
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-foreground">{section.title.split('–')[0].trim()}</span>
@@ -250,9 +301,12 @@ function DemoInner({ visitorName }: { visitorName: string }) {
           onSubmitProgress={handleSubmitProgress}
         />
       )}
+
+      <GuidedTour steps={TOUR_STEPS} active={tourActive} onFinish={() => setTourActive(false)} />
     </div>
   );
 }
+
 
 function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub: string }) {
   return (

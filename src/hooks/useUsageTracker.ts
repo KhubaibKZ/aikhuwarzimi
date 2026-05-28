@@ -33,21 +33,24 @@ export function useUsageTracker({
 
     const start = async () => {
       startRef.current = Date.now();
-      const { data, error } = await supabase
+      // Generate the id client-side so we don't need to read the row back
+      // (anon/demo visitors have no SELECT permission on usage_sessions).
+      const id = crypto.randomUUID();
+      const { error } = await supabase
         .from('usage_sessions')
         .insert({
+          id,
           account_type: accountType,
           user_id: userId ?? null,
           display_name: displayName ?? null,
           email: email ?? null,
           duration_seconds: 0,
-        })
-        .select('id')
-        .single();
-      if (!error && data && !cancelled) {
-        sessionIdRef.current = data.id;
+        });
+      if (!error && !cancelled) {
+        sessionIdRef.current = id;
       }
     };
+
 
     const beat = async () => {
       if (!sessionIdRef.current) return;

@@ -44,16 +44,21 @@ const AppRoutes = () => (
       <Route path="*" element={<NotFound />} />
     </Routes>
   </BrowserRouter>
-);
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <StudentSessionTracker />
         <AppRoutes />
       </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+);
+
+export default App;
+
     </AuthProvider>
   </QueryClientProvider>
 );

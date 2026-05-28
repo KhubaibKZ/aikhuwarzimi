@@ -1791,6 +1791,31 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     checkworkUsageRef.current = 0;
   };
 
+  const dismissAiResponse = useCallback(() => {
+    setAiResponse(null);
+  }, []);
+
+  const feedbackAction = aiResponse
+    ? {
+        label: aiResponse.type === 'hint' ? 'OK' : feedback[aiResponse.partKey || ''] === 'incorrect' ? 'Try again' : 'Continue',
+        onClick: dismissAiResponse,
+        tourData:
+          aiResponse.type === 'hint'
+            ? 'hint-ok-btn'
+            : feedback[aiResponse.partKey || ''] === 'incorrect'
+              ? aiResponse.partKey === 'a'
+                ? 'try-again-btn-a'
+                : aiResponse.partKey === 'b'
+                  ? 'try-again-btn-b'
+                  : 'try-again-btn'
+              : aiResponse.partKey === 'a'
+                ? 'continue-btn-a'
+                : aiResponse.partKey === 'b'
+                  ? 'continue-btn-b'
+                  : 'continue-btn',
+      }
+    : undefined;
+
   // Reset individual question (dashboard/general mode only)
   const handleResetQuestion = async () => {
     if (!user || workspaceMode !== 'general') return;

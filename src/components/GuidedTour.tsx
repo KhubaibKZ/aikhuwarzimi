@@ -131,8 +131,8 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
       let advanced = false;
       const nextStep = steps[index + 1];
-      const baselineInteractionPresent = !!document.querySelector(interactionSelector);
       const baselineNextPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
 
       const handleAdvance = () => {
         if (advanced) return;

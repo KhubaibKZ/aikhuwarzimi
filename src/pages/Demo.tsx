@@ -112,8 +112,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               <Sparkles className="h-3 w-3" /> Research & Demo
             </span>
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
-
-          </div>
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
         </div>
       </header>
 

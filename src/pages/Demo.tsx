@@ -298,8 +298,11 @@ function DemoInner({ visitorName }: { visitorName: string }) {
           isOpen={!!openQid}
           onClose={() => setOpenQid(null)}
           workspaceMode="general"
-          onSubmitProgress={handleSubmitProgress}
-        />
+      )}
+
+      <GuidedTour steps={TOUR_STEPS} active={tourActive} onFinish={() => setTourActive(false)} />
+    </div>
+
       )}
     </div>
   );

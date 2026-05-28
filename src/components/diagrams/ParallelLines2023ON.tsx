@@ -4,8 +4,8 @@ export function ParallelLines2023ON() {
   return (
     <img
       src={diagramSrc}
-      alt="Two parallel lines crossed by a transversal with angles 110°, x° and y°"
-      className="w-full max-w-md mx-auto bg-white rounded-md p-2"
+      alt="Parallel lines diagram for question 6 with points A, B, C, D, E, F and angles x, y, and 73 degrees"
+      className="w-full max-w-2xl mx-auto bg-white p-2"
     />
   );
 }

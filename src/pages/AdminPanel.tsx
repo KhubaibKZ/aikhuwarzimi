@@ -73,9 +73,31 @@ export default function AdminPanel() {
   const [defaultHints, setDefaultHints] = useState(3);
   const [defaultCheckwork, setDefaultCheckwork] = useState(3);
 
+  const [sessions, setSessions] = useState<UsageSession[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
+
   useEffect(() => {
     loadStudents();
+    loadSessions();
   }, []);
+
+  const loadSessions = async () => {
+    setLoadingSessions(true);
+    try {
+      const { data, error } = await supabase
+        .from('usage_sessions')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      setSessions((data as UsageSession[]) || []);
+    } catch (err) {
+      console.error('Failed to load usage sessions:', err);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
+
 
   const loadStudents = async () => {
     setLoadingStudents(true);

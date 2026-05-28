@@ -3083,7 +3083,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             <div className={cn(
               "rounded-lg border p-4 space-y-3",
               allCorrect ? "border-green-500/50 bg-green-500/10" : "border-primary/30 bg-primary/5"
-            )}>
+            )}
+            data-tour="submit-feedback">
               <div className="flex items-center gap-3">
                 {allCorrect ? <Award className="h-6 w-6 text-green-500" /> : <Clock className="h-6 w-6 text-primary" />}
                 <div className="flex-1">

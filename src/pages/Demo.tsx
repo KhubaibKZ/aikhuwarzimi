@@ -56,6 +56,40 @@ function DemoInner() {
 
   if (!paper) return <div className="p-8">Paper not found.</div>;
 
+  const submitName = () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed) return;
+    sessionStorage.setItem(NAME_KEY, trimmed);
+    setVisitorName(trimmed);
+  };
+
+  if (!visitorName) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-8 pb-7 text-center">
+            <img src={logoImg} alt="AI Khuwarizmi" className="h-14 w-14 rounded-xl object-contain mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-foreground">Welcome to the Demo</h2>
+            <p className="text-sm text-muted-foreground mt-1 mb-5">Enter your name to begin.</p>
+            <Input
+              autoFocus
+              placeholder="Your name"
+              value={nameInput}
+              maxLength={60}
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') submitName(); }}
+              className="mb-3"
+            />
+            <Button className="w-full" onClick={submitName} disabled={!nameInput.trim()}>
+              Start Demo
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+
   const totalQs = paper.sections.length;
   const solvedQs = Object.keys(progress).length;
   const completionPct = Math.round((solvedQs / totalQs) * 100);

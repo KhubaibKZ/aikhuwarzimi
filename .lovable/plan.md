@@ -1,68 +1,61 @@
 ## Goal
 
-Bring `4024/12 Oct/Nov 2023` up to the same quality bar as `4024/11 Oct/Nov 2023`: exact official wording, fillable "spaces-to-fill" scaffolding, scale-accurate interactive SVG diagrams, topic-aware smart keyboard, granular Check Work + marking-aware Hints — all driven by the uploaded QP and Mark Scheme.
+Repair the entire `/demo` guided tour so every step is smooth, visible, and ordered correctly: hint card stays lit long enough, feedback cards are fully highlighted, buttons like OK / Try again / Continue are obvious, and the tour never jumps ahead or briefly flashes the wrong target.
 
-## Reference vs. current state
+## What I’ll change
 
-- File: `src/lib/pastPaper4024_12_2023ON.ts` (24 Qs already exist, but wording is paraphrased, several diagrams are missing/text-only, and many parts lack stage-by-stage scaffolding).
-- Diagrams file: `src/components/diagrams/Paper4024_12_2023ON_Diagrams.tsx` exists with 9 SVGs (Q2, Q6, Q7, Q14, Q17, Q18, Q21, Q23, Q24) but most are NOT wired into `PastPaperWorkspace.tsx` (only Q2 / a couple are referenced — needs `EXTERNAL_DIAGRAM_QUESTIONS` entries in `src/lib/auditEngineRegistry.ts`, and per-question branches in `PastPaperWorkspace.tsx`).
+1. **Stabilize tour progression logic**
+  - Update `src/components/GuidedTour.tsx` so steps do not advance prematurely when a target merely appears for a moment.
+  - Separate these cases cleanly:
+    - steps that should pause until the user clicks a specific button
+    - steps that should only highlight/read a card without switching too early
+  - Make the spotlight persist across small layout remounts without re-centering or blinking.
+  - Tighten the fallback logic so it only helps when the UI truly moved forward, not when the current element is temporarily re-rendering.
+2. **Fix the scripted flow definition**
 
-## Per-question updates (driven by QP + MS)
+- Refine `TOUR_STEPS` in `src/pages/Demo.tsx` so each step matches the real intended sequence:
 
-| Q | What to fix |
-|---|---|
-| Q1 | Wording verbatim; keep 3-stage scaffold; validate 0.015 / 3000 / 14. |
-| Q2 | Wire `RectangleSquares_4024_12_2023ON`; answer `5/21`. |
-| Q3 | (a) halfway between 3⁄5 and 68% → 0.64; (b) 4.074; (c) ³√64 = 4. Fraction-aware keyboard for (a). |
-| Q4 | Range = 13 °C; median scaffold `(−1+T)/2 = 1 → T = 3`. |
-| Q5 | Ratio 5:9, Ria −Anna = $8 → total $28; show 4-step scaffold. |
-| Q6 | Wire `ParallelLines_4024_12_2023ON`; x = 73, y = 107 with `y = 180 − 73` scaffold. |
-| Q7 | Wire `TransformGrid_4024_12_2023ON`; (a) "Rotation, 90° clockwise, centre (0,0)" with multi-field validation; (b) S.F = √(27/3) = 3 enlargement, centre (5,5). |
-| Q8 | (a) 4.93 × 10⁻³; (b) 8 × 10⁷ with standard-form keyboard preset. |
-| Q9 | Prime-factor ladder UI for 180 → 2×2×3×3×5; (b) k = 5. |
-| Q10 | 1-s.f. estimation scaffold → √(1000×4/10) = √400 = 20. |
-| Q11 | 3-line inequality scaffold `7m ≤ 21 → m ≤ 3`. |
-| Q12 | Simultaneous-equations multi-stage workspace (elimination): x = 4, y = −3⁄2. |
-| Q13 | Mean scaffold: 12×8 = 96, 9×5 = 45, diff = 51. |
-| Q14 | Wire `TriangleConstruct_4024_12_2023ON` + digital protractor; accept 47–51° for ∠ABC; construction/shading parts marked manually with hint guidance. |
-| Q15 | (a) a=32, third=24, fourth=20 with `a+d`/`a+4d` scaffold; (b) nth term `2n² + 1` via second-difference scaffold. |
-| Q16 | (a) T = 6; (b) P = T² + 4 with rearrangement scaffold. |
-| Q17 | Wire `CumulativeFrequency_4024_12_2023ON`; (a) draw curve, (b) IQR ≈ 3.8 cm with tolerance, (c) H = 7.2 (read from curve where CF = 52). *Note: MS gives H ≈ 7 to 7.4 — confirm value when wiring tolerance.* |
-| Q18 | Wire `SpeedTime_4024_12_2023ON`; (a) 0.3 m/s²; (b) Cyclist B further by 20 m with area-of-trapezium scaffold. |
-| Q19 | Algebraic-fraction scaffold → (9x + 2)/16. |
-| Q20 | (a) (c − 3)(2d + e); (b) 3(v + 3t)(v − 3t) — both with grouping scaffolds + commutative validation. |
-| Q21 | Wire `TwoSectors_4024_12_2023ON`; (a) show x = 20 via arc-ratio scaffold; (b) y = 6 from area = 2π. |
-| Q22 | Matrix equation — verify wording vs. MS, keep current scaffold. |
-| Q23 | Wire `VennHSG_4024_12_2023ON`; (a) interactive fill; (b) n(S ∩ (H ∪ G)') = value from MS. |
-| Q24 | Wire `TriangleOAB_4024_12_2023ON`; vector keyboard preset; (a)(i) AP = 2b − a; (a)(ii) OB = (3a + 10b)/2; (b) QP parallel to OB → (3⁄5)a + 2b. |
+- open Q1
+- click Hint
+- show hint card fully & click OK
+- enter wrong answer for part (a)
+- click Check Work
+- show incorrect AI feedback fully
+- click Try again
+- enter correct answer for part (a)
+- click Check Work
+- show correct feedback fully
+- click Continue
+- enter part (b)
+- click Check Work
+- show part (b) feedback fully
+- click Continue
+- click Submit
+- show submit feedback
 
-## Cross-cutting work
+- Remove any step definitions that currently rely on timing in places where the user should be the one advancing.
 
-1. **Wording pass** — replace every `question` string with the exact QP wording (apostrophes, NOT TO SCALE notes, "Show that…", etc.).
-2. **Scaffolding pass** — for every multi-step question, add `equationStagesMap` with empty `box` keys mirroring the MS working (spaces-to-fill preference).
-3. **Diagrams wiring** —
-   - Add Q6, Q7, Q14, Q17, Q18, Q21, Q23, Q24 IDs to `EXTERNAL_DIAGRAM_QUESTIONS` in `src/lib/auditEngineRegistry.ts`.
-   - Add per-id branches in `PastPaperWorkspace.tsx` that render the matching `Paper4024_12_2023ON_Diagrams` component (mirroring how 4024/11 is wired).
-   - Verify scale matches QP screenshots (cumulative-frequency axes 0–12 cm × 0–80; speed-time axes 0–20 s × 0–8 m/s; etc.).
-4. **Keyboard presets** — extend `keyboardTopicPresets4024` so each Q12 question loads the right layout (vectors for Q24, standard-form for Q8, fractions for Q3/Q19, inequality for Q11, geometry for Q6/Q7/Q14/Q21).
-5. **Check Work + Hints** — granular per-stage validation (already supported by `multi-field-validation`); marking-aware hint text aligned with MS method marks (M1/A1).
-6. **Topic mapping** — update `src/lib/questionTopicMap.ts` so each 4024/12 ON23 question maps to its O Level 4024 syllabus topic (for the Topic Mastery analytics matrix).
-7. **Audit** — run `scripts/auditWorkspace.ts` against `pp_4024_on23_12_*` and fix any flagged issues.
+1. **Make highlight targets cover the whole visible area**
+  - Verify and adjust the `data-tour` anchors in `src/components/PastPaperWorkspace.tsx` and `src/components/workspace/StepWorkspace.tsx` so the spotlight lands on the full hint/feedback container, not just a small internal element.
+  - Ensure the connected instruction box points to the correct card or action button at every step.
+2. **Improve clarity of action points**
+  - Ensure the visible action for each feedback state is the one the tour is asking for:
+    - Hint → `OK`
+    - Wrong answer feedback → `Try again`
+    - Correct feedback → `Continue`
+  - Keep those actions inside the highlighted feedback area where appropriate so the whole area feels coherent.
+3. **Validate the full walkthrough end-to-end**
+  - Re-check the tour against the live `/demo` flow and confirm there are no more microsecond flashes, skipped steps, or dark/unreadable feedback states.
 
-## Files to change
+## Files likely to change
 
-- `src/lib/pastPaper4024_12_2023ON.ts` (full rewrite of question bodies, scaffolds, answers, hints)
-- `src/components/diagrams/Paper4024_12_2023ON_Diagrams.tsx` (minor scale tweaks if QP comparison shows drift)
-- `src/components/PastPaperWorkspace.tsx` (wire all 4024/12 ON23 interactive diagrams + protractor for Q14)
-- `src/lib/auditEngineRegistry.ts` (add external-diagram IDs)
-- `src/lib/keyboardConfigs.ts` (topic presets for new Q IDs)
-- `src/lib/questionTopicMap.ts` (syllabus mapping for analytics)
+- `src/components/GuidedTour.tsx`
+- `src/pages/Demo.tsx`
+- `src/components/PastPaperWorkspace.tsx`
+- `src/components/workspace/StepWorkspace.tsx`
 
-## Out of scope
+## Technical notes
 
-- Backend/RLS, analytics schema, auth — no DB changes needed.
-- Other papers — only `4024/12 Oct/Nov 2023`.
-
-## Open question
-
-For Q17(c) the MS gives a reading range for H; I'll use the official MS tolerance window (e.g. `H ∈ [7.0, 7.4]`) once I re-check the MS PDF during build. If you have a preferred exact accepted value, tell me now.
+- I’ll keep this frontend-only.
+- I’ll preserve the current demo content and only fix the tour behavior, highlight targeting, and visibility/flow issues.
+- I’ll follow the existing semantic design tokens rather than introducing ad-hoc colors.

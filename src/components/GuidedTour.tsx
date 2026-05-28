@@ -131,8 +131,8 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
 
       let advanced = false;
       const nextStep = steps[index + 1];
-      const baselineInteractionPresent = !!document.querySelector(interactionSelector);
       const baselineNextPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
+
 
       const handleAdvance = () => {
         if (advanced) return;
@@ -148,21 +148,21 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       };
 
       if (step.interaction !== 'appear') {
-        fallbackInterval = window.setInterval(() => {
-          if (advanced) return;
-
-          const interactionStillPresent = !!document.querySelector(interactionSelector);
-          const nextNowPresent = !!nextStep?.selector && !!document.querySelector(nextStep.selector);
-
-          if (baselineInteractionPresent && !interactionStillPresent) {
-            handleAdvance();
-            return;
-          }
-
-          if (nextStep?.selector && !baselineNextPresent && nextNowPresent) {
-            handleAdvance();
-          }
-        }, 180) as unknown as number;
+        // Safety net: only auto-advance when the NEXT step's target genuinely
+        // appears (and was not already present). This avoids premature jumps
+        // caused by the current element briefly re-rendering. Require two
+        // consecutive positive readings to debounce flicker.
+        let nextSeenStreak = 0;
+        if (nextStep?.selector && !baselineNextPresent) {
+          fallbackInterval = window.setInterval(() => {
+            if (advanced) return;
+            const nextNowPresent = !!document.querySelector(nextStep.selector);
+            nextSeenStreak = nextNowPresent ? nextSeenStreak + 1 : 0;
+            if (nextSeenStreak >= 2) {
+              handleAdvance();
+            }
+          }, 180) as unknown as number;
+        }
       }
 
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
@@ -171,10 +171,12 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
       }
 
       if (step.interaction === 'appear') {
-        timeout = window.setTimeout(handleAdvance, 1500) as unknown as number;
+        // Terminal "review this" step — give the user time to read, then finish.
+        timeout = window.setTimeout(handleAdvance, 2200) as unknown as number;
         cleanupListener = null;
         return;
       }
+
 
       if (step.interaction === 'input') {
         const handleInputAdvance = (event: Event) => {

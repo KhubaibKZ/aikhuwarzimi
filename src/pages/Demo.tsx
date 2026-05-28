@@ -29,24 +29,18 @@ const TOUR_STEPS: TourStep[] = [
     interaction: 'click',
   },
   {
+    // Highlight the whole hint card; advance only when the student clicks OK.
     selector: '[data-tour="hint-feedback"]',
     advanceSelector: '[data-tour="hint-ok-btn"]',
-    title: 'Read the hint',
-    body: 'The hint now appears inside the workspace so the student can read it before moving on.',
-    placement: 'top',
-    interaction: 'appear',
-  },
-  {
-    selector: '[data-tour="hint-ok-btn"]',
-    title: 'Close the hint',
-    body: 'Click OK after reading the hint, then we will try part (a).',
+    title: 'Read the hint, then click OK',
+    body: 'The hint appears inside the workspace. Read it, then click OK to start part (a).',
     placement: 'top',
     interaction: 'click',
   },
   {
     selector: '[data-tour="answer-input-a"]',
     title: 'Part (a): enter a wrong answer first',
-    body: 'Type an incorrect answer intentionally so the student can see how Check Work gives AI guidance.',
+    body: 'Type an incorrect answer on purpose so you can see how Check Work gives AI guidance.',
     placement: 'bottom',
     interaction: 'input',
   },
@@ -58,17 +52,11 @@ const TOUR_STEPS: TourStep[] = [
     interaction: 'click',
   },
   {
-    selector: '[data-tour="guidance-feedback-a"]',
-    title: 'Show the AI feedback',
-    body: 'This feedback explains what went wrong and guides the student without giving everything away immediately.',
-    placement: 'top',
-    interaction: 'appear',
-  },
-  {
+    // Highlight the full incorrect-feedback card; advance only on Try again.
     selector: '[data-tour="guidance-feedback-a"]',
     advanceSelector: '[data-tour="try-again-btn-a"]',
-    title: 'Try again',
-    body: 'Click Try again so the student can re-enter part (a) with the correct answer.',
+    title: 'Read the feedback, then Try again',
+    body: 'This explains what went wrong and nudges you in the right direction. Click Try again to re-enter part (a).',
     placement: 'top',
     interaction: 'click',
   },
@@ -82,23 +70,16 @@ const TOUR_STEPS: TourStep[] = [
   {
     selector: '[data-tour="checkwork-btn-a"]',
     title: 'Check the correct answer',
-    body: 'Tap Check Work again so the student sees the successful AI feedback state too.',
+    body: 'Tap Check Work again so you see the successful AI feedback too.',
     placement: 'left',
     interaction: 'click',
   },
   {
+    // Highlight the full success card; advance only on Continue.
     selector: '[data-tour="guidance-feedback-correct-a"]',
     advanceSelector: '[data-tour="continue-btn-a"]',
-    title: 'Successful feedback',
-    body: 'This confirms part (a) is now correct before moving on to part (b).',
-    placement: 'top',
-    interaction: 'appear',
-  },
-  {
-    selector: '[data-tour="guidance-feedback-correct-a"]',
-    advanceSelector: '[data-tour="continue-btn-a"]',
-    title: 'Continue to part (b)',
-    body: 'Click Continue to move forward once part (a) is done correctly.',
+    title: 'Part (a) is correct — Continue',
+    body: 'This confirms part (a) is correct. Click Continue to move on to part (b).',
     placement: 'top',
     interaction: 'click',
   },
@@ -117,18 +98,11 @@ const TOUR_STEPS: TourStep[] = [
     interaction: 'click',
   },
   {
+    // Highlight the full part (b) success card; advance only on Continue.
     selector: '[data-tour="guidance-feedback-correct-b"]',
     advanceSelector: '[data-tour="continue-btn-b"]',
-    title: 'Part (b) feedback',
-    body: 'The student can see the confirmation for part (b) before submitting.',
-    placement: 'top',
-    interaction: 'appear',
-  },
-  {
-    selector: '[data-tour="guidance-feedback-correct-b"]',
-    advanceSelector: '[data-tour="continue-btn-b"]',
-    title: 'Go to submit',
-    body: 'Click Continue and then submit the full question.',
+    title: 'Part (b) is correct — Continue',
+    body: 'Part (b) is confirmed. Click Continue, then submit the full question.',
     placement: 'top',
     interaction: 'click',
   },
@@ -147,6 +121,7 @@ const TOUR_STEPS: TourStep[] = [
     interaction: 'appear',
   },
 ];
+
 
 const PAPER_ID = 'pp_4024_on23_11';
 const STORAGE_KEY = 'demo_progress_v1';

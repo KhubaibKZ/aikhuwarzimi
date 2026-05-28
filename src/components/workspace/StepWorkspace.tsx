@@ -173,13 +173,16 @@ export function StepWorkspace({
           </div>
           
           {aiResponse?.partKey === step.key && (
-            <div className={cn(
-              "rounded-lg border p-3 text-sm ml-7",
-              aiResponse.type === 'hint' 
-                ? "border-amber-500/30 bg-amber-500/10" 
-                : "border-blue-500/30 bg-blue-500/10"
-            )}
-            data-tour={
+            <div
+              className={cn(
+                "rounded-lg border p-3 text-sm ml-7 shadow-sm",
+                aiResponse.type === 'hint'
+                  ? "border-warning/50 bg-warning/18 text-foreground"
+                  : feedback[step.key] === 'correct'
+                    ? "border-success/50 bg-success/12 text-foreground"
+                    : "border-primary/50 bg-primary/12 text-foreground"
+              )}
+              data-tour={
               step.key === 'a'
                 ? aiResponse.type === 'hint'
                   ? 'hint-feedback'
@@ -189,11 +192,21 @@ export function StepWorkspace({
                 : step.key === 'b' && feedback[step.key] === 'correct'
                   ? 'guidance-feedback-correct-b'
                   : undefined
-            }>
+            }
+            >
               <div className="flex items-start gap-2">
-                <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                <BookOpen
+                  className={cn(
+                    "h-4 w-4 mt-0.5 shrink-0",
+                    aiResponse.type === 'hint'
+                      ? 'text-warning'
+                      : feedback[step.key] === 'correct'
+                        ? 'text-success'
+                        : 'text-primary'
+                  )}
+                />
                 <div className="flex-1 space-y-3">
-                  <p className="whitespace-pre-line">{aiResponse.content}</p>
+                  <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{aiResponse.content}</p>
                   {feedbackAction && (
                     <div className="flex justify-end">
                       <Button

@@ -55,13 +55,26 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   }, [active, step]);
 
   const advance = useCallback(() => {
+    // Forward a real click to the underlying target so the app actually
+    // reacts (e.g. opens Q1, opens the hint, focuses the input) before we
+    // move the spotlight to the next step.
+    const el = document.querySelector(step?.selector ?? '') as HTMLElement | null;
+    if (el) {
+      el.click();
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+        el.focus();
+      }
+    }
+
     if (index >= steps.length - 1) {
       onFinish();
     } else {
       setRect(null);
-      setIndex((i) => i + 1);
+      // Give the app a moment to mount the next target (modals, inputs, etc.).
+      setTimeout(() => setIndex((i) => i + 1), 250);
     }
-  }, [index, steps.length, onFinish]);
+  }, [index, steps.length, onFinish, step]);
+
 
   if (!active || !step) return null;
 

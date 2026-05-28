@@ -8,6 +8,8 @@ export interface TourStep {
   body: string;
   /** Where to place the callout relative to the target. Defaults to auto. */
   placement?: 'top' | 'bottom' | 'left' | 'right';
+  /** How the user should progress this step. Defaults to click. */
+  interaction?: 'click' | 'input';
 }
 
 interface GuidedTourProps {
@@ -23,6 +25,15 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
   const [rect, setRect] = useState<Rect | null>(null);
 
   const step = steps[index];
+
+  const goToNextStep = useCallback(() => {
+    if (index >= steps.length - 1) {
+      onFinish();
+    } else {
+      setRect(null);
+      setIndex((i) => i + 1);
+    }
+  }, [index, onFinish, steps.length]);
 
   // Reset to first step whenever the tour (re)starts.
   useEffect(() => {
@@ -54,26 +65,62 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
     };
   }, [active, step]);
 
+  useEffect(() => {
+    if (!active || !step || step.interaction !== 'input') return;
+
+    let timeout = 0;
+    let cleanupListener: (() => void) | null = null;
+
+    const attachListener = () => {
+      const el = document.querySelector(step.selector) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (!el) {
+        timeout = window.setTimeout(attachListener, 200) as unknown as number;
+        return;
+      }
+
+      let advanced = false;
+      const handleAdvance = () => {
+        if (advanced) return;
+        advanced = true;
+        window.setTimeout(goToNextStep, 180);
+      };
+
+      el.addEventListener('input', handleAdvance);
+      el.addEventListener('change', handleAdvance);
+      cleanupListener = () => {
+        el.removeEventListener('input', handleAdvance);
+        el.removeEventListener('change', handleAdvance);
+      };
+    };
+
+    attachListener();
+
+    return () => {
+      clearTimeout(timeout);
+      cleanupListener?.();
+    };
+  }, [active, goToNextStep, step]);
+
   const advance = useCallback(() => {
-    // Forward a real click to the underlying target so the app actually
-    // reacts (e.g. opens Q1, opens the hint, focuses the input) before we
-    // move the spotlight to the next step.
     const el = document.querySelector(step?.selector ?? '') as HTMLElement | null;
     if (el) {
-      el.click();
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
         el.focus();
+        el.select?.();
+      }
+
+      if (step?.interaction !== 'input') {
+        // Forward a real click to the underlying target so the app actually reacts
+        // (e.g. opens Q1 or opens the hint) before we move the spotlight.
+        el.click();
       }
     }
 
-    if (index >= steps.length - 1) {
-      onFinish();
-    } else {
-      setRect(null);
+    if (step?.interaction !== 'input') {
       // Give the app a moment to mount the next target (modals, inputs, etc.).
-      setTimeout(() => setIndex((i) => i + 1), 250);
+      setTimeout(goToNextStep, 250);
     }
-  }, [index, steps.length, onFinish, step]);
+  }, [goToNextStep, step]);
 
 
   if (!active || !step) return null;
@@ -139,8 +186,14 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         }}
       />
 
-      {/* Clickable pulse ring around the target — clicking this advances the tour */}
-      {spotlight && (
+      {/* Highlighted target area */}
+      {spotlight && step.interaction === 'input' ? (
+        <div
+          className="absolute rounded-xl border-2 border-primary animate-pulse pointer-events-none"
+          style={{ top: spotlight.top, left: spotlight.left, width: spotlight.width, height: spotlight.height }}
+          aria-hidden="true"
+        />
+      ) : spotlight ? (
         <button
           onClick={advance}
           className="absolute rounded-xl border-2 border-primary animate-pulse cursor-pointer pointer-events-auto flex items-center justify-center"
@@ -149,7 +202,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         >
           <MousePointerClick className="h-6 w-6 text-primary opacity-60" />
         </button>
-      )}
+      ) : null}
 
       {/* Bouncing arrow pointing at the target */}
       {spotlight && (
@@ -186,7 +239,7 @@ export function GuidedTour({ steps, active, onFinish }: GuidedTourProps) {
         <p className="text-xs text-muted-foreground leading-relaxed">{step.body}</p>
         <div className="mt-3 flex items-center gap-2 text-[11px] font-medium text-primary">
           <MousePointerClick className="h-3.5 w-3.5" />
-          <span>Click the highlighted area to continue</span>
+          <span>{step.interaction === 'input' ? 'Type in the highlighted box to continue' : 'Click the highlighted area to continue'}</span>
         </div>
       </div>
     </div>

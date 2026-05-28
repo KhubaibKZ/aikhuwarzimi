@@ -5,12 +5,52 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun, Compass } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
+import { GuidedTour, type TourStep } from '@/components/GuidedTour';
 import StudentAnalytics from './StudentAnalytics';
+
+const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="demo-q1"]',
+    title: 'Open Question 1',
+    body: 'Click on Question 1 to open the interactive workspace and begin solving.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="hint-btn"]',
+    title: 'Ask for a Hint',
+    body: 'Stuck on what the question is asking? Tap Hint and the AI tutor will explain the idea.',
+    placement: 'top',
+  },
+  {
+    selector: '[data-tour="answer-input"]',
+    title: 'Write your answer',
+    body: 'Type your attempt into this answer box.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="checkwork-btn"]',
+    title: 'Check your work',
+    body: 'Tap Check Work to get instant feedback on your attempt without revealing the answer.',
+    placement: 'left',
+  },
+  {
+    selector: '[data-tour="answer-input"]',
+    title: 'Enter the correct answer',
+    body: 'Refine your working and enter the correct final answer in the box.',
+    placement: 'bottom',
+  },
+  {
+    selector: '[data-tour="submit-btn"]',
+    title: 'Submit your answer',
+    body: 'Finally, tap Submit to record your result. Your progress and analytics update instantly.',
+    placement: 'top',
+  },
+];
 
 const PAPER_ID = 'pp_4024_on23_11';
 const STORAGE_KEY = 'demo_progress_v1';

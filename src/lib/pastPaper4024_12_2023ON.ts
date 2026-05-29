@@ -192,7 +192,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 7 ==========
   'pp_4024_on23_12_q7': {
     id: 'pp_4024_on23_12_q7', questionNumber: '7', title: 'Transformations',
-    question: '(a) Describe fully the transformation that maps triangle P onto triangle Q.\n(b) Shape B is an enlargement of shape A, centre (5,5), area of B is 27 cm². Draw shape B.',
+    question: 'Shape A and triangles P and Q are drawn on a centimetre square grid.\n(a) Describe fully the transformation that maps triangle P onto triangle Q.\n(b) Shape B is an enlargement of shape A, centre (5,5), area of B is 27 cm². Draw shape B.',
     marks: 6,
     hints: ['(a) Rotation, 90° clockwise, centre (0,0)', '(b) Area of A = 3 cm², area SF = 27/3 = 9, linear SF = 3'],
     type: 'multi-part',

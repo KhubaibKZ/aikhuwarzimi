@@ -73,39 +73,72 @@ export function ParallelLines_4024_12_2023ON() {
   );
 }
 
-// ───────────────────────────── Q7: Transformation grid (P → Q) ─────────────────────────────
+// ───────────────────────────── Q7: Transformation grid (A, P, Q) ─────────────────────────────
 export function TransformGrid_4024_12_2023ON() {
-  const s = 18, ox = 30, oy = 30;
-  const xMin = -6, xMax = 6, yMin = -6, yMax = 6;
-  const X = (x: number) => ox + (x - xMin) * s;
-  const Y = (y: number) => oy + (yMax - y) * s;
-  const lines = [];
-  for (let i = xMin; i <= xMax; i++) lines.push(<line key={`v${i}`} x1={X(i)} y1={Y(yMax)} x2={X(i)} y2={Y(yMin)} stroke="hsl(var(--border))" strokeWidth={i === 0 ? 1.4 : 0.6} />);
-  for (let j = yMin; j <= yMax; j++) lines.push(<line key={`h${j}`} x1={X(xMin)} y1={Y(j)} x2={X(xMax)} y2={Y(j)} stroke="hsl(var(--border))" strokeWidth={j === 0 ? 1.4 : 0.6} />);
-  // Triangle P (upper-left): (-5,5),(-5,2),(-3,5)
-  const P = `${X(-5)},${Y(5)} ${X(-5)},${Y(2)} ${X(-3)},${Y(5)}`;
-  // Triangle Q (rotated 90° CW about origin): (5,5)→(5,-5)? — Use (5,5),(2,5),(5,3)
-  const Q = `${X(5)},${Y(5)} ${X(2)},${Y(5)} ${X(5)},${Y(3)}`;
-  // Shape A small (1,1),(2,1),(2,2) — area 0.5? Use a 2x3 rectangle centred near (5,5)
+  const s = 22, pad = 28;
+  const xMin = -8, xMax = 7, yMin = -7, yMax = 6;
+  const w = (xMax - xMin) * s + pad * 2;
+  const h = (yMax - yMin) * s + pad * 2;
+  const X = (x: number) => pad + (x - xMin) * s;
+  const Y = (y: number) => pad + (yMax - y) * s;
+
+  const grid: JSX.Element[] = [];
+  for (let i = xMin; i <= xMax; i++) {
+    grid.push(<line key={`v${i}`} x1={X(i)} y1={Y(yMax)} x2={X(i)} y2={Y(yMin)}
+      stroke="hsl(var(--border))" strokeWidth={0.6} strokeDasharray={i === 0 ? undefined : '2 2'} />);
+  }
+  for (let j = yMin; j <= yMax; j++) {
+    grid.push(<line key={`h${j}`} x1={X(xMin)} y1={Y(j)} x2={X(xMax)} y2={Y(j)}
+      stroke="hsl(var(--border))" strokeWidth={0.6} strokeDasharray={j === 0 ? undefined : '2 2'} />);
+  }
+
+  // Axes
+  const axes = (
+    <>
+      <line x1={X(xMin)} y1={Y(0)} x2={X(xMax)} y2={Y(0)} stroke={fg} strokeWidth={1.3} />
+      <line x1={X(0)} y1={Y(yMax)} x2={X(0)} y2={Y(yMin)} stroke={fg} strokeWidth={1.3} />
+      {/* arrows */}
+      <polygon points={`${X(xMax)},${Y(0)} ${X(xMax) - 7},${Y(0) - 4} ${X(xMax) - 7},${Y(0) + 4}`} fill={fg} />
+      <polygon points={`${X(0)},${Y(yMax)} ${X(0) - 4},${Y(yMax) + 7} ${X(0) + 4},${Y(yMax) + 7}`} fill={fg} />
+      <text x={X(xMax) + 8} y={Y(0) + 4} fontSize={12} fill={fg}>x</text>
+      <text x={X(0) + 6} y={Y(yMax) - 4} fontSize={12} fill={fg}>y</text>
+      <text x={X(0) - 8} y={Y(0) + 14} fontSize={10} fill={mu}>0</text>
+    </>
+  );
+
+  // Axis number labels
+  const xLabels = [];
+  for (let i = xMin; i <= xMax; i++) if (i !== 0) xLabels.push(
+    <text key={`xl${i}`} x={X(i)} y={Y(0) + 14} fontSize={10} fill={mu} textAnchor="middle">{i}</text>
+  );
+  const yLabels = [];
+  for (let j = yMin; j <= yMax; j++) if (j !== 0) yLabels.push(
+    <text key={`yl${j}`} x={X(0) - 6} y={Y(j) + 3} fontSize={10} fill={mu} textAnchor="end">{j}</text>
+  );
+
+  // Shape A: square (1,2)-(3,4) shaded
+  const A = `${X(1)},${Y(2)} ${X(3)},${Y(2)} ${X(3)},${Y(4)} ${X(1)},${Y(4)}`;
+  // Triangle P: (5,1),(6,1),(6,3) — right angle at (6,1)
+  const P = `${X(5)},${Y(1)} ${X(6)},${Y(1)} ${X(6)},${Y(3)}`;
+  // Triangle Q: (1,-5),(1,-6),(3,-6) — right angle at (1,-6)
+  const Q = `${X(1)},${Y(-5)} ${X(1)},${Y(-6)} ${X(3)},${Y(-6)}`;
+
   return (
-    <svg viewBox={`0 0 ${X(xMax) + 30} ${Y(yMin) + 30}`} className="w-full max-w-lg mx-auto">
-      {lines}
-      <polygon points={P} fill={pr} fillOpacity={0.3} stroke={pr} strokeWidth={1.5} />
-      <text x={X(-4.5)} y={Y(4)} fontSize={12} fill={pr} fontWeight="bold">P</text>
-      <polygon points={Q} fill={ac} fillOpacity={0.3} stroke={ac} strokeWidth={1.5} />
-      <text x={X(4)} y={Y(4)} fontSize={12} fill={ac} fontWeight="bold">Q</text>
-      {/* Shape A for part (b) */}
-      <polygon points={`${X(0)},${Y(-1)} ${X(2)},${Y(-1)} ${X(2)},${Y(-2)} ${X(0)},${Y(-2)}`} fill="hsl(var(--secondary))" stroke={fg} strokeWidth={1.2} />
-      <text x={X(1)} y={Y(-1.4)} fontSize={11} fill={fg} fontWeight="bold" textAnchor="middle">A</text>
-      {/* Centre of enlargement marker (5,5) */}
-      <circle cx={X(5)} cy={Y(5)} r={3} fill={fg} />
-      <text x={X(5) + 6} y={Y(5) - 4} fontSize={10} fill={mu}>(5,5)</text>
-      {/* Axes labels */}
-      <text x={X(xMax) + 6} y={Y(0) + 4} fontSize={11} fill={fg}>x</text>
-      <text x={X(0) - 4} y={Y(yMax) - 4} fontSize={11} fill={fg}>y</text>
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-2xl mx-auto bg-white rounded-md">
+      {grid}
+      {axes}
+      {xLabels}
+      {yLabels}
+      <polygon points={A} fill="hsl(var(--muted-foreground)/0.45)" stroke={fg} strokeWidth={1.2} />
+      <text x={X(2.4)} y={Y(3.4)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">A</text>
+      <polygon points={P} fill="none" stroke={fg} strokeWidth={1.4} />
+      <text x={X(5.85)} y={Y(1.7)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">P</text>
+      <polygon points={Q} fill="none" stroke={fg} strokeWidth={1.4} />
+      <text x={X(1.4)} y={Y(-5.55)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">Q</text>
     </svg>
   );
 }
+
 
 // ───────────────────────────── Q14: Triangle ABC for measure/construct ─────────────────────────────
 export function TriangleConstruct_4024_12_2023ON() {

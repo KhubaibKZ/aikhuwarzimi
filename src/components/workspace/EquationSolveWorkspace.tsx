@@ -39,6 +39,7 @@ interface EquationSolveWorkspaceProps {
   customStepsBefore?: boolean; // if true, render the custom steps block BEFORE the predefined stages
   hideOwnKeyboard?: boolean; // suppress this workspace's bottom keyboard (use shared one)
   onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
+  onFocusPart?: (partKey: string) => void;
 }
 
 // Custom step token model

@@ -88,6 +88,7 @@ export function EquationSolveWorkspace({
   customStepsBefore = false,
   hideOwnKeyboard = false,
   onActiveKeyHandler,
+  onFocusPart,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});

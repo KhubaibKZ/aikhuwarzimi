@@ -529,7 +529,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 17 ==========
   'pp_4024_on23_12_q17': {
     id: 'pp_4024_on23_12_q17', questionNumber: '17', title: 'Cumulative frequency',
-    question: 'Heights of 80 plants measured.\n(a) Draw a cumulative frequency diagram.\n(b) Find the interquartile range.\n(c) Plants taller than H cm are sold. 28 plants are sold. Find H.',
+    question: 'The heights of 80 plants are measured. The table shows the results.\n(a) On the grid, draw a cumulative frequency diagram. (Mark the points, then tap "Join points" to connect them.)',
     marks: 6,
     hints: ['(a) Plot cumulative frequencies against upper bounds', '(b) Q1 at 20th value, Q3 at 60th value, IQR = Q3 − Q1', '(c) 80 − 28 = 52 on CF axis, read across to H'],
     type: 'multi-part',

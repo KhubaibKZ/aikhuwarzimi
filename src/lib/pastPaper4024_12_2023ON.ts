@@ -365,15 +365,18 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 12 ==========
   'pp_4024_on23_12_q12': {
     id: 'pp_4024_on23_12_q12', questionNumber: '12', title: 'Simultaneous equations',
-    question: 'Solve: 5x + 4y = 14 and 3x − 2y = 15.',
+    question: 'Solve the simultaneous equations. Show all your working.\n5x + 4y = 14\n3x − 2y = 15',
     marks: 3,
-    hints: ['Multiply 2nd equation by 2: 6x − 4y = 30', 'Add: 11x = 44, x = 4', 'Sub back: 5(4) + 4y = 14, 4y = −6, y = −3/2'],
+    hints: ['Multiply 2nd equation by 2: 6x − 4y = 30', 'Write eq1: 5x + 4y = 14', 'Add: 11x = 44, x = 4', 'Sub back: 5(4) + 4y = 14, 4y = −6, y = −3/2'],
     type: 'multi-part',
     equationSolveParts: ['x', 'y'],
     equationStagesMap: {
       'x': [
         { label: 'Multiply eq2 by 2', stepKey: 's1', elements: [
           { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: 'x −' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: 'y =' }, { type: 'box', key: 's1_c', width: 'w-10' }
+        ]},
+        { label: 'Write eq1', stepKey: 's1b', elements: [
+          { type: 'box', key: 's1b_a', width: 'w-10' }, { type: 'text', value: 'x +' }, { type: 'box', key: 's1b_b', width: 'w-10' }, { type: 'text', value: 'y =' }, { type: 'box', key: 's1b_c', width: 'w-10' }
         ]},
         { label: 'Add equations', stepKey: 's2', elements: [
           { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's2_b', width: 'w-10' }
@@ -395,6 +398,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       x: '4', y: '-3/2',
       x_s1_a: '6', x_s1_b: '4', x_s1_c: '30',
+      x_s1b_a: '5', x_s1b_b: '4', x_s1b_c: '14',
       x_s2_a: '11', x_s2_b: '44',
       x_s3_a: '4',
       y_s1_a: '4',

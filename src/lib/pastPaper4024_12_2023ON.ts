@@ -571,7 +571,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_12_q18', questionNumber: '18', title: 'Speed-time graph',
     question: 'Speed-time graph for cyclists A and B over 20 seconds.\n(a) Find the acceleration of cyclist A.\n(b) Which cyclist travelled further and by how many metres?',
     marks: 4,
-    hints: ['(a) Acceleration = change in speed / time = 6/20 = 0.3 m/s²', '(b) Compare areas under graphs: A = ½×20×6 = 60, B = ½×(1+7)×20 = 80, B by 20m'],
+    hints: ['(a) Acceleration = change in speed / time = 6/20 = 0.3 m/s²', '(b) Distance A = ½(1+7)×20 = 80 m, Distance B = 5×20 = 100 m, so B travels further by 20 m'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
@@ -582,13 +582,13 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       ],
       'b': [
         { label: 'Distance A', stepKey: 's1', elements: [
-          { type: 'text', value: '½ ×' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '×' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: 'm' }
+          { type: 'text', value: '½ × (' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: ') ×' }, { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: 'm' }
         ]},
         { label: 'Distance B', stepKey: 's2', elements: [
-          { type: 'text', value: '½ × (' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: ') ×' }, { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_d', width: 'w-10' }, { type: 'text', value: 'm' }
+          { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '×' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_c', width: 'w-12' }, { type: 'text', value: 'm' }
         ]},
-        { label: 'Difference', stepKey: 's3', elements: [
-          { type: 'box', key: 's3_a', width: 'w-12' }, { type: 'text', value: 'by' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: 'm' }
+        { label: 'Final answer', stepKey: 's3', elements: [
+          { type: 'text', value: 'Cyclist' }, { type: 'box', key: 's3_a', width: 'w-12' }, { type: 'text', value: 'travelled further by' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: 'meters' }
         ]}
       ]
     },
@@ -596,11 +596,11 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '0.3', b: 'B, 20',
       a_s1_a: '6', a_s1_b: '20', a_s1_c: '0.3',
-      b_s1_a: '20', b_s1_b: '6', b_s1_c: '60',
-      b_s2_a: '1', b_s2_b: '7', b_s2_c: '20', b_s2_d: '80',
+      b_s1_a: '1', b_s1_b: '7', b_s1_c: '20', b_s1_d: '80',
+      b_s2_a: '5', b_s2_b: '20', b_s2_c: '100',
       b_s3_a: 'B', b_s3_b: '20'
     },
-    markingCriteria: { a: 'B1 for 6/20 oe (= 0.3 m/s²).', b: 'M1 for distance B = 5 × 20 oe. M1 for distance A = ½(1 + 7) × 20 oe. OR M2 for 4 × 20 − ½(7 − 1) × 20 oe. A1 for "B, 20" nfww.' }
+    markingCriteria: { a: 'B1 for 6/20 oe (= 0.3 m/s²).', b: 'M1 for distance A = ½(1 + 7) × 20 oe. M1 for distance B = 5 × 20 oe. OR M2 for 4 × 20 − ½(7 − 1) × 20 oe. A1 for "B, 20" nfww.' }
   },
 
   // ========== Question 19 ==========

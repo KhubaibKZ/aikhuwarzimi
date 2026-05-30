@@ -329,27 +329,62 @@ export function CumulativeFrequency_4024_12_2023ON() {
 
 // ───────────────────────────── Q18: Speed-time graph (cyclists A, B) ─────────────────────────────
 export function SpeedTime_4024_12_2023ON() {
-  const ox = 50, oy = 20, w = 300, h = 180;
+  // NOT TO SCALE diagram matching exam paper exactly:
+  // Cyclist A: straight line from (0,1) → (20,7)
+  // Cyclist B: horizontal line at speed 5
+  const ox = 70, oy = 30, w = 280, h = 220;
   const X = (t: number) => ox + (t / 20) * w;
   const Y = (s: number) => oy + h - (s / 8) * h;
-  // A: (0,0) → (20,6) straight
-  // B: (0,1) → (20,7)
+  const axisBottom = oy + h;
   return (
-    <svg viewBox={`0 0 ${ox + w + 20} ${oy + h + 50}`} className="w-full max-w-lg mx-auto">
-      {[0, 4, 8, 12, 16, 20].map(t => <line key={`gx${t}`} x1={X(t)} y1={oy} x2={X(t)} y2={oy + h} stroke="hsl(var(--border))" strokeWidth={0.6} />)}
-      {[0, 2, 4, 6, 8].map(s => <line key={`gy${s}`} x1={ox} y1={Y(s)} x2={ox + w} y2={Y(s)} stroke="hsl(var(--border))" strokeWidth={0.6} />)}
-      <line x1={ox} y1={oy} x2={ox} y2={oy + h} stroke={fg} strokeWidth={1.4} />
-      <line x1={ox} y1={oy + h} x2={ox + w} y2={oy + h} stroke={fg} strokeWidth={1.4} />
-      {/* Cyclist A */}
-      <line x1={X(0)} y1={Y(0)} x2={X(20)} y2={Y(6)} stroke={pr} strokeWidth={2} />
-      <text x={X(20) + 4} y={Y(6) + 4} fontSize={11} fill={pr} fontWeight="bold">A</text>
-      {/* Cyclist B */}
-      <line x1={X(0)} y1={Y(1)} x2={X(20)} y2={Y(7)} stroke={ac} strokeWidth={2} />
-      <text x={X(20) + 4} y={Y(7) + 4} fontSize={11} fill={ac} fontWeight="bold">B</text>
-      {[0, 4, 8, 12, 16, 20].map(t => <text key={`xl${t}`} x={X(t)} y={oy + h + 14} fontSize={10} fill={mu} textAnchor="middle">{t}</text>)}
-      {[0, 2, 4, 6, 8].map(s => <text key={`yl${s}`} x={ox - 6} y={Y(s) + 4} fontSize={10} fill={mu} textAnchor="end">{s}</text>)}
-      <text x={ox + w / 2} y={oy + h + 32} fontSize={11} fill={fg} textAnchor="middle">Time (s)</text>
-      <text x={14} y={oy + h / 2} fontSize={11} fill={fg} textAnchor="middle" transform={`rotate(-90 14 ${oy + h / 2})`}>Speed (m/s)</text>
+    <svg viewBox={`0 0 ${ox + w + 100} ${oy + h + 50}`} className="w-full max-w-lg mx-auto">
+      {/* Y-axis with arrow */}
+      <line x1={ox} y1={oy - 5} x2={ox} y2={axisBottom} stroke={fg} strokeWidth={1.4} />
+      <polygon points={`${ox - 4},${oy} ${ox + 4},${oy} ${ox},${oy - 8}`} fill={fg} />
+      {/* X-axis with arrow */}
+      <line x1={ox} y1={axisBottom} x2={ox + w + 10} y2={axisBottom} stroke={fg} strokeWidth={1.4} />
+      <polygon points={`${ox + w + 6},${axisBottom - 4} ${ox + w + 6},${axisBottom + 4} ${ox + w + 14},${axisBottom}`} fill={fg} />
+
+      {/* Dashed rectangle indicators at (20,7) */}
+      <line x1={ox} y1={Y(7)} x2={X(20)} y2={Y(7)} stroke={fg} strokeWidth={1} strokeDasharray="4,3" />
+      <line x1={X(20)} y1={Y(7)} x2={X(20)} y2={axisBottom} stroke={fg} strokeWidth={1} strokeDasharray="4,3" />
+
+      {/* Cyclist A: (0,1) → (20,7) */}
+      <line x1={X(0)} y1={Y(1)} x2={X(20)} y2={Y(7)} stroke={fg} strokeWidth={2} />
+      {/* Cyclist B: horizontal at speed 5 */}
+      <line x1={X(0)} y1={Y(5)} x2={X(20)} y2={Y(5)} stroke={fg} strokeWidth={2} />
+
+      {/* Labels for cyclists */}
+      <text x={X(10)} y={Y(5) - 6} fontSize={12} fill={fg} textAnchor="middle">Cyclist <tspan fontStyle="italic">B</tspan></text>
+      <text x={X(11)} y={Y(3) + 4} fontSize={12} fill={fg} textAnchor="middle">Cyclist <tspan fontStyle="italic">A</tspan></text>
+
+      {/* Y-axis ticks and labels: 0, 1, 5, 7 */}
+      {[
+        { v: 0, label: '0' },
+        { v: 1, label: '1' },
+        { v: 5, label: '5' },
+        { v: 7, label: '7' },
+      ].map(({ v, label }) => (
+        <g key={`y${v}`}>
+          <line x1={ox - 4} y1={Y(v)} x2={ox} y2={Y(v)} stroke={fg} strokeWidth={1.2} />
+          <text x={ox - 8} y={Y(v) + 4} fontSize={11} fill={fg} textAnchor="end">{label}</text>
+        </g>
+      ))}
+
+      {/* X-axis ticks: 0, 20 */}
+      <line x1={ox} y1={axisBottom} x2={ox} y2={axisBottom + 4} stroke={fg} strokeWidth={1.2} />
+      <text x={ox} y={axisBottom + 16} fontSize={11} fill={fg} textAnchor="middle">0</text>
+      <line x1={X(20)} y1={axisBottom} x2={X(20)} y2={axisBottom + 4} stroke={fg} strokeWidth={1.2} />
+      <text x={X(20)} y={axisBottom + 16} fontSize={11} fill={fg} textAnchor="middle">20</text>
+
+      {/* Axis labels */}
+      <text x={ox - 40} y={oy + h / 2 - 6} fontSize={11} fill={fg} textAnchor="middle">Speed</text>
+      <text x={ox - 40} y={oy + h / 2 + 8} fontSize={11} fill={fg} textAnchor="middle">(m/s)</text>
+      <text x={ox + w / 2} y={axisBottom + 34} fontSize={11} fill={fg} textAnchor="middle">Time (seconds)</text>
+
+      {/* NOT TO SCALE */}
+      <text x={ox + w + 30} y={oy + h / 2} fontSize={10} fill={mu}>NOT TO</text>
+      <text x={ox + w + 30} y={oy + h / 2 + 12} fontSize={10} fill={mu}>SCALE</text>
     </svg>
   );
 }

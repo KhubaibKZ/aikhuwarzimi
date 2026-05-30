@@ -108,7 +108,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<{ type: 'hint' | 'guidance'; content: string; partKey?: string } | null>(null);
   const [attemptCount, setAttemptCount] = useState<Record<string, number>>({});
-  const [focusedPartKey, setFocusedPartKey] = useState<string | null>(null);
   const { markExampleComplete } = useProgress();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -1243,16 +1242,6 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       refetchAssignments();
     }
 
-    // Pick a part-specific hint based on the part the user is focused on (if any).
-    // Hints in question.hints may be prefixed with "(a)", "(b)", "(c)" — match by that.
-    const targetPart = focusedPartKey || (question.parts?.[0]?.key as string | undefined);
-    const findPartHint = (pk?: string | null): string | null => {
-      if (!pk || !question.hints?.length) return null;
-      const re = new RegExp(`^\\s*\\(${pk}\\)`, 'i');
-      const match = question.hints.find(h => re.test(h));
-      return match ?? null;
-    };
-
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -1261,30 +1250,24 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           topic: question.title,
           hints: question.hints,
           attemptCount,
-          markingCriteria: question.markingCriteria,
-          specificPart: targetPart ? `Part (${targetPart})` : undefined
+          markingCriteria: question.markingCriteria
         }
       });
 
       if (error) throw error;
-      const partHint = findPartHint(targetPart);
-      setAiResponse({ type: 'hint', content: partHint ?? data.hint, partKey: targetPart });
+      setAiResponse({ type: 'hint', content: data.hint });
     } catch (error) {
       console.error('Hint error:', error);
-      const partHint = findPartHint(targetPart);
-      if (partHint) {
-        setAiResponse({ type: 'hint', content: partHint, partKey: targetPart });
-      } else if (question.hints.length > 0) {
+      if (question.hints.length > 0) {
         const totalAttempts = Object.values(attemptCount).reduce((sum, count) => sum + count, 0);
         const hintIndex = Math.min(totalAttempts, question.hints.length - 1);
-        setAiResponse({ type: 'hint', content: question.hints[hintIndex], partKey: targetPart });
+        setAiResponse({ type: 'hint', content: question.hints[hintIndex] });
       }
     } finally {
       setIsLoading(false);
       setLoadingType(null);
     }
   };
-
 
   // Check Work for individual part: Analyze specific answer and provide targeted guidance
   // Optionally accepts a direct answer value (for LCM ladder where state may not be updated yet)
@@ -2954,10 +2937,8 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               customStepsBefore={!!(beforeMap && beforeMap[partKey])}
                               hideOwnKeyboard={useSingleKeyboard}
                               onActiveKeyHandler={useSingleKeyboard ? publishActiveKeyHandler : undefined}
-                              onFocusPart={setFocusedPartKey}
 
                             />
-
                           </div>
                         );
                       })}

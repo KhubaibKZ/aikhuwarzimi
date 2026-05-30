@@ -12,9 +12,9 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) 0.05 × 0.3 = 0.015', '(b) 600 ÷ 0.2 = 3000', '(c) 8−6=2, 12÷2=6, 20−6=14'],
     type: 'multi-part',
     equationSolveParts: ['a', 'b', 'c'],
-    allowCustomStepsMap: { a: false, b: true, c: true },
-    customStepsBeforeMap: { b: true, c: true },
-    customStepTemplateMap: { b: 'text', c: 'text' },
+    allowCustomStepsMap: { a: true, b: true, c: true },
+    customStepsBeforeMap: { a: true, b: true, c: true },
+    customStepTemplateMap: { a: 'text', b: 'text', c: 'text' },
     equationStagesMap: {
       'a': [
         { label: 'Answer', stepKey: 'sFinal', elements: [

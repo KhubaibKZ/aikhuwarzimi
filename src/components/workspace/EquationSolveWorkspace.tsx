@@ -39,7 +39,6 @@ interface EquationSolveWorkspaceProps {
   customStepsBefore?: boolean; // if true, render the custom steps block BEFORE the predefined stages
   hideOwnKeyboard?: boolean; // suppress this workspace's bottom keyboard (use shared one)
   onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
-  onFocusPart?: (partKey: string) => void;
 }
 
 // Custom step token model
@@ -88,7 +87,6 @@ export function EquationSolveWorkspace({
   customStepsBefore = false,
   hideOwnKeyboard = false,
   onActiveKeyHandler,
-  onFocusPart,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -289,7 +287,6 @@ export function EquationSolveWorkspace({
       onFocus={() => {
         setFocusedInput(id);
         setFocusedSlot(null);
-        onFocusPart?.(questionKey);
       }}
       disabled={isSubmitted}
       className={cn(
@@ -425,7 +422,6 @@ export function EquationSolveWorkspace({
           onFocus={() => {
             setFocusedSlot(slot);
             setFocusedInput(null);
-            onFocusPart?.(questionKey);
           }}
           style={{ width: `${widthCh}ch` }}
           className={cn(
@@ -712,7 +708,6 @@ export function EquationSolveWorkspace({
                     onFocus={() => {
                       setFocusedSlot(`cs:${si}:0:txt`);
                       setFocusedInput(null);
-                      onFocusPart?.(questionKey);
                     }}
                     placeholder="Write your step here..."
                     className="flex-1 w-full min-h-[1.75rem] bg-transparent font-mono text-base text-foreground outline-none border-0 px-1"

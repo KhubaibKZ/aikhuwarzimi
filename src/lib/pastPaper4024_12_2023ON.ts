@@ -600,7 +600,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
       b_s2_a: '5', b_s2_b: '20', b_s2_c: '100',
       b_s3_a: 'B', b_s3_b: '20'
     },
-    markingCriteria: { a: 'B1 for 6/20 oe (= 0.3 m/s²).', b: 'M1 for distance A = ½(1 + 7) × 20 oe. M1 for distance B = 5 × 20 oe. A1 for "B, 20" nfww (A1 only available when both M1s earned).' }
+    markingCriteria: { a: 'B1 for 6/20 oe (= 0.3 m/s²).', b: 'B1 for "B, 20" nfww → full 3 marks. Otherwise: M1 for [distance B =] 5 × 20 oe. M1 for [distance A =] (1+7)×20/2 oe OR M2 for 4×20 − ½×(7−1)×20.' }
   },
 
   // ========== Question 19 ==========

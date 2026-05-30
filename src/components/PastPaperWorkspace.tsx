@@ -1276,7 +1276,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       if (matchingStage?.elements) {
         const els = matchingStage.elements;
         for (let i = 0; i < els.length - 2; i++) {
-          if (els[i].type === 'box' && els[i+1].type === 'text' && els[i+1].value === '×' && els[i+2].type === 'box') {
+          if (els[i].type === 'box' && els[i+1].type === 'text' && (els[i+1].value === '×' || els[i+1].value === '+') && els[i+2].type === 'box') {
             const prefix = partKey + '_';
             const keyA = prefix + els[i].key?.split('_').pop();
             const keyB = prefix + els[i+2].key?.split('_').pop();

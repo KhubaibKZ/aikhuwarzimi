@@ -529,7 +529,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 17 ==========
   'pp_4024_on23_12_q17': {
     id: 'pp_4024_on23_12_q17', questionNumber: '17', title: 'Cumulative frequency',
-    question: 'Heights of 80 plants measured.\n(a) Draw a cumulative frequency diagram.\n(b) Find the interquartile range.\n(c) Plants taller than H cm are sold. 28 plants are sold. Find H.',
+    question: 'The heights of 80 plants are measured. The table shows the results.\n(a) On the grid, draw a cumulative frequency diagram. (Mark the points, then tap "Join points" to connect them.)',
     marks: 6,
     hints: ['(a) Plot cumulative frequencies against upper bounds', '(b) Q1 at 20th value, Q3 at 60th value, IQR = Q3 − Q1', '(c) 80 − 28 = 52 on CF axis, read across to H'],
     type: 'multi-part',
@@ -555,7 +555,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ]
     },
-    parts: [{ label: '(a) CF diagram', key: 'a', marks: 2 }, { label: '(b) IQR (cm)', key: 'b', marks: 2 }, { label: '(c) H', key: 'c', marks: 2 }],
+    parts: [{ label: '(a) Draw the cumulative frequency diagram', key: 'a', marks: 2 }, { label: '(b) Use your diagram to find the interquartile range (cm)', key: 'b', marks: 2 }, { label: '(c) Plants taller than H cm are sold. 28 plants are sold. Use your diagram to find H.', key: 'c', marks: 2 }],
     answer: {
       a: 'Correct CF diagram', b: '3.8|3.6|3.7|3.9|4|4.0', c: '7|7.1|7.2|7.0',
       b_s1_a: '20', b_s1_b: '4.2',

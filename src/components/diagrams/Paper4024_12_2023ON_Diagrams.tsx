@@ -1,6 +1,8 @@
 // Diagrams for 4024/12 Oct/Nov 2023 — visual references matching the QP
 // All scaled to fit the workspace and use semantic theme tokens.
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import q6ParallelLines2023ONSrc from "@/assets/q6-parallel-lines-2023ON.png";
 
 const fg = "hsl(var(--foreground))";
@@ -160,33 +162,170 @@ export function TriangleConstruct_4024_12_2023ON() {
   );
 }
 
-// ───────────────────────────── Q17: Cumulative frequency curve ─────────────────────────────
+// ───────────────────────────── Q17: Interactive cumulative frequency workspace ─────────────────────────────
+// Shows the exact data table from the question paper, plus an empty grid where
+// students can click to mark points and then optionally join them. No curve is
+// pre-drawn — students do the plotting themselves.
 export function CumulativeFrequency_4024_12_2023ON() {
-  const ox = 50, oy = 30, w = 320, h = 220;
-  const xs = [0, 2, 4, 6, 8, 10];           // height (cm)
-  const ys = [0, 8, 32, 60, 76, 80];         // cumulative freq
-  const X = (v: number) => ox + (v / 10) * w;
-  const Y = (v: number) => oy + h - (v / 80) * h;
-  const path = xs.map((x, i) => `${i === 0 ? "M" : "L"} ${X(x)} ${Y(ys[i])}`).join(" ");
+  const ox = 50, oy = 20, w = 360, h = 240;
+  const xMax = 12, yMax = 80;
+  const X = (v: number) => ox + (v / xMax) * w;
+  const Y = (v: number) => oy + h - (v / yMax) * h;
+  // Snap clicks to nearest 0.5 cm on x and nearest 2 on y
+  const snap = (raw: number, step: number) => Math.round(raw / step) * step;
+
+  const headers: Array<{ label: string; cf: number }> = [
+    { label: "h ⩽ 2", cf: 4 },
+    { label: "h ⩽ 4", cf: 18 },
+    { label: "h ⩽ 6", cf: 42 },
+    { label: "h ⩽ 8", cf: 60 },
+    { label: "h ⩽ 10", cf: 72 },
+    { label: "h ⩽ 12", cf: 80 },
+  ];
+
+  const [points, setPoints] = useState<{ x: number; y: number }[]>([]);
+  const [joined, setJoined] = useState(false);
+
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const sx = vb.width / rect.width;
+    const sy = vb.height / rect.height;
+    const px = (e.clientX - rect.left) * sx;
+    const py = (e.clientY - rect.top) * sy;
+    // Convert back to data coords
+    const dx = ((px - ox) / w) * xMax;
+    const dy = ((oy + h - py) / h) * yMax;
+    if (dx < 0 || dx > xMax || dy < 0 || dy > yMax) return;
+    const nx = snap(dx, 0.5);
+    const ny = snap(dy, 2);
+    setPoints((prev) => [...prev, { x: nx, y: ny }]);
+  };
+
+  const removePoint = (i: number) => {
+    setPoints((prev) => prev.filter((_, idx) => idx !== i));
+  };
+
+  const clearAll = () => {
+    setPoints([]);
+    setJoined(false);
+  };
+
+  const sorted = [...points].sort((a, b) => a.x - b.x);
+  const pathD = sorted
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${X(p.x)} ${Y(p.y)}`)
+    .join(" ");
+
+  // Gridlines: x every 1 cm (minor 0.5), y every 10 (minor 2)
+  const xMajor = Array.from({ length: xMax + 1 }, (_, i) => i);
+  const xMinor: number[] = [];
+  for (let i = 0; i <= xMax * 2; i++) {
+    const v = i / 2;
+    if (!xMajor.includes(v)) xMinor.push(v);
+  }
+  const yMajor = [0, 10, 20, 30, 40, 50, 60, 70, 80];
+  const yMinor: number[] = [];
+  for (let i = 0; i <= yMax; i += 2) {
+    if (!yMajor.includes(i)) yMinor.push(i);
+  }
+
   return (
-    <svg viewBox={`0 0 ${ox + w + 20} ${oy + h + 50}`} className="w-full max-w-lg mx-auto">
-      {/* Grid */}
-      {xs.map(v => <line key={`gx${v}`} x1={X(v)} y1={oy} x2={X(v)} y2={oy + h} stroke="hsl(var(--border))" strokeWidth={0.6} />)}
-      {[0, 10, 20, 30, 40, 50, 60, 70, 80].map(v => <line key={`gy${v}`} x1={ox} y1={Y(v)} x2={ox + w} y2={Y(v)} stroke="hsl(var(--border))" strokeWidth={0.6} />)}
-      {/* Axes */}
-      <line x1={ox} y1={oy} x2={ox} y2={oy + h} stroke={fg} strokeWidth={1.4} />
-      <line x1={ox} y1={oy + h} x2={ox + w} y2={oy + h} stroke={fg} strokeWidth={1.4} />
-      {/* CF curve */}
-      <path d={path} fill="none" stroke={pr} strokeWidth={2} />
-      {xs.map((x, i) => <circle key={`p${i}`} cx={X(x)} cy={Y(ys[i])} r={3} fill={pr} />)}
-      {/* Axis labels */}
-      {xs.map(v => <text key={`xl${v}`} x={X(v)} y={oy + h + 14} fontSize={10} fill={mu} textAnchor="middle">{v}</text>)}
-      {[0, 20, 40, 60, 80].map(v => <text key={`yl${v}`} x={ox - 6} y={Y(v) + 4} fontSize={10} fill={mu} textAnchor="end">{v}</text>)}
-      <text x={ox + w / 2} y={oy + h + 36} fontSize={11} fill={fg} textAnchor="middle">Height (cm)</text>
-      <text x={14} y={oy + h / 2} fontSize={11} fill={fg} textAnchor="middle" transform={`rotate(-90 14 ${oy + h / 2})`}>Cumulative frequency</text>
-    </svg>
+    <div className="space-y-3">
+      {/* Data table — matches QP exactly */}
+      <div className="overflow-x-auto">
+        <table className="border-collapse mx-auto text-sm">
+          <tbody>
+            <tr>
+              <th className="border border-foreground px-3 py-2 text-left font-normal align-middle">
+                Height
+                <br />(<em>h</em> centimetres)
+              </th>
+              {headers.map((c) => (
+                <th key={c.label} className="border border-foreground px-4 py-2 font-normal italic">
+                  {c.label}
+                </th>
+              ))}
+            </tr>
+            <tr>
+              <th className="border border-foreground px-3 py-2 text-left font-normal align-middle">
+                Cumulative
+                <br />frequency
+              </th>
+              {headers.map((c) => (
+                <td key={c.label} className="border border-foreground px-4 py-2 text-center">
+                  {c.cf}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <Button size="sm" variant={joined ? "default" : "outline"} onClick={() => setJoined((j) => !j)} disabled={points.length < 2}>
+          {joined ? "Hide line" : "Join points"}
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setPoints((p) => p.slice(0, -1))} disabled={points.length === 0}>
+          Undo
+        </Button>
+        <Button size="sm" variant="outline" onClick={clearAll} disabled={points.length === 0}>
+          Clear
+        </Button>
+        <span className="text-xs text-muted-foreground">{points.length} point{points.length === 1 ? "" : "s"} • tap a point to remove</span>
+      </div>
+
+      {/* Interactive grid */}
+      <svg
+        viewBox={`0 0 ${ox + w + 20} ${oy + h + 50}`}
+        className="w-full max-w-2xl mx-auto bg-white rounded-md cursor-crosshair touch-none"
+        onClick={handleClick}
+      >
+        {/* Minor gridlines */}
+        {xMinor.map((v) => (
+          <line key={`gxm${v}`} x1={X(v)} y1={oy} x2={X(v)} y2={oy + h} stroke="hsl(var(--border))" strokeWidth={0.4} />
+        ))}
+        {yMinor.map((v) => (
+          <line key={`gym${v}`} x1={ox} y1={Y(v)} x2={ox + w} y2={Y(v)} stroke="hsl(var(--border))" strokeWidth={0.4} />
+        ))}
+        {/* Major gridlines */}
+        {xMajor.map((v) => (
+          <line key={`gx${v}`} x1={X(v)} y1={oy} x2={X(v)} y2={oy + h} stroke="hsl(var(--border))" strokeWidth={0.9} />
+        ))}
+        {yMajor.map((v) => (
+          <line key={`gy${v}`} x1={ox} y1={Y(v)} x2={ox + w} y2={Y(v)} stroke="hsl(var(--border))" strokeWidth={0.9} />
+        ))}
+        {/* Axes */}
+        <line x1={ox} y1={oy} x2={ox} y2={oy + h} stroke={fg} strokeWidth={1.5} />
+        <line x1={ox} y1={oy + h} x2={ox + w} y2={oy + h} stroke={fg} strokeWidth={1.5} />
+        {/* Axis labels */}
+        {xMajor.map((v) => (
+          <text key={`xl${v}`} x={X(v)} y={oy + h + 14} fontSize={11} fill={mu} textAnchor="middle">{v}</text>
+        ))}
+        {yMajor.map((v) => (
+          <text key={`yl${v}`} x={ox - 6} y={Y(v) + 4} fontSize={11} fill={mu} textAnchor="end">{v}</text>
+        ))}
+        <text x={ox + w / 2} y={oy + h + 36} fontSize={12} fill={fg} textAnchor="middle">Height (cm)</text>
+        <text x={16} y={oy + h / 2} fontSize={12} fill={fg} textAnchor="middle" transform={`rotate(-90 16 ${oy + h / 2})`}>
+          Cumulative frequency
+        </text>
+        {/* Joined line */}
+        {joined && sorted.length >= 2 && (
+          <path d={pathD} fill="none" stroke={pr} strokeWidth={2} />
+        )}
+        {/* Plotted points */}
+        {points.map((p, i) => (
+          <g key={`pt${i}`} onClick={(e) => { e.stopPropagation(); removePoint(i); }} className="cursor-pointer">
+            <circle cx={X(p.x)} cy={Y(p.y)} r={6} fill="transparent" />
+            <circle cx={X(p.x)} cy={Y(p.y)} r={3.5} fill={pr} stroke={fg} strokeWidth={0.8} />
+          </g>
+        ))}
+      </svg>
+    </div>
   );
 }
+
 
 // ───────────────────────────── Q18: Speed-time graph (cyclists A, B) ─────────────────────────────
 export function SpeedTime_4024_12_2023ON() {

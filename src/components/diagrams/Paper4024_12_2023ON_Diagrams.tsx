@@ -1,6 +1,8 @@
 // Diagrams for 4024/12 Oct/Nov 2023 — visual references matching the QP
 // All scaled to fit the workspace and use semantic theme tokens.
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import q6ParallelLines2023ONSrc from "@/assets/q6-parallel-lines-2023ON.png";
 
 const fg = "hsl(var(--foreground))";

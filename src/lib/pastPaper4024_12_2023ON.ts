@@ -389,20 +389,24 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
         { label: 'Substitute', stepKey: 's1', elements: [
           { type: 'text', value: '5(' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: ') + 4y = 14' }
         ]},
-        { label: 'Solve for y', stepKey: 's2', elements: [
-          { type: 'text', value: '4y =' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: ', y =' }, { type: 'box', key: 's2_b', width: 'w-12' }
+        { label: 'Rearrange', stepKey: 's2', elements: [
+          { type: 'text', value: '4y =' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-10' }
+        ]},
+        { label: 'Solve for y', stepKey: 's3', elements: [
+          { type: 'text', value: 'y =' }, { type: 'box', key: 's3_a', width: 'w-12' }
         ]}
       ]
     },
     parts: [{ label: 'x', key: 'x', marks: 2 }, { label: 'y', key: 'y', marks: 1 }],
     answer: {
-      x: '4', y: '-3/2',
+      x: '4', y: '-3/2|-1.5|-6/4',
       x_s1_a: '6', x_s1_b: '4', x_s1_c: '30',
       x_s1b_a: '5', x_s1b_b: '4', x_s1b_c: '14',
       x_s2_a: '11', x_s2_b: '44',
       x_s3_a: '4',
       y_s1_a: '4',
-      y_s2_a: '-6', y_s2_b: '-3/2'
+      y_s2_a: '14', y_s2_b: '20',
+      y_s3_a: '-3/2|-1.5|-6/4'
     },
     markingCriteria: { x: 'M1 for a correct method to eliminate one variable (e.g. doubling eq2 to get 6x − 4y = 30, then adding to eq1). A1 for x = 4.', y: 'A1 for y = −3/2. SC1 (after A0 on the pair) for a pair of values that satisfy either original equation, or for correct answers with no working.' }
   },

@@ -555,7 +555,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
         ]}
       ]
     },
-    parts: [{ label: '(a) CF diagram', key: 'a', marks: 2 }, { label: '(b) IQR (cm)', key: 'b', marks: 2 }, { label: '(c) H', key: 'c', marks: 2 }],
+    parts: [{ label: '(a) Draw the cumulative frequency diagram', key: 'a', marks: 2 }, { label: '(b) Use your diagram to find the interquartile range (cm)', key: 'b', marks: 2 }, { label: '(c) Plants taller than H cm are sold. 28 plants are sold. Use your diagram to find H.', key: 'c', marks: 2 }],
     answer: {
       a: 'Correct CF diagram', b: '3.8|3.6|3.7|3.9|4|4.0', c: '7|7.1|7.2|7.0',
       b_s1_a: '20', b_s1_b: '4.2',

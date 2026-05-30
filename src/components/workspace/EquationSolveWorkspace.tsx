@@ -425,6 +425,7 @@ export function EquationSolveWorkspace({
           onFocus={() => {
             setFocusedSlot(slot);
             setFocusedInput(null);
+            onFocusPart?.(questionKey);
           }}
           style={{ width: `${widthCh}ch` }}
           className={cn(

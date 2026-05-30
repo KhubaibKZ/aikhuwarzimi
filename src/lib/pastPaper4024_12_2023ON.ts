@@ -271,32 +271,9 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     marks: 3,
     hints: ['(a) 180 = 2² × 3² × 5', '(b) LCM = 2² × 3² × 5 = 180, N must contribute factor 5, so k = 5'],
     type: 'multi-part',
-    equationSolveParts: ['a', 'b'],
+    primeFactorParts: { a: 180 },
+    equationSolveParts: ['b'],
     equationStagesMap: {
-      'a': [
-        { label: 'Ladder: 180 ÷', stepKey: 's1', elements: [
-          { type: 'text', value: '180 ÷' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-12' }
-        ]},
-        { label: 'Ladder: next ÷', stepKey: 's2', elements: [
-          { type: 'text', value: '90 ÷' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's2_b', width: 'w-12' }
-        ]},
-        { label: 'Ladder: next ÷', stepKey: 's3', elements: [
-          { type: 'text', value: '45 ÷' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_b', width: 'w-12' }
-        ]},
-        { label: 'Ladder: next ÷', stepKey: 's4', elements: [
-          { type: 'text', value: '15 ÷' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's4_b', width: 'w-12' }
-        ]},
-        { label: 'Ladder: final ÷', stepKey: 's5', elements: [
-          { type: 'text', value: '5 ÷' }, { type: 'box', key: 's5_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's5_b', width: 'w-12' }
-        ]},
-        { label: 'Factor tree', stepKey: 's6', elements: [
-          { type: 'text', value: '180 =' }, { type: 'box', key: 's6_a', width: 'w-8' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's6_b', width: 'w-8' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's6_c', width: 'w-8' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's6_d', width: 'w-8' }, { type: 'text', value: '×' },
-          { type: 'box', key: 's6_e', width: 'w-8' }
-        ]}
-      ],
       'b': [
         { label: 'Final answer', stepKey: 's1', elements: [
           { type: 'text', value: 'k =' }, { type: 'box', key: 's1_a', width: 'w-12' }
@@ -305,13 +282,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a) Prime factors', key: 'a', marks: 2 }, { label: '(b) k', key: 'b', marks: 1 }],
     answer: {
-      a: '2² × 3² × 5', b: '5',
-      a_s1_a: '2', a_s1_b: '90',
-      a_s2_a: '2', a_s2_b: '45',
-      a_s3_a: '3', a_s3_b: '15',
-      a_s4_a: '3', a_s4_b: '5',
-      a_s5_a: '5', a_s5_b: '1',
-      a_s6_a: '2', a_s6_b: '2', a_s6_c: '3', a_s6_d: '3', a_s6_e: '5',
+      a: '2² × 3² × 5|2^2 × 3^2 × 5|2x2x3x3x5|2 × 2 × 3 × 3 × 5|2*2*3*3*5',
+      b: '5',
       b_s1_a: '5'
     },
     markingCriteria: { a: 'B2 for 2² × 3² × 5 or 2 × 2 × 3 × 3 × 5. B1 for list 2, 2, 3, 3, 5 not as product, or M1 for any two stages correct in a factor tree or ladder method.', b: 'B1 cao for k = 5.' }

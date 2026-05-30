@@ -289,6 +289,7 @@ export function EquationSolveWorkspace({
       onFocus={() => {
         setFocusedInput(id);
         setFocusedSlot(null);
+        onFocusPart?.(questionKey);
       }}
       disabled={isSubmitted}
       className={cn(

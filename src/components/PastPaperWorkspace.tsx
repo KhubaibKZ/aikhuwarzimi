@@ -835,12 +835,11 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           const finalAns = s3Keys.every(k => answersMatch(currentAnswers[k] || '', (question.answer as Record<string, string>)[k] || ''));
           let earned = 0;
           const notes: string[] = [];
-          if (distanceA) { earned += 1; notes.push('M1 for distance A = ½(1+7)×20 oe'); }
-          if (distanceB) { earned += 1; notes.push('M1 for distance B = 5×20 oe'); }
-          if (finalAns && distanceA && distanceB) { earned += 1; notes.push('A1 for "B, 20" nfww'); }
-          else if (finalAns) { notes.push('Final answer correct but A mark withheld — not from wrong working.'); }
-          marksEarned['b'] = earned;
-          newFeedback['b'] = earned === bPart.marks ? 'correct' : 'incorrect';
+          if (distanceA) { earned += 1; notes.push('1 mark for distance A = ½(1+7)×20 = 80'); }
+          if (distanceB) { earned += 1; notes.push('1 mark for distance B = 5×20 = 100'); }
+          if (finalAns) { earned += 1; notes.push('1 mark for final answer "B, 20"'); }
+          marksEarned['b'] = Math.min(bPart.marks, earned);
+          newFeedback['b'] = earned >= bPart.marks ? 'correct' : 'incorrect';
           if (earned < bPart.marks) allCorrect = false;
           if (notes.length) markingNotes['b'] = notes.join('. ') + '.';
         }

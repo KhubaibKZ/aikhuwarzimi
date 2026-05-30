@@ -822,8 +822,29 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
 
-
-
+      // === Q18 (4024/12 ON 2023) part (b) — MS-aligned: 1 mark per distance + 1 for final answer ===
+      // M1 for distance A = ½(1+7)×20 oe, M1 for distance B = 5×20 oe, A1 for "B, 20" nfww.
+      if (question.id === 'pp_4024_on23_12_q18') {
+        const bPart = question.parts.find(p => p.key === 'b');
+        if (bPart) {
+          const s1Keys = ['b_s1_a', 'b_s1_b', 'b_s1_c', 'b_s1_d'];
+          const s2Keys = ['b_s2_a', 'b_s2_b', 'b_s2_c'];
+          const s3Keys = ['b_s3_a', 'b_s3_b'];
+          const distanceA = s1Keys.every(k => answersMatch(currentAnswers[k] || '', (question.answer as Record<string, string>)[k] || ''));
+          const distanceB = s2Keys.every(k => answersMatch(currentAnswers[k] || '', (question.answer as Record<string, string>)[k] || ''));
+          const finalAns = s3Keys.every(k => answersMatch(currentAnswers[k] || '', (question.answer as Record<string, string>)[k] || ''));
+          let earned = 0;
+          const notes: string[] = [];
+          if (distanceA) { earned += 1; notes.push('M1 for distance A = ½(1+7)×20 oe'); }
+          if (distanceB) { earned += 1; notes.push('M1 for distance B = 5×20 oe'); }
+          if (finalAns && distanceA && distanceB) { earned += 1; notes.push('A1 for "B, 20" nfww'); }
+          else if (finalAns) { notes.push('Final answer correct but A mark withheld — not from wrong working.'); }
+          marksEarned['b'] = earned;
+          newFeedback['b'] = earned === bPart.marks ? 'correct' : 'incorrect';
+          if (earned < bPart.marks) allCorrect = false;
+          if (notes.length) markingNotes['b'] = notes.join('. ') + '.';
+        }
+      }
 
       // === Q17 (4024/11 ON 2023) — k box + follow-through final answer ===
       if (question.id === 'pp_4024_on23_11_q17') {

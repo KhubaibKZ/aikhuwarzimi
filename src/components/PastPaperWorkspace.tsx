@@ -2938,8 +2938,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
                               customStepsBefore={!!(beforeMap && beforeMap[partKey])}
                               hideOwnKeyboard={useSingleKeyboard}
                               onActiveKeyHandler={useSingleKeyboard ? publishActiveKeyHandler : undefined}
+                              onFocusPart={setFocusedPartKey}
 
                             />
+
                           </div>
                         );
                       })}

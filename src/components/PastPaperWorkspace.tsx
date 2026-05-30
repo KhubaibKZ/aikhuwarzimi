@@ -792,36 +792,36 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       // Rule: +1 mark per correct final answer (x or y), -1 mark per wrong final answer.
       // Total clamped at 0. Applied only when no intermediate working boxes are filled.
       if (question.id === 'pp_4024_on23_12_q12') {
-        const xWorkKeys = ['x_s1_a','x_s1_b','x_s1_c','x_s1b_a','x_s1b_b','x_s1b_c','x_s2_a','x_s2_b','x_s3_a'];
-        const yWorkKeys = ['y_s1_a','y_s2_a','y_s2_b','y_s3_a'];
+        // Working = intermediate steps only (exclude the final-answer boxes x_s3_a / y_s3_a)
+        const xWorkKeys = ['x_s1_a','x_s1_b','x_s1_c','x_s1b_a','x_s1b_b','x_s1b_c','x_s2_a','x_s2_b'];
+        const yWorkKeys = ['y_s1_a','y_s2_a','y_s2_b'];
         const anyWorking = [...xWorkKeys, ...yWorkKeys].some(k => (currentAnswers[k] || '').trim().length > 0);
-        const xFinal = (currentAnswers['x'] || '').trim();
-        const yFinal = (currentAnswers['y'] || '').trim();
+        // Final answers live in the last-stage boxes
+        const xFinal = (currentAnswers['x_s3_a'] || currentAnswers['x'] || '').trim();
+        const yFinal = (currentAnswers['y_s3_a'] || currentAnswers['y'] || '').trim();
         if (!anyWorking && (xFinal || yFinal)) {
-          const xCorrect = answersMatch(xFinal, '4');
-          const yCorrect = answersMatch(yFinal, '-3/2') || answersMatch(yFinal, '-1.5') || answersMatch(yFinal, '-6/4');
+          const xCorrect = !!xFinal && answersMatch(xFinal, '4');
+          const yCorrect = !!yFinal && (answersMatch(yFinal, '-3/2') || answersMatch(yFinal, '-1.5') || answersMatch(yFinal, '-6/4'));
           const rawX = xCorrect ? 1 : -1;
           const rawY = yCorrect ? 1 : -1;
           const total = Math.max(0, rawX + rawY);
-          // Distribute: prefer giving the mark to the correct part(s)
           let mX = 0, mY = 0;
-          if (total > 0) {
-            if (xCorrect && yCorrect) { mX = 1; mY = 1; }
-            else if (xCorrect) { mX = total; }
-            else if (yCorrect) { mY = total; }
-          }
+          if (xCorrect && yCorrect) { mX = 1; mY = 1; }
+          else if (total > 0 && xCorrect) { mX = total; }
+          else if (total > 0 && yCorrect) { mY = total; }
           marksEarned['x'] = mX;
           marksEarned['y'] = mY;
-          newFeedback['x'] = xCorrect ? 'correct' : 'incorrect';
-          newFeedback['y'] = yCorrect ? 'correct' : 'incorrect';
-          const noteParts: string[] = [];
-          noteParts.push('No working shown: +1 per correct final value, −1 per wrong final value (total cannot go below 0).');
-          noteParts.push(`x ${xCorrect ? 'correct (+1)' : 'wrong (−1)'}, y ${yCorrect ? 'correct (+1)' : 'wrong (−1)'} → total ${total}/3.`);
-          markingNotes['x'] = noteParts.join(' ');
-          markingNotes['y'] = noteParts.join(' ');
+          newFeedback['x'] = mX >= 1 ? 'correct' : 'incorrect';
+          newFeedback['y'] = mY >= 1 ? 'correct' : 'incorrect';
+          if (xFinal) newFeedback['x_s3_a'] = xCorrect ? 'correct' : 'incorrect';
+          if (yFinal) newFeedback['y_s3_a'] = yCorrect ? 'correct' : 'incorrect';
+          const note = `No working shown — special case scoring: +1 per correct final value, −1 per wrong (total ≥ 0). x ${xCorrect ? 'correct (+1)' : 'wrong (−1)'}, y ${yCorrect ? 'correct (+1)' : 'wrong (−1)'} → ${total}/3.`;
+          markingNotes['x'] = note;
+          markingNotes['y'] = note;
           allCorrect = question.parts.every(p => (marksEarned[p.key] ?? 0) >= p.marks);
         }
       }
+
 
 
 

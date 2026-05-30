@@ -712,6 +712,7 @@ export function EquationSolveWorkspace({
                     onFocus={() => {
                       setFocusedSlot(`cs:${si}:0:txt`);
                       setFocusedInput(null);
+                      onFocusPart?.(questionKey);
                     }}
                     placeholder="Write your step here..."
                     className="flex-1 w-full min-h-[1.75rem] bg-transparent font-mono text-base text-foreground outline-none border-0 px-1"

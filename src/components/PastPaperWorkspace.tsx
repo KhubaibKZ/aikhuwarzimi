@@ -108,6 +108,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<{ type: 'hint' | 'guidance'; content: string; partKey?: string } | null>(null);
   const [attemptCount, setAttemptCount] = useState<Record<string, number>>({});
+  const [focusedPartKey, setFocusedPartKey] = useState<string | null>(null);
   const { markExampleComplete } = useProgress();
   const { toast } = useToast();
   const { user } = useAuth();

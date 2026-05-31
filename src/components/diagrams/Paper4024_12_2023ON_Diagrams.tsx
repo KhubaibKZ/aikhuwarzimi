@@ -394,33 +394,57 @@ export function TwoSectors_4024_12_2023ON() {
   // Sector A: centre D, radius 3y, angle 6x° (drawn obtuse ~120°)
   // Sector B: centre P, radius y, angle x° (drawn ~20°)
   return (
-    <svg viewBox="0 0 360 220" className="w-full max-w-lg mx-auto">
-      {/* Sector A circle */}
-      <g transform="translate(90,110)">
-        <circle r={70} fill="hsl(var(--primary)/0.06)" stroke={fg} strokeWidth={1.4} />
-        {/* Sector lines DE, DF — angle 6x° */}
-        <line x1={0} y1={0} x2={70} y2={0} stroke={fg} strokeWidth={1.5} />
-        <line x1={0} y1={0} x2={-35} y2={-60.6} stroke={fg} strokeWidth={1.5} />
-        {/* Major arc shading */}
-        <path d="M 70 0 A 70 70 0 1 0 -35 -60.6 L 0 0 Z" fill={pr} fillOpacity={0.18} />
-        <text x={0} y={5} fontSize={11} fill={fg} fontWeight="bold" textAnchor="middle">D</text>
-        <text x={76} y={4} fontSize={11} fill={fg} fontWeight="bold">E</text>
-        <text x={-46} y={-62} fontSize={11} fill={fg} fontWeight="bold">F</text>
-        <text x={36} y={-30} fontSize={10} fill={pr} fontWeight="bold">3y</text>
-        <text x={20} y={-10} fontSize={10} fill={pr} fontWeight="bold">6x°</text>
+    <svg viewBox="0 0 360 240" className="w-full max-w-lg mx-auto">
+      {/* ── Diagram A: D centre, major arc EF on top, obtuse 6x° at D ── */}
+      <g transform="translate(110,150)">
+        {/* Radii DE (down-left) and DF (down-right), obtuse angle ~150° between them */}
+        {(() => {
+          const R = 80;
+          // Half-angle from vertical-down for chord: use obtuse angle 150° → half = 75° from downward
+          const a = (75 * Math.PI) / 180;
+          const Ex = -R * Math.sin(a), Ey = R * Math.cos(a);
+          const Fx = R * Math.sin(a), Fy = R * Math.cos(a);
+          // Major arc from F to E going the long way (over the top)
+          return (
+            <>
+              <path d={`M ${Fx} ${Fy} A ${R} ${R} 0 1 0 ${Ex} ${Ey}`} fill="hsl(var(--primary)/0.08)" stroke={fg} strokeWidth={1.5} />
+              <line x1={0} y1={0} x2={Ex} y2={Ey} stroke={fg} strokeWidth={1.5} />
+              <line x1={0} y1={0} x2={Fx} y2={Fy} stroke={fg} strokeWidth={1.5} />
+              {/* Close chord visually (sector boundary at bottom not drawn in original; omit) */}
+              <text x={0} y={-4} fontSize={11} fill={fg} fontWeight="bold" textAnchor="middle">D</text>
+              <text x={Ex - 10} y={Ey + 12} fontSize={11} fill={fg} fontWeight="bold">E</text>
+              <text x={Fx + 4} y={Fy + 12} fontSize={11} fill={fg} fontWeight="bold">F</text>
+              <text x={-14} y={14} fontSize={10} fill={pr} fontWeight="bold">6x°</text>
+              <text x={Fx / 2 + 4} y={Fy / 2 + 4} fontSize={10} fill={pr} fontWeight="bold">¾y</text>
+            </>
+          );
+        })()}
+        <text x={0} y={Math.round(80 * Math.cos((75 * Math.PI) / 180)) + 32} fontSize={11} fill={fg} fontStyle="italic" textAnchor="middle">Diagram A</text>
       </g>
-      {/* Sector B */}
-      <g transform="translate(260,110)">
-        <circle r={50} fill="hsl(var(--accent)/0.06)" stroke={fg} strokeWidth={1.4} />
-        <line x1={0} y1={0} x2={50} y2={0} stroke={fg} strokeWidth={1.5} />
-        <line x1={0} y1={0} x2={47} y2={-17} stroke={fg} strokeWidth={1.5} />
-        <path d="M 50 0 A 50 50 0 0 0 47 -17 L 0 0 Z" fill={ac} fillOpacity={0.25} />
-        <text x={0} y={14} fontSize={11} fill={fg} fontWeight="bold" textAnchor="middle">P</text>
-        <text x={56} y={4} fontSize={11} fill={fg} fontWeight="bold">R</text>
-        <text x={50} y={-22} fontSize={11} fill={fg} fontWeight="bold">Q</text>
-        <text x={28} y={-4} fontSize={10} fill={ac} fontWeight="bold">y</text>
-        <text x={28} y={-12} fontSize={10} fill={ac} fontWeight="bold">x°</text>
+
+      {/* ── Diagram B: narrow sector, P at top, Q & R at bottom, angle x° ── */}
+      <g transform="translate(280,50)">
+        {(() => {
+          const R = 110;
+          const half = (10 * Math.PI) / 180; // narrow ~20°
+          const Qx = -R * Math.sin(half), Qy = R * Math.cos(half);
+          const Rx = R * Math.sin(half), Ry = R * Math.cos(half);
+          return (
+            <>
+              <path d={`M 0 0 L ${Qx} ${Qy} A ${R} ${R} 0 0 0 ${Rx} ${Ry} Z`} fill="hsl(var(--accent)/0.10)" stroke={fg} strokeWidth={1.5} />
+              <text x={0} y={-4} fontSize={11} fill={fg} fontWeight="bold" textAnchor="middle">P</text>
+              <text x={Qx - 10} y={Qy + 12} fontSize={11} fill={fg} fontWeight="bold">Q</text>
+              <text x={Rx + 4} y={Ry + 12} fontSize={11} fill={fg} fontWeight="bold">R</text>
+              <text x={-4} y={18} fontSize={10} fill={ac} fontWeight="bold" textAnchor="end">x°</text>
+              <text x={Rx / 2 + 6} y={Ry / 2} fontSize={10} fill={ac} fontWeight="bold">y</text>
+              <text x={0} y={Ry + 28} fontSize={11} fill={fg} fontStyle="italic" textAnchor="middle">Diagram B</text>
+            </>
+          );
+        })()}
       </g>
+
+      <text x={345} y={70} fontSize={9} fill={mu} textAnchor="end">NOT TO</text>
+      <text x={345} y={82} fontSize={9} fill={mu} textAnchor="end">SCALE</text>
     </svg>
   );
 }

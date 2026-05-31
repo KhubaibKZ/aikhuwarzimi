@@ -2757,7 +2757,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {question.id === 'pp_4024_on23_12_q17' && (<div className="mt-4"><CumulativeFrequency_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q18' && (<div className="mt-4"><SpeedTime_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q21' && (<div className="mt-4"><TwoSectors_4024_12_2023ON /></div>)}
-            {question.id === 'pp_4024_on23_12_q23' && (<div className="mt-4"><VennHSG_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q23' && (<div className="mt-4"><VennHSG_4024_12_2023ON answers={answers} onAnswerChange={handleAnswerChange} feedback={feedback} isSubmitted={isSubmitted} /></div>)}
             {question.id === 'pp_4024_on23_12_q24' && (<div className="mt-4"><TriangleOAB_4024_12_2023ON /></div>)}
 
             {/* Fallback to static image if no interactive diagram and image exists */}

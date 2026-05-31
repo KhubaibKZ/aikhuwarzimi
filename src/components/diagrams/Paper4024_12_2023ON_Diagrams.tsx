@@ -400,22 +400,56 @@ export function TwoSectors_4024_12_2023ON() {
 }
 
 // ───────────────────────────── Q23: 3-set Venn (H, S, G) ─────────────────────────────
-export function VennHSG_4024_12_2023ON() {
-  const cx = 160, cy = 130, r = 60;
+import q23VennSrc from '@/assets/pp_4024_on23_12_q23_venn.png';
+import { cn } from '@/lib/utils';
+
+interface VennHSGProps {
+  answers?: Record<string, string>;
+  onAnswerChange?: (key: string, value: string) => void;
+  feedback?: Record<string, 'correct' | 'incorrect' | null>;
+  isSubmitted?: boolean;
+}
+
+export function VennHSG_4024_12_2023ON({
+  answers = {},
+  onAnswerChange,
+  feedback = {},
+  isSubmitted = false,
+}: VennHSGProps = {}) {
+  // Empty regions on the printed diagram (left%, top%):
+  // - hsg: triple intersection (centre)
+  // - hg : H ∩ G only (lower-left intersection)
+  // - sg : S ∩ G only (lower-right intersection)
+  // - g  : G only (bottom of G circle)
+  const slots: { key: string; left: string; top: string; label: string }[] = [
+    { key: 'a_hsg', left: '50%', top: '47%', label: 'H ∩ S ∩ G' },
+    { key: 'a_hg',  left: '38%', top: '62%', label: 'H ∩ G only' },
+    { key: 'a_sg',  left: '62%', top: '62%', label: 'S ∩ G only' },
+    { key: 'a_g',   left: '50%', top: '80%', label: 'G only' },
+  ];
+  const cls = (k: string) => cn(
+    'w-10 h-7 text-center text-sm font-bold rounded border bg-background text-foreground outline-none',
+    feedback[k] === 'correct' && 'border-green-500 bg-green-500/10',
+    feedback[k] === 'incorrect' && 'border-destructive bg-destructive/10',
+    !feedback[k] && 'border-primary/50 focus:border-primary',
+  );
   return (
-    <svg viewBox="0 0 320 250" className="w-full max-w-md mx-auto">
-      <rect x={10} y={10} width={300} height={230} rx={6} fill="none" stroke={fg} strokeWidth={1.4} />
-      <text x={22} y={28} fontSize={11} fill={fg} fontWeight="bold">ξ = 40</text>
-      <circle cx={cx - 32} cy={cy - 18} r={r} fill="hsl(var(--primary)/0.06)" stroke={fg} strokeWidth={1.4} />
-      <circle cx={cx + 32} cy={cy - 18} r={r} fill="hsl(var(--primary)/0.06)" stroke={fg} strokeWidth={1.4} />
-      <circle cx={cx} cy={cy + 28} r={r} fill="hsl(var(--primary)/0.06)" stroke={fg} strokeWidth={1.4} />
-      <text x={cx - 32 - r - 4} y={cy - 18 - r + 8} fontSize={13} fill={fg} fontWeight="bold">H</text>
-      <text x={cx + 32 + r - 6} y={cy - 18 - r + 8} fontSize={13} fill={fg} fontWeight="bold">S</text>
-      <text x={cx + r - 6} y={cy + 28 + r + 14} fontSize={13} fill={fg} fontWeight="bold">G</text>
-      {/* Centre = 2 (all three) */}
-      <text x={cx} y={cy + 8} fontSize={12} fill={pr} fontWeight="bold" textAnchor="middle">2</text>
-      <text x={cx} y={cy - 28} fontSize={12} fill={mu} textAnchor="middle">0</text>
-    </svg>
+    <div className="relative w-full max-w-lg mx-auto">
+      <img src={q23VennSrc} alt="Q23 Venn diagram (H, S, G) with empty regions" className="w-full" />
+      {slots.map(s => (
+        <input
+          key={s.key}
+          type="text"
+          inputMode="numeric"
+          aria-label={s.label}
+          value={answers[s.key] || ''}
+          onChange={e => onAnswerChange?.(s.key, e.target.value)}
+          disabled={isSubmitted}
+          className={cn(cls(s.key), 'absolute -translate-x-1/2 -translate-y-1/2')}
+          style={{ left: s.left, top: s.top }}
+        />
+      ))}
+    </div>
   );
 }
 

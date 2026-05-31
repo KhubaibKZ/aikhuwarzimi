@@ -645,8 +645,11 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Working', stepKey: 's1', elements: [
+        { label: 'Step 1: Partial factorisation (grouping)', stepKey: 's1', elements: [
           { type: 'box', key: 's1_work', width: 'w-full' }
+        ]},
+        { label: 'Step 2: Final factorised form', stepKey: 's2', elements: [
+          { type: 'box', key: 's2_work', width: 'w-full' }
         ]}
       ],
       'b': [
@@ -662,6 +665,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     answer: {
       a: '(c-3)(2d+e)', b: '3(v+3t)(v-3t)',
       a_s1_work: 'c(2d+e) − 3(2d+e)',
+      a_s2_work: '(c-3)(2d+e)',
       b_s1_a: '3', b_s1_b: 'v²−9t²',
       b_s2_a: '3', b_s2_b: 'v+3t', b_s2_c: 'v−3t'
     },

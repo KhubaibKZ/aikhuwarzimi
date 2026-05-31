@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import q6ParallelLines2023ONSrc from "@/assets/q6-parallel-lines-2023ON.png";
+import q21TwoSectorsSrc from "@/assets/pp_4024_on23_12_q21_diagram.png";
 
 const fg = "hsl(var(--foreground))";
 const mu = "hsl(var(--muted-foreground))";

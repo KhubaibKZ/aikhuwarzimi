@@ -772,8 +772,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     hints: ['(a) H∩S∩G = 2; since H∩S ⊂ G, H∩S only = 0; exactly two ⇒ H∩G only + S∩G only = 4', '(b) S only = people in S but not H or G = 10'],
     type: 'multi-part',
     parts: [{ label: '(a) Venn diagram', key: 'a', marks: 2 }, { label: '(b) n(S ∩ (H∪G)′)', key: 'b', marks: 1 }],
-    answer: { a: 'Completed correctly', a_hsg: '2', a_hg: '0', a_sg: '4', a_g: '16', b: '10' },
-    markingCriteria: { a: 'B2 for all four empty regions correct: H∩S∩G = 2, H∩G only = 0, S∩G only = 4, G only = 16. B1 for any two correct.', b: 'B1 cao for n(S ∩ (H ∪ G)′) = 10 (S only).' }
+    answer: { a: 'Completed correctly', a_hs: '0', a_hsg: '2', a_sg: '4', a_g: '16', b: '10' },
+    markingCriteria: { a: 'B2 for all four empty regions correct: H∩S only = 0, H∩S∩G = 2, S∩G only = 4, G only = 16. B1 for any two correct.', b: 'B1 cao for n(S ∩ (H ∪ G)′) = 10 (S only).' }
   },
 
   // ========== Question 24 ==========

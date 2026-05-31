@@ -422,10 +422,10 @@ export function VennHSG_4024_12_2023ON({
   // - sg : S ∩ G only (lower-right intersection)
   // - g  : G only (bottom of G circle)
   const slots: { key: string; left: string; top: string; label: string }[] = [
-    { key: 'a_hs',  left: '50%', top: '32%', label: 'H ∩ S only' },
-    { key: 'a_hsg', left: '50%', top: '50%', label: 'H ∩ S ∩ G' },
-    { key: 'a_sg',  left: '64%', top: '64%', label: 'S ∩ G only' },
-    { key: 'a_g',   left: '50%', top: '80%', label: 'G only' },
+    { key: 'a_hs',  left: '50%', top: '30%', label: 'H ∩ S only' },
+    { key: 'a_hsg', left: '52%', top: '50%', label: 'H ∩ S ∩ G' },
+    { key: 'a_sg',  left: '60%', top: '58%', label: 'S ∩ G only' },
+    { key: 'a_g',   left: '50%', top: '70%', label: 'G only' },
   ];
   const cls = (k: string) => cn(
     'w-10 h-7 text-center text-sm font-bold rounded border bg-background text-foreground outline-none',

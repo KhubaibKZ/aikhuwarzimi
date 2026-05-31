@@ -645,11 +645,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Group terms', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-20' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-20' }
-        ]},
-        { label: 'Factor out', stepKey: 's2', elements: [
-          { type: 'text', value: '= (' }, { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: ')(' }, { type: 'box', key: 's2_b', width: 'w-14' }, { type: 'text', value: ')' }
+        { label: 'Working', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_work', width: 'w-full' }
         ]}
       ],
       'b': [
@@ -664,8 +661,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: '(a) Factorised', key: 'a', marks: 2 }, { label: '(b) Factorised', key: 'b', marks: 2 }],
     answer: {
       a: '(c-3)(2d+e)', b: '3(v+3t)(v-3t)',
-      a_s1_a: 'c(2d+e)', a_s1_b: '3(2d+e)',
-      a_s2_a: 'c−3', a_s2_b: '2d+e',
+      a_s1_work: 'c(2d+e) − 3(2d+e)',
       b_s1_a: '3', b_s1_b: 'v²−9t²',
       b_s2_a: '3', b_s2_b: 'v+3t', b_s2_c: 'v−3t'
     },

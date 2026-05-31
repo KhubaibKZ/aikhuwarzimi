@@ -675,7 +675,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 21 ==========
   'pp_4024_on23_12_q21': {
     id: 'pp_4024_on23_12_q21', questionNumber: '21', title: 'Sector and arc length',
-    question: 'Diagram A: sector centre D, radius (3/4)y cm, obtuse angle EDF = 6x°. Diagram B: sector centre P, radius y cm, sector angle x°. The length of the major arc EF is 9 times the length of arc QR.\n(a) Show that x = 20.\n(b) Find y when the area of sector QPR = 2π cm².',
+    question: 'Diagram A shows a sector of a circle, centre D and radius (3/4)y cm. The obtuse angle EDF = 6x°.\nDiagram B shows a sector of a circle, centre P and radius y cm. The sector angle is x°.\n(a) The length of the major arc EF is 9 times the length of the arc QR. Show that x = 20.\n(b) Find the value of y when the area of sector QPR is equal to 2π cm².',
     marks: 5,
     hints: ['(a) Major arc EF = (360−6x)/360 × 2π × (3y/4); arc QR = (x/360) × 2πy', '(b) Area = (x/360)πy² = (20/360)πy² = 2π → y² = 36, y = 6'],
     type: 'multi-part',

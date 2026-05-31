@@ -835,13 +835,13 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           const finalAns = s3Keys.every(k => answersMatch(currentAnswers[k] || '', (question.answer as Record<string, string>)[k] || ''));
           let earned = 0;
           const notes: string[] = [];
-          if (finalAns) {
-            earned = bPart.marks;
-            notes.push('Final answer "B, 20" nfww — full 3 marks awarded');
-          } else {
-            if (distanceB) { earned += 1; notes.push('M1 for distance B = 5×20'); }
-            if (distanceA) { earned += 1; notes.push('M1 for distance A = (1+7)×20/2'); }
-            notes.push('A1 for final answer "B, 20" not earned');
+          if (distanceB) { earned += 1; notes.push('M1 for distance B = 5×20'); }
+          if (distanceA) { earned += 1; notes.push('M1 for distance A = (1+7)×20/2'); }
+          if (finalAns && distanceA && distanceB) {
+            earned += 1;
+            notes.push('A1 for final answer "B, 20"');
+          } else if (finalAns) {
+            notes.push('A1 for final answer withheld — both distances A and B must be correct');
           }
           marksEarned['b'] = Math.min(bPart.marks, earned);
           newFeedback['b'] = earned >= bPart.marks ? 'correct' : 'incorrect';

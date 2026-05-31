@@ -612,22 +612,22 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
-      { label: 'Common denominator', stepKey: 's1', elements: [
-        { type: 'text', value: 'LCD =' }, { type: 'box', key: 's1_a', width: 'w-10' }
+      { label: 'Combine over common denominator', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_num', width: 'w-56' }, { type: 'text', value: '/ 16' }
       ]},
-      { label: 'Convert numerators', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_a', width: 'w-16' }, { type: 'text', value: '+' }, { type: 'box', key: 's2_b', width: 'w-12' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_c', width: 'w-12' }
+      { label: 'Expand brackets', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_num', width: 'w-56' }, { type: 'text', value: '/ 16' }
       ]},
       { label: 'Simplify', stepKey: 's3', elements: [
-        { type: 'text', value: '= (' }, { type: 'box', key: 's3_a', width: 'w-16' }, { type: 'text', value: ') / 16' }
+        { type: 'box', key: 's3_num', width: 'w-32' }, { type: 'text', value: '/ 16' }
       ]}
     ],
     parts: [{ label: 'Single fraction', key: 'answer', marks: 2 }],
     answer: {
       answer: '(9x+2)/16',
-      answer_s1_a: '16',
-      answer_s2_a: '2(x+1)', answer_s2_b: '12x', answer_s2_c: '5x',
-      answer_s3_a: '9x+2'
+      answer_s1_num: '2(x+1)+12x−5x',
+      answer_s2_num: '2x+2+12x−5x',
+      answer_s3_num: '9x+2'
     },
     markingCriteria: { answer: 'M1 for (2(x + 1) + 4 · 3x − 5x)/16 oe (any equivalent correct combined numerator over a common denominator of 16). A1 for (9x + 2)/16 as final answer.' }
   },

@@ -907,6 +907,44 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
 
+      // === Q20(a) (4024/12 ON 2023) — B1 partial factorisation, B2 final answer ===
+      if (question.id === 'pp_4024_on23_12_q20') {
+        const aPart = question.parts.find(p => p.key === 'a');
+        if (aPart) {
+          const ansObj = question.answer as Record<string, string>;
+          const s1Val = (currentAnswers['a_s1_work'] || '').trim();
+          const s2Val = (currentAnswers['a_s2_work'] || '').trim();
+          const aVal = (currentAnswers['a'] || '').trim();
+          // Accept partial factorisations: c(2d+e) − 3(2d+e), or equivalent groupings like d(2c-6)+e(c-3) etc.
+          const norm = (s: string) => s.replace(/\s+/g, '').replace(/−/g, '-').replace(/×/g, '*').toLowerCase();
+          const partialOptions = ['c(2d+e)-3(2d+e)', '(2d+e)(c-3)', '(c-3)(2d+e)', '(2d+e)c-3(2d+e)', 'c(2d+e)+(-3)(2d+e)'];
+          const finalOptions = ['(c-3)(2d+e)', '(2d+e)(c-3)'];
+          const containsPartial = (v: string) => {
+            const n = norm(v);
+            return partialOptions.some(o => n.includes(norm(o)));
+          };
+          const isFinal = (v: string) => {
+            const n = norm(v);
+            return finalOptions.some(o => n === norm(o));
+          };
+          const finalSeen = isFinal(s2Val) || isFinal(aVal) || isFinal(s1Val);
+          const partialSeen = containsPartial(s1Val) || containsPartial(s2Val) || containsPartial(aVal);
+          let earned = 0;
+          const notes: string[] = [];
+          if (finalSeen) {
+            earned = 2;
+            notes.push('B2 awarded for (c − 3)(2d + e) as final answer.');
+          } else if (partialSeen) {
+            earned = 1;
+            notes.push('B1 awarded for one correct partial factorisation seen, e.g. c(2d + e) − 3(2d + e).');
+          }
+          marksEarned['a'] = Math.min(aPart.marks, earned);
+          newFeedback['a'] = earned >= aPart.marks ? 'correct' : 'incorrect';
+          if (earned < aPart.marks) allCorrect = false;
+          if (notes.length) markingNotes['a'] = notes.join(' ');
+        }
+      }
+
       // === Q17 (4024/11 ON 2023) — k box + follow-through final answer ===
       if (question.id === 'pp_4024_on23_11_q17') {
         const ansPart = question.parts.find(p => p.key === 'answer');

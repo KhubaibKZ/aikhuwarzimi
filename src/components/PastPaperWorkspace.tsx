@@ -884,6 +884,26 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         }
       }
 
+      // === Q19 (4024/12 ON 2023) — M1 for step 1 (combined fraction over LCM), A1 for final answer ===
+      if (question.id === 'pp_4024_on23_12_q19') {
+        const ansPart = question.parts.find(p => p.key === 'answer');
+        if (ansPart) {
+          const ansObj = question.answer as Record<string, string>;
+          const s1NumOk = answersMatch(currentAnswers['answer_s1_num'] || '', ansObj['answer_s1_num'] || '');
+          const s1DenOk = answersMatch(currentAnswers['answer_s1_den'] || '', ansObj['answer_s1_den'] || '');
+          const step1Correct = s1NumOk && s1DenOk;
+          const finalCorrect = answersMatch(currentAnswers['answer'] || '', ansObj['answer'] || '');
+          let earned = 0;
+          const notes: string[] = [];
+          if (step1Correct) { earned += 1; notes.push('M1 for combined fraction over common denominator (Take LCM step)'); }
+          if (finalCorrect) { earned += 1; notes.push('A1 for final answer (9x + 2)/16'); }
+          marksEarned['answer'] = Math.min(ansPart.marks, earned);
+          newFeedback['answer'] = earned >= ansPart.marks ? 'correct' : 'incorrect';
+          if (earned < ansPart.marks) allCorrect = false;
+          if (notes.length) markingNotes['answer'] = notes.join('. ') + '.';
+        }
+      }
+
       // === Q17 (4024/11 ON 2023) — k box + follow-through final answer ===
       if (question.id === 'pp_4024_on23_11_q17') {
         const ansPart = question.parts.find(p => p.key === 'answer');

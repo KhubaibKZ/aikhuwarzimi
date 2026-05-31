@@ -408,6 +408,7 @@ interface VennHSGProps {
   onAnswerChange?: (key: string, value: string) => void;
   feedback?: Record<string, 'correct' | 'incorrect' | null>;
   isSubmitted?: boolean;
+  onCheck?: () => void;
 }
 
 export function VennHSG_4024_12_2023ON({
@@ -415,12 +416,8 @@ export function VennHSG_4024_12_2023ON({
   onAnswerChange,
   feedback = {},
   isSubmitted = false,
+  onCheck,
 }: VennHSGProps = {}) {
-  // Empty regions on the printed diagram (left%, top%):
-  // - hsg: triple intersection (centre)
-  // - hg : H ∩ G only (lower-left intersection)
-  // - sg : S ∩ G only (lower-right intersection)
-  // - g  : G only (bottom of G circle)
   const slots: { key: string; left: string; top: string; label: string }[] = [
     { key: 'a_hs',  left: '50%', top: '30%', label: 'H ∩ S only' },
     { key: 'a_hsg', left: '52%', top: '50%', label: 'H ∩ S ∩ G' },
@@ -434,21 +431,28 @@ export function VennHSG_4024_12_2023ON({
     !feedback[k] && 'border-primary/50 focus:border-primary',
   );
   return (
-    <div className="relative w-full max-w-lg mx-auto">
-      <img src={q23VennSrc} alt="Q23 Venn diagram (H, S, G) with empty regions" className="w-full" />
-      {slots.map(s => (
-        <input
-          key={s.key}
-          type="text"
-          inputMode="numeric"
-          aria-label={s.label}
-          value={answers[s.key] || ''}
-          onChange={e => onAnswerChange?.(s.key, e.target.value)}
-          disabled={isSubmitted}
-          className={cn(cls(s.key), 'absolute -translate-x-1/2 -translate-y-1/2')}
-          style={{ left: s.left, top: s.top }}
-        />
-      ))}
+    <div className="w-full max-w-lg mx-auto space-y-3">
+      <div className="relative">
+        <img src={q23VennSrc} alt="Q23 Venn diagram (H, S, G) with empty regions" className="w-full" />
+        {slots.map(s => (
+          <input
+            key={s.key}
+            type="text"
+            inputMode="numeric"
+            aria-label={s.label}
+            value={answers[s.key] || ''}
+            onChange={e => onAnswerChange?.(s.key, e.target.value)}
+            disabled={isSubmitted}
+            className={cn(cls(s.key), 'absolute -translate-x-1/2 -translate-y-1/2')}
+            style={{ left: s.left, top: s.top }}
+          />
+        ))}
+      </div>
+      {onCheck && !isSubmitted && (
+        <div className="flex justify-center">
+          <Button size="sm" variant="outline" onClick={onCheck}>Check work</Button>
+        </div>
+      )}
     </div>
   );
 }

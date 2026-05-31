@@ -611,7 +611,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       question.parts.forEach(part => {
         // Diagram-scored parts: handled after the loop using diagramScores state
         if ((part as any).diagramScored) {
-          const ds = diagramScores[part.key];
+          let ds = diagramScores[part.key];
+          if (!ds && question.id === 'pp_4024_on23_12_q23' && part.key === 'a') {
+            const expected: Record<string,string> = { a_hs:'0', a_hsg:'2', a_sg:'4', a_g:'16' };
+            let correct = 0;
+            Object.entries(expected).forEach(([k,v]) => {
+              const u = (currentAnswers[k] || '').trim();
+              if (u === v) { newFeedback[k] = 'correct'; correct++; }
+              else newFeedback[k] = u ? 'incorrect' : null;
+            });
+            const marks = correct === 4 ? 2 : correct >= 2 ? 1 : 0;
+            ds = { marks, note: `${correct}/4 regions correct` };
+          }
           const earned = ds?.marks ?? 0;
           marksEarned[part.key] = earned;
           if (ds?.note) markingNotes[part.key] = ds.note;
@@ -2757,7 +2768,20 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {question.id === 'pp_4024_on23_12_q17' && (<div className="mt-4"><CumulativeFrequency_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q18' && (<div className="mt-4"><SpeedTime_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q21' && (<div className="mt-4"><TwoSectors_4024_12_2023ON /></div>)}
-            {question.id === 'pp_4024_on23_12_q23' && (<div className="mt-4"><VennHSG_4024_12_2023ON answers={answers} onAnswerChange={handleAnswerChange} feedback={feedback} isSubmitted={isSubmitted} /></div>)}
+            {question.id === 'pp_4024_on23_12_q23' && (<div className="mt-4"><VennHSG_4024_12_2023ON answers={answers} onAnswerChange={handleAnswerChange} feedback={feedback} isSubmitted={isSubmitted} onCheck={() => {
+              const expected: Record<string,string> = { a_hs:'0', a_hsg:'2', a_sg:'4', a_g:'16' };
+              const fb: Record<string, 'correct'|'incorrect'|null> = { ...feedback };
+              let correct = 0;
+              Object.entries(expected).forEach(([k,v]) => {
+                const u = (answers[k] || '').trim();
+                if (u === v) { fb[k] = 'correct'; correct++; }
+                else fb[k] = u ? 'incorrect' : null;
+              });
+              setFeedback(fb);
+              const marks = correct === 4 ? 2 : correct >= 2 ? 1 : 0;
+              setDiagramScores(prev => ({ ...prev, a: { marks, note: `${correct}/4 regions correct` } }));
+              toast({ title: 'Check Work', description: `${correct}/4 regions correct (${marks}/2 marks)` });
+            }} /></div>)}
             {question.id === 'pp_4024_on23_12_q24' && (<div className="mt-4"><TriangleOAB_4024_12_2023ON /></div>)}
 
             {/* Fallback to static image if no interactive diagram and image exists */}

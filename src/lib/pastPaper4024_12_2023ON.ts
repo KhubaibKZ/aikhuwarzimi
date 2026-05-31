@@ -612,22 +612,25 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     equationSolveParts: ['answer'],
     equationStages: [
-      { label: 'Combine over common denominator', stepKey: 's1', elements: [
-        { type: 'box', key: 's1_num', width: 'w-56' }, { type: 'text', value: '/ 16' }
+      { label: 'Take LCM', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_num', width: 'w-56' }, { type: 'text', value: '/' }, { type: 'box', key: 's1_den', width: 'w-16' }
       ]},
       { label: 'Expand brackets', stepKey: 's2', elements: [
-        { type: 'box', key: 's2_num', width: 'w-56' }, { type: 'text', value: '/ 16' }
+        { type: 'box', key: 's2_num', width: 'w-56' }, { type: 'text', value: '/' }, { type: 'box', key: 's2_den', width: 'w-16' }
       ]},
       { label: 'Simplify', stepKey: 's3', elements: [
-        { type: 'box', key: 's3_num', width: 'w-32' }, { type: 'text', value: '/ 16' }
+        { type: 'box', key: 's3_num', width: 'w-32' }, { type: 'text', value: '/' }, { type: 'box', key: 's3_den', width: 'w-16' }
       ]}
     ],
     parts: [{ label: 'Single fraction', key: 'answer', marks: 2 }],
     answer: {
       answer: '(9x+2)/16',
       answer_s1_num: '2(x+1)+12x−5x',
+      answer_s1_den: '16',
       answer_s2_num: '2x+2+12x−5x',
-      answer_s3_num: '9x+2'
+      answer_s2_den: '16',
+      answer_s3_num: '9x+2',
+      answer_s3_den: '16'
     },
     markingCriteria: { answer: 'M1 for (2(x + 1) + 4 · 3x − 5x)/16 oe (any equivalent correct combined numerator over a common denominator of 16). A1 for (9x + 2)/16 as final answer.' }
   },

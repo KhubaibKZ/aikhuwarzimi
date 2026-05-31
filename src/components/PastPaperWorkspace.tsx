@@ -378,6 +378,40 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     // Mixed: one is fraction, other is decimal
     if (uFrac !== null && isPureNumber(c) && Math.abs(uFrac - parseFloat(c)) < 1e-9) return true;
     if (cFrac !== null && isPureNumber(u) && Math.abs(parseFloat(u) - cFrac) < 1e-9) return true;
+    // Commutative addition: accept terms in any order (e.g. a+b == b+a, 2x+2+12x-5x == 12x-5x+2x+2)
+    const splitAdditiveTerms = (s: string): string[] | null => {
+      const terms: string[] = [];
+      let depth = 0;
+      let cur = '';
+      let sign = '+';
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        if (depth === 0 && (ch === '+' || ch === '-') && i > 0) {
+          if (cur) terms.push(sign + cur);
+          sign = ch;
+          cur = '';
+          continue;
+        }
+        cur += ch;
+      }
+      if (cur) terms.push(sign + cur);
+      // Only meaningful if there are 2+ top-level additive terms
+      return terms.length >= 2 ? terms : null;
+    };
+    const uTerms = splitAdditiveTerms(u);
+    const cTerms = splitAdditiveTerms(c);
+    if (uTerms && cTerms && uTerms.length === cTerms.length) {
+      const used = new Array(cTerms.length).fill(false);
+      const allMatch = uTerms.every((ut) => {
+        const idx = cTerms.findIndex((ct, i) => !used[i] && ct === ut);
+        if (idx === -1) return false;
+        used[idx] = true;
+        return true;
+      });
+      if (allMatch) return true;
+    }
     return false;
   };
 

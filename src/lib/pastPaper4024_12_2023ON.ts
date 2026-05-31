@@ -767,13 +767,13 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
   // ========== Question 23 ==========
   'pp_4024_on23_12_q23': {
     id: 'pp_4024_on23_12_q23', questionNumber: '23', title: 'Venn diagram',
-    question: 'A shop sells hats (H), scarves (S), gloves (G). 40 people surveyed.\n(a) 2 buy all three. Those buying hat and scarf also buy gloves. 4 buy exactly two items. Complete the Venn diagram.\n(b) Find n(S ∩ (H ∪ G)′).',
+    question: 'A shop sells hats (H), scarves (S) and gloves (G). A group of 40 people are asked which items they buy in the shop. Some of the results are shown in the Venn diagram.\n(a) 2 people buy all three items. Everyone who buys a hat and a scarf also buys gloves. A total of 4 people buy exactly two items. Complete the Venn diagram by filling in the empty regions.\n(b) Find n(S ∩ (H ∪ G)′).',
     marks: 3,
-    hints: ['(a) H∩S∩G = 2, H∩S only = 0, exactly two = 4 means H∩G only + S∩G only = 4', '(b) S only = people in S but not H or G = 10'],
+    hints: ['(a) H∩S∩G = 2; since H∩S ⊂ G, H∩S only = 0; exactly two ⇒ H∩G only + S∩G only = 4', '(b) S only = people in S but not H or G = 10'],
     type: 'multi-part',
     parts: [{ label: '(a) Venn diagram', key: 'a', marks: 2 }, { label: '(b) n(S ∩ (H∪G)′)', key: 'b', marks: 1 }],
-    answer: { a: 'Completed correctly', b: '10' },
-    markingCriteria: { a: 'B2 for a correctly completed Venn diagram (H∩S∩G = 2, H∩S only = 0, H∩G only and S∩G only sum to 4 with H∩G only = 0 and S∩G only = 4 from the given clues, H only = 3, S only = 10, G only = 5, outside = 16). B1 for at least 2 region values correct in the correct position.', b: 'B1 cao for n(S ∩ (H ∪ G)′) = 10 (S only).' }
+    answer: { a: 'Completed correctly', a_hsg: '2', a_hg: '0', a_sg: '4', a_g: '16', b: '10' },
+    markingCriteria: { a: 'B2 for all four empty regions correct: H∩S∩G = 2, H∩G only = 0, S∩G only = 4, G only = 16. B1 for any two correct.', b: 'B1 cao for n(S ∩ (H ∪ G)′) = 10 (S only).' }
   },
 
   // ========== Question 24 ==========

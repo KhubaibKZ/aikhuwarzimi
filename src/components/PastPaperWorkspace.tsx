@@ -611,7 +611,18 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       question.parts.forEach(part => {
         // Diagram-scored parts: handled after the loop using diagramScores state
         if ((part as any).diagramScored) {
-          const ds = diagramScores[part.key];
+          let ds = diagramScores[part.key];
+          if (!ds && question.id === 'pp_4024_on23_12_q23' && part.key === 'a') {
+            const expected: Record<string,string> = { a_hs:'0', a_hsg:'2', a_sg:'4', a_g:'16' };
+            let correct = 0;
+            Object.entries(expected).forEach(([k,v]) => {
+              const u = (currentAnswers[k] || '').trim();
+              if (u === v) { newFeedback[k] = 'correct'; correct++; }
+              else newFeedback[k] = u ? 'incorrect' : null;
+            });
+            const marks = correct === 4 ? 2 : correct >= 2 ? 1 : 0;
+            ds = { marks, note: `${correct}/4 regions correct` };
+          }
           const earned = ds?.marks ?? 0;
           marksEarned[part.key] = earned;
           if (ds?.note) markingNotes[part.key] = ds.note;

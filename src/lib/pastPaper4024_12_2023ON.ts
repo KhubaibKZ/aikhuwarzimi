@@ -645,11 +645,8 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['a', 'b'],
     equationStagesMap: {
       'a': [
-        { label: 'Group terms', stepKey: 's1', elements: [
-          { type: 'box', key: 's1_a', width: 'w-20' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-20' }
-        ]},
-        { label: 'Factor out', stepKey: 's2', elements: [
-          { type: 'text', value: '= (' }, { type: 'box', key: 's2_a', width: 'w-14' }, { type: 'text', value: ')(' }, { type: 'box', key: 's2_b', width: 'w-14' }, { type: 'text', value: ')' }
+        { label: 'Working', stepKey: 's1', elements: [
+          { type: 'box', key: 's1_work', width: 'w-full' }
         ]}
       ],
       'b': [

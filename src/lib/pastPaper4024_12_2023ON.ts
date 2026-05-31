@@ -661,8 +661,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: '(a) Factorised', key: 'a', marks: 2 }, { label: '(b) Factorised', key: 'b', marks: 2 }],
     answer: {
       a: '(c-3)(2d+e)', b: '3(v+3t)(v-3t)',
-      a_s1_a: 'c(2d+e)', a_s1_b: '3(2d+e)',
-      a_s2_a: 'c−3', a_s2_b: '2d+e',
+      a_s1_work: 'c(2d+e) − 3(2d+e)',
       b_s1_a: '3', b_s1_b: 'v²−9t²',
       b_s2_a: '3', b_s2_b: 'v+3t', b_s2_c: 'v−3t'
     },

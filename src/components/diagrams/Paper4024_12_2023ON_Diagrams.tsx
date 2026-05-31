@@ -458,29 +458,12 @@ export function VennHSG_4024_12_2023ON({
 }
 
 // ───────────────────────────── Q24: Triangle OAB with point P ─────────────────────────────
+import q24TriangleImg from '@/assets/pp_4024_on23_12_q24_triangle.png';
 export function TriangleOAB_4024_12_2023ON() {
-  const O = { x: 40, y: 200 };
-  const A = { x: 240, y: 200 };
-  const B = { x: 140, y: 40 };
-  // P on AB with AP:PB = 2:3 → P = A + (2/5)(B-A)
-  const P = { x: A.x + (2 / 5) * (B.x - A.x), y: A.y + (2 / 5) * (B.y - A.y) };
   return (
-    <svg viewBox="0 0 280 240" className="w-full max-w-md mx-auto">
-      <line x1={O.x} y1={O.y} x2={A.x} y2={A.y} stroke={fg} strokeWidth={1.6} />
-      <line x1={O.x} y1={O.y} x2={B.x} y2={B.y} stroke={fg} strokeWidth={1.6} />
-      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={fg} strokeWidth={1.6} />
-      <line x1={O.x} y1={O.y} x2={P.x} y2={P.y} stroke={pr} strokeWidth={1.4} strokeDasharray="4 3" />
-      <circle cx={O.x} cy={O.y} r={3} fill={fg} />
-      <circle cx={A.x} cy={A.y} r={3} fill={fg} />
-      <circle cx={B.x} cy={B.y} r={3} fill={fg} />
-      <circle cx={P.x} cy={P.y} r={3} fill={pr} />
-      <text x={O.x - 14} y={O.y + 6} fontSize={13} fill={fg} fontWeight="bold">O</text>
-      <text x={A.x + 6} y={A.y + 6} fontSize={13} fill={fg} fontWeight="bold">A</text>
-      <text x={B.x - 4} y={B.y - 6} fontSize={13} fill={fg} fontWeight="bold">B</text>
-      <text x={P.x + 6} y={P.y} fontSize={12} fill={pr} fontWeight="bold">P</text>
-      <text x={(O.x + A.x) / 2} y={A.y + 16} fontSize={10} fill={mu} textAnchor="middle">4a</text>
-      <text x={(O.x + P.x) / 2 - 8} y={(O.y + P.y) / 2} fontSize={10} fill={pr}>3a + 2b</text>
-      <text x={(A.x + B.x) / 2 + 6} y={(A.y + B.y) / 2} fontSize={10} fill={mu}>AP:PB = 2:3</text>
-    </svg>
+    <div className="w-full max-w-md mx-auto bg-white rounded-md p-2">
+      <img src={q24TriangleImg} alt="Triangle OAB with point P, OA = 4a and OP = 3a + 2b" className="w-full h-auto" />
+    </div>
   );
 }
+

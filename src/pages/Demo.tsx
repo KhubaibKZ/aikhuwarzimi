@@ -12,8 +12,9 @@ import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
 
-const PAPER_ID = 'pp_4024_on23_11';
+const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';
+const PAPER_KEY = 'demo_paper_id_v1';
 const NAME_KEY = 'demo_visitor_name';
 
 

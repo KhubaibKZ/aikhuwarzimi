@@ -284,7 +284,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
               <p className="text-[10px] text-muted-foreground">{marksObtained}/{totalMarks} marks</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">TDI</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence Index</p>
               <p className={`text-lg font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
               <p className="text-[10px] text-muted-foreground">{totalHints} hints · {totalCheckWork} checkwork</p>
             </div>

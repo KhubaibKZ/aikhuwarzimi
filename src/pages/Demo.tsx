@@ -121,7 +121,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <img src={logoImg} alt="AI Khuwarizmi" className="h-10 w-10 rounded-xl object-contain" />
             <div>
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
-              <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
+              <p className="text-xs text-muted-foreground">Cambridge O Level {paper.code} — {paper.session} {paper.year}</p>
             </div>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo
@@ -130,6 +130,23 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
+          <div className="flex items-center gap-2">
+            {DEMO_PAPER_IDS.map(pid => {
+              const p = pastPapers.find(pp => pp.id === pid);
+              if (!p) return null;
+              const active = pid === paperId;
+              return (
+                <Button
+                  key={pid}
+                  size="sm"
+                  variant={active ? 'default' : 'outline'}
+                  onClick={() => { setPaperId(pid); setOpenQid(null); }}
+                >
+                  {p.code}
+                </Button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
@@ -137,8 +154,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full max-w-2xl grid-cols-3">
             <TabsTrigger value="paper" className="gap-2"><FileText className="h-4 w-4" />Paper</TabsTrigger>
-            <TabsTrigger value="learning" className="gap-2"><BarChart3 className="h-4 w-4" />Learning Analytics</TabsTrigger>
-            <TabsTrigger value="demo" className="gap-2"><Sparkles className="h-4 w-4" />Demo Analytics</TabsTrigger>
+            <TabsTrigger value="learning" className="gap-2"><BarChart3 className="h-4 w-4" />Student Analytics</TabsTrigger>
+            <TabsTrigger value="demo" className="gap-2"><Sparkles className="h-4 w-4" />Student Demo Analytics</TabsTrigger>
           </TabsList>
 
           {/* ─── Paper tab ─── */}

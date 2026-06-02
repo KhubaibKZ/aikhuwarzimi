@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, RotateCcw, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, RotateCcw, Moon, Sun, Target } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';

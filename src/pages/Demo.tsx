@@ -90,7 +90,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const totalTime = Object.values(progress).reduce((s, r) => s + r.timeSpentSeconds, 0);
   const totalAi = Object.values(progress).reduce((s, r) => s + r.aiUsageCount, 0);
   const totalCheckwork = Object.values(progress).reduce((s, r) => s + (r.checkworkCount || 0), 0);
-  const aiIndependence = independenceFromUsage(totalAi, totalCheckwork, solvedQs);
   const aiTdi = computeTDI(totalAi, totalCheckwork, solvedQs);
 
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;

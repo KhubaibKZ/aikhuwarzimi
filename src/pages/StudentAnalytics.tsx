@@ -24,7 +24,7 @@ import {
 } from '@/lib/analyticsData';
 import { PaperFilter } from '@/components/PaperFilter';
 import { demoPaperResults, demoTopicMastery, demoRows_, demoPapers_, demoTopicMap_, demoFullTopicMap_ } from '@/lib/demoAnalyticsData';
-import { independenceFromUsage, computeTDI } from '@/lib/aiDependenceIndex';
+import { independenceFromUsage, computeTDI, tdiStatus, tdiToneClass } from '@/lib/aiDependenceIndex';
 
 const masteryColorMap = {
   green: 'hsl(142, 76%, 36%)',
@@ -285,9 +285,9 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
               <p className="text-[10px] text-muted-foreground">{marksObtained}/{totalMarks} marks</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence Index</p>
-              <p className={`text-lg font-bold ${aiTdi < 0.3 ? 'text-success' : aiTdi < 0.7 ? 'text-warning' : 'text-destructive'}`}>{aiTdi.toFixed(3)}</p>
-              <p className="text-[10px] text-muted-foreground">{totalHints} hints · {totalCheckWork} checkwork</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Dependence Index</p>
+              <p className={`text-lg font-bold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{aiTdi.toFixed(3)}</p>
+              <p className={`text-[10px] font-semibold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{tdiStatus(aiTdi).emoji} {tdiStatus(aiTdi).label}</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Avg Time</p>
@@ -525,9 +525,10 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                   {/* AI Independence Index */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
-                      <img src={iconBrain} alt="AI Independence Index" className="h-10 w-10 object-contain" loading="lazy" />
-                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence Index</p>
-                      <p className={`text-xl font-bold ${aiTdi < 0.3 ? 'text-success' : aiTdi < 0.7 ? 'text-warning' : 'text-destructive'}`}>{aiTdi.toFixed(3)}</p>
+                      <img src={iconBrain} alt="AI Dependence Index" className="h-10 w-10 object-contain" loading="lazy" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Dependence Index</p>
+                      <p className={`text-xl font-bold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{aiTdi.toFixed(3)}</p>
+                      <p className={`text-[10px] font-semibold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{tdiStatus(aiTdi).emoji} {tdiStatus(aiTdi).label}</p>
                       <div className="flex gap-3 text-xs">
                         <div className="flex flex-col items-center">
                           <span className="text-sm font-bold text-foreground">{totalHints}</span>

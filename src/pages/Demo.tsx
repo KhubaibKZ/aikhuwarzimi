@@ -1,17 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import logoImg from '@/assets/logo.png';
+import iconProgress from '@/assets/icon-progress.png';
+import iconMarks from '@/assets/icon-marks.png';
+import iconBrain from '@/assets/icon-brain.png';
+import iconTimer from '@/assets/icon-timer.png';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, RotateCcw, Moon, Sun } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
-import { independenceFromUsage, computeTDI, tdiStatus } from '@/lib/aiDependenceIndex';
+import { computeTDI, tdiStatus, tdiToneClass } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';

@@ -1,17 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import logoImg from '@/assets/logo.png';
+import iconProgress from '@/assets/icon-progress.png';
+import iconMarks from '@/assets/icon-marks.png';
+import iconBrain from '@/assets/icon-brain.png';
+import iconTimer from '@/assets/icon-timer.png';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, Clock, Target, Brain, Award, RotateCcw, Moon, Sun } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, RotateCcw, Moon, Sun, Target } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
-import { independenceFromUsage, computeTDI, tdiStatus } from '@/lib/aiDependenceIndex';
+import { computeTDI, tdiStatus, tdiToneClass } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';
@@ -86,7 +90,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const totalTime = Object.values(progress).reduce((s, r) => s + r.timeSpentSeconds, 0);
   const totalAi = Object.values(progress).reduce((s, r) => s + r.aiUsageCount, 0);
   const totalCheckwork = Object.values(progress).reduce((s, r) => s + (r.checkworkCount || 0), 0);
-  const aiIndependence = independenceFromUsage(totalAi, totalCheckwork, solvedQs);
   const aiTdi = computeTDI(totalAi, totalCheckwork, solvedQs);
 
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
@@ -133,23 +136,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
-          <div className="flex items-center gap-2">
-            {DEMO_PAPER_IDS.map(pid => {
-              const p = pastPapers.find(pp => pp.id === pid);
-              if (!p) return null;
-              const active = pid === paperId;
-              return (
-                <Button
-                  key={pid}
-                  size="sm"
-                  variant={active ? 'default' : 'outline'}
-                  onClick={() => { setPaperId(pid); setOpenQid(null); }}
-                >
-                  {p.code}
-                </Button>
-              );
-            })}
-          </div>
         </div>
       </header>
 
@@ -163,6 +149,26 @@ function DemoInner({ visitorName }: { visitorName: string }) {
 
           {/* ─── Paper tab ─── */}
           <TabsContent value="paper" className="mt-6">
+            {/* Paper toggle inside Paper tab */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mr-1">Paper:</span>
+              {DEMO_PAPER_IDS.map(pid => {
+                const p = pastPapers.find(pp => pp.id === pid);
+                if (!p) return null;
+                const active = pid === paperId;
+                return (
+                  <Button
+                    key={pid}
+                    size="sm"
+                    variant={active ? 'default' : 'outline'}
+                    onClick={() => { setPaperId(pid); setOpenQid(null); }}
+                  >
+                    {p.code}
+                  </Button>
+                );
+              })}
+            </div>
+
             <Card className="mb-6">
               <CardContent className="pt-6 pb-5">
                 <div className="flex items-center justify-between mb-3">
@@ -219,13 +225,66 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             )}
           </TabsContent>
 
-          {/* ─── Learning Analytics (live from working) ─── */}
+          {/* ─── Learning Analytics (live from working) — mirrors Student Demo Analytics interface ─── */}
           <TabsContent value="learning" className="mt-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-              <StatCard icon={<Target className="h-5 w-5" />} label="Progress" value={`${completionPct}%`} sub={`${solvedQs}/${totalQs} questions`} />
-              <StatCard icon={<Award className="h-5 w-5" />} label="Marks" value={`${marksObtained}/${totalMarks}`} sub={`${accuracyPct}% accuracy on solved`} />
-              <StatCard icon={<Brain className="h-5 w-5" />} label="AI Dependence Index" value={aiTdi.toFixed(3)} sub={`${tdiStatus(aiTdi).emoji} ${tdiStatus(aiTdi).label} · ${totalAi}H · ${totalCheckwork}CW`} />
-              <StatCard icon={<Clock className="h-5 w-5" />} label="Time on Paper" value={fmtTime(totalTime)} sub={`avg ${solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question`} />
+            <h2 className="text-sm font-bold text-foreground mb-4 flex items-center justify-center gap-2 uppercase tracking-widest">
+              <Target className="h-4 w-4 text-primary" />
+              OVERALL MASTERY
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+              {/* Progress */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                  <img src={iconProgress} alt="Progress" className="h-10 w-10 object-contain" loading="lazy" />
+                  <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Progress</p>
+                  <div className="w-full">
+                    <Progress value={completionPct} className="h-2.5 mb-1" />
+                    <p className="text-xs text-muted-foreground">{solvedQs}/{totalQs} Questions</p>
+                  </div>
+                  <p className={`text-xl font-bold ${completionPct > 80 ? 'text-success' : completionPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{completionPct}%</p>
+                </CardContent>
+              </Card>
+
+              {/* Marks Obtained */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                  <img src={iconMarks} alt="Marks" className="h-10 w-10 object-contain" loading="lazy" />
+                  <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Marks Obtained</p>
+                  <p className={`text-xl font-bold ${accuracyPct > 80 ? 'text-success' : accuracyPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{marksObtained}/{totalMarks}</p>
+                  <p className="text-[10px] text-muted-foreground">{accuracyPct}% accuracy on solved</p>
+                </CardContent>
+              </Card>
+
+              {/* AI Dependence Index */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
+                  <img src={iconBrain} alt="AI Dependence Index" className="h-10 w-10 object-contain" loading="lazy" />
+                  <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Dependence Index</p>
+                  <p className={`text-xl font-bold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{aiTdi.toFixed(3)}</p>
+                  <p className={`text-[10px] font-semibold ${tdiToneClass(tdiStatus(aiTdi).tone)}`}>{tdiStatus(aiTdi).emoji} {tdiStatus(aiTdi).label}</p>
+                  <div className="flex gap-3 text-xs">
+                    <div className="flex flex-col items-center">
+                      <span className="text-sm font-bold text-foreground">{totalAi}</span>
+                      <span className="text-[10px] text-muted-foreground">Hints</span>
+                    </div>
+                    <div className="w-px bg-border" />
+                    <div className="flex flex-col items-center">
+                      <span className="text-sm font-bold text-foreground">{totalCheckwork}</span>
+                      <span className="text-[10px] text-muted-foreground">Check Work</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Time Taken */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 flex flex-col items-center text-center gap-2">
+                  <img src={iconTimer} alt="Time Taken" className="h-10 w-10 object-contain" loading="lazy" />
+                  <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">Time Taken</p>
+                  <p className="text-xl font-bold text-foreground">{fmtTime(totalTime)}</p>
+                  <p className="text-[10px] text-muted-foreground">avg {solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question</p>
+                </CardContent>
+              </Card>
             </div>
 
             <Card>

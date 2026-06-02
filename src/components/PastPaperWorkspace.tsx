@@ -79,6 +79,7 @@ export interface SubmitProgressPayload {
   accuracyScore: number;
   speedScore: number;
   aiUsageCount: number;
+  checkworkCount: number;
   timeSpentSeconds: number;
   totalSteps: number;
   completedSteps: number;
@@ -1920,6 +1921,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         accuracyScore,
         speedScore,
         aiUsageCount: aiUsageRef.current,
+        checkworkCount: checkworkUsageRef.current,
         timeSpentSeconds: timeSpent,
         totalSteps: totalCount,
         completedSteps: correctCount,

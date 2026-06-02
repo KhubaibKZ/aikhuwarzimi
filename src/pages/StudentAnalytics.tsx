@@ -191,6 +191,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
   const totalCheckWork = topicRows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
   const aiIndependence = independenceFromUsage(totalHints, totalCheckWork, topicRows.length);
+  const aiTdi = computeTDI(totalHints, totalCheckWork, topicRows.length);
 
   const totalTime = topicRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
   const avgTime = completedQs > 0 ? totalTime / completedQs : 0;
@@ -285,7 +286,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">AI Independence Index</p>
-              <p className={`text-lg font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
+              <p className={`text-lg font-bold ${aiTdi < 0.3 ? 'text-success' : aiTdi < 0.7 ? 'text-warning' : 'text-destructive'}`}>{aiTdi.toFixed(3)}</p>
               <p className="text-[10px] text-muted-foreground">{totalHints} hints · {totalCheckWork} checkwork</p>
             </div>
             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
@@ -483,6 +484,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
               const totalHints = rows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
               const totalCheckWork = rows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
               const aiIndependence = independenceFromUsage(totalHints, totalCheckWork, rows.length);
+              const aiTdi = computeTDI(totalHints, totalCheckWork, rows.length);
 
               // Time Taken: total seconds
               const totalTime = rows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
@@ -525,7 +527,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
                       <img src={iconBrain} alt="AI Independence Index" className="h-10 w-10 object-contain" loading="lazy" />
                       <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence Index</p>
-                      <p className={`text-xl font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
+                      <p className={`text-xl font-bold ${aiTdi < 0.3 ? 'text-success' : aiTdi < 0.7 ? 'text-warning' : 'text-destructive'}`}>{aiTdi.toFixed(3)}</p>
                       <div className="flex gap-3 text-xs">
                         <div className="flex flex-col items-center">
                           <span className="text-sm font-bold text-foreground">{totalHints}</span>

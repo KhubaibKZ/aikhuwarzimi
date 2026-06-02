@@ -11,6 +11,7 @@ import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/Pas
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
+import { independenceFromUsage } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';
@@ -84,7 +85,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const accuracyPct = marksAvailableSolved > 0 ? Math.round((marksObtained / marksAvailableSolved) * 100) : 0;
   const totalTime = Object.values(progress).reduce((s, r) => s + r.timeSpentSeconds, 0);
   const totalAi = Object.values(progress).reduce((s, r) => s + r.aiUsageCount, 0);
-  const aiIndependence = Math.max(0, Math.round(100 - totalAi * 5));
+  const totalCheckwork = Object.values(progress).reduce((s, r) => s + (r.checkworkCount || 0), 0);
+  const aiIndependence = independenceFromUsage(totalAi, totalCheckwork, solvedQs);
 
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 

@@ -189,8 +189,7 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
 
   const totalHints = topicRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
   const totalCheckWork = topicRows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
-  const totalAiActions = totalHints + totalCheckWork;
-  const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
+  const aiIndependence = independenceFromUsage(totalHints, totalCheckWork, topicRows.length);
 
   const totalTime = topicRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
   const avgTime = completedQs > 0 ? totalTime / completedQs : 0;

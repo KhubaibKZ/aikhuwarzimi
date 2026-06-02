@@ -482,8 +482,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
               // AI Dependence: count hints & checkwork used
               const totalHints = rows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
               const totalCheckWork = rows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
-              const totalAiActions = totalHints + totalCheckWork;
-              const aiIndependence = Math.max(0, Math.round((100 - totalAiActions * 0.1) * 10) / 10);
+              const aiIndependence = independenceFromUsage(totalHints, totalCheckWork, rows.length);
 
               // Time Taken: total seconds
               const totalTime = rows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);

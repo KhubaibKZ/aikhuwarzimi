@@ -520,11 +520,11 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                     </CardContent>
                   </Card>
 
-                  {/* TDI */}
+                  {/* AI Independence Index */}
                   <Card className="bg-card border-border">
                     <CardContent className="p-4 flex flex-col items-center text-center gap-1.5">
-                      <img src={iconBrain} alt="TDI" className="h-10 w-10 object-contain" loading="lazy" />
-                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">TDI</p>
+                      <img src={iconBrain} alt="AI Independence Index" className="h-10 w-10 object-contain" loading="lazy" />
+                      <p className="text-[11px] font-semibold text-foreground uppercase tracking-wide">AI Independence Index</p>
                       <p className={`text-xl font-bold ${aiIndependence > 80 ? 'text-success' : aiIndependence >= 50 ? 'text-warning' : 'text-destructive'}`}>{aiIndependence}%</p>
                       <div className="flex gap-3 text-xs">
                         <div className="flex flex-col items-center">

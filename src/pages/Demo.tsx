@@ -135,24 +135,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            {DEMO_PAPER_IDS.map(pid => {
-              const p = pastPapers.find(pp => pp.id === pid);
-              if (!p) return null;
-              const active = pid === paperId;
-              return (
-                <Button
-                  key={pid}
-                  size="sm"
-                  variant={active ? 'default' : 'outline'}
-                  onClick={() => { setPaperId(pid); setOpenQid(null); }}
-                >
-                  {p.code}
-                </Button>
-              );
-            })}
-          </div>
         </div>
       </header>
 

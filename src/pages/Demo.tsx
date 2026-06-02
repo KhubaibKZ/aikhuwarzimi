@@ -11,7 +11,7 @@ import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/Pas
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
-import { independenceFromUsage } from '@/lib/aiDependenceIndex';
+import { independenceFromUsage, computeTDI } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';
@@ -87,6 +87,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const totalAi = Object.values(progress).reduce((s, r) => s + r.aiUsageCount, 0);
   const totalCheckwork = Object.values(progress).reduce((s, r) => s + (r.checkworkCount || 0), 0);
   const aiIndependence = independenceFromUsage(totalAi, totalCheckwork, solvedQs);
+  const aiTdi = computeTDI(totalAi, totalCheckwork, solvedQs);
 
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
@@ -223,7 +224,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
               <StatCard icon={<Target className="h-5 w-5" />} label="Progress" value={`${completionPct}%`} sub={`${solvedQs}/${totalQs} questions`} />
               <StatCard icon={<Award className="h-5 w-5" />} label="Marks" value={`${marksObtained}/${totalMarks}`} sub={`${accuracyPct}% accuracy on solved`} />
-              <StatCard icon={<Brain className="h-5 w-5" />} label="AI Independence Index" value={`${aiIndependence}%`} sub={`${totalAi} hints · ${totalCheckwork} check-work`} />
+              <StatCard icon={<Brain className="h-5 w-5" />} label="AI Independence Index" value={aiTdi.toFixed(3)} sub={`${totalAi} hints · ${totalCheckwork} check-work`} />
               <StatCard icon={<Clock className="h-5 w-5" />} label="Time on Paper" value={fmtTime(totalTime)} sub={`avg ${solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question`} />
             </div>
 

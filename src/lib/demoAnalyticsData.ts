@@ -2,6 +2,7 @@
 // Shows realistic mock data for 10 papers across 4 years (2021-2024)
 
 import type { PastPaperResult, TopicMastery, PaperScore } from './analyticsData';
+import { independenceFromUsage } from './aiDependenceIndex';
 import { olevelMathsSyllabus } from './olevelSyllabusData';
 
 // ── Demo Progress Rows (simulating student_paper_progress rows) ──
@@ -209,8 +210,9 @@ export const demoTopicMastery: TopicMastery[] = (() => {
       const marksObt = qs.reduce((s, q) => s + q.marks_obtained, 0);
       const avgAcc = totalMarks > 0 ? Math.round((marksObt / totalMarks) * 100) : 0;
       
-      const totalAiActions = qs.reduce((s, q) => s + q.ai_usage_count + q.checkwork_count, 0);
-      const independence = Math.round(Math.max(0, 100 - totalAiActions * 2));
+      const totalHints = qs.reduce((s, q) => s + q.ai_usage_count, 0);
+      const totalCheckwork = qs.reduce((s, q) => s + q.checkwork_count, 0);
+      const independence = independenceFromUsage(totalHints, totalCheckwork, qs.length);
       const avgTime = qs.reduce((s, q) => s + q.time_spent_seconds, 0) / qs.length;
       const speed = Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3)));
       paperScores.push({
@@ -228,8 +230,9 @@ export const demoTopicMastery: TopicMastery[] = (() => {
     const marksObt = allQs.reduce((s, q) => s + q.marks_obtained, 0);
     const avgAcc = totalMarks > 0 ? Math.round((marksObt / totalMarks) * 100) : 0;
     
-    const totalAiActions = allQs.reduce((s, q) => s + q.ai_usage_count + q.checkwork_count, 0);
-    const avgInd = Math.round(Math.max(0, 100 - totalAiActions * 2));
+    const totalHintsAll = allQs.reduce((s, q) => s + q.ai_usage_count, 0);
+    const totalCheckworkAll = allQs.reduce((s, q) => s + q.checkwork_count, 0);
+    const avgInd = independenceFromUsage(totalHintsAll, totalCheckworkAll, allQs.length);
     const avgTime = allQs.reduce((s, q) => s + q.time_spent_seconds, 0) / allQs.length;
     const avgSpeed = Math.round(Math.max(0, Math.min(100, 100 - (avgTime - 60) / 3)));
 

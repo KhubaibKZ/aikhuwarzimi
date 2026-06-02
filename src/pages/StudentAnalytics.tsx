@@ -24,7 +24,7 @@ import {
 } from '@/lib/analyticsData';
 import { PaperFilter } from '@/components/PaperFilter';
 import { demoPaperResults, demoTopicMastery, demoRows_, demoPapers_, demoTopicMap_, demoFullTopicMap_ } from '@/lib/demoAnalyticsData';
-import { independenceFromUsage } from '@/lib/aiDependenceIndex';
+import { independenceFromUsage, computeTDI } from '@/lib/aiDependenceIndex';
 
 const masteryColorMap = {
   green: 'hsl(142, 76%, 36%)',

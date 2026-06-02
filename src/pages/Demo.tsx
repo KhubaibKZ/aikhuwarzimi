@@ -223,7 +223,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
               <StatCard icon={<Target className="h-5 w-5" />} label="Progress" value={`${completionPct}%`} sub={`${solvedQs}/${totalQs} questions`} />
               <StatCard icon={<Award className="h-5 w-5" />} label="Marks" value={`${marksObtained}/${totalMarks}`} sub={`${accuracyPct}% accuracy on solved`} />
-              <StatCard icon={<Brain className="h-5 w-5" />} label="AI Independence" value={`${aiIndependence}%`} sub={`${totalAi} AI hints used`} />
+              <StatCard icon={<Brain className="h-5 w-5" />} label="AI Independence" value={`${aiIndependence}%`} sub={`${totalAi} hints · ${totalCheckwork} check-work (TDI)`} />
               <StatCard icon={<Clock className="h-5 w-5" />} label="Time on Paper" value={fmtTime(totalTime)} sub={`avg ${solvedQs ? fmtTime(totalTime / solvedQs) : '—'} / question`} />
             </div>
 

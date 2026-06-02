@@ -89,14 +89,15 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
   const handleSubmitProgress = (payload: SubmitProgressPayload) => {
-    setProgress(prev => ({ ...prev, [payload.questionId]: payload }));
+    setProgressByPaper(prev => ({
+      ...prev,
+      [paperId]: { ...(prev[paperId] || {}), [payload.questionId]: payload },
+    }));
   };
 
   const resetAll = () => {
-    if (confirm('Reset all demo progress?')) {
-      sessionStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(STORAGE_KEY);
-      setProgress({});
+    if (confirm('Reset progress for this paper?')) {
+      setProgressByPaper(prev => ({ ...prev, [paperId]: {} }));
     }
   };
 

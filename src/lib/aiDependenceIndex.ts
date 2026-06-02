@@ -26,3 +26,28 @@ export function tdiToIndependence(tdi: number): number {
 export function independenceFromUsage(hints: number, checkworks: number, questions: number): number {
   return tdiToIndependence(computeTDI(hints, checkworks, questions));
 }
+
+export type TDIStatus = {
+  label: string;
+  emoji: string;
+  tone: 'success' | 'good' | 'warning' | 'orange' | 'destructive';
+};
+
+export function tdiStatus(tdi: number): TDIStatus {
+  if (tdi <= 0) return { label: 'Absolute Autonomy', emoji: '🌟', tone: 'success' };
+  if (tdi <= 0.5) return { label: 'Highly Autonomous', emoji: '🟢', tone: 'good' };
+  if (tdi <= 1.2) return { label: 'Moderately Supported', emoji: '🟡', tone: 'warning' };
+  if (tdi <= 2.0) return { label: 'Heavily Dependent', emoji: '🟠', tone: 'orange' };
+  return { label: 'Critical Over-Use', emoji: '🔴', tone: 'destructive' };
+}
+
+export function tdiToneClass(tone: TDIStatus['tone']): string {
+  switch (tone) {
+    case 'success': return 'text-success';
+    case 'good': return 'text-success';
+    case 'warning': return 'text-warning';
+    case 'orange': return 'text-orange-500';
+    case 'destructive': return 'text-destructive';
+  }
+}
+

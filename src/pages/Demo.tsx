@@ -12,8 +12,9 @@ import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useUsageTracker } from '@/hooks/useUsageTracker';
 import StudentAnalytics from './StudentAnalytics';
 
-const PAPER_ID = 'pp_4024_on23_11';
+const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
 const STORAGE_KEY = 'demo_progress_v1';
+const PAPER_KEY = 'demo_paper_id_v1';
 const NAME_KEY = 'demo_visitor_name';
 
 
@@ -40,8 +41,24 @@ function fmtTime(secs: number) {
 }
 
 function DemoInner({ visitorName }: { visitorName: string }) {
-  const paper = pastPapers.find(p => p.id === PAPER_ID);
-  const [progress, setProgress] = useState<Record<string, DemoRecord>>(loadProgress());
+  const [paperId, setPaperId] = useState<string>(() => {
+    const saved = sessionStorage.getItem(PAPER_KEY);
+    return saved && (DEMO_PAPER_IDS as readonly string[]).includes(saved) ? saved : DEMO_PAPER_IDS[0];
+  });
+  const paper = pastPapers.find(p => p.id === paperId);
+  const [progressByPaper, setProgressByPaper] = useState<Record<string, Record<string, DemoRecord>>>(() => {
+    const legacy = loadProgress();
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      // Migrate legacy flat shape into per-paper shape under first paper
+      if (parsed && !parsed[DEMO_PAPER_IDS[0]] && Object.keys(legacy).length) {
+        return { [DEMO_PAPER_IDS[0]]: legacy };
+      }
+      return parsed;
+    } catch { return {}; }
+  });
+  const progress = progressByPaper[paperId] || {};
   const [openQid, setOpenQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
@@ -50,7 +67,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   // Track this demo visit (who, when, how long).
   useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
 
-  useEffect(() => { saveProgress(progress); }, [progress]);
+  useEffect(() => { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progressByPaper)); }, [progressByPaper]);
+  useEffect(() => { sessionStorage.setItem(PAPER_KEY, paperId); }, [paperId]);
 
   if (!paper) return <div className="p-8">Paper not found.</div>;
 
@@ -71,14 +89,15 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   const currentQuestion = openQid ? getPastPaperQuestion(openQid) : null;
 
   const handleSubmitProgress = (payload: SubmitProgressPayload) => {
-    setProgress(prev => ({ ...prev, [payload.questionId]: payload }));
+    setProgressByPaper(prev => ({
+      ...prev,
+      [paperId]: { ...(prev[paperId] || {}), [payload.questionId]: payload },
+    }));
   };
 
   const resetAll = () => {
-    if (confirm('Reset all demo progress?')) {
-      sessionStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(STORAGE_KEY);
-      setProgress({});
+    if (confirm('Reset progress for this paper?')) {
+      setProgressByPaper(prev => ({ ...prev, [paperId]: {} }));
     }
   };
 
@@ -102,7 +121,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <img src={logoImg} alt="AI Khuwarizmi" className="h-10 w-10 rounded-xl object-contain" />
             <div>
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
-              <p className="text-xs text-muted-foreground">Cambridge O Level 4024/11 — Oct/Nov 2023</p>
+              <p className="text-xs text-muted-foreground">Cambridge O Level {paper.code} — {paper.session} {paper.year}</p>
             </div>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo
@@ -111,6 +130,23 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
+          <div className="flex items-center gap-2">
+            {DEMO_PAPER_IDS.map(pid => {
+              const p = pastPapers.find(pp => pp.id === pid);
+              if (!p) return null;
+              const active = pid === paperId;
+              return (
+                <Button
+                  key={pid}
+                  size="sm"
+                  variant={active ? 'default' : 'outline'}
+                  onClick={() => { setPaperId(pid); setOpenQid(null); }}
+                >
+                  {p.code}
+                </Button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
@@ -118,8 +154,8 @@ function DemoInner({ visitorName }: { visitorName: string }) {
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full max-w-2xl grid-cols-3">
             <TabsTrigger value="paper" className="gap-2"><FileText className="h-4 w-4" />Paper</TabsTrigger>
-            <TabsTrigger value="learning" className="gap-2"><BarChart3 className="h-4 w-4" />Learning Analytics</TabsTrigger>
-            <TabsTrigger value="demo" className="gap-2"><Sparkles className="h-4 w-4" />Demo Analytics</TabsTrigger>
+            <TabsTrigger value="learning" className="gap-2"><BarChart3 className="h-4 w-4" />Student Analytics</TabsTrigger>
+            <TabsTrigger value="demo" className="gap-2"><Sparkles className="h-4 w-4" />Student Demo Analytics</TabsTrigger>
           </TabsList>
 
           {/* ─── Paper tab ─── */}

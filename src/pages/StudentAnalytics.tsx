@@ -125,6 +125,14 @@ interface TopicRowProps {
 
 function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
   const [expanded, setExpanded] = useState(false);
+  const [expandedSubs, setExpandedSubs] = useState<Set<string>>(new Set());
+  const toggleSub = (key: string) => {
+    setExpandedSubs(prev => {
+      const n = new Set(prev);
+      if (n.has(key)) n.delete(key); else n.add(key);
+      return n;
+    });
+  };
   const hasData = (topic.completedQuestions || 0) > 0;
 
   const activeTopicMap = demoMode ? demoTopicMap_ : questionTopicMap;

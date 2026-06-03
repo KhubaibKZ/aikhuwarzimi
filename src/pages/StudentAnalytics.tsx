@@ -318,32 +318,39 @@ function TopicRow({ topic, index, rows, demoMode = false }: TopicRowProps) {
                 </tr>
               </thead>
               <tbody>
-                {subtopicGroups.map((group, gi) => (
-                  <Fragment key={`g-${gi}`}>
-                    <tr className="bg-primary/10 border-b border-border/50">
-                      <td colSpan={6} className="py-1.5 px-4">
-                        <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
-                          {group.code ? `${group.code} · ` : ''}{group.title}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground ml-2">
-                          {group.items.length} {group.items.length === 1 ? 'question' : 'questions'}
-                        </span>
-                      </td>
-                    </tr>
-                    {group.items.map((q, i) => (
-                      <tr key={`q-${i}`} className="border-b border-border/30">
-                        <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
-                        <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
-                        <td className="py-2 px-2 text-center">{q.marks}</td>
-                        <td className="py-2 px-2 text-center">
-                          <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                {subtopicGroups.map((group, gi) => {
+                  const key = group.code || group.title || `g-${gi}`;
+                  const isOpen = expandedSubs.has(key);
+                  return (
+                    <Fragment key={`g-${gi}`}>
+                      <tr className="bg-primary/10 border-b border-border/50 hover:bg-primary/20 cursor-pointer" onClick={() => toggleSub(key)}>
+                        <td colSpan={6} className="py-1.5 px-4">
+                          <div className="flex items-center gap-2">
+                            {isOpen ? <ChevronUp className="h-3.5 w-3.5 text-primary" /> : <ChevronDown className="h-3.5 w-3.5 text-primary" />}
+                            <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
+                              {group.code ? `${group.code} · ` : ''}{group.title}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground ml-1">
+                              {group.items.length} {group.items.length === 1 ? 'question' : 'questions'}
+                            </span>
+                          </div>
                         </td>
-                        <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
-                        <td className="py-2 px-2 text-center">{q.timeTaken}</td>
                       </tr>
-                    ))}
-                  </Fragment>
-                ))}
+                      {isOpen && group.items.map((q, i) => (
+                        <tr key={`q-${i}`} className="border-b border-border/30">
+                          <td className="py-2 px-4 font-medium text-foreground">{q.paper}</td>
+                          <td className="py-2 px-2 text-foreground">{q.questionNo}</td>
+                          <td className="py-2 px-2 text-center">{q.marks}</td>
+                          <td className="py-2 px-2 text-center">
+                            <span className={q.hintUsed === 'Yes' ? 'text-foreground font-medium' : 'text-muted-foreground'}>{q.hintUsed}</span>
+                          </td>
+                          <td className="py-2 px-2 text-center">{q.checkWorkUsed}</td>
+                          <td className="py-2 px-2 text-center">{q.timeTaken}</td>
+                        </tr>
+                      ))}
+                    </Fragment>
+                  );
+                })}
 
               </tbody>
             </table>

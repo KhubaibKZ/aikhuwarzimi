@@ -224,6 +224,7 @@ export type Database = {
           email: string | null
           id: string
           last_active_at: string
+          session_token: string | null
           started_at: string
           user_id: string | null
         }
@@ -235,6 +236,7 @@ export type Database = {
           email?: string | null
           id?: string
           last_active_at?: string
+          session_token?: string | null
           started_at?: string
           user_id?: string | null
         }
@@ -246,6 +248,7 @@ export type Database = {
           email?: string | null
           id?: string
           last_active_at?: string
+          session_token?: string | null
           started_at?: string
           user_id?: string | null
         }
@@ -288,6 +291,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      update_demo_session: {
+        Args: { _duration_seconds: number; _id: string; _token: string }
+        Returns: undefined
       }
     }
     Enums: {

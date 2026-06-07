@@ -25,6 +25,7 @@ export function useUsageTracker({
   email,
 }: UsageTrackerOptions) {
   const sessionIdRef = useRef<string | null>(null);
+  const tokenRef = useRef<string | null>(null);
   const startRef = useRef<number>(0);
 
   useEffect(() => {
@@ -33,9 +34,9 @@ export function useUsageTracker({
 
     const start = async () => {
       startRef.current = Date.now();
-      // Generate the id client-side so we don't need to read the row back
-      // (anon/demo visitors have no SELECT permission on usage_sessions).
       const id = crypto.randomUUID();
+      // Per-session secret used to prove ownership of demo rows on update.
+      const token = accountType === 'demo' ? crypto.randomUUID() + crypto.randomUUID() : null;
       const { error } = await supabase
         .from('usage_sessions')
         .insert({
@@ -45,20 +46,30 @@ export function useUsageTracker({
           display_name: displayName ?? null,
           email: email ?? null,
           duration_seconds: 0,
+          session_token: token,
         });
       if (!error && !cancelled) {
         sessionIdRef.current = id;
+        tokenRef.current = token;
       }
     };
-
 
     const beat = async () => {
       if (!sessionIdRef.current) return;
       const seconds = Math.floor((Date.now() - startRef.current) / 1000);
-      await supabase
-        .from('usage_sessions')
-        .update({ duration_seconds: seconds, last_active_at: new Date().toISOString() })
-        .eq('id', sessionIdRef.current);
+      if (accountType === 'demo') {
+        if (!tokenRef.current) return;
+        await supabase.rpc('update_demo_session', {
+          _id: sessionIdRef.current,
+          _token: tokenRef.current,
+          _duration_seconds: seconds,
+        });
+      } else {
+        await supabase
+          .from('usage_sessions')
+          .update({ duration_seconds: seconds, last_active_at: new Date().toISOString() })
+          .eq('id', sessionIdRef.current);
+      }
     };
 
     start();
@@ -77,3 +88,4 @@ export function useUsageTracker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, accountType, userId, displayName, email]);
 }
+

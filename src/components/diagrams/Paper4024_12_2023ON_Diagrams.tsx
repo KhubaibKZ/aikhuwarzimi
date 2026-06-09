@@ -162,6 +162,9 @@ export function TransformGrid_4024_12_2023ON() {
   const drawnPts = points.map((p) => `${X(p.x)},${Y(p.y)}`).join(' ');
   const strokeCol = correct ? "hsl(142 76% 45%)" : pr;
 
+  // Pre-drawn shapes must be dark to show up on the white SVG background
+  const diagramFg = "#111827";
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-2">
       <div className="flex flex-wrap items-center gap-2">
@@ -183,21 +186,21 @@ export function TransformGrid_4024_12_2023ON() {
         onClick={handleClick}
       >
         {grid}
-        <line x1={X(xMin)} y1={Y(0)} x2={X(xMax)} y2={Y(0)} stroke={fg} strokeWidth={1.3} />
-        <line x1={X(0)} y1={Y(yMax)} x2={X(0)} y2={Y(yMin)} stroke={fg} strokeWidth={1.3} />
-        <polygon points={`${X(xMax)},${Y(0)} ${X(xMax) - 7},${Y(0) - 4} ${X(xMax) - 7},${Y(0) + 4}`} fill={fg} />
-        <polygon points={`${X(0)},${Y(yMax)} ${X(0) - 4},${Y(yMax) + 7} ${X(0) + 4},${Y(yMax) + 7}`} fill={fg} />
-        <text x={X(xMax) + 8} y={Y(0) + 4} fontSize={12} fill={fg}>x</text>
-        <text x={X(0) + 6} y={Y(yMax) - 4} fontSize={12} fill={fg}>y</text>
+        <line x1={X(xMin)} y1={Y(0)} x2={X(xMax)} y2={Y(0)} stroke={diagramFg} strokeWidth={1.3} />
+        <line x1={X(0)} y1={Y(yMax)} x2={X(0)} y2={Y(yMin)} stroke={diagramFg} strokeWidth={1.3} />
+        <polygon points={`${X(xMax)},${Y(0)} ${X(xMax) - 7},${Y(0) - 4} ${X(xMax) - 7},${Y(0) + 4}`} fill={diagramFg} />
+        <polygon points={`${X(0)},${Y(yMax)} ${X(0) - 4},${Y(yMax) + 7} ${X(0) + 4},${Y(yMax) + 7}`} fill={diagramFg} />
+        <text x={X(xMax) + 8} y={Y(0) + 4} fontSize={12} fill={diagramFg}>x</text>
+        <text x={X(0) + 6} y={Y(yMax) - 4} fontSize={12} fill={diagramFg}>y</text>
         <text x={X(0) - 8} y={Y(0) + 14} fontSize={10} fill={mu}>0</text>
         {xLabels}
         {yLabels}
-        <polygon points={A} fill="hsl(var(--muted-foreground)/0.45)" stroke={fg} strokeWidth={1.2} />
-        <text x={X(2.4)} y={Y(3.4)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">A</text>
-        <polygon points={P} fill="none" stroke={fg} strokeWidth={1.4} />
-        <text x={X(5.85)} y={Y(1.7)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">P</text>
-        <polygon points={Q} fill="none" stroke={fg} strokeWidth={1.4} />
-        <text x={X(1.4)} y={Y(-5.55)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">Q</text>
+        <polygon points={A} fill="#374151" stroke={diagramFg} strokeWidth={1.2} />
+        <text x={X(2.4)} y={Y(3.4)} fontSize={12} fill={diagramFg} fontStyle="italic" fontWeight="bold">A</text>
+        <polygon points={P} fill="none" stroke={diagramFg} strokeWidth={1.4} />
+        <text x={X(5.85)} y={Y(1.7)} fontSize={12} fill={diagramFg} fontStyle="italic" fontWeight="bold">P</text>
+        <polygon points={Q} fill="none" stroke={diagramFg} strokeWidth={1.4} />
+        <text x={X(1.4)} y={Y(-5.55)} fontSize={12} fill={diagramFg} fontStyle="italic" fontWeight="bold">Q</text>
         {/* User-drawn shape */}
         {joined && points.length >= 2 && (
           <polygon

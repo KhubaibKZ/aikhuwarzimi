@@ -136,6 +136,15 @@ export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { mark
   };
   const correct = joined && checkCorrect();
 
+  useEffect(() => {
+    if (!onScore) return;
+    if (correct) {
+      onScore({ marks: 3, note: 'B3: shape B drawn at correct vertices.' });
+    } else {
+      onScore({ marks: 0, note: 'Diagram not drawn correctly.' });
+    }
+  }, [correct, onScore]);
+
   const grid: JSX.Element[] = [];
   for (let i = xMin; i <= xMax; i++) {
     grid.push(<line key={`v${i}`} x1={X(i)} y1={Y(yMax)} x2={X(i)} y2={Y(yMin)}

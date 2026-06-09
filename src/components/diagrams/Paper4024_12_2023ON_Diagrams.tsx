@@ -76,14 +76,65 @@ export function ParallelLines_4024_12_2023ON() {
   );
 }
 
-// ───────────────────────────── Q7: Transformation grid (A, P, Q) ─────────────────────────────
+// ───────────────────────────── Q7: Transformation grid (A, P, Q) — INTERACTIVE ─────────────────────────────
+// Replicates the exam diagram with shapes A (square), P and Q (triangles).
+// Students click grid intersections to mark points, then "Join points" to draw
+// a closed polygon. Used to draw the image of A after a transformation.
+// Correct target shape: (-7,2),(-1,2),(-1,-4),(-4,-4),(-4,-1),(-7,-1)
 export function TransformGrid_4024_12_2023ON() {
-  const s = 22, pad = 28;
+  const s = 28, pad = 32;
   const xMin = -8, xMax = 7, yMin = -7, yMax = 6;
   const w = (xMax - xMin) * s + pad * 2;
   const h = (yMax - yMin) * s + pad * 2;
   const X = (x: number) => pad + (x - xMin) * s;
   const Y = (y: number) => pad + (yMax - y) * s;
+
+  const TARGET: [number, number][] = [
+    [-7, 2], [-1, 2], [-1, -4], [-4, -4], [-4, -1], [-7, -1],
+  ];
+
+  const [points, setPoints] = useState<{ x: number; y: number }[]>([]);
+  const [joined, setJoined] = useState(false);
+
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const sx = vb.width / rect.width;
+    const sy = vb.height / rect.height;
+    const px = (e.clientX - rect.left) * sx;
+    const py = (e.clientY - rect.top) * sy;
+    const dx = Math.round((px - pad) / s + xMin);
+    const dy = Math.round(yMax - (py - pad) / s);
+    if (dx < xMin || dx > xMax || dy < yMin || dy > yMax) return;
+    setPoints((prev) => {
+      if (prev.some((p) => p.x === dx && p.y === dy)) return prev;
+      return [...prev, { x: dx, y: dy }];
+    });
+  };
+
+  const undo = () => setPoints((p) => p.slice(0, -1));
+  const clear = () => { setPoints([]); setJoined(false); };
+
+  const checkCorrect = () => {
+    if (points.length !== TARGET.length) return false;
+    // Allow any rotation/reversal of the same polygon order
+    const n = TARGET.length;
+    const tryMatch = (arr: [number, number][]) => {
+      for (let off = 0; off < n; off++) {
+        let ok = true;
+        for (let i = 0; i < n; i++) {
+          const [tx, ty] = TARGET[(i + off) % n];
+          if (arr[i][0] !== tx || arr[i][1] !== ty) { ok = false; break; }
+        }
+        if (ok) return true;
+      }
+      return false;
+    };
+    const fwd: [number, number][] = points.map((p) => [p.x, p.y]);
+    return tryMatch(fwd) || tryMatch([...fwd].reverse());
+  };
+  const correct = joined && checkCorrect();
 
   const grid: JSX.Element[] = [];
   for (let i = xMin; i <= xMax; i++) {
@@ -95,21 +146,6 @@ export function TransformGrid_4024_12_2023ON() {
       stroke="hsl(var(--border))" strokeWidth={0.6} strokeDasharray={j === 0 ? undefined : '2 2'} />);
   }
 
-  // Axes
-  const axes = (
-    <>
-      <line x1={X(xMin)} y1={Y(0)} x2={X(xMax)} y2={Y(0)} stroke={fg} strokeWidth={1.3} />
-      <line x1={X(0)} y1={Y(yMax)} x2={X(0)} y2={Y(yMin)} stroke={fg} strokeWidth={1.3} />
-      {/* arrows */}
-      <polygon points={`${X(xMax)},${Y(0)} ${X(xMax) - 7},${Y(0) - 4} ${X(xMax) - 7},${Y(0) + 4}`} fill={fg} />
-      <polygon points={`${X(0)},${Y(yMax)} ${X(0) - 4},${Y(yMax) + 7} ${X(0) + 4},${Y(yMax) + 7}`} fill={fg} />
-      <text x={X(xMax) + 8} y={Y(0) + 4} fontSize={12} fill={fg}>x</text>
-      <text x={X(0) + 6} y={Y(yMax) - 4} fontSize={12} fill={fg}>y</text>
-      <text x={X(0) - 8} y={Y(0) + 14} fontSize={10} fill={mu}>0</text>
-    </>
-  );
-
-  // Axis number labels
   const xLabels = [];
   for (let i = xMin; i <= xMax; i++) if (i !== 0) xLabels.push(
     <text key={`xl${i}`} x={X(i)} y={Y(0) + 14} fontSize={10} fill={mu} textAnchor="middle">{i}</text>
@@ -119,26 +155,76 @@ export function TransformGrid_4024_12_2023ON() {
     <text key={`yl${j}`} x={X(0) - 6} y={Y(j) + 3} fontSize={10} fill={mu} textAnchor="end">{j}</text>
   );
 
-  // Shape A: square (1,2)-(3,4) shaded
   const A = `${X(1)},${Y(2)} ${X(3)},${Y(2)} ${X(3)},${Y(4)} ${X(1)},${Y(4)}`;
-  // Triangle P: (5,1),(6,1),(6,3) — right angle at (6,1)
   const P = `${X(5)},${Y(1)} ${X(6)},${Y(1)} ${X(6)},${Y(3)}`;
-  // Triangle Q: (1,-5),(1,-6),(3,-6) — right angle at (1,-6)
   const Q = `${X(1)},${Y(-5)} ${X(1)},${Y(-6)} ${X(3)},${Y(-6)}`;
 
+  const drawnPts = points.map((p) => `${X(p.x)},${Y(p.y)}`).join(' ');
+  const strokeCol = correct ? "hsl(142 76% 45%)" : pr;
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full max-w-2xl mx-auto bg-white rounded-md">
-      {grid}
-      {axes}
-      {xLabels}
-      {yLabels}
-      <polygon points={A} fill="hsl(var(--muted-foreground)/0.45)" stroke={fg} strokeWidth={1.2} />
-      <text x={X(2.4)} y={Y(3.4)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">A</text>
-      <polygon points={P} fill="none" stroke={fg} strokeWidth={1.4} />
-      <text x={X(5.85)} y={Y(1.7)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">P</text>
-      <polygon points={Q} fill="none" stroke={fg} strokeWidth={1.4} />
-      <text x={X(1.4)} y={Y(-5.55)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">Q</text>
-    </svg>
+    <div className="w-full max-w-2xl mx-auto space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" variant="outline" onClick={() => setJoined((j) => !j)} disabled={points.length < 2}>
+          {joined ? 'Unjoin' : 'Join points'}
+        </Button>
+        <Button size="sm" variant="outline" onClick={undo} disabled={!points.length}>Undo</Button>
+        <Button size="sm" variant="outline" onClick={clear} disabled={!points.length && !joined}>Clear</Button>
+        <span className="text-xs text-muted-foreground">
+          Click grid intersections to plot vertices, then join them.
+        </span>
+        {correct && (
+          <span className="text-xs font-semibold text-green-600 ml-auto">✓ Correct shape</span>
+        )}
+      </div>
+      <svg
+        viewBox={`0 0 ${w} ${h}`}
+        className="w-full bg-white rounded-md cursor-crosshair select-none"
+        onClick={handleClick}
+      >
+        {grid}
+        <line x1={X(xMin)} y1={Y(0)} x2={X(xMax)} y2={Y(0)} stroke={fg} strokeWidth={1.3} />
+        <line x1={X(0)} y1={Y(yMax)} x2={X(0)} y2={Y(yMin)} stroke={fg} strokeWidth={1.3} />
+        <polygon points={`${X(xMax)},${Y(0)} ${X(xMax) - 7},${Y(0) - 4} ${X(xMax) - 7},${Y(0) + 4}`} fill={fg} />
+        <polygon points={`${X(0)},${Y(yMax)} ${X(0) - 4},${Y(yMax) + 7} ${X(0) + 4},${Y(yMax) + 7}`} fill={fg} />
+        <text x={X(xMax) + 8} y={Y(0) + 4} fontSize={12} fill={fg}>x</text>
+        <text x={X(0) + 6} y={Y(yMax) - 4} fontSize={12} fill={fg}>y</text>
+        <text x={X(0) - 8} y={Y(0) + 14} fontSize={10} fill={mu}>0</text>
+        {xLabels}
+        {yLabels}
+        <polygon points={A} fill="hsl(var(--muted-foreground)/0.45)" stroke={fg} strokeWidth={1.2} />
+        <text x={X(2.4)} y={Y(3.4)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">A</text>
+        <polygon points={P} fill="none" stroke={fg} strokeWidth={1.4} />
+        <text x={X(5.85)} y={Y(1.7)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">P</text>
+        <polygon points={Q} fill="none" stroke={fg} strokeWidth={1.4} />
+        <text x={X(1.4)} y={Y(-5.55)} fontSize={12} fill={fg} fontStyle="italic" fontWeight="bold">Q</text>
+        {/* User-drawn shape */}
+        {joined && points.length >= 2 && (
+          <polygon
+            points={drawnPts}
+            fill={correct ? "hsl(142 76% 45% / 0.18)" : "hsl(var(--primary) / 0.12)"}
+            stroke={strokeCol}
+            strokeWidth={1.8}
+          />
+        )}
+        {points.map((p, i) => (
+          <circle
+            key={i}
+            cx={X(p.x)}
+            cy={Y(p.y)}
+            r={4}
+            fill={strokeCol}
+            stroke="white"
+            strokeWidth={1}
+            onClick={(e) => {
+              e.stopPropagation();
+              setPoints((prev) => prev.filter((_, idx) => idx !== i));
+            }}
+            style={{ cursor: 'pointer' }}
+          />
+        ))}
+      </svg>
+    </div>
   );
 }
 

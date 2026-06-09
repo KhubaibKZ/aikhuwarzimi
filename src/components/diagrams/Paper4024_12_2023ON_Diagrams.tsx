@@ -81,7 +81,7 @@ export function ParallelLines_4024_12_2023ON() {
 // Students click grid intersections to mark points, then "Join points" to draw
 // a closed polygon. Used to draw the image of A after a transformation.
 // Correct target shape: (-7,2),(-1,2),(-1,-4),(-4,-4),(-4,-1),(-7,-1)
-export function TransformGrid_4024_12_2023ON() {
+export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { marks: number; note: string }) => void } = {}) {
   const s = 28, pad = 32;
   const xMin = -8, xMax = 7, yMin = -7, yMax = 6;
   const w = (xMax - xMin) * s + pad * 2;

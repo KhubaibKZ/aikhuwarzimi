@@ -715,6 +715,22 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               marksEarned['c'] = (numOk ? 1 : 0) + (denOk ? 1 : 0) + (finalOk ? 1 : 0);
             }
 
+            // === Q7(b) override: diagram drives full marks; linear SF = 3 fallback awards B1 ===
+            if (question.id === 'pp_4024_on23_12_q7' && part.key === 'b') {
+              const diagramOk = (diagramScores['b']?.marks ?? 0) >= 3;
+              const linearSFOk = newFeedback['b_s2_b'] === 'correct';
+              if (diagramOk) {
+                marksEarned['b'] = 3;
+                markingNotes['b'] = 'B3: shape B drawn at the correct vertices (−7,2),(−1,2),(−1,−4),(−4,−4),(−4,−1),(−7,−1).';
+              } else if (linearSFOk) {
+                marksEarned['b'] = 1;
+                markingNotes['b'] = 'B1: linear scale factor = 3 seen, but the image of shape B is missing or drawn incorrectly.';
+              } else {
+                marksEarned['b'] = 0;
+                markingNotes['b'] = 'No marks: linear scale factor not established and diagram not drawn correctly.';
+              }
+            }
+
             if (!markingNotes[part.key] && marksEarned[part.key] > 0 && marksEarned[part.key] < part.marks) {
               markingNotes[part.key] = `Partial marks awarded using the specimen rule: ${partCriteria}`;
             }
@@ -2765,7 +2781,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
             {/* ========== 4024/12 Oct/Nov 2023 Diagrams ========== */}
             {question.id === 'pp_4024_on23_12_q2' && (<div className="mt-4"><RectangleSquares_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q6' && (<div className="mt-4"><ParallelLines_4024_12_2023ON /></div>)}
-            {question.id === 'pp_4024_on23_12_q7' && (<div className="mt-4"><TransformGrid_4024_12_2023ON /></div>)}
+            {question.id === 'pp_4024_on23_12_q7' && (<div className="mt-4"><TransformGrid_4024_12_2023ON onScore={(s) => setDiagramScores(prev => ({ ...prev, b: s }))} /></div>)}
             {question.id === 'pp_4024_on23_12_q14' && (<div className="mt-4"><TriangleConstruct_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q17' && (<div className="mt-4"><CumulativeFrequency_4024_12_2023ON /></div>)}
             {question.id === 'pp_4024_on23_12_q18' && (<div className="mt-4"><SpeedTime_4024_12_2023ON /></div>)}

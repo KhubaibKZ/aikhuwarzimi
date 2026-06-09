@@ -1,7 +1,7 @@
 // Diagrams for 4024/12 Oct/Nov 2023 — visual references matching the QP
 // All scaled to fit the workspace and use semantic theme tokens.
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import q6ParallelLines2023ONSrc from "@/assets/q6-parallel-lines-2023ON.png";
 import q21TwoSectorsSrc from "@/assets/pp_4024_on23_12_q21_diagram.png";
@@ -81,7 +81,7 @@ export function ParallelLines_4024_12_2023ON() {
 // Students click grid intersections to mark points, then "Join points" to draw
 // a closed polygon. Used to draw the image of A after a transformation.
 // Correct target shape: (-7,2),(-1,2),(-1,-4),(-4,-4),(-4,-1),(-7,-1)
-export function TransformGrid_4024_12_2023ON() {
+export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { marks: number; note: string }) => void } = {}) {
   const s = 28, pad = 32;
   const xMin = -8, xMax = 7, yMin = -7, yMax = 6;
   const w = (xMax - xMin) * s + pad * 2;
@@ -135,6 +135,15 @@ export function TransformGrid_4024_12_2023ON() {
     return tryMatch(fwd) || tryMatch([...fwd].reverse());
   };
   const correct = joined && checkCorrect();
+
+  useEffect(() => {
+    if (!onScore) return;
+    if (correct) {
+      onScore({ marks: 3, note: 'B3: shape B drawn at correct vertices.' });
+    } else {
+      onScore({ marks: 0, note: 'Diagram not drawn correctly.' });
+    }
+  }, [correct, onScore]);
 
   const grid: JSX.Element[] = [];
   for (let i = xMin; i <= xMax; i++) {

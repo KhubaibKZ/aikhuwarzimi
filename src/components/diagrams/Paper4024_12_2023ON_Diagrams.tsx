@@ -155,7 +155,7 @@ export function TransformGrid_4024_12_2023ON() {
     <text key={`yl${j}`} x={X(0) - 6} y={Y(j) + 3} fontSize={10} fill={mu} textAnchor="end">{j}</text>
   );
 
-  const A = `${X(1)},${Y(2)} ${X(3)},${Y(2)} ${X(3)},${Y(4)} ${X(1)},${Y(4)}`;
+  const A = `${X(2)},${Y(2)} ${X(3)},${Y(2)} ${X(3)},${Y(4)} ${X(1)},${Y(4)} ${X(1)},${Y(3)} ${X(2)},${Y(3)}`;
   const P = `${X(5)},${Y(1)} ${X(6)},${Y(1)} ${X(6)},${Y(3)}`;
   const Q = `${X(1)},${Y(-5)} ${X(1)},${Y(-6)} ${X(3)},${Y(-6)}`;
 

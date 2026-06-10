@@ -8,7 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, CheckSquare, Plus, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, CheckSquare, Keyboard, Lightbulb, Plus, Send, Trash2, Type } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { cn } from '@/lib/utils';
 import {
   BoxSize,

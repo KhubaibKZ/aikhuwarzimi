@@ -1,7 +1,7 @@
 // Diagrams for 4024/12 Oct/Nov 2023 — visual references matching the QP
 // All scaled to fit the workspace and use semantic theme tokens.
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import q6ParallelLines2023ONSrc from "@/assets/q6-parallel-lines-2023ON.png";
 import q21TwoSectorsSrc from "@/assets/pp_4024_on23_12_q21_diagram.png";
@@ -242,7 +242,7 @@ export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { mark
 
 
 // ───────────────────────────── Q14: Triangle ABC interactive (protractor + compass) ─────────────────────────────
-export function TriangleConstruct_4024_12_2023ON() {
+export function TriangleConstruct_4024_12_2023ON({ onScore }: { onScore?: (s: { b: { marks: number; note: string }; c: { marks: number; note: string } }) => void } = {}) {
   // Diagram replicating the QP image: A top, B right, C bottom-left (∠ABC ≈ 49°)
   const W = 560, H = 380;
   const A = { x: 240, y: 50 };
@@ -268,13 +268,17 @@ export function TriangleConstruct_4024_12_2023ON() {
   const [dragOff, setDragOff] = useState({ x: 0, y: 0 });
   const protractorR = 90;
 
-  const toSvgCoords = (e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const toSvgCoords = (e: { clientX: number; clientY: number }) => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
     const rect = svg.getBoundingClientRect();
-    const vb = svg.viewBox.baseVal;
+    const vb = svg.viewBox?.baseVal;
+    const vbW = vb && vb.width ? vb.width : W;
+    const vbH = vb && vb.height ? vb.height : H;
     return {
-      x: ((e.clientX - rect.left) / rect.width) * vb.width,
-      y: ((e.clientY - rect.top) / rect.height) * vb.height,
+      x: ((e.clientX - rect.left) / rect.width) * vbW,
+      y: ((e.clientY - rect.top) / rect.height) * vbH,
     };
   };
 
@@ -367,6 +371,48 @@ export function TriangleConstruct_4024_12_2023ON() {
     if (arcs.length) { setArcs((p) => p.slice(0, -1)); return; }
   };
 
+  // ───── Diagram-derived marks for parts (b) and (c) ─────
+  const AClen = Math.hypot(A.x - C.x, A.y - C.y);
+  const nearVertex = (cx: number, cy: number, V: { x: number; y: number }, tol = 12) => Math.hypot(cx - V.x, cy - V.y) <= tol;
+  const arcAt = (V: { x: number; y: number }, minR = 0) => arcs.find(a => nearVertex(a.cx, a.cy, V) && a.r > minR);
+  const arcA_b = arcAt(A, AClen / 2 - 5);
+  const arcC_b = arcAt(C, AClen / 2 - 5);
+  const arcsPairOk = !!arcA_b && !!arcC_b && Math.abs(arcA_b.r - arcC_b.r) <= 8;
+
+  // perpendicular bisector line: passes near midpoint of AC and perpendicular to AC (±15°)
+  const Mx = (A.x + C.x) / 2, My = (A.y + C.y) / 2;
+  const acAng = Math.atan2(C.y - A.y, C.x - A.x);
+  const bisectorLine = lines.find(l => {
+    const lAng = Math.atan2(l.y2 - l.y1, l.x2 - l.x1);
+    const diff = Math.abs(((lAng - acAng - Math.PI / 2) * 180 / Math.PI) % 180);
+    const angOk = diff < 15 || Math.abs(diff - 180) < 15;
+    // distance from midpoint to line
+    const dx = l.x2 - l.x1, dy = l.y2 - l.y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const dist = Math.abs((Mx - l.x1) * dy - (My - l.y1) * dx) / len;
+    return angOk && dist <= 18;
+  });
+
+  const bScore = (() => {
+    if (bisectorLine && arcsPairOk) return { marks: 2, note: 'B2 — acceptable perpendicular bisector of AC with correct arcs from A and C (equal radius > ½ AC).' };
+    if (bisectorLine) return { marks: 1, note: 'B1 — acceptable bisector of AC, but construction arcs from A and C are missing/incorrect.' };
+    return { marks: 0, note: 'Construct the perpendicular bisector of AC: draw equal arcs from A and C with radius > ½ AC, then join the intersections.' };
+  })();
+
+  // (c) Arc of radius 6 cm at B drawn within the triangle (B1), plus correct region shaded (B1, dep)
+  const arcB6 = arcs.find(a => nearVertex(a.cx, a.cy, B) && Math.abs(a.r - 6 * PX_PER_CM) <= 0.4 * PX_PER_CM);
+  const cScore = (() => {
+    const arcOk = !!arcB6;
+    // We cannot reliably score shading, so the second B1 (region) is awarded if bisector exists AND 6 cm arc exists
+    if (arcOk && bScore.marks >= 1) return { marks: 1, note: 'B1 — 6 cm arc centred at B drawn. (Second B1 for the correctly shaded region requires shading the area nearer to A AND outside the 6 cm arc — assessed manually.)' };
+    if (arcOk) return { marks: 1, note: 'B1 — 6 cm arc centred at B drawn. The second B1 is dependent on a correct bisector of AC.' };
+    return { marks: 0, note: 'Draw an arc of radius 6 cm centred at B within the triangle, then identify the region nearer to A and further than 6 cm from B.' };
+  })();
+
+  useEffect(() => {
+    onScore?.({ b: bScore, c: cScore });
+  }, [bScore.marks, cScore.marks, onScore]);
+
   return (
     <div className="space-y-3">
       {/* Toolbar */}
@@ -396,6 +442,7 @@ export function TriangleConstruct_4024_12_2023ON() {
       )}
 
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
         className="w-full bg-white rounded-lg border-2 border-border shadow-inner"
         onClick={handleSvgClick}

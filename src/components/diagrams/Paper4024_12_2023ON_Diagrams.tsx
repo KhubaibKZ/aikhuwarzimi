@@ -514,7 +514,7 @@ export function TriangleConstruct_4024_12_2023ON({ onScore }: { onScore?: (s: { 
 // Shows the exact data table from the question paper, plus an empty grid where
 // students can click to mark points and then optionally join them. No curve is
 // pre-drawn — students do the plotting themselves.
-export function CumulativeFrequency_4024_12_2023ON() {
+export function CumulativeFrequency_4024_12_2023ON({ onScore }: { onScore?: (s: { marks: number; note: string }) => void } = {}) {
   const ox = 50, oy = 20, w = 360, h = 240;
   const xMax = 12, yMax = 80;
   const X = (v: number) => ox + (v / xMax) * w;
@@ -533,6 +533,22 @@ export function CumulativeFrequency_4024_12_2023ON() {
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]);
   const [joined, setJoined] = useState(false);
+
+  // Score: B1 for ≥5 correct upper-bound points, B2 for all 6 + joined
+  React.useEffect(() => {
+    if (!onScore) return;
+    const expected = headers.map(h => ({ x: parseFloat(h.label.replace(/[^\d.]/g, '')), y: h.cf }));
+    let correct = 0;
+    expected.forEach(e => {
+      if (points.some(p => Math.abs(p.x - e.x) <= 0.25 && Math.abs(p.y - e.y) <= 1)) correct++;
+    });
+    let marks = 0;
+    let note = `${correct}/6 points plotted correctly`;
+    if (correct >= 6 && joined) { marks = 2; note = 'B2: all 6 points correct and joined'; }
+    else if (correct >= 5) { marks = 1; note = `B1: ${correct}/6 points plotted correctly` + (joined ? '' : ' (join points for B2)'); }
+    onScore({ marks, note });
+  }, [points, joined, onScore]);
+
 
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     const svg = e.currentTarget;

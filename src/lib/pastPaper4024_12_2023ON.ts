@@ -685,17 +685,22 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     equationStagesMap: {
       'a': [
         { label: 'Major arc EF', stepKey: 's1', elements: [
-          { type: 'text', value: '(360 −' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: ') / 360 × 2π ×' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: '(360 −' }, { type: 'box', key: 's1_a', width: 'w-12' }, { type: 'text', value: ') / 360 × 2π ×' }, { type: 'box', key: 's1_b', width: 'w-14' }
         ]},
         { label: 'Arc QR', stepKey: 's2', elements: [
           { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '/ 360 × 2π ×' }, { type: 'box', key: 's2_b', width: 'w-10' }
         ]},
-        { label: 'Equation', stepKey: 's3', elements: [
-          { type: 'text', value: '360 − 6x = 9 ×' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '× x/(' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: ')' }
+        { label: 'Cancel 2π and y', stepKey: 's3', elements: [
+          { type: 'text', value: '(360 − 6x)/360 ×' }, { type: 'box', key: 's3_a', width: 'w-12' }, { type: 'text', value: '= 9x /' }, { type: 'box', key: 's3_b', width: 'w-12' }
         ]},
-        { label: 'Solve', stepKey: 's4', elements: [
-          { type: 'text', value: '360 −' }, { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's4_b', width: 'w-10' },
-          { type: 'text', value: '→ 360 =' }, { type: 'box', key: 's4_c', width: 'w-10' }, { type: 'text', value: 'x → x =' }, { type: 'box', key: 's4_d', width: 'w-10' }
+        { label: 'Multiply both sides by 360', stepKey: 's4', elements: [
+          { type: 'text', value: '(360 − 6x) ×' }, { type: 'box', key: 's4_a', width: 'w-12' }, { type: 'text', value: '=' }, { type: 'box', key: 's4_b', width: 'w-12' }
+        ]},
+        { label: 'Multiply by 4 and expand', stepKey: 's5', elements: [
+          { type: 'text', value: '1080 −' }, { type: 'box', key: 's5_a', width: 'w-12' }, { type: 'text', value: 'x =' }, { type: 'box', key: 's5_b', width: 'w-12' }, { type: 'text', value: 'x' }
+        ]},
+        { label: 'Solve for x', stepKey: 's6', elements: [
+          { type: 'text', value: '1080 =' }, { type: 'box', key: 's6_a', width: 'w-12' }, { type: 'text', value: 'x → x =' }, { type: 'box', key: 's6_b', width: 'w-12' }
         ]}
       ],
       'b': [
@@ -710,10 +715,12 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     parts: [{ label: '(a) Show x = 20', key: 'a', marks: 3 }, { label: '(b) y', key: 'b', marks: 2 }],
     answer: {
       a: 'x = 20 shown', b: '6',
-      a_s1_a: '6x', a_s1_b: '3y',
+      a_s1_a: '6x', a_s1_b: '3y/4',
       a_s2_a: 'x', a_s2_b: 'y',
-      a_s3_a: '1', a_s3_b: '3',
-      a_s4_a: '6x', a_s4_b: '12x', a_s4_c: '18', a_s4_d: '20',
+      a_s3_a: '3/4', a_s3_b: '360',
+      a_s4_a: '3/4', a_s4_b: '9x',
+      a_s5_a: '18', a_s5_b: '36',
+      a_s6_a: '54', a_s6_b: '20',
       b_s1_a: '20', b_s2_a: '36', b_s2_b: '6'
     },
     markingCriteria: { a: 'M2 for a fully correct equation linking the two arc lengths, e.g. ((360 − 6x)/360) × 2π × (3y/4) = 9 × (x/360) × 2πy. M1 for (x/360) × 2πy oe for arc QR, or for (6x/360) × 2π × (3y/4) oe, or for (360 − 6x) seen as the reflex/major angle. A1 for at least one extra step of rearrangement leading to x = 20 (A0 if any errors or omissions).', b: 'M1 for (20 × π × y²)/360 = 2π oe or better. A1 for y = 6.' }

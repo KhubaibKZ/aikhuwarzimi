@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      question_overrides: {
+        Row: {
+          created_at: string
+          diagram_image_url: string | null
+          override: Json
+          paper_id: string
+          question_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          diagram_image_url?: string | null
+          override?: Json
+          paper_id: string
+          question_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          diagram_image_url?: string | null
+          override?: Json
+          paper_id?: string
+          question_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       student_assignments: {
         Row: {
           assigned_by: string | null

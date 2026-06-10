@@ -158,7 +158,7 @@ export function PastPaperWorkspace({
   onAddHint,
   onRemoveHint,
   headerActions,
-
+  solutionOverride,
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);

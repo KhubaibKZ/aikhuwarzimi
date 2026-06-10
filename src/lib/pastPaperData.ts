@@ -96,6 +96,7 @@ export interface PastPaperQuestion {
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")
   questionFraction?: { numerator: string; denominator: string }; // Display question with a proper vertical fraction
   syllabusOverride?: { topicTitle?: string; subtopicCode?: string; subtopicTitle?: string }; // Admin-editable override of derived syllabus ref
+  solutionCanvas?: import('@/components/editor/canvasTypes').SolutionCanvas; // Admin-built freeform solution canvas (paper 4024/21 ON 2023 only)
 }
 
 

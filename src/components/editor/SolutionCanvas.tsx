@@ -26,6 +26,7 @@ interface Props {
   value?: TCanvas;
   onChange: (next: TCanvas) => void;
   hints?: string[];
+  previewMode?: boolean;
 }
 
 const empty: TCanvas = { blocks: [] };

@@ -99,7 +99,7 @@ interface PastPaperWorkspaceProps {
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;
-
+  solutionOverride?: ReactNode;
 }
 
 function InlineEditableText({

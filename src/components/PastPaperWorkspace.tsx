@@ -2121,8 +2121,19 @@ export function PastPaperWorkspace({
                 <Clock className="h-3 w-3" />
                 {formatTime(isSubmitted && finalTime !== null ? finalTime : elapsedSeconds)}
               </Badge>
-              <Badge variant="outline">
-                {question.marks} mark{question.marks > 1 ? 's' : ''}
+              <Badge variant="outline" className="flex items-center gap-1">
+                {editMode && onEditField ? (
+                  <input
+                    type="number"
+                    min={0}
+                    value={question.marks}
+                    onChange={(e) => onEditField('marks', e.target.value)}
+                    className="w-10 bg-transparent border-b border-dashed border-border focus:border-primary outline-none text-center"
+                  />
+                ) : (
+                  question.marks
+                )}
+                {' '}mark{question.marks > 1 ? 's' : ''}
               </Badge>
               {paperQuota && (
                 <>

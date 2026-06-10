@@ -12,6 +12,7 @@ import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
 import PaperEditor from "./pages/PaperEditor";
 import { OverridesSync } from "@/hooks/useOverridesSync";
+import { ProgressProvider } from "@/context/ProgressContext";
 
 import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
@@ -40,7 +41,7 @@ const AppRoutes = () => (
       <Route path="/student-demo-analytics" element={<StudentAnalytics />} />
       <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
-      <Route path="/editor" element={<PaperEditor />} />
+      <Route path="/editor" element={<ProgressProvider><PaperEditor /></ProgressProvider>} />
       <Route path="/demo" element={<Demo />} />
       
       <Route path="/student" element={<StudentDashboard />} />

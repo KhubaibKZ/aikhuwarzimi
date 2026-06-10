@@ -532,8 +532,9 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     id: 'pp_4024_on23_12_q17', questionNumber: '17', title: 'Cumulative frequency',
     question: 'The heights of 80 plants are measured. The table shows the results.\n(a) On the grid, draw a cumulative frequency diagram. (Mark the points, then tap "Join points" to connect them.)',
     marks: 6,
-    hints: ['(a) Plot cumulative frequencies against upper bounds', '(b) Q1 at 20th value, Q3 at 60th value, IQR = Q3 − Q1', '(c) 80 − 28 = 52 on CF axis, read across to H'],
+    hints: ['(a) Plot cumulative frequencies against upper bounds, then join them with a smooth curve or polygon', '(b) Q1 at 20th value, Q3 at 60th value, IQR = Q3 − Q1', '(c) 80 − 28 = 52 on CF axis, read across to H'],
     type: 'multi-part',
+    diagramParts: ['a'],
     equationSolveParts: ['b', 'c'],
     equationStagesMap: {
       'b': [
@@ -544,27 +545,27 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
           { type: 'text', value: 'Q3 at' }, { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: 'th value → Q3 =' }, { type: 'box', key: 's2_b', width: 'w-10' }
         ]},
         { label: 'IQR', stepKey: 's3', elements: [
-          { type: 'text', value: 'IQR =' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_c', width: 'w-10' }
+          { type: 'text', value: 'IQR =' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's3_c', width: 'w-12' }
         ]}
       ],
       'c': [
         { label: 'CF value', stepKey: 's1', elements: [
-          { type: 'text', value: '80 −' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '=' }, { type: 'box', key: 's1_b', width: 'w-10' }
+          { type: 'text', value: 'CF =' }, { type: 'box', key: 's1_a', width: 'w-12' }
         ]},
         { label: 'Read H', stepKey: 's2', elements: [
-          { type: 'text', value: 'H =' }, { type: 'box', key: 's2_a', width: 'w-10' }
+          { type: 'text', value: 'H =' }, { type: 'box', key: 's2_a', width: 'w-12' }, { type: 'text', value: 'cm' }
         ]}
       ]
     },
-    parts: [{ label: '(a) Draw the cumulative frequency diagram', key: 'a', marks: 2 }, { label: '(b) Use your diagram to find the interquartile range (cm)', key: 'b', marks: 2 }, { label: '(c) Plants taller than H cm are sold. 28 plants are sold. Use your diagram to find H.', key: 'c', marks: 2 }],
+    parts: [{ label: '(a) Draw the cumulative frequency diagram', key: 'a', marks: 2, diagramScored: true } as any, { label: '(b) Use your diagram to find the interquartile range (cm)', key: 'b', marks: 2 }, { label: '(c) Plants taller than H cm are sold. 28 plants are sold. Use your diagram to find H.', key: 'c', marks: 2 }],
     answer: {
-      a: 'Correct CF diagram', b: '3.8|3.6|3.7|3.9|4|4.0', c: '7|7.1|7.2|7.0',
-      b_s1_a: '20', b_s1_b: '4.2',
-      b_s2_a: '60', b_s2_b: '8',
-      b_s3_a: '8', b_s3_b: '4.2', b_s3_c: '3.8',
-      c_s1_a: '28', c_s1_b: '52', c_s2_a: '7|7.1|7.2|7.0'
+      a: 'Correct CF diagram', b: '3.4|3.5|3.6|3.7|3.8|3.9|4|4.0|4.1|4.2', c: '6.6|6.7|6.8|6.9|7|7.0|7.1|7.2',
+      b_s1_a: '20', b_s1_b: '4|4.0|4.1|4.2|4.3|4.4',
+      b_s2_a: '60', b_s2_b: '7.8|7.9|8|8.0|8.1|8.2',
+      b_s3_a: '7.8|7.9|8|8.0|8.1|8.2', b_s3_b: '4|4.0|4.1|4.2|4.3|4.4', b_s3_c: '3.4|3.5|3.6|3.7|3.8|3.9|4|4.0|4.1|4.2',
+      c_s1_a: '52', c_s2_a: '6.6|6.7|6.8|6.9|7|7.0|7.1|7.2'
     },
-    markingCriteria: { a: 'B2 for a correct cumulative frequency diagram (curve or polygon). B1 for at least 5 points plotted correctly at the upper class boundaries.', b: 'B2 (FT their increasing curve/polygon) for strict FT their UQ − their LQ evaluated. B1 dep for their UQ or their LQ written, dependent on an increasing curve/polygon. Accept IQR ≈ 3.6 to 4.', c: 'B2 (FT their increasing curve/polygon) for a correct reading of H when CF = 52. M1 for 52 (= 80 − 28) soi. Accept H ≈ 7 to 7.2.' }
+    markingCriteria: { a: 'B2 for a correct cumulative frequency diagram (curve or polygon). B1 for at least 5 points plotted correctly at the upper class boundaries.', b: 'B2 (FT their increasing curve/polygon) for strict FT their UQ − their LQ evaluated. B1 dep for their UQ or their LQ written, dependent on an increasing curve/polygon. accept 3.4 to 4.2.', c: 'B2 (FT their increasing curve/polygon) for a correct reading of H when CF = 52. M1 for 52 (= 80 − 28) soi. accept 6.6 to 7.0.' }
   },
 
   // ========== Question 18 ==========

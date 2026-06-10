@@ -25,6 +25,7 @@ import {
 interface Props {
   value?: TCanvas;
   onChange: (next: TCanvas) => void;
+  hints?: string[];
 }
 
 const empty: TCanvas = { blocks: [] };

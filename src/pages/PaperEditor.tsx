@@ -53,7 +53,6 @@ export default function PaperEditor() {
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
   const [msOpen, setMsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -187,7 +186,7 @@ export default function PaperEditor() {
           <div>
             <h1 className="text-2xl font-bold">Paper Editor</h1>
             <p className="text-sm text-muted-foreground">
-              Edit Oct/Nov 2023 Paper 2 questions. Click a question, then use Edit fields or Mark scheme.
+               Edit Oct/Nov 2023 Paper 2 questions. Click a question, then edit the heading and question text directly.
             </p>
           </div>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Back</Button>
@@ -242,53 +241,25 @@ export default function PaperEditor() {
           isOpen={workspaceOpen}
           onClose={() => { setWorkspaceOpen(false); setQuestionId(''); }}
           workspaceMode="general"
+          editMode
+          onEditField={(field, value) => update((d) => {
+            if (field === 'title') d.title = value;
+            if (field === 'question') d.question = value;
+          })}
+          headerActions={(
+            <>
+              <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
+                <BookOpen className="h-4 w-4" /> Mark scheme
+              </Button>
+              <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
+                <RotateCcw className="h-4 w-4" /> Revert
+              </Button>
+              <Button size="sm" onClick={save} disabled={saving} className="gap-2">
+                <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+              </Button>
+            </>
+          )}
         />
-      )}
-
-      {/* Floating action buttons over the workspace */}
-      {draft && workspaceOpen && (
-        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2 items-end">
-          <Button
-            size="lg"
-            variant="secondary"
-            onClick={() => setMsOpen(true)}
-            className="shadow-lg gap-2"
-          >
-            <BookOpen className="h-4 w-4" /> Mark scheme
-          </Button>
-          <Button
-            size="lg"
-            onClick={() => { setWorkspaceOpen(false); setEditOpen(true); }}
-            className="shadow-lg gap-2"
-          >
-            <Pencil className="h-4 w-4" /> Edit fields
-          </Button>
-        </div>
-      )}
-
-      {/* Edit sheet */}
-      {draft && (
-        <Sheet open={editOpen} onOpenChange={setEditOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Edit Q{draft.questionNumber} — {draft.title}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4 space-y-3">
-              <div className="flex gap-2 flex-wrap">
-                <Button size="sm" onClick={save} disabled={saving}>
-                  <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
-                  <RotateCcw className="h-4 w-4" /> Revert
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => { setEditOpen(false); setWorkspaceOpen(true); }}>
-                  Back to question
-                </Button>
-              </div>
-              <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />
-            </div>
-          </SheetContent>
-        </Sheet>
       )}
 
       {/* Mark-scheme drawer (read-only view of validator answers + hints) */}

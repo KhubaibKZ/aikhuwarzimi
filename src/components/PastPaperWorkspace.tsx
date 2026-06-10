@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,9 +94,66 @@ interface PastPaperWorkspaceProps {
   onClose: () => void;
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
+  editMode?: boolean;
+  onEditField?: (field: 'title' | 'question', value: string) => void;
+  headerActions?: ReactNode;
 }
 
-export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general', onSubmitProgress }: PastPaperWorkspaceProps) {
+function InlineEditableText({
+  value,
+  onCommit,
+  className,
+  multiline = false,
+}: {
+  value: string;
+  onCommit: (value: string) => void;
+  className?: string;
+  multiline?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (document.activeElement !== el && el.innerText !== value) {
+      el.innerText = value;
+    }
+  }, [value]);
+
+  return (
+    <div
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      role="textbox"
+      aria-multiline={multiline}
+      onInput={(e) => onCommit(e.currentTarget.innerText.replace(/\u00a0/g, ' '))}
+      onKeyDown={(e) => {
+        if (!multiline && e.key === 'Enter') {
+          e.preventDefault();
+          e.currentTarget.blur();
+        }
+      }}
+      className={cn(
+        'rounded-md border border-dashed border-transparent bg-transparent px-2 py-1 outline-none transition-colors hover:border-border focus:border-primary focus:bg-muted/40 whitespace-pre-wrap',
+        className,
+      )}
+    >
+      {value}
+    </div>
+  );
+}
+
+export function PastPaperWorkspace({
+  question,
+  isOpen,
+  onClose,
+  workspaceMode = 'general',
+  onSubmitProgress,
+  editMode = false,
+  onEditField,
+  headerActions,
+}: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -2053,6 +2110,7 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">{question.questionNumber}</DialogTitle>
             <div className="flex items-center gap-2">
+              {headerActions}
               <Badge variant={isSubmitted ? "secondary" : "outline"} className={cn("flex items-center gap-1 font-mono", !isSubmitted && "animate-pulse")}>
                 <Clock className="h-3 w-3" />
                 {formatTime(isSubmitted && finalTime !== null ? finalTime : elapsedSeconds)}
@@ -2074,7 +2132,15 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               )}
             </div>
           </div>
-          <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
+          {editMode && onEditField ? (
+            <InlineEditableText
+              value={question.title}
+              onCommit={(value) => onEditField('title', value)}
+              className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
+          )}
           {(() => {
             const syllabusRef = getQuestionSyllabusRef(question.id);
             return syllabusRef ? (
@@ -2092,7 +2158,16 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
         <div className="space-y-6">
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
-            <QuestionText text={question.question} />
+            {editMode && onEditField ? (
+              <InlineEditableText
+                value={question.question}
+                onCommit={(value) => onEditField('question', value)}
+                multiline
+                className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+              />
+            ) : (
+              <QuestionText text={question.question} />
+            )}
             {question.questionFraction && (
               <p className="text-foreground flex flex-wrap items-center gap-1 mt-2">
                 <span className="inline-flex flex-col items-center mx-2 align-middle">

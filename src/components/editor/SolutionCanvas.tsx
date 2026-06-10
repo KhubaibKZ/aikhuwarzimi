@@ -466,6 +466,11 @@ function StepItemView({
           onChange={(e) => onChange((i) => ({ ...(i as any), text: e.target.value }))}
           className="h-8 min-w-[6rem] max-w-[20rem]"
           style={{ width: `${Math.max(6, item.text.length + 2)}ch` }}
+          spellCheck={false}
+          autoComplete="off"
+          data-gramm="false"
+          data-gramm_editor="false"
+          data-enable-grammarly="false"
         />
         {removeBtn}
       </div>
@@ -480,6 +485,11 @@ function StepItemView({
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
           className={cn('h-8 border-2 border-dashed text-center', boxWidth[item.size])}
+          spellCheck={false}
+          autoComplete="off"
+          data-gramm="false"
+          data-gramm_editor="false"
+          data-enable-grammarly="false"
         />
         {removeBtn}
       </div>
@@ -495,6 +505,11 @@ function StepItemView({
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), num: e.target.value }))}
           className="h-7 w-20 border-2 border-dashed text-center text-xs"
+          spellCheck={false}
+          autoComplete="off"
+          data-gramm="false"
+          data-gramm_editor="false"
+          data-enable-grammarly="false"
         />
         <div className="my-0.5 h-px w-20 bg-foreground" />
         <Input
@@ -503,6 +518,11 @@ function StepItemView({
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), den: e.target.value }))}
           className="h-7 w-20 border-2 border-dashed text-center text-xs"
+          spellCheck={false}
+          autoComplete="off"
+          data-gramm="false"
+          data-gramm_editor="false"
+          data-enable-grammarly="false"
         />
       </div>
       {removeBtn}

@@ -33,6 +33,11 @@ import {
 } from '@/lib/pastPaperData';
 import { getOverride, setOverride, clearOverride } from '@/lib/questionOverrides';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
+import { QuestionText } from '@/components/QuestionText';
+
+const CANVAS_PAPER_ID = 'pp_4024_on23_21';
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 
@@ -106,7 +111,7 @@ export default function PaperEditor() {
       const keys: (keyof PastPaperQuestion)[] = [
         'title', 'question', 'marks', 'hints', 'parts',
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
-        'syllabusOverride',
+        'syllabusOverride', 'solutionCanvas',
       ];
 
       for (const k of keys) {
@@ -236,8 +241,42 @@ export default function PaperEditor() {
         </Tabs>
       </div>
 
-      {/* Live workspace — same as student dashboard */}
-      {draft && workspaceOpen && (
+      {/* Live workspace — same as student dashboard (except for paper 21 ON 2023 which uses the blank Solution Canvas) */}
+      {draft && workspaceOpen && paperId === CANVAS_PAPER_ID && (
+        <Dialog open={workspaceOpen} onOpenChange={(o) => { if (!o) { setWorkspaceOpen(false); setQuestionId(''); } }}>
+          <DialogContent className="max-w-[1400px] w-[96vw] h-[92vh] p-0 gap-0 flex flex-col">
+            <DialogHeader className="px-4 py-3 border-b border-border flex-row items-center justify-between space-y-0">
+              <DialogTitle className="text-base">
+                Q{draft.questionNumber} — {draft.title}
+                <span className="ml-2 text-xs font-normal text-muted-foreground">Solution Canvas (admin)</span>
+              </DialogTitle>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
+                  <BookOpen className="h-4 w-4" /> Mark scheme
+                </Button>
+                <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
+                  <RotateCcw className="h-4 w-4" /> Revert
+                </Button>
+                <Button size="sm" onClick={save} disabled={saving} className="gap-2">
+                  <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+                </Button>
+              </div>
+            </DialogHeader>
+            <div className="grid flex-1 min-h-0 grid-cols-1 md:grid-cols-2">
+              <div className="overflow-y-auto border-r border-border p-4 space-y-3">
+                <Badge variant="secondary">{draft.marks} marks</Badge>
+                <QuestionText text={draft.question} />
+              </div>
+              <SolutionCanvas
+                value={draft.solutionCanvas}
+                onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {draft && workspaceOpen && paperId !== CANVAS_PAPER_ID && (
         <PastPaperWorkspace
           question={draft as PastPaperQuestion}
           isOpen={workspaceOpen}

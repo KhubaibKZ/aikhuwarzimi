@@ -1,79 +1,40 @@
-## Paper Editor — build plan
 
-A new top-level **Editor** tab where you pick any paper and any question, then edit it on a canvas-style surface that mirrors the dashboard's question + solution layout. Saved edits persist in Lovable Cloud and override the hardcoded paper for every viewer.
+# Simplified Paper Editor
 
-### What you'll get
+Strip `/editor` down to two papers and make editing happen *inside* the normal question workspace — no separate forms.
 
-**New route:** `/editor` (link in Header, admin-only via `has_role`).
+## Scope
 
-**Layout** (mirrors dashboard workspace):
-```text
-┌───────────────────────┬─────────────────────────────────────┐
-│ Paper dropdown        │ ┌──── Question canvas ───────────┐  │
-│ Question list         │ │ [editable title]               │  │
-│  • Q1 ✎               │ │ [editable question text]       │  │
-│  • Q2 ✎ (edited)      │ │ [diagram preview / replace img]│  │
-│  • Q3                 │ ├──── Solution steps ────────────┤  │
-│  ...                  │ │ Step 1: [+ box] [- box] [text] │  │
-│                       │ │ Step 2: ...    [↑] [↓] [🗑]    │  │
-│ [+ Add step]          │ │ [+ Add step]                   │  │
-│ [Discard] [Save]      │ │ Answer key per box             │  │
-│                       │ │ Hints [+ add] · Check-work ☑   │  │
-│                       │ └────────────────────────────────┘  │
-└───────────────────────┴─────────────────────────────────────┘
-```
+**Papers shown:** only `4024/21 Oct-Nov 2023` and `4024/22 Oct-Nov 2023` (from `pastPaper4024_21_2023ON.ts` and `pastPaper4024_22_2023ON.ts`).
 
-### Editable fields (per question)
-- `title`, `question` text, `marks`
-- `parts[]` — label, key, marks (add / remove / reorder)
-- `equationStagesMap` per part — add / remove / reorder steps, each step's elements (text vs. box, box width, box `key`)
-- `answer` map — correct value per box (supports `|` alternatives, tolerances)
-- `hints[]` — add / edit / remove
-- per-part check-work toggle
-- diagram **image override** — upload an image that replaces the hand-coded SVG diagram in both editor and dashboard
+**Removed from `/editor`:**
+- Year / session / variant pickers
+- The separate "Edit fields" slide-out sheet and tab system
+- The two-pane (preview + form) layout
 
-### What's intentionally out of scope (with reason)
-- **Free-form vector editing of existing SVG diagrams.** Diagrams like `ScatterDiagram2023ON`, `VennDiagram3Set2023ON`, etc. are hand-coded React components with interactive logic (drag points, clickable axes). A generic canvas cannot edit those. The realistic lever is an **image override**: upload a static replacement that renders instead of the SVG component. Interactivity is lost on overridden diagrams — that's the trade-off.
-- Editing custom workspace components (LCM ladder, prime-factor ladder, Venn drag-and-drop). Same reason — they're bespoke React.
+## New flow
 
-### How overrides plug into the dashboard
-1. On app load, `pastPaperData.ts` lookups are wrapped by a `useQuestionOverrides()` hook that merges DB overrides on top of the hardcoded question object.
-2. `PastPaperWorkspace` reads from the merged object — no changes needed in question-rendering code.
-3. Diagram renderer checks for an `imageOverrideUrl`; if present, renders `<img>` instead of the SVG component.
+1. **Landing on `/editor`** → same dashboard-style interface used in `PaperOverview` (question list / sections), but scoped to just the two 2023 ON Paper 2 variants (shown as two cards or a single toggle).
+2. **Click a question** → opens the normal `PastPaperWorkspace` modal exactly like the student sees it.
+3. **Edit-in-place mode** is always on inside `/editor`:
+   - Every text node (question stem, part labels, marks, hint text, final-answer placeholder) becomes `contentEditable` on click, with a subtle dashed outline on hover.
+   - Solution-space boxes (input fields, step boxes, fraction num/den slots) get a small toolbar on focus: **＋ add box**, **✕ remove**, **↑/↓ reorder**, and the math keyboard from `SmartKeyboard` for typing the *expected/seed* value.
+   - Diagrams/images get a hover overlay with **Replace image** / **Remove**.
+4. **Mark scheme button** in the workspace header → opens a side drawer showing the existing `answer` map + `hints` from the question definition (read-only, this is what's already used internally as the marking scheme). Editable from the same drawer.
+5. **Save** (top-right) writes the diff to `question_overrides` via existing `useOverridesSync` / `questionOverrides.ts` — already wired, no schema change. **Revert** removes the override.
 
-### Backend (Lovable Cloud)
+## Technical notes
 
-**Table `question_overrides`** (admin-writable, world-readable):
-- `paper_id text`, `question_id text` — composite PK
-- `override jsonb` — partial `PastPaperQuestion` merged onto the original
-- `diagram_image_url text` (optional)
-- `updated_by uuid`, `updated_at timestamptz`
+- `src/pages/PaperEditor.tsx`: replace current implementation. Reuse `PaperOverview` filtered to `paperId in ['4024_21_2023ON','4024_22_2023ON']`, render `PastPaperWorkspace` in an `editMode` prop.
+- `src/components/PastPaperWorkspace.tsx`: add optional `editMode?: boolean` prop. When true:
+  - Wrap each rendered text span in an `<EditableText>` helper (new small component) bound to a local draft state.
+  - Wrap input/step containers in an `<EditableBoxGroup>` exposing add/remove/reorder.
+  - Render a "Mark scheme" button in the existing header bar next to timer.
+- New `src/components/editor/EditableText.tsx`, `EditableBoxGroup.tsx`, `MarkSchemeDrawer.tsx` (~60 lines each).
+- Persistence flow unchanged: draft state → on Save → merge into override row → `upsert` to `question_overrides`.
+- Delete the old tab/sheet UI code paths from `PaperEditor.tsx`.
 
-RLS: anyone can `SELECT`; only `has_role(auth.uid(),'admin')` can `INSERT/UPDATE/DELETE`.
-
-**Storage bucket `question-diagrams`** (public) for uploaded diagram images.
-
-### Files
-
-New:
-- `src/pages/PaperEditor.tsx` — page shell + paper/question selectors
-- `src/components/editor/QuestionEditorCanvas.tsx` — the editable canvas
-- `src/components/editor/StepEditor.tsx` — step + elements editor
-- `src/components/editor/PartsEditor.tsx`, `HintsEditor.tsx`, `DiagramUploader.tsx`
-- `src/hooks/useQuestionOverrides.ts` — fetch + cache, expose `getMerged(question)`
-- `src/lib/mergeQuestionOverride.ts` — deep-merge utility
-- migration for `question_overrides` + storage bucket
-
-Touched:
-- `src/App.tsx` — add `/editor` route
-- `src/components/Header.tsx` — Editor nav link (admin-only)
-- `src/lib/pastPaperData.ts` — export `getPastPaperQuestionMerged` that consumes overrides
-- `src/components/PastPaperWorkspace.tsx` — read merged question
-- diagram renderer — honour `imageOverrideUrl`
-
-### Phasing
-1. **Phase 1 (this PR):** route, admin gating, paper/question pickers, edit title/question/marks/parts/steps/answers/hints/check-work toggle, save to DB, dashboard reads overrides. Live for every question type that uses `equationStagesMap`.
-2. **Phase 2:** diagram image upload + override rendering.
-3. **Phase 3:** revert-to-original button, edit history, bulk export of overrides as TS code (to fold back into source).
-
-Confirm and I'll start with Phase 1 end-to-end (DB migration → hook → page → dashboard wiring), then immediately do Phase 2 in the same loop.
+## Out of scope
+- No new tables, no auth changes.
+- Other papers stay untouched (the student-facing pages still render every paper).
+- No new diagram editor — image replace only.

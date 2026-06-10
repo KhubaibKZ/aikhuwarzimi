@@ -12,6 +12,7 @@ import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
 import PaperEditor from "./pages/PaperEditor";
 import { OverridesSync } from "@/hooks/useOverridesSync";
+import { ProgressProvider } from "@/context/ProgressContext";
 
 import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";

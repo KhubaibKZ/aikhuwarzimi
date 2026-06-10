@@ -40,7 +40,7 @@ const AppRoutes = () => (
       <Route path="/student-demo-analytics" element={<StudentAnalytics />} />
       <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
-      <Route path="/editor" element={<PaperEditor />} />
+      <Route path="/editor" element={<ProgressProvider><PaperEditor /></ProgressProvider>} />
       <Route path="/demo" element={<Demo />} />
       
       <Route path="/student" element={<StudentDashboard />} />

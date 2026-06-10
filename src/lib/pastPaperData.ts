@@ -95,7 +95,9 @@ export interface PastPaperQuestion {
   primeFactorParts?: Record<string, number>; // Map of answer-key -> target number, renders a PrimeFactorLadder for that key
   markingCriteria?: Record<string, string>; // Per-part marking notes from the marking scheme (e.g. "B1 for 3 correct")
   questionFraction?: { numerator: string; denominator: string }; // Display question with a proper vertical fraction
+  syllabusOverride?: { topicTitle?: string; subtopicCode?: string; subtopicTitle?: string }; // Admin-editable override of derived syllabus ref
 }
+
 
 export interface PastPaperSection {
   id: string;

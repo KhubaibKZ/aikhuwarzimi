@@ -106,7 +106,9 @@ export default function PaperEditor() {
       const keys: (keyof PastPaperQuestion)[] = [
         'title', 'question', 'marks', 'hints', 'parts',
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
+        'syllabusOverride',
       ];
+
       for (const k of keys) {
         if (JSON.stringify((draft as any)[k]) !== JSON.stringify(base[k])) {
           ov[k] = (draft as any)[k];
@@ -243,9 +245,28 @@ export default function PaperEditor() {
           workspaceMode="general"
           editMode
           onEditField={(field, value) => update((d) => {
-            if (field === 'title') d.title = value;
-            if (field === 'question') d.question = value;
+            if (field === 'title') { d.title = value; return; }
+            if (field === 'question') { d.question = value; return; }
+            if (field === 'topicTitle' || field === 'subtopicCode' || field === 'subtopicTitle') {
+              d.syllabusOverride = { ...(d.syllabusOverride || {}), [field]: value };
+              return;
+            }
+            if (typeof field === 'string' && field.startsWith('hint:')) {
+              const idx = parseInt(field.slice(5), 10);
+              if (!Number.isNaN(idx)) {
+                const hints = [...(d.hints || [])];
+                hints[idx] = value;
+                d.hints = hints;
+              }
+            }
           })}
+          onAddHint={() => update((d) => { d.hints = [...(d.hints || []), '']; })}
+          onRemoveHint={(i) => update((d) => {
+            const hints = [...(d.hints || [])];
+            hints.splice(i, 1);
+            d.hints = hints;
+          })}
+
           headerActions={(
             <>
               <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">

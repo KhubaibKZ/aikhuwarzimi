@@ -2228,50 +2228,8 @@ export function PastPaperWorkspace({
               </div>
             )}
 
-            {/* Editor-only: edit Concept Hint wordings inline */}
-            {editMode && onEditField && (
-              <div className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-3 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-warning">
-                    <Lightbulb className="h-3.5 w-3.5" />
-                    Concept Hints (editable)
-                  </div>
-                  {onAddHint && (
-                    <Button type="button" size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={onAddHint}>
-                      + Add hint
-                    </Button>
-                  )}
-                </div>
-                {(question.hints || []).length === 0 && (
-                  <p className="text-xs text-muted-foreground">No hints yet. Click “Add hint” to create one.</p>
-                )}
-                {(question.hints || []).map((h, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="mt-1 inline-flex h-5 min-w-5 items-center justify-center rounded bg-warning/30 px-1 text-[10px] font-bold text-warning">
-                      {i + 1}
-                    </span>
-                    <InlineEditableText
-                      value={h}
-                      onCommit={(v) => onEditField(`hint:${i}` as const, v)}
-                      multiline
-                      className="flex-1 text-sm text-foreground bg-background/40"
-                    />
-                    {onRemoveHint && (
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7 text-destructive"
-                        onClick={() => onRemoveHint(i)}
-                        aria-label="Remove hint"
-                      >
-                        ×
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+
+
 
 
 
@@ -3461,7 +3419,22 @@ export function PastPaperWorkspace({
                   )}>
                     {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
                   </p>
-                  <p className="text-sm whitespace-pre-line leading-relaxed text-foreground">{aiResponse.content}</p>
+                  {editMode && onEditField && aiResponse.type === 'hint' ? (
+                    <div className="space-y-2">
+                      {(question.hints || []).map((h, i) => (
+                        <InlineEditableText
+                          key={i}
+                          value={h}
+                          onCommit={(v) => onEditField(`hint:${i}` as const, v)}
+                          multiline
+                          className="text-sm leading-relaxed text-foreground bg-background/30"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm whitespace-pre-line leading-relaxed text-foreground">{aiResponse.content}</p>
+                  )}
+
                   {feedbackAction && (
                     <div className="mt-3 flex justify-end">
                       <Button

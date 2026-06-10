@@ -241,23 +241,224 @@ export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { mark
 }
 
 
-// ───────────────────────────── Q14: Triangle ABC for measure/construct ─────────────────────────────
+// ───────────────────────────── Q14: Triangle ABC interactive (protractor + compass) ─────────────────────────────
 export function TriangleConstruct_4024_12_2023ON() {
-  // ABC with AB ~ 8cm, BC ~ 7cm, angle ABC ≈ 49°
-  const A = { x: 40, y: 220 };
-  const C = { x: 280, y: 220 };
-  const B = { x: 90, y: 60 };
+  // Diagram replicating the QP image: A top, B right, C bottom-left (∠ABC ≈ 49°)
+  const W = 560, H = 380;
+  const A = { x: 240, y: 50 };
+  const B = { x: 470, y: 200 };
+  const C = { x: 50, y: 320 };
+  const diagramFg = "#111827";
+
+  type Arc = { cx: number; cy: number; r: number };
+  type Line = { x1: number; y1: number; x2: number; y2: number };
+
+  const [tool, setTool] = useState<"protractor" | "arc" | "line">("protractor");
+  const [arcs, setArcs] = useState<Arc[]>([]);
+  const [lines, setLines] = useState<Line[]>([]);
+  const [lineStart, setLineStart] = useState<{ x: number; y: number } | null>(null);
+  const [arcRadius, setArcRadius] = useState(80);
+
+  // Protractor state
+  const [pPos, setPPos] = useState({ x: 470, y: 200 });
+  const [pRot, setPRot] = useState(180); // rotated so straight edge faces up by default
+  const [dragMode, setDragMode] = useState<null | "drag" | "rotate">(null);
+  const [dragOff, setDragOff] = useState({ x: 0, y: 0 });
+  const svgRef = useState<SVGSVGElement | null>(null);
+  const protractorR = 90;
+
+  const toSvgCoords = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * vb.width,
+      y: ((e.clientY - rect.top) / rect.height) * vb.height,
+    };
+  };
+
+  // Snap helper — snap to a vertex if within 20px
+  const snapToVertex = (p: { x: number; y: number }) => {
+    for (const V of [A, B, C]) {
+      const d = Math.hypot(p.x - V.x, p.y - V.y);
+      if (d < 22) return { ...V };
+    }
+    return p;
+  };
+
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (dragMode) return;
+    const p = toSvgCoords(e);
+    if (tool === "arc") {
+      const snapped = snapToVertex(p);
+      setArcs((prev) => [...prev, { cx: snapped.x, cy: snapped.y, r: arcRadius }]);
+    } else if (tool === "line") {
+      const snapped = snapToVertex(p);
+      if (!lineStart) setLineStart(snapped);
+      else {
+        setLines((prev) => [...prev, { x1: lineStart.x, y1: lineStart.y, x2: snapped.x, y2: snapped.y }]);
+        setLineStart(null);
+      }
+    }
+  };
+
+  const onMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!dragMode) return;
+    const p = toSvgCoords(e);
+    if (dragMode === "drag") {
+      setPPos({
+        x: Math.max(protractorR, Math.min(W - protractorR, p.x - dragOff.x)),
+        y: Math.max(protractorR, Math.min(H - 10, p.y - dragOff.y)),
+      });
+    } else {
+      const ang = Math.atan2(p.y - pPos.y, p.x - pPos.x) * (180 / Math.PI);
+      setPRot(ang);
+    }
+  };
+
+  const endDrag = () => setDragMode(null);
+
+  // Protractor reading at angle ABC: compute angle between protractor baseline and the two sides BA / BC,
+  // only meaningful when protractor centre is near vertex B.
+  const distToB = Math.hypot(pPos.x - B.x, pPos.y - B.y);
+  const baselineDir = pRot; // baseline points along +x rotated by pRot
+  const angBA = Math.atan2(A.y - B.y, A.x - B.x) * (180 / Math.PI);
+  const angBC = Math.atan2(C.y - B.y, C.x - B.x) * (180 / Math.PI);
+  const norm = (a: number) => ((a % 360) + 360) % 360;
+  const between = (from: number, to: number) => {
+    let d = norm(to - from);
+    if (d > 180) d = 360 - d;
+    return d;
+  };
+  let reading = 0;
+  if (distToB < 30) {
+    const dBA = between(baselineDir, angBA);
+    const dBC = between(baselineDir, angBC);
+    // If baseline aligned with BA or BC, show the other angle
+    if (dBA < 12) reading = Math.round(dBC);
+    else if (dBC < 12) reading = Math.round(dBA);
+    else reading = Math.round(between(angBA, angBC)); // fallback: real angle
+  }
+
+  // Generate protractor markings
+  const marks: JSX.Element[] = [];
+  for (let a = 0; a <= 180; a += 1) {
+    const r = (a * Math.PI) / 180;
+    const isL = a % 10 === 0, isM = a % 5 === 0;
+    const innerR = protractorR - (isL ? 10 : isM ? 6 : 3);
+    const x1 = Math.cos(Math.PI - r) * innerR;
+    const y1 = -Math.sin(Math.PI - r) * innerR;
+    const x2 = Math.cos(Math.PI - r) * (protractorR - 2);
+    const y2 = -Math.sin(Math.PI - r) * (protractorR - 2);
+    marks.push(<line key={`m${a}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1a1a2e" strokeWidth={isL ? 1.1 : isM ? 0.7 : 0.4} />);
+    if (isL && a > 0 && a < 180) {
+      const tR = protractorR - 17;
+      marks.push(
+        <text key={`t${a}`} x={Math.cos(Math.PI - r) * tR} y={-Math.sin(Math.PI - r) * tR + 2} fontSize={7} fill="#1a1a2e" textAnchor="middle">{a}</text>
+      );
+    }
+  }
+
+  const clearAll = () => { setArcs([]); setLines([]); setLineStart(null); };
+  const undo = () => {
+    if (lineStart) { setLineStart(null); return; }
+    if (lines.length) { setLines((p) => p.slice(0, -1)); return; }
+    if (arcs.length) { setArcs((p) => p.slice(0, -1)); return; }
+  };
+
   return (
-    <svg viewBox="0 0 320 260" className="w-full max-w-md mx-auto">
-      <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`} fill="none" stroke={fg} strokeWidth={1.6} />
-      <text x={A.x - 14} y={A.y + 4} fontSize={13} fill={fg} fontWeight="bold">A</text>
-      <text x={B.x - 4} y={B.y - 6} fontSize={13} fill={fg} fontWeight="bold">B</text>
-      <text x={C.x + 4} y={C.y + 4} fontSize={13} fill={fg} fontWeight="bold">C</text>
-      {/* Angle B marker */}
-      <path d={`M ${B.x + 14} ${B.y + 6} A 18 18 0 0 0 ${B.x + 6} ${B.y + 22}`} fill="none" stroke={pr} strokeWidth={1.4} />
-      <text x={B.x + 18} y={B.y + 22} fontSize={11} fill={pr} fontWeight="bold">?</text>
-      <text x={150} y={250} fontSize={10} fill={mu} textAnchor="middle">(measure ∠ABC; construct ⊥ bisector of AC)</text>
-    </svg>
+    <div className="space-y-3">
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-2 p-2 rounded-lg bg-muted/40 border border-border">
+        <Button size="sm" variant={tool === "protractor" ? "default" : "outline"} onClick={() => setTool("protractor")}>📐 Protractor</Button>
+        <Button size="sm" variant={tool === "arc" ? "default" : "outline"} onClick={() => setTool("arc")}>🧭 Compass (arc)</Button>
+        <Button size="sm" variant={tool === "line" ? "default" : "outline"} onClick={() => setTool("line")}>📏 Line</Button>
+        {tool === "arc" && (
+          <label className="flex items-center gap-2 text-xs text-foreground ml-2">
+            radius
+            <input type="range" min={30} max={180} value={arcRadius} onChange={(e) => setArcRadius(Number(e.target.value))} />
+            <span className="tabular-nums w-8 text-right">{arcRadius}</span>
+          </label>
+        )}
+        <div className="ml-auto flex gap-2">
+          <Button size="sm" variant="outline" onClick={undo}>Undo</Button>
+          <Button size="sm" variant="outline" onClick={clearAll}>Clear</Button>
+        </div>
+      </div>
+
+      {/* Reading */}
+      {tool === "protractor" && (
+        <div className="p-2 rounded-lg bg-muted/50 border border-border flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">∠ABC reading (place protractor centre on B and align baseline with BA or BC):</span>
+          <span className="text-xl font-bold text-foreground tabular-nums">{distToB < 30 ? `${reading}°` : "—"}</span>
+        </div>
+      )}
+
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full bg-white rounded-lg border-2 border-border shadow-inner"
+        onClick={handleSvgClick}
+        onMouseMove={onMouseMove}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
+        style={{ cursor: tool === "arc" || tool === "line" ? "crosshair" : "default" }}
+      >
+        {/* Triangle ABC — replicating QP image */}
+        <polygon points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`} fill="none" stroke={diagramFg} strokeWidth={1.6} />
+        <text x={A.x - 4} y={A.y - 10} fontSize={18} fontStyle="italic" fill={diagramFg}>A</text>
+        <text x={B.x + 8} y={B.y + 6} fontSize={18} fontStyle="italic" fill={diagramFg}>B</text>
+        <text x={C.x - 16} y={C.y + 14} fontSize={18} fontStyle="italic" fill={diagramFg}>C</text>
+
+        {/* User-drawn arcs (compass) */}
+        {arcs.map((a, i) => (
+          <circle key={`a${i}`} cx={a.cx} cy={a.cy} r={a.r} fill="none" stroke="#0a7" strokeWidth={1} strokeDasharray="4 3" />
+        ))}
+
+        {/* User-drawn lines */}
+        {lines.map((l, i) => (
+          <line key={`l${i}`} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="#c2185b" strokeWidth={1.6} />
+        ))}
+        {lineStart && (
+          <circle cx={lineStart.x} cy={lineStart.y} r={4} fill="#c2185b" />
+        )}
+
+        {/* Protractor */}
+        {tool === "protractor" && (
+          <g transform={`translate(${pPos.x}, ${pPos.y}) rotate(${pRot})`}>
+            <path
+              d={`M ${-protractorR} 0 A ${protractorR} ${protractorR} 0 0 1 ${protractorR} 0 L 0 0 Z`}
+              fill="rgba(255,224,130,0.55)"
+              stroke="#d4a000"
+              strokeWidth={1.5}
+              style={{ cursor: dragMode === "drag" ? "grabbing" : "grab" }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                const p = toSvgCoords(e as any);
+                setDragOff({ x: p.x - pPos.x, y: p.y - pPos.y });
+                setDragMode("drag");
+              }}
+            />
+            <line x1={-protractorR + 3} y1={0} x2={protractorR - 3} y2={0} stroke="#c62828" strokeWidth={1} />
+            <line x1={-6} y1={0} x2={6} y2={0} stroke="#c62828" strokeWidth={1.5} />
+            <line x1={0} y1={-6} x2={0} y2={6} stroke="#c62828" strokeWidth={1.5} />
+            <circle cx={0} cy={0} r={2.5} fill="#c62828" />
+            {marks}
+            <g
+              transform={`translate(${protractorR - 14}, -22)`}
+              style={{ cursor: "pointer" }}
+              onMouseDown={(e) => { e.stopPropagation(); setDragMode("rotate"); }}
+            >
+              <circle r={10} fill="#2196f3" stroke="#1565c0" strokeWidth={1.2} />
+              <text y={3} fontSize={12} fill="white" textAnchor="middle" fontWeight="bold">↻</text>
+            </g>
+          </g>
+        )}
+      </svg>
+
+      <p className="text-xs text-muted-foreground">
+        Tip: For (a), drag the protractor so its centre crosshair sits on vertex B and align the baseline with BA (or BC); the reading shows the angle to the other side. For (b)/(c), use the compass tool to draw arcs from A, C (and B for the 6 cm region), then use the line tool to join intersection points.
+      </p>
+    </div>
   );
 }
 

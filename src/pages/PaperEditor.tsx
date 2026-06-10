@@ -279,6 +279,7 @@ export default function PaperEditor() {
           solutionOverride={paperId === CANVAS_PAPER_ID ? (
             <SolutionCanvas
               value={draft.solutionCanvas}
+              hints={draft.hints}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />
           ) : undefined}

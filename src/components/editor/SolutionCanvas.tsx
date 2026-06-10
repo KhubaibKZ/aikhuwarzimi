@@ -8,7 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, CheckSquare, Plus, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, CheckSquare, Keyboard, Lightbulb, Plus, Send, Trash2, Type } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { cn } from '@/lib/utils';
 import {
   BoxSize,
@@ -23,9 +25,16 @@ import {
 interface Props {
   value?: TCanvas;
   onChange: (next: TCanvas) => void;
+  hints?: string[];
 }
 
 const empty: TCanvas = { blocks: [] };
+
+const DEFAULT_KEYBOARD: string[][] = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['+', '-', '×', '÷', '=', '.', '(', ')', '<', '>'],
+  ['√', 'π', '²', '³', '°', '±', '½', '¼', '¾', '⌫'],
+];
 
 const boxWidth: Record<BoxSize, string> = {
   sm: 'w-16',
@@ -33,8 +42,10 @@ const boxWidth: Record<BoxSize, string> = {
   lg: 'w-48',
 };
 
-export function SolutionCanvas({ value, onChange }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [] }: Props) {
   const canvas = value ?? empty;
+  const { toast } = useToast();
+  const [hintIdx, setHintIdx] = useState(0);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
@@ -162,10 +173,38 @@ export function SolutionCanvas({ value, onChange }: Props) {
                 update={(fn) => updateBlock(b.id, fn as any)}
                 setFocusedRef={setFocusedRef}
                 symbolPopover={symbolPopover}
+                insertAtCursor={insertAtCursor}
               />
             )}
           </BlockShell>
         ))}
+      </div>
+
+      {/* Bottom action bar — Hint + Submit (matches regular interface) */}
+      <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-background/95 px-3 py-2 backdrop-blur">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1"
+          onClick={() => {
+            if (!hints.length) {
+              toast({ title: 'No hints', description: 'No hints defined for this question.' });
+              return;
+            }
+            const i = hintIdx % hints.length;
+            toast({ title: `Hint ${i + 1} of ${hints.length}`, description: hints[i] });
+            setHintIdx(i + 1);
+          }}
+        >
+          <Lightbulb className="h-4 w-4" /> Hint
+        </Button>
+        <Button
+          size="sm"
+          className="gap-1"
+          onClick={() => toast({ title: 'Submitted', description: 'Solution canvas submitted (preview).' })}
+        >
+          <Send className="h-4 w-4" /> Submit
+        </Button>
       </div>
     </div>
   );
@@ -210,12 +249,15 @@ function StepCard({
   update,
   setFocusedRef,
   symbolPopover,
+  insertAtCursor,
 }: {
   block: Extract<CanvasBlock, { kind: 'step' }>;
   update: (fn: (b: Extract<CanvasBlock, { kind: 'step' }>) => CanvasBlock) => void;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
   symbolPopover: React.ReactNode;
+  insertAtCursor: (s: string) => void;
 }) {
+  const [kbOpen, setKbOpen] = useState(false);
   const setItems = (items: StepItem[]) => update((b) => ({ ...b, items }));
   const addItem = (it: StepItem) => setItems([...block.items, it]);
   const updateItem = (id: string, fn: (i: StepItem) => StepItem) =>
@@ -246,6 +288,14 @@ function StepCard({
         {symbolPopover}
         <Button
           size="sm"
+          variant={kbOpen ? 'default' : 'outline'}
+          className="h-7 gap-1 px-2 text-xs"
+          onClick={() => setKbOpen((v) => !v)}
+        >
+          <Keyboard className="h-3.5 w-3.5" /> {kbOpen ? 'Hide' : 'Keyboard'}
+        </Button>
+        <Button
+          size="sm"
           variant="outline"
           className="ml-auto h-7 gap-1 px-2 text-xs"
           title="Check Work (preview)"
@@ -268,6 +318,35 @@ function StepCard({
               onRemove={() => removeItem(it.id)}
             />
           ))}
+        </div>
+      )}
+
+      {kbOpen && (
+        <div className="mt-3 rounded-md border border-border bg-muted/40 p-2">
+          <HorizontalKeyboard
+            keys={DEFAULT_KEYBOARD}
+            onKeyPress={(k) => {
+              if (k === '⌫') {
+                const el = (document.activeElement as HTMLInputElement | HTMLTextAreaElement | null);
+                if (el && 'value' in el) {
+                  const start = el.selectionStart ?? el.value.length;
+                  if (start > 0) {
+                    const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
+                    const setter = Object.getOwnPropertyDescriptor(
+                      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                      'value',
+                    )?.set;
+                    setter?.call(el, next);
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
+                  }
+                }
+                return;
+              }
+              insertAtCursor(k);
+            }}
+          />
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
         </div>
       )}
     </div>

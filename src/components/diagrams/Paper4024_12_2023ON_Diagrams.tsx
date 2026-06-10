@@ -242,7 +242,7 @@ export function TransformGrid_4024_12_2023ON({ onScore }: { onScore?: (s: { mark
 
 
 // ───────────────────────────── Q14: Triangle ABC interactive (protractor + compass) ─────────────────────────────
-export function TriangleConstruct_4024_12_2023ON() {
+export function TriangleConstruct_4024_12_2023ON({ onScore }: { onScore?: (s: { b: { marks: number; note: string }; c: { marks: number; note: string } }) => void } = {}) {
   // Diagram replicating the QP image: A top, B right, C bottom-left (∠ABC ≈ 49°)
   const W = 560, H = 380;
   const A = { x: 240, y: 50 };
@@ -268,13 +268,17 @@ export function TriangleConstruct_4024_12_2023ON() {
   const [dragOff, setDragOff] = useState({ x: 0, y: 0 });
   const protractorR = 90;
 
-  const toSvgCoords = (e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const toSvgCoords = (e: { clientX: number; clientY: number }) => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
     const rect = svg.getBoundingClientRect();
-    const vb = svg.viewBox.baseVal;
+    const vb = svg.viewBox?.baseVal;
+    const vbW = vb && vb.width ? vb.width : W;
+    const vbH = vb && vb.height ? vb.height : H;
     return {
-      x: ((e.clientX - rect.left) / rect.width) * vb.width,
-      y: ((e.clientY - rect.top) / rect.height) * vb.height,
+      x: ((e.clientX - rect.left) / rect.width) * vbW,
+      y: ((e.clientY - rect.top) / rect.height) * vbH,
     };
   };
 

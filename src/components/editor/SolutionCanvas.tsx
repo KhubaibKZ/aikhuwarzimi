@@ -249,12 +249,15 @@ function StepCard({
   update,
   setFocusedRef,
   symbolPopover,
+  insertAtCursor,
 }: {
   block: Extract<CanvasBlock, { kind: 'step' }>;
   update: (fn: (b: Extract<CanvasBlock, { kind: 'step' }>) => CanvasBlock) => void;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
   symbolPopover: React.ReactNode;
+  insertAtCursor: (s: string) => void;
 }) {
+  const [kbOpen, setKbOpen] = useState(false);
   const setItems = (items: StepItem[]) => update((b) => ({ ...b, items }));
   const addItem = (it: StepItem) => setItems([...block.items, it]);
   const updateItem = (id: string, fn: (i: StepItem) => StepItem) =>

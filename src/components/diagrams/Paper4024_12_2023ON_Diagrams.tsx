@@ -535,7 +535,7 @@ export function CumulativeFrequency_4024_12_2023ON({ onScore }: { onScore?: (s: 
   const [joined, setJoined] = useState(false);
 
   // Score: B1 for ≥5 correct upper-bound points, B2 for all 6 + joined
-  React.useEffect(() => {
+  useEffect(() => {
     if (!onScore) return;
     const expected = headers.map(h => ({ x: parseFloat(h.label.replace(/[^\d.]/g, '')), y: h.cf }));
     let correct = 0;

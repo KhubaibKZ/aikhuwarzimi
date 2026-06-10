@@ -243,13 +243,13 @@ export default function PaperEditor() {
 
       {/* Live workspace — same as student dashboard (except for paper 21 ON 2023 which uses the blank Solution Canvas) */}
       {draft && workspaceOpen && paperId === CANVAS_PAPER_ID && (
-        <Dialog open={workspaceOpen} onOpenChange={(o) => { if (!o) { setWorkspaceOpen(false); setQuestionId(''); } }}>
-          <DialogContent className="max-w-[1400px] w-[96vw] h-[92vh] p-0 gap-0 flex flex-col">
-            <DialogHeader className="px-4 py-3 border-b border-border flex-row items-center justify-between space-y-0">
-              <DialogTitle className="text-base">
+        <Sheet open={workspaceOpen} onOpenChange={(o) => { if (!o) { setWorkspaceOpen(false); setQuestionId(''); } }}>
+          <SheetContent side="right" className="w-full sm:max-w-none sm:w-[96vw] p-0 flex flex-col">
+            <SheetHeader className="px-4 py-3 border-b border-border flex flex-row items-center justify-between space-y-0">
+              <SheetTitle className="text-base">
                 Q{draft.questionNumber} — {draft.title}
                 <span className="ml-2 text-xs font-normal text-muted-foreground">Solution Canvas (admin)</span>
-              </DialogTitle>
+              </SheetTitle>
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
                   <BookOpen className="h-4 w-4" /> Mark scheme
@@ -261,19 +261,28 @@ export default function PaperEditor() {
                   <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
                 </Button>
               </div>
-            </DialogHeader>
-            <div className="grid flex-1 min-h-0 grid-cols-1 md:grid-cols-2">
-              <div className="overflow-y-auto border-r border-border p-4 space-y-3">
-                <Badge variant="secondary">{draft.marks} marks</Badge>
-                <QuestionText text={draft.question} />
+            </SheetHeader>
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="mx-auto max-w-4xl p-4 space-y-4">
+                {/* Question card — matches student workspace look */}
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary">{draft.marks} marks</Badge>
+                  </div>
+                  <QuestionText text={draft.question} />
+                </div>
+
+                {/* Blank Solution Canvas — sits directly under the question */}
+                <div className="rounded-xl border border-border bg-card overflow-hidden">
+                  <SolutionCanvas
+                    value={draft.solutionCanvas}
+                    onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
+                  />
+                </div>
               </div>
-              <SolutionCanvas
-                value={draft.solutionCanvas}
-                onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
-              />
             </div>
-          </DialogContent>
-        </Dialog>
+          </SheetContent>
+        </Sheet>
       )}
 
       {draft && workspaceOpen && paperId !== CANVAS_PAPER_ID && (

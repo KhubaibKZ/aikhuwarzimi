@@ -106,7 +106,7 @@ export default function PaperEditor() {
       const keys: (keyof PastPaperQuestion)[] = [
         'title', 'question', 'marks', 'hints', 'parts',
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
-        'syllabusOverride',
+        'syllabusOverride', 'solutionCanvas',
       ];
 
       for (const k of keys) {

@@ -166,6 +166,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                     onFocus={(e) => setFocusedRef(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
                     className="text-lg font-bold"
+                    spellCheck={false}
+                    autoComplete="off"
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
                   />
                 )}
                 {b.kind === 'text' && (
@@ -174,6 +179,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                     value={b.text}
                     onFocus={(e) => setFocusedRef(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                    spellCheck={false}
+                    autoComplete="off"
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
                   />
                 )}
                 {b.kind === 'step' && (

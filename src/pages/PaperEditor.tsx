@@ -241,51 +241,8 @@ export default function PaperEditor() {
         </Tabs>
       </div>
 
-      {/* Live workspace — same as student dashboard (except for paper 21 ON 2023 which uses the blank Solution Canvas) */}
-      {draft && workspaceOpen && paperId === CANVAS_PAPER_ID && (
-        <Sheet open={workspaceOpen} onOpenChange={(o) => { if (!o) { setWorkspaceOpen(false); setQuestionId(''); } }}>
-          <SheetContent side="right" className="w-full sm:max-w-none sm:w-[96vw] p-0 flex flex-col">
-            <SheetHeader className="px-4 py-3 border-b border-border flex flex-row items-center justify-between space-y-0">
-              <SheetTitle className="text-base">
-                Q{draft.questionNumber} — {draft.title}
-                <span className="ml-2 text-xs font-normal text-muted-foreground">Solution Canvas (admin)</span>
-              </SheetTitle>
-              <div className="flex items-center gap-2">
-                <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
-                  <BookOpen className="h-4 w-4" /> Mark scheme
-                </Button>
-                <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
-                  <RotateCcw className="h-4 w-4" /> Revert
-                </Button>
-                <Button size="sm" onClick={save} disabled={saving} className="gap-2">
-                  <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-                </Button>
-              </div>
-            </SheetHeader>
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <div className="mx-auto max-w-4xl p-4 space-y-4">
-                {/* Question card — matches student workspace look */}
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="secondary">{draft.marks} marks</Badge>
-                  </div>
-                  <QuestionText text={draft.question} />
-                </div>
-
-                {/* Blank Solution Canvas — sits directly under the question */}
-                <div className="rounded-xl border border-border bg-card overflow-hidden">
-                  <SolutionCanvas
-                    value={draft.solutionCanvas}
-                    onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
-                  />
-                </div>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-      )}
-
-      {draft && workspaceOpen && paperId !== CANVAS_PAPER_ID && (
+      {/* Live workspace — same interface as Papers 11/12. For paper 21 ON 2023 we replace the solution body with the blank Solution Canvas. */}
+      {draft && workspaceOpen && (
         <PastPaperWorkspace
           question={draft as PastPaperQuestion}
           isOpen={workspaceOpen}
@@ -319,7 +276,12 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
-
+          solutionOverride={paperId === CANVAS_PAPER_ID ? (
+            <SolutionCanvas
+              value={draft.solutionCanvas}
+              onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
+            />
+          ) : undefined}
           headerActions={(
             <>
               <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
@@ -335,6 +297,7 @@ export default function PaperEditor() {
           )}
         />
       )}
+
 
       {/* Mark-scheme drawer (read-only view of validator answers + hints) */}
       {draft && (

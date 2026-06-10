@@ -377,8 +377,8 @@ export function TriangleConstruct_4024_12_2023ON() {
         {tool === "arc" && (
           <label className="flex items-center gap-2 text-xs text-foreground ml-2">
             radius
-            <input type="range" min={30} max={180} value={arcRadius} onChange={(e) => setArcRadius(Number(e.target.value))} />
-            <span className="tabular-nums w-8 text-right">{arcRadius}</span>
+            <input type="range" min={1} max={8} step={0.5} value={arcRadiusCm} onChange={(e) => setArcRadiusCm(Number(e.target.value))} />
+            <span className="tabular-nums w-12 text-right">{arcRadiusCm} cm</span>
           </label>
         )}
         <div className="ml-auto flex gap-2">

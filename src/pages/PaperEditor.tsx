@@ -58,6 +58,7 @@ export default function PaperEditor() {
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
   const [msOpen, setMsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);

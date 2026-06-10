@@ -33,6 +33,11 @@ import {
 } from '@/lib/pastPaperData';
 import { getOverride, setOverride, clearOverride } from '@/lib/questionOverrides';
 import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
+import { QuestionText } from '@/components/QuestionText';
+
+const CANVAS_PAPER_ID = 'pp_4024_on23_21';
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 

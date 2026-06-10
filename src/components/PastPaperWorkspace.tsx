@@ -3421,16 +3421,26 @@ export function PastPaperWorkspace({
                   </p>
                   {editMode && onEditField && aiResponse.type === 'hint' ? (
                     <InlineEditableText
-                      value={(question.hints && question.hints.length ? question.hints.join('\n') : aiResponse.content)}
+                      value={aiResponse.content}
                       onCommit={(v) => {
-                        const lines = v.split('\n');
-                        const existing = question.hints || [];
-                        const max = Math.max(lines.length, existing.length);
-                        for (let i = 0; i < max; i++) {
-                          const next = lines[i] ?? '';
-                          const prev = existing[i] ?? '';
-                          if (next !== prev) onEditField(`hint:${i}` as const, next);
+                        const hints = question.hints || [];
+                        const joined = hints.join('\n');
+                        if (aiResponse.content === joined) {
+                          // Multi-part display: split lines back into hints
+                          const lines = v.split('\n');
+                          const max = Math.max(lines.length, hints.length);
+                          for (let i = 0; i < max; i++) {
+                            const next = lines[i] ?? '';
+                            const prev = hints[i] ?? '';
+                            if (next !== prev) onEditField(`hint:${i}` as const, next);
+                          }
+                        } else {
+                          // Single hint display: find which index is currently shown
+                          const idx = hints.findIndex(h => h === aiResponse.content);
+                          const targetIdx = idx >= 0 ? idx : 0;
+                          onEditField(`hint:${targetIdx}` as const, v);
                         }
+                        setAiResponse({ type: 'hint', content: v });
                       }}
                       multiline
                       className="text-sm leading-relaxed text-foreground bg-background/30 whitespace-pre-line"

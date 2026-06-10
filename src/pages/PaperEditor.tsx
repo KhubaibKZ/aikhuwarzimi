@@ -253,7 +253,7 @@ export default function PaperEditor() {
             </CardContent>
           </Card>
 
-          {/* Right: canvas */}
+          {/* Right: live dashboard view + edit sheet */}
           <div className="col-span-12 lg:col-span-9">
             {!draft ? (
               <Card>
@@ -272,8 +272,23 @@ export default function PaperEditor() {
                   </div>
                   <div className="flex gap-2 flex-wrap justify-end">
                     <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                      <Eye className="h-4 w-4" /> Preview
+                      Open live view
                     </Button>
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Pencil className="h-4 w-4" /> Edit fields
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto z-[70]">
+                        <SheetHeader>
+                          <SheetTitle>Edit Q{draft.questionNumber} — {draft.title}</SheetTitle>
+                        </SheetHeader>
+                        <div className="mt-4">
+                          <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />
+                        </div>
+                      </SheetContent>
+                    </Sheet>
                     <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
                       <RotateCcw className="h-4 w-4" /> Revert
                     </Button>
@@ -283,196 +298,10 @@ export default function PaperEditor() {
                   </div>
                 </CardHeader>
 
-                <CardContent>
-                  <Tabs defaultValue="content" className="w-full">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="content">Content</TabsTrigger>
-                      <TabsTrigger value="parts">Parts</TabsTrigger>
-                      <TabsTrigger value="steps">Solution steps</TabsTrigger>
-                      <TabsTrigger value="hints">Hints & Check</TabsTrigger>
-                      <TabsTrigger value="diagram">Diagram image</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="content" className="space-y-4">
-                      <div>
-                        <Label>Title</Label>
-                        <Input value={draft.title} onChange={(e) => update((d) => { d.title = e.target.value; })} />
-                      </div>
-                      <div>
-                        <Label>Question text</Label>
-                        <Textarea
-                          rows={6}
-                          value={draft.question}
-                          onChange={(e) => update((d) => { d.question = e.target.value; })}
-                        />
-                        <p className="text-[11px] text-muted-foreground mt-1">
-                          Use plain text. Newlines preserved. Math symbols: × ÷ ² ³ √ π °.
-                        </p>
-                      </div>
-                      <div className="w-32">
-                        <Label>Total marks</Label>
-                        <Input
-                          type="number" min={0}
-                          value={draft.marks}
-                          onChange={(e) => update((d) => { d.marks = Number(e.target.value) || 0; })}
-                        />
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="parts" className="space-y-3">
-                      {(draft.parts || []).length === 0 && (
-                        <p className="text-sm text-muted-foreground">
-                          This question has no parts. (Short / single-answer questions edit the answer directly under Solution steps.)
-                        </p>
-                      )}
-                      {(draft.parts || []).map((p, idx) => (
-                        <div key={idx} className="rounded-md border border-border p-3 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1">
-                              <Label className="text-xs">Label</Label>
-                              <Input value={p.label} onChange={(e) => update((d) => { d.parts![idx].label = e.target.value; })} />
-                            </div>
-                            <div className="w-24">
-                              <Label className="text-xs">Key</Label>
-                              <Input value={p.key} onChange={(e) => update((d) => { d.parts![idx].key = e.target.value; })} />
-                            </div>
-                            <div className="w-20">
-                              <Label className="text-xs">Marks</Label>
-                              <Input type="number" min={0} value={p.marks}
-                                onChange={(e) => update((d) => { d.parts![idx].marks = Number(e.target.value) || 0; })} />
-                            </div>
-                            <div className="flex flex-col gap-1 pt-5">
-                              <Button variant="ghost" size="icon" className="h-7 w-7"
-                                onClick={() => update((d) => {
-                                  if (idx > 0) { const a = d.parts![idx - 1]; d.parts![idx - 1] = d.parts![idx]; d.parts![idx] = a; }
-                                })}><ArrowUp className="h-3 w-3" /></Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7"
-                                onClick={() => update((d) => {
-                                  if (idx < d.parts!.length - 1) { const a = d.parts![idx + 1]; d.parts![idx + 1] = d.parts![idx]; d.parts![idx] = a; }
-                                })}><ArrowDown className="h-3 w-3" /></Button>
-                            </div>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive"
-                              onClick={() => update((d) => { d.parts!.splice(idx, 1); })}>
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                          <div>
-                            <Label className="text-xs">Final answer for this part (used by validator)</Label>
-                            <Input
-                              value={((draft.answer as any) || {})[p.key] || ''}
-                              onChange={(e) => update((d) => {
-                                if (typeof d.answer !== 'object' || !d.answer) d.answer = {} as any;
-                                (d.answer as any)[p.key] = e.target.value;
-                              })}
-                              placeholder="e.g. 2b-a|-a+2b"
-                            />
-                            <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives.</p>
-                          </div>
-                        </div>
-                      ))}
-                      <Button variant="outline" size="sm" onClick={() => update((d) => {
-                        d.parts = d.parts || [];
-                        const k = `p${d.parts.length + 1}`;
-                        d.parts.push({ label: `(${String.fromCharCode(97 + d.parts.length)}) New part`, key: k, marks: 1 });
-                      })}>
-                        <Plus className="h-4 w-4" /> Add part
-                      </Button>
-                    </TabsContent>
-
-                    <TabsContent value="steps">
-                      <StepsEditor draft={draft} update={update} />
-                    </TabsContent>
-
-                    <TabsContent value="hints" className="space-y-4">
-                      <div>
-                        <Label>Hints (shown one at a time via the Hint button)</Label>
-                        <div className="space-y-2 mt-2">
-                          {(draft.hints || []).map((h, i) => (
-                            <div key={i} className="flex gap-2">
-                              <Input value={h} onChange={(e) => update((d) => { d.hints[i] = e.target.value; })} />
-                              <Button variant="ghost" size="icon" className="text-destructive"
-                                onClick={() => update((d) => { d.hints.splice(i, 1); })}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button variant="outline" size="sm" onClick={() => update((d) => { d.hints = [...(d.hints || []), '']; })}>
-                            <Plus className="h-4 w-4" /> Add hint
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <Label className="mb-2 block">Check-work button (per part)</Label>
-                        {(draft.parts || []).length === 0 ? (
-                          <p className="text-sm text-muted-foreground">No parts on this question.</p>
-                        ) : (
-                          <div className="space-y-2">
-                            {(draft.parts || []).map((p) => {
-                              const map = (draft as any).checkWorkDisabledMap || {};
-                              const disabled = !!map[p.key];
-                              return (
-                                <div key={p.key} className="flex items-center justify-between rounded-md border border-border px-3 py-2">
-                                  <span className="text-sm">{p.label}</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground">{disabled ? 'Hidden' : 'Shown'}</span>
-                                    <Switch
-                                      checked={!disabled}
-                                      onCheckedChange={(v) => update((d) => {
-                                        (d as any).checkWorkDisabledMap = { ...((d as any).checkWorkDisabledMap || {}) };
-                                        if (v) delete (d as any).checkWorkDisabledMap[p.key];
-                                        else (d as any).checkWorkDisabledMap[p.key] = true;
-                                      })}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                        <p className="text-[11px] text-muted-foreground mt-2">
-                          Note: this toggle is saved as metadata. The dashboard currently always shows the check-work button — wiring it to hide per part is a small follow-up.
-                        </p>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="diagram" className="space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        Upload an image to display above (or in place of) the built-in diagram for this question.
-                        Existing hand-coded SVG diagrams will still render below — clear the image to remove the override.
-                      </p>
-                      {(draft as any).diagramImageUrl ? (
-                        <div className="space-y-3">
-                          <div className="rounded-md border border-border p-2 bg-white">
-                            <img src={(draft as any).diagramImageUrl} alt="Diagram" className="max-h-80 mx-auto" />
-                          </div>
-                          <Button variant="outline" size="sm"
-                            onClick={() => update((d) => { (d as any).diagramImageUrl = null; })}>
-                            <ImageOff className="h-4 w-4" /> Remove image
-                          </Button>
-                        </div>
-                      ) : (
-                        <div>
-                          <input
-                            id="diagram-upload"
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const f = e.target.files?.[0];
-                              if (f) uploadDiagram(f);
-                              e.currentTarget.value = '';
-                            }}
-                          />
-                          <Button asChild variant="outline" disabled={uploading}>
-                            <label htmlFor="diagram-upload" className="cursor-pointer">
-                              <Upload className="h-4 w-4" /> {uploading ? 'Uploading…' : 'Upload image'}
-                            </label>
-                          </Button>
-                        </div>
-                      )}
-                    </TabsContent>
-                  </Tabs>
+                <CardContent className="text-sm text-muted-foreground">
+                  The live dashboard view is open on top — close it (✕) to return here. Use{' '}
+                  <span className="font-medium text-foreground">Edit fields</span> to change content, parts, steps, hints, or the diagram.
+                  Click <span className="font-medium text-foreground">Save</span> to publish for all users.
                 </CardContent>
               </Card>
             )}
@@ -480,7 +309,7 @@ export default function PaperEditor() {
         </div>
       </div>
 
-      {/* Live preview */}
+      {/* Live dashboard workspace — auto-opens on question select */}
       {draft && previewOpen && (
         <PastPaperWorkspace
           question={draft as PastPaperQuestion}
@@ -489,7 +318,236 @@ export default function PaperEditor() {
           workspaceMode="general"
         />
       )}
+
+      {/* Floating Edit button visible while the dialog is open */}
+      {draft && previewOpen && (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              size="lg"
+              className="fixed bottom-6 right-6 z-[60] shadow-lg gap-2"
+            >
+              <Pencil className="h-4 w-4" /> Edit fields
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto z-[80]">
+            <SheetHeader>
+              <SheetTitle>Edit Q{draft.questionNumber} — {draft.title}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3">
+              <div className="flex gap-2">
+                <Button size="sm" onClick={save} disabled={saving}>
+                  <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+                </Button>
+                <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
+                  <RotateCcw className="h-4 w-4" /> Revert
+                </Button>
+              </div>
+              <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
+  );
+}
+
+/* -------------------- Editor Tabs (extracted) -------------------- */
+
+function EditorTabs({
+  draft, update, uploading, uploadDiagram,
+}: {
+  draft: Editable;
+  update: (m: (d: Editable) => void) => void;
+  uploading: boolean;
+  uploadDiagram: (f: File) => void;
+}) {
+  return (
+    <Tabs defaultValue="content" className="w-full">
+      <TabsList className="mb-4 flex-wrap h-auto">
+        <TabsTrigger value="content">Content</TabsTrigger>
+        <TabsTrigger value="parts">Parts</TabsTrigger>
+        <TabsTrigger value="steps">Solution steps</TabsTrigger>
+        <TabsTrigger value="hints">Hints & Check</TabsTrigger>
+        <TabsTrigger value="diagram">Diagram image</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="content" className="space-y-4">
+        <div>
+          <Label>Title</Label>
+          <Input value={draft.title} onChange={(e) => update((d) => { d.title = e.target.value; })} />
+        </div>
+        <div>
+          <Label>Question text</Label>
+          <Textarea
+            rows={6}
+            value={draft.question}
+            onChange={(e) => update((d) => { d.question = e.target.value; })}
+          />
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Use plain text. Newlines preserved. Math symbols: × ÷ ² ³ √ π °.
+          </p>
+        </div>
+        <div className="w-32">
+          <Label>Total marks</Label>
+          <Input
+            type="number" min={0}
+            value={draft.marks}
+            onChange={(e) => update((d) => { d.marks = Number(e.target.value) || 0; })}
+          />
+        </div>
+      </TabsContent>
+
+      <TabsContent value="parts" className="space-y-3">
+        {(draft.parts || []).length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            This question has no parts. (Short / single-answer questions edit the answer directly under Solution steps.)
+          </p>
+        )}
+        {(draft.parts || []).map((p, idx) => (
+          <div key={idx} className="rounded-md border border-border p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <Label className="text-xs">Label</Label>
+                <Input value={p.label} onChange={(e) => update((d) => { d.parts![idx].label = e.target.value; })} />
+              </div>
+              <div className="w-24">
+                <Label className="text-xs">Key</Label>
+                <Input value={p.key} onChange={(e) => update((d) => { d.parts![idx].key = e.target.value; })} />
+              </div>
+              <div className="w-20">
+                <Label className="text-xs">Marks</Label>
+                <Input type="number" min={0} value={p.marks}
+                  onChange={(e) => update((d) => { d.parts![idx].marks = Number(e.target.value) || 0; })} />
+              </div>
+              <div className="flex flex-col gap-1 pt-5">
+                <Button variant="ghost" size="icon" className="h-7 w-7"
+                  onClick={() => update((d) => {
+                    if (idx > 0) { const a = d.parts![idx - 1]; d.parts![idx - 1] = d.parts![idx]; d.parts![idx] = a; }
+                  })}><ArrowUp className="h-3 w-3" /></Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7"
+                  onClick={() => update((d) => {
+                    if (idx < d.parts!.length - 1) { const a = d.parts![idx + 1]; d.parts![idx + 1] = d.parts![idx]; d.parts![idx] = a; }
+                  })}><ArrowDown className="h-3 w-3" /></Button>
+              </div>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive"
+                onClick={() => update((d) => { d.parts!.splice(idx, 1); })}>
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+            <div>
+              <Label className="text-xs">Final answer for this part (used by validator)</Label>
+              <Input
+                value={((draft.answer as any) || {})[p.key] || ''}
+                onChange={(e) => update((d) => {
+                  if (typeof d.answer !== 'object' || !d.answer) d.answer = {} as any;
+                  (d.answer as any)[p.key] = e.target.value;
+                })}
+                placeholder="e.g. 2b-a|-a+2b"
+              />
+              <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives.</p>
+            </div>
+          </div>
+        ))}
+        <Button variant="outline" size="sm" onClick={() => update((d) => {
+          d.parts = d.parts || [];
+          const k = `p${d.parts.length + 1}`;
+          d.parts.push({ label: `(${String.fromCharCode(97 + d.parts.length)}) New part`, key: k, marks: 1 });
+        })}>
+          <Plus className="h-4 w-4" /> Add part
+        </Button>
+      </TabsContent>
+
+      <TabsContent value="steps">
+        <StepsEditor draft={draft} update={update} />
+      </TabsContent>
+
+      <TabsContent value="hints" className="space-y-4">
+        <div>
+          <Label>Hints (shown one at a time via the Hint button)</Label>
+          <div className="space-y-2 mt-2">
+            {(draft.hints || []).map((h, i) => (
+              <div key={i} className="flex gap-2">
+                <Input value={h} onChange={(e) => update((d) => { d.hints[i] = e.target.value; })} />
+                <Button variant="ghost" size="icon" className="text-destructive"
+                  onClick={() => update((d) => { d.hints.splice(i, 1); })}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={() => update((d) => { d.hints = [...(d.hints || []), '']; })}>
+              <Plus className="h-4 w-4" /> Add hint
+            </Button>
+          </div>
+        </div>
+
+        <div className="border-t pt-4">
+          <Label className="mb-2 block">Check-work button (per part)</Label>
+          {(draft.parts || []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">No parts on this question.</p>
+          ) : (
+            <div className="space-y-2">
+              {(draft.parts || []).map((p) => {
+                const map = (draft as any).checkWorkDisabledMap || {};
+                const disabled = !!map[p.key];
+                return (
+                  <div key={p.key} className="flex items-center justify-between rounded-md border border-border px-3 py-2">
+                    <span className="text-sm">{p.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{disabled ? 'Hidden' : 'Shown'}</span>
+                      <Switch
+                        checked={!disabled}
+                        onCheckedChange={(v) => update((d) => {
+                          (d as any).checkWorkDisabledMap = { ...((d as any).checkWorkDisabledMap || {}) };
+                          if (v) delete (d as any).checkWorkDisabledMap[p.key];
+                          else (d as any).checkWorkDisabledMap[p.key] = true;
+                        })}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="diagram" className="space-y-3">
+        <p className="text-sm text-muted-foreground">
+          Upload an image to display above (or in place of) the built-in diagram for this question.
+        </p>
+        {(draft as any).diagramImageUrl ? (
+          <div className="space-y-3">
+            <div className="rounded-md border border-border p-2 bg-white">
+              <img src={(draft as any).diagramImageUrl} alt="Diagram" className="max-h-80 mx-auto" />
+            </div>
+            <Button variant="outline" size="sm"
+              onClick={() => update((d) => { (d as any).diagramImageUrl = null; })}>
+              <ImageOff className="h-4 w-4" /> Remove image
+            </Button>
+          </div>
+        ) : (
+          <div>
+            <input
+              id="diagram-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) uploadDiagram(f);
+                e.currentTarget.value = '';
+              }}
+            />
+            <Button asChild variant="outline" disabled={uploading}>
+              <label htmlFor="diagram-upload" className="cursor-pointer">
+                <Upload className="h-4 w-4" /> {uploading ? 'Uploading…' : 'Upload image'}
+              </label>
+            </Button>
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }
 

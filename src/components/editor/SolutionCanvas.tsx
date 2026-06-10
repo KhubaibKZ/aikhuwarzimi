@@ -173,10 +173,38 @@ export function SolutionCanvas({ value, onChange, hints = [] }: Props) {
                 update={(fn) => updateBlock(b.id, fn as any)}
                 setFocusedRef={setFocusedRef}
                 symbolPopover={symbolPopover}
+                insertAtCursor={insertAtCursor}
               />
             )}
           </BlockShell>
         ))}
+      </div>
+
+      {/* Bottom action bar — Hint + Submit (matches regular interface) */}
+      <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-end gap-2 border-t border-border bg-background/95 px-3 py-2 backdrop-blur">
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1"
+          onClick={() => {
+            if (!hints.length) {
+              toast({ title: 'No hints', description: 'No hints defined for this question.' });
+              return;
+            }
+            const i = hintIdx % hints.length;
+            toast({ title: `Hint ${i + 1} of ${hints.length}`, description: hints[i] });
+            setHintIdx(i + 1);
+          }}
+        >
+          <Lightbulb className="h-4 w-4" /> Hint
+        </Button>
+        <Button
+          size="sm"
+          className="gap-1"
+          onClick={() => toast({ title: 'Submitted', description: 'Solution canvas submitted (preview).' })}
+        >
+          <Send className="h-4 w-4" /> Submit
+        </Button>
       </div>
     </div>
   );

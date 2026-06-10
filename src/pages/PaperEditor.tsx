@@ -58,6 +58,7 @@ export default function PaperEditor() {
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
   const [msOpen, setMsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -248,7 +249,7 @@ export default function PaperEditor() {
           isOpen={workspaceOpen}
           onClose={() => { setWorkspaceOpen(false); setQuestionId(''); }}
           workspaceMode="general"
-          editMode
+          editMode={viewMode === 'edit'}
           onEditField={(field, value) => update((d) => {
             if (field === 'title') { d.title = value; return; }
             if (field === 'question') { d.question = value; return; }
@@ -280,11 +281,28 @@ export default function PaperEditor() {
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}
+              previewMode={viewMode === 'preview'}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />
           ) : undefined}
           headerActions={(
             <>
+              <div className="inline-flex rounded-md border border-border overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('edit')}
+                  className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'edit' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('preview')}
+                  className={`px-3 py-1 text-xs font-medium transition-colors border-l border-border ${viewMode === 'preview' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
+                >
+                  Preview
+                </button>
+              </div>
               <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
                 <BookOpen className="h-4 w-4" /> Mark scheme
               </Button>

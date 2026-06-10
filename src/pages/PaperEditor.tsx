@@ -51,6 +51,7 @@ export default function PaperEditor() {
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -319,28 +320,34 @@ export default function PaperEditor() {
         />
       )}
 
-      {/* Floating Edit button visible while the dialog is open */}
+      {/* Floating Edit button — closes the dialog and opens the Sheet (avoids two stacked Radix modals) */}
       {draft && previewOpen && (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              size="lg"
-              className="fixed bottom-6 right-6 z-[60] shadow-lg gap-2"
-            >
-              <Pencil className="h-4 w-4" /> Edit fields
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto z-[80]">
+        <Button
+          size="lg"
+          onClick={() => { setPreviewOpen(false); setEditOpen(true); }}
+          className="fixed bottom-6 right-6 z-[60] shadow-lg gap-2"
+        >
+          <Pencil className="h-4 w-4" /> Edit fields
+        </Button>
+      )}
+
+      {/* Controlled edit sheet */}
+      {draft && (
+        <Sheet open={editOpen} onOpenChange={setEditOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
             <SheetHeader>
               <SheetTitle>Edit Q{draft.questionNumber} — {draft.title}</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button size="sm" onClick={save} disabled={saving}>
                   <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
                 </Button>
                 <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
                   <RotateCcw className="h-4 w-4" /> Revert
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => { setEditOpen(false); setPreviewOpen(true); }}>
+                  Back to live view
                 </Button>
               </div>
               <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />

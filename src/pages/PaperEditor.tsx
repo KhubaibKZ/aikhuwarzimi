@@ -106,7 +106,9 @@ export default function PaperEditor() {
       const keys: (keyof PastPaperQuestion)[] = [
         'title', 'question', 'marks', 'hints', 'parts',
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
+        'syllabusOverride',
       ];
+
       for (const k of keys) {
         if (JSON.stringify((draft as any)[k]) !== JSON.stringify(base[k])) {
           ov[k] = (draft as any)[k];

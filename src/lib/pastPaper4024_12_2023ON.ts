@@ -796,11 +796,11 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     equationSolveParts: ['ai', 'aii', 'b'],
     equationStagesMap: {
       'ai': [
-        { label: 'AP = OP − OA', stepKey: 's1', elements: [
-          { type: 'text', value: 'AP = (' }, { type: 'box', key: 's1_a', width: 'w-16' }, { type: 'text', value: ') − (' }, { type: 'box', key: 's1_b', width: 'w-12' }, { type: 'text', value: ')' }
+        { label: 'Step 1: Working (use OP − OA  or  AO + OP)', stepKey: 's1', elements: [
+          { type: 'text', value: 'AP =' }, { type: 'box', key: 's1_a', width: 'w-44' }
         ]},
-        { label: 'Simplify', stepKey: 's2', elements: [
-          { type: 'text', value: 'AP =' }, { type: 'box', key: 's2_a', width: 'w-16' }
+        { label: 'Step 2: Final answer', stepKey: 's2', elements: [
+          { type: 'text', value: 'AP =' }, { type: 'box', key: 's2_a', width: 'w-24' }
         ]}
       ],
       'aii': [
@@ -822,13 +822,14 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     },
     parts: [{ label: '(a)(i) AP', key: 'ai', marks: 1 }, { label: '(a)(ii) OB', key: 'aii', marks: 3 }, { label: '(b) QP', key: 'b', marks: 1 }],
     answer: {
-      ai: '2b-a', aii: '(3/2)a+5b|(3a+10b)/2|3a/2+5b', b: '(3/5)a+2b|3a/5+2b',
-      ai_s1_a: '3a+2b', ai_s1_b: '4a', ai_s2_a: '2b−a',
+      ai: '2b-a|-a+2b|2b−a|−a+2b', aii: '(3/2)a+5b|(3a+10b)/2|3a/2+5b', b: '(3/5)a+2b|3a/5+2b',
+      ai_s1_a: '3a+2b-4a|(3a+2b)-4a|3a+2b−4a|(3a+2b)−4a|-4a+3a+2b|−4a+3a+2b|OP-OA|OP−OA|AO+OP|-OA+OP|−OA+OP',
+      ai_s2_a: '2b-a|-a+2b|2b−a|−a+2b',
       aii_s1_a: '5', aii_s1_b: '2', aii_s2_a: '5b−5a/2',
       aii_s3_a: '(3/2)a+5b',
       b_s1_a: '(3/5)a+2b'
     },
-    markingCriteria: { ai: 'B1 for AP = 2b − a as final answer (from AP = OP − OA).', aii: 'M1 for a correct vector route for OB along the lines of the diagram, or for [AB =] (5/2) AP or 2 AB = 5 AP oe stated, or for [PB =] (3/2) AP or 2 PB = 3 AP oe stated. B1 FT for AB = (5/2) × their (2b − a) oe, or PB = (3/2) × their (2b − a) oe. A1 for OB = (3/2)a + 5b (or equivalent (3a + 10b)/2) as final answer.', b: 'B1 (FT (2/5) × their OB, or (2/their 5) × their OB) for QP = (3/5)a + 2b oe.' }
+    markingCriteria: { ai: 'B1 for AP = 2b − a (accept −a + 2b). Working may use AP = OP − OA or AP = AO + OP.', aii: 'M1 for a correct vector route for OB along the lines of the diagram, or for [AB =] (5/2) AP or 2 AB = 5 AP oe stated, or for [PB =] (3/2) AP or 2 PB = 3 AP oe stated. B1 FT for AB = (5/2) × their (2b − a) oe, or PB = (3/2) × their (2b − a) oe. A1 for OB = (3/2)a + 5b (or equivalent (3a + 10b)/2) as final answer.', b: 'B1 (FT (2/5) × their OB, or (2/their 5) × their OB) for QP = (3/5)a + 2b oe.' }
   },
 };
 

@@ -1,61 +1,79 @@
-## Goal
+## Paper Editor — build plan
 
-Repair the entire `/demo` guided tour so every step is smooth, visible, and ordered correctly: hint card stays lit long enough, feedback cards are fully highlighted, buttons like OK / Try again / Continue are obvious, and the tour never jumps ahead or briefly flashes the wrong target.
+A new top-level **Editor** tab where you pick any paper and any question, then edit it on a canvas-style surface that mirrors the dashboard's question + solution layout. Saved edits persist in Lovable Cloud and override the hardcoded paper for every viewer.
 
-## What I’ll change
+### What you'll get
 
-1. **Stabilize tour progression logic**
-  - Update `src/components/GuidedTour.tsx` so steps do not advance prematurely when a target merely appears for a moment.
-  - Separate these cases cleanly:
-    - steps that should pause until the user clicks a specific button
-    - steps that should only highlight/read a card without switching too early
-  - Make the spotlight persist across small layout remounts without re-centering or blinking.
-  - Tighten the fallback logic so it only helps when the UI truly moved forward, not when the current element is temporarily re-rendering.
-2. **Fix the scripted flow definition**
+**New route:** `/editor` (link in Header, admin-only via `has_role`).
 
-- Refine `TOUR_STEPS` in `src/pages/Demo.tsx` so each step matches the real intended sequence:
+**Layout** (mirrors dashboard workspace):
+```text
+┌───────────────────────┬─────────────────────────────────────┐
+│ Paper dropdown        │ ┌──── Question canvas ───────────┐  │
+│ Question list         │ │ [editable title]               │  │
+│  • Q1 ✎               │ │ [editable question text]       │  │
+│  • Q2 ✎ (edited)      │ │ [diagram preview / replace img]│  │
+│  • Q3                 │ ├──── Solution steps ────────────┤  │
+│  ...                  │ │ Step 1: [+ box] [- box] [text] │  │
+│                       │ │ Step 2: ...    [↑] [↓] [🗑]    │  │
+│ [+ Add step]          │ │ [+ Add step]                   │  │
+│ [Discard] [Save]      │ │ Answer key per box             │  │
+│                       │ │ Hints [+ add] · Check-work ☑   │  │
+│                       │ └────────────────────────────────┘  │
+└───────────────────────┴─────────────────────────────────────┘
+```
 
-- open Q1
-- click Hint
-- show hint card fully & click OK
-- enter wrong answer for part (a)
-- click Check Work
-- show incorrect AI feedback fully
-- click Try again
-- enter correct answer for part (a)
-- click Check Work
-- show correct feedback fully
-- click Continue
-- enter part (b)
-- click Check Work
-- show part (b) feedback fully
-- click Continue
-- click Submit
-- show submit feedback
+### Editable fields (per question)
+- `title`, `question` text, `marks`
+- `parts[]` — label, key, marks (add / remove / reorder)
+- `equationStagesMap` per part — add / remove / reorder steps, each step's elements (text vs. box, box width, box `key`)
+- `answer` map — correct value per box (supports `|` alternatives, tolerances)
+- `hints[]` — add / edit / remove
+- per-part check-work toggle
+- diagram **image override** — upload an image that replaces the hand-coded SVG diagram in both editor and dashboard
 
-- Remove any step definitions that currently rely on timing in places where the user should be the one advancing.
+### What's intentionally out of scope (with reason)
+- **Free-form vector editing of existing SVG diagrams.** Diagrams like `ScatterDiagram2023ON`, `VennDiagram3Set2023ON`, etc. are hand-coded React components with interactive logic (drag points, clickable axes). A generic canvas cannot edit those. The realistic lever is an **image override**: upload a static replacement that renders instead of the SVG component. Interactivity is lost on overridden diagrams — that's the trade-off.
+- Editing custom workspace components (LCM ladder, prime-factor ladder, Venn drag-and-drop). Same reason — they're bespoke React.
 
-1. **Make highlight targets cover the whole visible area**
-  - Verify and adjust the `data-tour` anchors in `src/components/PastPaperWorkspace.tsx` and `src/components/workspace/StepWorkspace.tsx` so the spotlight lands on the full hint/feedback container, not just a small internal element.
-  - Ensure the connected instruction box points to the correct card or action button at every step.
-2. **Improve clarity of action points**
-  - Ensure the visible action for each feedback state is the one the tour is asking for:
-    - Hint → `OK`
-    - Wrong answer feedback → `Try again`
-    - Correct feedback → `Continue`
-  - Keep those actions inside the highlighted feedback area where appropriate so the whole area feels coherent.
-3. **Validate the full walkthrough end-to-end**
-  - Re-check the tour against the live `/demo` flow and confirm there are no more microsecond flashes, skipped steps, or dark/unreadable feedback states.
+### How overrides plug into the dashboard
+1. On app load, `pastPaperData.ts` lookups are wrapped by a `useQuestionOverrides()` hook that merges DB overrides on top of the hardcoded question object.
+2. `PastPaperWorkspace` reads from the merged object — no changes needed in question-rendering code.
+3. Diagram renderer checks for an `imageOverrideUrl`; if present, renders `<img>` instead of the SVG component.
 
-## Files likely to change
+### Backend (Lovable Cloud)
 
-- `src/components/GuidedTour.tsx`
-- `src/pages/Demo.tsx`
-- `src/components/PastPaperWorkspace.tsx`
-- `src/components/workspace/StepWorkspace.tsx`
+**Table `question_overrides`** (admin-writable, world-readable):
+- `paper_id text`, `question_id text` — composite PK
+- `override jsonb` — partial `PastPaperQuestion` merged onto the original
+- `diagram_image_url text` (optional)
+- `updated_by uuid`, `updated_at timestamptz`
 
-## Technical notes
+RLS: anyone can `SELECT`; only `has_role(auth.uid(),'admin')` can `INSERT/UPDATE/DELETE`.
 
-- I’ll keep this frontend-only.
-- I’ll preserve the current demo content and only fix the tour behavior, highlight targeting, and visibility/flow issues.
-- I’ll follow the existing semantic design tokens rather than introducing ad-hoc colors.
+**Storage bucket `question-diagrams`** (public) for uploaded diagram images.
+
+### Files
+
+New:
+- `src/pages/PaperEditor.tsx` — page shell + paper/question selectors
+- `src/components/editor/QuestionEditorCanvas.tsx` — the editable canvas
+- `src/components/editor/StepEditor.tsx` — step + elements editor
+- `src/components/editor/PartsEditor.tsx`, `HintsEditor.tsx`, `DiagramUploader.tsx`
+- `src/hooks/useQuestionOverrides.ts` — fetch + cache, expose `getMerged(question)`
+- `src/lib/mergeQuestionOverride.ts` — deep-merge utility
+- migration for `question_overrides` + storage bucket
+
+Touched:
+- `src/App.tsx` — add `/editor` route
+- `src/components/Header.tsx` — Editor nav link (admin-only)
+- `src/lib/pastPaperData.ts` — export `getPastPaperQuestionMerged` that consumes overrides
+- `src/components/PastPaperWorkspace.tsx` — read merged question
+- diagram renderer — honour `imageOverrideUrl`
+
+### Phasing
+1. **Phase 1 (this PR):** route, admin gating, paper/question pickers, edit title/question/marks/parts/steps/answers/hints/check-work toggle, save to DB, dashboard reads overrides. Live for every question type that uses `equationStagesMap`.
+2. **Phase 2:** diagram image upload + override rendering.
+3. **Phase 3:** revert-to-original button, edit history, bulk export of overrides as TS code (to fold back into source).
+
+Confirm and I'll start with Phase 1 end-to-end (DB migration → hook → page → dashboard wiring), then immediately do Phase 2 in the same loop.

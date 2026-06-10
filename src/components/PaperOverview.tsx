@@ -13,6 +13,7 @@ import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { useStudentProgress } from '@/hooks/useStudentProgress';
 import { useStudentAssignments } from '@/hooks/useStudentAssignments';
 import { useAuth } from '@/hooks/useAuth';
+import { useOverridesVersion } from '@/hooks/useOverridesSync';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,6 +34,7 @@ export function PaperOverview({
   enforceAssignments = false,
 }: PaperOverviewProps) {
   const paper = pastPapers.find((p) => p.id === paperId);
+  useOverridesVersion(); // re-render when admin saves edits
   const { user } = useAuth();
   const { getPaperQuota } = useStudentAssignments();
   const { data: progressData } = useStudentProgress({ studentMode });

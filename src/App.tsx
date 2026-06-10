@@ -10,6 +10,8 @@ import Landing from "./pages/Landing";
 import Demo from "./pages/Demo";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
+import PaperEditor from "./pages/PaperEditor";
+import { OverridesSync } from "@/hooks/useOverridesSync";
 
 import StudentDashboard from "./pages/StudentDashboard";
 import NotFound from "./pages/NotFound";
@@ -38,6 +40,7 @@ const AppRoutes = () => (
       <Route path="/student-demo-analytics" element={<StudentAnalytics />} />
       <Route path="/student/analytics" element={<StudentAnalytics studentMode />} />
       <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/editor" element={<PaperEditor />} />
       <Route path="/demo" element={<Demo />} />
       
       <Route path="/student" element={<StudentDashboard />} />
@@ -52,6 +55,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <OverridesSync />
         <StudentSessionTracker />
         <AppRoutes />
       </TooltipProvider>

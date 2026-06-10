@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -15,9 +15,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff } from 'lucide-react';
+import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff, BookOpen } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { useOverridesVersion } from '@/hooks/useOverridesSync';
@@ -36,6 +36,8 @@ import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 
+const EDITOR_PAPER_IDS = ['pp_4024_on23_21', 'pp_4024_on23_22'] as const;
+
 function deepClone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
 }
@@ -47,30 +49,29 @@ export default function PaperEditor() {
   const { toast } = useToast();
   useOverridesVersion();
 
-  const [paperId, setPaperId] = useState<string>('');
+  const [paperId, setPaperId] = useState<string>(EDITOR_PAPER_IDS[0]);
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [msOpen, setMsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const sortedPapers = useMemo(
-    () => [...pastPapers].sort((a, b) => a.title.localeCompare(b.title)),
-    [],
-  );
-  const currentPaper = pastPapers.find((p) => p.id === paperId);
+  const editorPapers = EDITOR_PAPER_IDS
+    .map((id) => pastPapers.find((p) => p.id === id))
+    .filter(Boolean) as typeof pastPapers;
+  const currentPaper = editorPapers.find((p) => p.id === paperId);
   const sections = currentPaper?.sections ?? [];
 
-  // Load draft when question changes, and auto-open the live dashboard view
   useEffect(() => {
-    if (!questionId) { setDraft(null); setPreviewOpen(false); return; }
+    if (!questionId) { setDraft(null); setWorkspaceOpen(false); return; }
     const base = pastPaperQuestions[questionId];
     if (!base) { setDraft(null); return; }
     const ov = getOverride(questionId);
     const merged = ov ? getPastPaperQuestion(questionId) : base;
     setDraft(deepClone(merged as Editable));
-    setPreviewOpen(true);
+    setWorkspaceOpen(true);
   }, [questionId]);
 
   if (!roleLoading && !isAdmin) {
@@ -101,7 +102,6 @@ export default function PaperEditor() {
     if (!draft || !paperId || !questionId || !user) return;
     setSaving(true);
     try {
-      // Build override = only fields that differ from the base (shallow keys we edit)
       const base = pastPaperQuestions[questionId] as any;
       const ov: any = {};
       const keys: (keyof PastPaperQuestion)[] = [
@@ -113,7 +113,6 @@ export default function PaperEditor() {
           ov[k] = (draft as any)[k];
         }
       }
-      // Also persist a per-part check-work toggle map
       if ((draft as any).checkWorkDisabledMap) {
         ov.checkWorkDisabledMap = (draft as any).checkWorkDisabledMap;
       }
@@ -122,23 +121,12 @@ export default function PaperEditor() {
       const { error } = await supabase
         .from('question_overrides')
         .upsert(
-          {
-            paper_id: paperId,
-            question_id: questionId,
-            override: ov,
-            diagram_image_url: diagramUrl,
-            updated_by: user.id,
-          },
+          { paper_id: paperId, question_id: questionId, override: ov, diagram_image_url: diagramUrl, updated_by: user.id },
           { onConflict: 'paper_id,question_id' },
         );
       if (error) throw error;
-      setOverride({
-        paper_id: paperId,
-        question_id: questionId,
-        override: ov,
-        diagram_image_url: diagramUrl,
-      });
-      toast({ title: 'Saved', description: 'Question override is live on the dashboard.' });
+      setOverride({ paper_id: paperId, question_id: questionId, override: ov, diagram_image_url: diagramUrl });
+      toast({ title: 'Saved', description: 'Question is now live for all users.' });
     } catch (e: any) {
       toast({ title: 'Save failed', description: e.message ?? String(e), variant: 'destructive' });
     } finally {
@@ -179,7 +167,7 @@ export default function PaperEditor() {
       if (upErr) throw upErr;
       const { data: signed } = await supabase.storage
         .from('question-diagrams')
-        .createSignedUrl(path, 60 * 60 * 24 * 365 * 5); // 5 years
+        .createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
       const url = signed?.signedUrl;
       if (!url) throw new Error('Could not generate URL');
       update((d) => { (d as any).diagramImageUrl = url; });
@@ -199,139 +187,86 @@ export default function PaperEditor() {
           <div>
             <h1 className="text-2xl font-bold">Paper Editor</h1>
             <p className="text-sm text-muted-foreground">
-              Pick any paper and question, edit the canvas, save to publish for all users.
+              Edit Oct/Nov 2023 Paper 2 questions. Click a question, then use Edit fields or Mark scheme.
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/dashboard')}>Back</Button>
-          </div>
+          <Button variant="outline" onClick={() => navigate('/dashboard')}>Back</Button>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          {/* Left: pickers + question list */}
-          <Card className="col-span-12 lg:col-span-3 h-fit">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Select</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="text-xs">Paper</Label>
-                <Select value={paperId} onValueChange={(v) => { setPaperId(v); setQuestionId(''); }}>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Choose paper" /></SelectTrigger>
-                  <SelectContent className="max-h-80">
-                    {sortedPapers.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <Tabs value={paperId} onValueChange={(v) => { setPaperId(v); setQuestionId(''); }}>
+          <TabsList className="mb-4">
+            {editorPapers.map((p) => (
+              <TabsTrigger key={p.id} value={p.id}>{p.title}</TabsTrigger>
+            ))}
+          </TabsList>
 
-              {currentPaper && (
-                <div>
-                  <Label className="text-xs">Question ({sections.length})</Label>
-                  <div className="mt-1 max-h-[60vh] overflow-y-auto space-y-1 pr-1">
-                    {sections.map((s) => {
+          {editorPapers.map((p) => (
+            <TabsContent key={p.id} value={p.id} className="mt-0">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="mb-3 text-xs text-muted-foreground">
+                    {p.category} · {p.duration} · {p.totalMarks} marks · {p.sections.length} questions
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {p.sections.map((s) => {
                       const hasOverride = !!getOverride(s.questionId);
-                      const isActive = s.questionId === questionId;
+                      const titleParts = s.title.split('–');
+                      const qLabel = titleParts[0]?.trim() || s.title;
+                      const qSub = titleParts[1]?.trim() || '';
                       return (
                         <button
                           key={s.id}
                           onClick={() => setQuestionId(s.questionId)}
-                          className={`w-full text-left rounded-md border px-2 py-1.5 text-xs transition-colors ${
-                            isActive ? 'border-primary bg-primary/10' : 'border-border hover:bg-muted/50'
-                          }`}
+                          className="text-left rounded-xl border border-border bg-card p-3 transition-all hover:shadow-md hover:border-primary/50"
                         >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-medium truncate">{s.title}</span>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-bold text-foreground">{qLabel}</span>
                             {hasOverride && <Badge variant="secondary" className="text-[9px]">edited</Badge>}
                           </div>
+                          <p className="text-[11px] text-muted-foreground line-clamp-2 min-h-[28px]">{qSub}</p>
                         </button>
                       );
                     })}
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Right: live dashboard view + edit sheet */}
-          <div className="col-span-12 lg:col-span-9">
-            {!draft ? (
-              <Card>
-                <CardContent className="py-16 text-center text-muted-foreground">
-                  Select a paper and a question to start editing.
                 </CardContent>
               </Card>
-            ) : (
-              <Card>
-                <CardHeader className="pb-2 flex flex-row items-start justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-lg">
-                      Q{draft.questionNumber} — {draft.title || 'untitled'}
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">{questionId}</p>
-                  </div>
-                  <div className="flex gap-2 flex-wrap justify-end">
-                    <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                      Open live view
-                    </Button>
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Pencil className="h-4 w-4" /> Edit fields
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto z-[70]">
-                        <SheetHeader>
-                          <SheetTitle>Edit Q{draft.questionNumber} — {draft.title}</SheetTitle>
-                        </SheetHeader>
-                        <div className="mt-4">
-                          <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />
-                        </div>
-                      </SheetContent>
-                    </Sheet>
-                    <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
-                      <RotateCcw className="h-4 w-4" /> Revert
-                    </Button>
-                    <Button size="sm" onClick={save} disabled={saving}>
-                      <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-                    </Button>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="text-sm text-muted-foreground">
-                  The live dashboard view is open on top — close it (✕) to return here. Use{' '}
-                  <span className="font-medium text-foreground">Edit fields</span> to change content, parts, steps, hints, or the diagram.
-                  Click <span className="font-medium text-foreground">Save</span> to publish for all users.
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
 
-      {/* Live dashboard workspace — auto-opens on question select */}
-      {draft && previewOpen && (
+      {/* Live workspace — same as student dashboard */}
+      {draft && workspaceOpen && (
         <PastPaperWorkspace
           question={draft as PastPaperQuestion}
-          isOpen={previewOpen}
-          onClose={() => setPreviewOpen(false)}
+          isOpen={workspaceOpen}
+          onClose={() => { setWorkspaceOpen(false); setQuestionId(''); }}
           workspaceMode="general"
         />
       )}
 
-      {/* Floating Edit button — closes the dialog and opens the Sheet (avoids two stacked Radix modals) */}
-      {draft && previewOpen && (
-        <Button
-          size="lg"
-          onClick={() => { setPreviewOpen(false); setEditOpen(true); }}
-          className="fixed bottom-6 right-6 z-[60] shadow-lg gap-2"
-        >
-          <Pencil className="h-4 w-4" /> Edit fields
-        </Button>
+      {/* Floating action buttons over the workspace */}
+      {draft && workspaceOpen && (
+        <div className="fixed bottom-6 right-6 z-[60] flex flex-col gap-2 items-end">
+          <Button
+            size="lg"
+            variant="secondary"
+            onClick={() => setMsOpen(true)}
+            className="shadow-lg gap-2"
+          >
+            <BookOpen className="h-4 w-4" /> Mark scheme
+          </Button>
+          <Button
+            size="lg"
+            onClick={() => { setWorkspaceOpen(false); setEditOpen(true); }}
+            className="shadow-lg gap-2"
+          >
+            <Pencil className="h-4 w-4" /> Edit fields
+          </Button>
+        </div>
       )}
 
-      {/* Controlled edit sheet */}
+      {/* Edit sheet */}
       {draft && (
         <Sheet open={editOpen} onOpenChange={setEditOpen}>
           <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
@@ -346,11 +281,64 @@ export default function PaperEditor() {
                 <Button variant="outline" size="sm" onClick={revertToOriginal} disabled={saving}>
                   <RotateCcw className="h-4 w-4" /> Revert
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => { setEditOpen(false); setPreviewOpen(true); }}>
-                  Back to live view
+                <Button variant="outline" size="sm" onClick={() => { setEditOpen(false); setWorkspaceOpen(true); }}>
+                  Back to question
                 </Button>
               </div>
               <EditorTabs draft={draft} update={update} uploading={uploading} uploadDiagram={uploadDiagram} />
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
+
+      {/* Mark-scheme drawer (read-only view of validator answers + hints) */}
+      {draft && (
+        <Sheet open={msOpen} onOpenChange={setMsOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Mark scheme — Q{draft.questionNumber}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-4 text-sm">
+              <div>
+                <h4 className="font-semibold mb-2">Expected answers</h4>
+                {typeof draft.answer === 'string' ? (
+                  <div className="rounded border border-border p-2 font-mono text-xs">{draft.answer}</div>
+                ) : draft.answer && typeof draft.answer === 'object' ? (
+                  <ul className="space-y-1">
+                    {Object.entries(draft.answer as Record<string, any>).map(([k, v]) => (
+                      <li key={k} className="rounded border border-border p-2 flex gap-2">
+                        <span className="font-mono text-xs text-primary shrink-0">{k}</span>
+                        <span className="font-mono text-xs break-all">{String(v)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted-foreground text-xs">No answer key defined.</p>
+                )}
+              </div>
+              {draft.hints && draft.hints.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Hints</h4>
+                  <ol className="space-y-1 list-decimal list-inside">
+                    {draft.hints.map((h, i) => (
+                      <li key={i} className="rounded border border-border p-2 text-xs">{h}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+              {draft.parts && draft.parts.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Parts &amp; marks</h4>
+                  <ul className="space-y-1">
+                    {draft.parts.map((p) => (
+                      <li key={p.key} className="rounded border border-border p-2 text-xs flex justify-between gap-2">
+                        <span>{p.label}</span>
+                        <span className="text-muted-foreground shrink-0">{p.marks} mark{p.marks === 1 ? '' : 's'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </SheetContent>
         </Sheet>

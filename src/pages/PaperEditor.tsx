@@ -251,6 +251,11 @@ export default function PaperEditor() {
               d.syllabusOverride = { ...(d.syllabusOverride || {}), [field]: value };
               return;
             }
+            if (field === 'marks') {
+              const n = Number(value);
+              d.marks = Number.isFinite(n) && n >= 0 ? n : 0;
+              return;
+            }
             if (typeof field === 'string' && field.startsWith('hint:')) {
               const idx = parseInt(field.slice(5), 10);
               if (!Number.isNaN(idx)) {

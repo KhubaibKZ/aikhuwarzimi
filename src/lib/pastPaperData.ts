@@ -1265,6 +1265,12 @@ export const pastPapers: PastPaper[] = [
   },
 ];
 
+import { getOverride, mergeOverride } from './questionOverrides';
+
 export const getPastPaperQuestion = (id: string): PastPaperQuestion | undefined => {
-  return pastPaperQuestions[id];
+  const base = pastPaperQuestions[id];
+  if (!base) return undefined;
+  const ov = getOverride(id);
+  if (!ov) return base;
+  return mergeOverride(base, ov.override, ov.diagram_image_url);
 };

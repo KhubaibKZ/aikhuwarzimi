@@ -288,6 +288,14 @@ function StepCard({
         {symbolPopover}
         <Button
           size="sm"
+          variant={kbOpen ? 'default' : 'outline'}
+          className="h-7 gap-1 px-2 text-xs"
+          onClick={() => setKbOpen((v) => !v)}
+        >
+          <Keyboard className="h-3.5 w-3.5" /> {kbOpen ? 'Hide' : 'Keyboard'}
+        </Button>
+        <Button
+          size="sm"
           variant="outline"
           className="ml-auto h-7 gap-1 px-2 text-xs"
           title="Check Work (preview)"
@@ -310,6 +318,35 @@ function StepCard({
               onRemove={() => removeItem(it.id)}
             />
           ))}
+        </div>
+      )}
+
+      {kbOpen && (
+        <div className="mt-3 rounded-md border border-border bg-muted/40 p-2">
+          <HorizontalKeyboard
+            keys={DEFAULT_KEYBOARD}
+            onKeyPress={(k) => {
+              if (k === '⌫') {
+                const el = (document.activeElement as HTMLInputElement | HTMLTextAreaElement | null);
+                if (el && 'value' in el) {
+                  const start = el.selectionStart ?? el.value.length;
+                  if (start > 0) {
+                    const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
+                    const setter = Object.getOwnPropertyDescriptor(
+                      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                      'value',
+                    )?.set;
+                    setter?.call(el, next);
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
+                  }
+                }
+                return;
+              }
+              insertAtCursor(k);
+            }}
+          />
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
         </div>
       )}
     </div>

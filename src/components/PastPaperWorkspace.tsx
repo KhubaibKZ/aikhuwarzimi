@@ -2205,6 +2205,36 @@ export function PastPaperWorkspace({
         </DialogHeader>
 
         <div className="space-y-6">
+        {solutionOverride ? (
+          <>
+            <div className="rounded-lg bg-muted/50 p-4">
+              {editMode && onEditField ? (
+                <InlineEditableText
+                  value={question.question}
+                  onCommit={(value) => onEditField('question', value)}
+                  multiline
+                  className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+                />
+              ) : (
+                <QuestionText text={question.question} />
+              )}
+              {(question as any).diagramImageUrl && (
+                <div className="mt-4 flex justify-center">
+                  <img
+                    src={(question as any).diagramImageUrl}
+                    alt="Question diagram"
+                    className="max-w-full rounded-lg border border-border bg-white"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
+              {solutionOverride}
+            </div>
+          </>
+        ) : (<></>)}
+        {!solutionOverride && (<></>)}
+        {!solutionOverride && (
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             {editMode && onEditField ? (

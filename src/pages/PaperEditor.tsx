@@ -61,14 +61,15 @@ export default function PaperEditor() {
   const currentPaper = pastPapers.find((p) => p.id === paperId);
   const sections = currentPaper?.sections ?? [];
 
-  // Load draft when question changes
+  // Load draft when question changes, and auto-open the live dashboard view
   useEffect(() => {
-    if (!questionId) { setDraft(null); return; }
+    if (!questionId) { setDraft(null); setPreviewOpen(false); return; }
     const base = pastPaperQuestions[questionId];
     if (!base) { setDraft(null); return; }
     const ov = getOverride(questionId);
     const merged = ov ? getPastPaperQuestion(questionId) : base;
     setDraft(deepClone(merged as Editable));
+    setPreviewOpen(true);
   }, [questionId]);
 
   if (!roleLoading && !isAdmin) {

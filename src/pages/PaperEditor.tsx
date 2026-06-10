@@ -36,7 +36,7 @@ import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 
-const EDITOR_PAPER_IDS = ['pp_4024_on23_21', 'pp_4024_on23_22'] as const;
+const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22'] as const;
 
 function deepClone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));

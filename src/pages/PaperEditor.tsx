@@ -36,7 +36,7 @@ import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 
-const EDITOR_PAPER_IDS = ['pp_4024_on23_21', 'pp_4024_on23_22'] as const;
+const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22'] as const;
 
 function deepClone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
@@ -186,7 +186,7 @@ export default function PaperEditor() {
           <div>
             <h1 className="text-2xl font-bold">Paper Editor</h1>
             <p className="text-sm text-muted-foreground">
-               Edit Oct/Nov 2023 Paper 2 questions. Click a question, then edit the heading and question text directly.
+               Edit Oct/Nov 2023 Paper 1 &amp; Paper 2 questions. Click a question, then edit the heading and question text directly.
             </p>
           </div>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Back</Button>

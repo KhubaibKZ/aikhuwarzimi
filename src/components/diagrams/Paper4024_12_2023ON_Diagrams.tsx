@@ -257,7 +257,9 @@ export function TriangleConstruct_4024_12_2023ON() {
   const [arcs, setArcs] = useState<Arc[]>([]);
   const [lines, setLines] = useState<Line[]>([]);
   const [lineStart, setLineStart] = useState<{ x: number; y: number } | null>(null);
-  const [arcRadius, setArcRadius] = useState(80);
+  const PX_PER_CM = 30; // diagram scale: 1 cm = 30 px (so 6 cm matches QP "6 cm from B")
+  const [arcRadiusCm, setArcRadiusCm] = useState(6);
+  const arcRadius = arcRadiusCm * PX_PER_CM;
 
   // Protractor state
   const [pPos, setPPos] = useState({ x: 470, y: 200 });
@@ -375,8 +377,8 @@ export function TriangleConstruct_4024_12_2023ON() {
         {tool === "arc" && (
           <label className="flex items-center gap-2 text-xs text-foreground ml-2">
             radius
-            <input type="range" min={30} max={180} value={arcRadius} onChange={(e) => setArcRadius(Number(e.target.value))} />
-            <span className="tabular-nums w-8 text-right">{arcRadius}</span>
+            <input type="range" min={1} max={8} step={0.5} value={arcRadiusCm} onChange={(e) => setArcRadiusCm(Number(e.target.value))} />
+            <span className="tabular-nums w-12 text-right">{arcRadiusCm} cm</span>
           </label>
         )}
         <div className="ml-auto flex gap-2">

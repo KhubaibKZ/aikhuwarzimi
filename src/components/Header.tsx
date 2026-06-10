@@ -1,4 +1,4 @@
-import { TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield } from 'lucide-react';
+import { TrendingUp, Moon, Sun, ArrowLeft, Home, LogOut, Shield, Pencil } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
@@ -72,10 +72,16 @@ export function Header({ currentCourseId, onBackToCourses, hideAdmin = false, pu
               </Button>
 
               {!hideAdmin && isAdmin && (
-                <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
-                  <Shield className="h-4 w-4" />
-                  Admin
-                </Button>
+                <>
+                  <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/editor')}>
+                    <Pencil className="h-4 w-4" />
+                    Editor
+                  </Button>
+                  <Button variant="outline" size="sm" className="hidden gap-2 sm:flex" onClick={() => navigate('/admin')}>
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Button>
+                </>
               )}
 
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-soft">

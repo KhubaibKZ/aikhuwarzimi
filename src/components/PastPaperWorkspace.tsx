@@ -155,7 +155,10 @@ export function PastPaperWorkspace({
   onSubmitProgress,
   editMode = false,
   onEditField,
+  onAddHint,
+  onRemoveHint,
   headerActions,
+
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);

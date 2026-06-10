@@ -447,6 +447,7 @@ export const questions4024_12_2023ON: Record<string, PastPaperQuestion> = {
     marks: 5,
     hints: ['(a) Use protractor — answer between 47° and 51°', '(b) Use compasses and straight edge', '(c) Intersection of perpendicular bisector side (nearer A) and outside arc of 6 cm from B'],
     type: 'multi-part',
+    diagramParts: ['b', 'c'],
     parts: [{ label: '(a) Angle ABC (°)', key: 'a', marks: 1 }, { label: '(b) Construction', key: 'b', marks: 2 }, { label: '(c) Shaded region', key: 'c', marks: 2 }],
     answer: { a: '47|48|49|50|51', b: 'Perpendicular bisector drawn', c: 'Correct region shaded' },
     markingCriteria: { a: 'B1 for any value 47 to 51 inclusive.', b: 'B2 for an acceptable perpendicular bisector of AC with correct arcs. B1 for an acceptable bisector without (or with incorrect) construction arcs.', c: 'B1 for an arc of radius 6 cm centred at B drawn within the triangle. B1 (dep on a correct bisector and 6 cm arc) for the correct region (closer to A AND further than 6 cm from B) clearly shaded.' }

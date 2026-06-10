@@ -2232,9 +2232,7 @@ export function PastPaperWorkspace({
               {solutionOverride}
             </div>
           </>
-        ) : (<></>)}
-        {!solutionOverride && (<></>)}
-        {!solutionOverride && (
+        ) : (<>
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             {editMode && onEditField ? (

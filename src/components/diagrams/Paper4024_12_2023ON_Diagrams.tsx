@@ -257,7 +257,9 @@ export function TriangleConstruct_4024_12_2023ON() {
   const [arcs, setArcs] = useState<Arc[]>([]);
   const [lines, setLines] = useState<Line[]>([]);
   const [lineStart, setLineStart] = useState<{ x: number; y: number } | null>(null);
-  const [arcRadius, setArcRadius] = useState(80);
+  const PX_PER_CM = 30; // diagram scale: 1 cm = 30 px (so 6 cm matches QP "6 cm from B")
+  const [arcRadiusCm, setArcRadiusCm] = useState(6);
+  const arcRadius = arcRadiusCm * PX_PER_CM;
 
   // Protractor state
   const [pPos, setPPos] = useState({ x: 470, y: 200 });

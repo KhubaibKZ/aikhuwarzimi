@@ -3419,7 +3419,22 @@ export function PastPaperWorkspace({
                   )}>
                     {aiResponse.type === 'hint' ? 'Concept Hint' : 'Teacher Guidance'}
                   </p>
-                  <p className="text-sm whitespace-pre-line leading-relaxed text-foreground">{aiResponse.content}</p>
+                  {editMode && onEditField && aiResponse.type === 'hint' ? (
+                    <div className="space-y-2">
+                      {(question.hints || []).map((h, i) => (
+                        <InlineEditableText
+                          key={i}
+                          value={h}
+                          onCommit={(v) => onEditField(`hint:${i}` as const, v)}
+                          multiline
+                          className="text-sm leading-relaxed text-foreground bg-background/30"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm whitespace-pre-line leading-relaxed text-foreground">{aiResponse.content}</p>
+                  )}
+
                   {feedbackAction && (
                     <div className="mt-3 flex justify-end">
                       <Button

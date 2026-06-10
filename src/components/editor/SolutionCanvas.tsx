@@ -29,6 +29,12 @@ interface Props {
 
 const empty: TCanvas = { blocks: [] };
 
+const DEFAULT_KEYBOARD: string[][] = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['+', '-', '×', '÷', '=', '.', '(', ')', '<', '>'],
+  ['√', 'π', '²', '³', '°', '±', '½', '¼', '¾', '⌫'],
+];
+
 const boxWidth: Record<BoxSize, string> = {
   sm: 'w-16',
   md: 'w-28',

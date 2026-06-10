@@ -114,13 +114,14 @@ function InlineEditableText({
   multiline?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const lastValueRef = useRef(value);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (document.activeElement !== el && el.innerText !== value) {
-      el.innerText = value;
-    }
+    if (document.activeElement === el) return;
+    if (el.innerText !== value) el.innerText = value;
+    lastValueRef.current = value;
   }, [value]);
 
   return (
@@ -130,7 +131,11 @@ function InlineEditableText({
       suppressContentEditableWarning
       role="textbox"
       aria-multiline={multiline}
-      onInput={(e) => onCommit(e.currentTarget.innerText.replace(/\u00a0/g, ' '))}
+      onInput={(e) => {
+        const next = e.currentTarget.innerText.replace(/\u00a0/g, ' ');
+        lastValueRef.current = next;
+        onCommit(next);
+      }}
       onKeyDown={(e) => {
         if (!multiline && e.key === 'Enter') {
           e.preventDefault();
@@ -141,9 +146,7 @@ function InlineEditableText({
         'rounded-md border border-dashed border-transparent bg-transparent px-2 py-1 outline-none transition-colors hover:border-border focus:border-primary focus:bg-muted/40 whitespace-pre-wrap',
         className,
       )}
-    >
-      {value}
-    </div>
+    />
   );
 }
 

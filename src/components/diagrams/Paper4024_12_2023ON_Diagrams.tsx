@@ -264,7 +264,6 @@ export function TriangleConstruct_4024_12_2023ON() {
   const [pRot, setPRot] = useState(180); // rotated so straight edge faces up by default
   const [dragMode, setDragMode] = useState<null | "drag" | "rotate">(null);
   const [dragOff, setDragOff] = useState({ x: 0, y: 0 });
-  const svgRef = useState<SVGSVGElement | null>(null);
   const protractorR = 90;
 
   const toSvgCoords = (e: React.MouseEvent<SVGSVGElement>) => {

@@ -2110,6 +2110,7 @@ export function PastPaperWorkspace({
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">{question.questionNumber}</DialogTitle>
             <div className="flex items-center gap-2">
+              {headerActions}
               <Badge variant={isSubmitted ? "secondary" : "outline"} className={cn("flex items-center gap-1 font-mono", !isSubmitted && "animate-pulse")}>
                 <Clock className="h-3 w-3" />
                 {formatTime(isSubmitted && finalTime !== null ? finalTime : elapsedSeconds)}
@@ -2131,7 +2132,15 @@ export function PastPaperWorkspace({
               )}
             </div>
           </div>
-          <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
+          {editMode && onEditField ? (
+            <InlineEditableText
+              value={question.title}
+              onCommit={(value) => onEditField('title', value)}
+              className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
+          )}
           {(() => {
             const syllabusRef = getQuestionSyllabusRef(question.id);
             return syllabusRef ? (
@@ -2149,7 +2158,16 @@ export function PastPaperWorkspace({
         <div className="space-y-6">
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
-            <QuestionText text={question.question} />
+            {editMode && onEditField ? (
+              <InlineEditableText
+                value={question.question}
+                onCommit={(value) => onEditField('question', value)}
+                multiline
+                className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+              />
+            ) : (
+              <QuestionText text={question.question} />
+            )}
             {question.questionFraction && (
               <p className="text-foreground flex flex-wrap items-center gap-1 mt-2">
                 <span className="inline-flex flex-col items-center mx-2 align-middle">

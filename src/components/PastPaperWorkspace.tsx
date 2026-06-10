@@ -1390,6 +1390,12 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
       refetchAssignments();
     }
 
+    // Detect multi-part hints (e.g. each hint starts with "(a)", "(b)", ...) so the AI
+    // covers EVERY part — including diagram-scored parts like (b) and (c).
+    const partMarkerRegex = /^\s*\(([a-z])\)/i;
+    const isMultiPartHints = (question.hints?.filter(h => partMarkerRegex.test(h)).length || 0) >= 2;
+    const partLabels = (question.parts || []).map((p: any) => p.label || p.key);
+
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
@@ -1398,7 +1404,10 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
           topic: question.title,
           hints: question.hints,
           attemptCount,
-          markingCriteria: question.markingCriteria
+          markingCriteria: question.markingCriteria,
+          multiPart: isMultiPartHints,
+          partLabels,
+          diagramParts: (question as any).diagramParts || []
         }
       });
 
@@ -1407,9 +1416,14 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
     } catch (error) {
       console.error('Hint error:', error);
       if (question.hints.length > 0) {
-        const totalAttempts = Object.values(attemptCount).reduce((sum, count) => sum + count, 0);
-        const hintIndex = Math.min(totalAttempts, question.hints.length - 1);
-        setAiResponse({ type: 'hint', content: question.hints[hintIndex] });
+        // For multi-part questions show ALL hints so b/c are covered; otherwise cycle by attempt.
+        if (isMultiPartHints) {
+          setAiResponse({ type: 'hint', content: question.hints.join('\n') });
+        } else {
+          const totalAttempts = Object.values(attemptCount).reduce((sum, count) => sum + count, 0);
+          const hintIndex = Math.min(totalAttempts, question.hints.length - 1);
+          setAiResponse({ type: 'hint', content: question.hints[hintIndex] });
+        }
       }
     } finally {
       setIsLoading(false);

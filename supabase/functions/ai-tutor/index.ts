@@ -25,7 +25,10 @@ serve(async (req) => {
       workingContent,
       markingCriteria,
       previousFeedback,
-      evaluateNeutral
+      evaluateNeutral,
+      multiPart,
+      partLabels,
+      diagramParts
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -40,6 +43,13 @@ serve(async (req) => {
 
     if (actionType === "hint") {
       // Hint: Provide concept explanation related to the question
+      const multiPartBlock = multiPart
+        ? `\n\nMULTI-PART MODE (IMPORTANT):
+This question has multiple parts${partLabels && partLabels.length ? ` — ${partLabels.join(', ')}` : ''}.${diagramParts && diagramParts.length ? ` Parts ${diagramParts.map((p: string) => `(${p})`).join(', ')} are solved on an interactive diagram (constructions, measurements, shading) — give explicit construction guidance for them too.` : ''}
+You MUST provide a SHORT hint for EVERY part, labelled clearly as (a), (b), (c), ... on separate lines.
+Keep each part's hint to one short sentence. Do NOT skip any part. Do NOT give final numerical answers.`
+        : '';
+
       systemPrompt = `You are a helpful math tutor. Your role is to provide conceptual hints that help students understand the mathematical concepts needed to solve a problem.
 
 RULES:
@@ -47,7 +57,7 @@ RULES:
 2. Explain the concept or formula needed
 3. Give a general approach or method
 4. Use simple, clear language
-5. Keep hints concise (2-3 sentences max)
+5. ${multiPart ? 'Cover every part — one short sentence per part, labelled (a), (b), (c)...' : 'Keep hints concise (2-3 sentences max)'}
 6. NEVER use LaTeX notation like $x$ or \\times - use plain text/Unicode instead
 
 FORMATTING (CRITICAL):
@@ -56,7 +66,7 @@ FORMATTING (CRITICAL):
 - Use ² ³ for exponents (not ^2 or ^3)
 - Use √ for square root
 - Write fractions as a/b
-- Use plain numbers: "2 × 3 = 6" not "$2 \\times 3 = 6$"
+- Use plain numbers: "2 × 3 = 6" not "$2 \\times 3 = 6$"${multiPartBlock}
 
 Examples of good hints:
 - "To find the prime factorization, keep dividing by the smallest prime (2, 3, 5...) until you reach 1."
@@ -65,9 +75,9 @@ Examples of good hints:
       userPrompt = `Question: "${question}"
 Topic: ${topic || "Mathematics"}
 
-${hints && hints.length > 0 ? `Related concepts from the curriculum:\n${hints.join('\n')}` : ''}
+${hints && hints.length > 0 ? `Related concepts from the curriculum (one per part where labelled):\n${hints.join('\n')}` : ''}
 
-Provide a helpful conceptual hint (2-3 sentences max). Use plain text, NOT LaTeX.`;
+${multiPart ? 'Provide a one-line hint for EVERY part, labelled (a), (b), (c)... on separate lines. Include construction/diagram parts.' : 'Provide a helpful conceptual hint (2-3 sentences max).'} Use plain text, NOT LaTeX.`;
 
     } else if (actionType === "checkWork") {
       // Check Work: Provide teacher-like guidance based on their work

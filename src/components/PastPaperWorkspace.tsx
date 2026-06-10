@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,9 +94,66 @@ interface PastPaperWorkspaceProps {
   onClose: () => void;
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
+  editMode?: boolean;
+  onEditField?: (field: 'title' | 'question', value: string) => void;
+  headerActions?: ReactNode;
 }
 
-export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 'general', onSubmitProgress }: PastPaperWorkspaceProps) {
+function InlineEditableText({
+  value,
+  onCommit,
+  className,
+  multiline = false,
+}: {
+  value: string;
+  onCommit: (value: string) => void;
+  className?: string;
+  multiline?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (document.activeElement !== el && el.innerText !== value) {
+      el.innerText = value;
+    }
+  }, [value]);
+
+  return (
+    <div
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      role="textbox"
+      aria-multiline={multiline}
+      onInput={(e) => onCommit(e.currentTarget.innerText.replace(/\u00a0/g, ' '))}
+      onKeyDown={(e) => {
+        if (!multiline && e.key === 'Enter') {
+          e.preventDefault();
+          e.currentTarget.blur();
+        }
+      }}
+      className={cn(
+        'rounded-md border border-dashed border-transparent bg-transparent px-2 py-1 outline-none transition-colors hover:border-border focus:border-primary focus:bg-muted/40 whitespace-pre-wrap',
+        className,
+      )}
+    >
+      {value}
+    </div>
+  );
+}
+
+export function PastPaperWorkspace({
+  question,
+  isOpen,
+  onClose,
+  workspaceMode = 'general',
+  onSubmitProgress,
+  editMode = false,
+  onEditField,
+  headerActions,
+}: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);

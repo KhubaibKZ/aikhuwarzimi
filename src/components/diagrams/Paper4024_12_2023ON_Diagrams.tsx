@@ -400,6 +400,7 @@ export function TriangleConstruct_4024_12_2023ON({ onScore }: { onScore?: (s: { 
       )}
 
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${W} ${H}`}
         className="w-full bg-white rounded-lg border-2 border-border shadow-inner"
         onClick={handleSvgClick}

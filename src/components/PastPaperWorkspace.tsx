@@ -2148,17 +2148,49 @@ export function PastPaperWorkspace({
             <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{question.title}</p>
           )}
           {(() => {
-            const syllabusRef = getQuestionSyllabusRef(question.id);
-            return syllabusRef ? (
+            const baseRef = getQuestionSyllabusRef(question.id);
+            const ov = (question as any).syllabusOverride as { topicTitle?: string; subtopicCode?: string; subtopicTitle?: string } | undefined;
+            const subtopicCode = ov?.subtopicCode ?? baseRef?.subtopicCode ?? '';
+            const subtopicTitle = ov?.subtopicTitle ?? baseRef?.subtopicTitle ?? '';
+            const topicTitle = ov?.topicTitle ?? baseRef?.topicTitle ?? '';
+            const hasAny = subtopicCode || subtopicTitle || topicTitle;
+            if (!hasAny && !editMode) return null;
+            if (editMode && onEditField) {
+              return (
+                <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                  <Badge variant="secondary" className="text-xs font-normal gap-1 py-0.5">
+                    <BookOpen className="w-3 h-3" />
+                    <InlineEditableText
+                      value={subtopicCode}
+                      onCommit={(v) => onEditField('subtopicCode', v)}
+                      className="px-1 py-0 text-xs min-w-[2rem]"
+                    />
+                    <InlineEditableText
+                      value={subtopicTitle}
+                      onCommit={(v) => onEditField('subtopicTitle', v)}
+                      className="px-1 py-0 text-xs min-w-[4rem]"
+                    />
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">•</span>
+                  <InlineEditableText
+                    value={topicTitle}
+                    onCommit={(v) => onEditField('topicTitle', v)}
+                    className="text-xs text-muted-foreground px-1 py-0 min-w-[4rem]"
+                  />
+                </div>
+              );
+            }
+            return (
               <div className="flex items-center gap-1.5 mt-1">
                 <Badge variant="secondary" className="text-xs font-normal">
                   <BookOpen className="w-3 h-3 mr-1" />
-                  {syllabusRef.subtopicCode} {syllabusRef.subtopicTitle}
+                  {subtopicCode} {subtopicTitle}
                 </Badge>
-                <span className="text-xs text-muted-foreground">• {syllabusRef.topicTitle}</span>
+                {topicTitle && <span className="text-xs text-muted-foreground">• {topicTitle}</span>}
               </div>
-            ) : null;
+            );
           })()}
+
         </DialogHeader>
 
         <div className="space-y-6">

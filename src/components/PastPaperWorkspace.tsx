@@ -2104,6 +2104,17 @@ export function PastPaperWorkspace({ question, isOpen, onClose, workspaceMode = 
               </p>
             )}
 
+            {/* Admin-uploaded diagram image override (from PaperEditor) */}
+            {(question as any).diagramImageUrl && (
+              <div className="mt-4 flex justify-center">
+                <img
+                  src={(question as any).diagramImageUrl}
+                  alt="Question diagram"
+                  className="max-w-full rounded-lg border border-border bg-white"
+                />
+              </div>
+            )}
+
             {/* Interactive Diagrams based on question ID */}
             {question.id === 'pp_0580_s22_q2b' && (
               <div className="mt-4">

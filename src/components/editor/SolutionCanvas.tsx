@@ -43,11 +43,13 @@ const boxWidth: Record<BoxSize, string> = {
   lg: 'w-48',
 };
 
-export function SolutionCanvas({ value, onChange, hints = [] }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const canvas = value ?? empty;
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 

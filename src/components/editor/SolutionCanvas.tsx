@@ -549,57 +549,95 @@ function StepItemView({
   }
   if (item.kind === 'box') {
     const filled = !!(item.value && item.value.length > 0);
+    const hasCustom = item.width || item.height;
     return (
-      <div className="group/item inline-flex items-start gap-0.5">
-        <Input
-          value={item.value ?? ''}
-          placeholder="…"
-          onFocus={(e) => setFocusedRef(e.currentTarget)}
-          onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
-          className={cn(
-            'h-8 text-center',
-            filled ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent',
-            boxWidth[item.size],
-          )}
-          spellCheck={false}
-          autoComplete="off"
-          data-gramm="false"
-          data-gramm_editor="false"
-          data-enable-grammarly="false"
-        />
+      <div className="group/item relative inline-flex items-start gap-0.5">
+        <div className="relative">
+          <Input
+            value={item.value ?? ''}
+            placeholder="…"
+            onFocus={(e) => setFocusedRef(e.currentTarget)}
+            onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
+            style={hasCustom ? { width: item.width, height: item.height } : undefined}
+            className={cn(
+              'text-center',
+              item.height ? '' : 'h-8',
+              filled ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
+              !item.width && boxWidth[item.size],
+            )}
+            spellCheck={false}
+            autoComplete="off"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+          />
+          <ResizeHandle
+            onResize={(dw, dh) =>
+              onChange((i) => {
+                const b = i as Extract<StepItem, { kind: 'box' }>;
+                const baseW = b.width ?? (b.size === 'sm' ? 64 : b.size === 'md' ? 112 : 192);
+                const baseH = b.height ?? 32;
+                return { ...b, width: Math.max(32, baseW + dw), height: Math.max(24, baseH + dh) };
+              })
+            }
+          />
+        </div>
         {removeBtn}
       </div>
     );
   }
   // fraction
+  const fracW = Math.max(item.numW ?? 80, item.denW ?? 80);
   return (
     <div className="group/item inline-flex items-start gap-0.5">
       <div className="inline-flex flex-col items-center">
-        <Input
-          value={item.num ?? ''}
-          placeholder="num"
-          onFocus={(e) => setFocusedRef(e.currentTarget)}
-          onChange={(e) => onChange((i) => ({ ...(i as any), num: e.target.value }))}
-          className={cn('h-7 w-20 text-center text-xs', item.num ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
-          spellCheck={false}
-          autoComplete="off"
-          data-gramm="false"
-          data-gramm_editor="false"
-          data-enable-grammarly="false"
-        />
-        <div className="my-0.5 h-px w-20 bg-foreground" />
-        <Input
-          value={item.den ?? ''}
-          placeholder="den"
-          onFocus={(e) => setFocusedRef(e.currentTarget)}
-          onChange={(e) => onChange((i) => ({ ...(i as any), den: e.target.value }))}
-          className={cn('h-7 w-20 text-center text-xs', item.den ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
-          spellCheck={false}
-          autoComplete="off"
-          data-gramm="false"
-          data-gramm_editor="false"
-          data-enable-grammarly="false"
-        />
+        <div className="relative">
+          <Input
+            value={item.num ?? ''}
+            placeholder="num"
+            onFocus={(e) => setFocusedRef(e.currentTarget)}
+            onChange={(e) => onChange((i) => ({ ...(i as any), num: e.target.value }))}
+            style={{ width: item.numW ?? 80, height: item.numH ?? 28 }}
+            className={cn('text-center text-xs', item.num ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
+            spellCheck={false}
+            autoComplete="off"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+          />
+          <ResizeHandle
+            onResize={(dw, dh) =>
+              onChange((i) => {
+                const f = i as Extract<StepItem, { kind: 'fraction' }>;
+                return { ...f, numW: Math.max(32, (f.numW ?? 80) + dw), numH: Math.max(20, (f.numH ?? 28) + dh) };
+              })
+            }
+          />
+        </div>
+        <div className="my-0.5 h-px bg-foreground" style={{ width: fracW }} />
+        <div className="relative">
+          <Input
+            value={item.den ?? ''}
+            placeholder="den"
+            onFocus={(e) => setFocusedRef(e.currentTarget)}
+            onChange={(e) => onChange((i) => ({ ...(i as any), den: e.target.value }))}
+            style={{ width: item.denW ?? 80, height: item.denH ?? 28 }}
+            className={cn('text-center text-xs', item.den ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
+            spellCheck={false}
+            autoComplete="off"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
+          />
+          <ResizeHandle
+            onResize={(dw, dh) =>
+              onChange((i) => {
+                const f = i as Extract<StepItem, { kind: 'fraction' }>;
+                return { ...f, denW: Math.max(32, (f.denW ?? 80) + dw), denH: Math.max(20, (f.denH ?? 28) + dh) };
+              })
+            }
+          />
+        </div>
       </div>
       {removeBtn}
     </div>

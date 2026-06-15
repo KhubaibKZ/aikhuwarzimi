@@ -99,6 +99,7 @@ interface PastPaperWorkspaceProps {
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;
+  topCenterToggle?: ReactNode;
   solutionOverride?: ReactNode;
 }
 

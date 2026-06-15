@@ -17,7 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff, BookOpen } from 'lucide-react';
+import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff, BookOpen, Undo2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { useOverridesVersion } from '@/hooks/useOverridesSync';

@@ -295,37 +295,70 @@ function PreviewItem({
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);
+    const hasCustom = item.width || item.height;
     return (
       <Input
         value={v}
         placeholder="…"
         onChange={(e) => setVal(item.id, e.target.value)}
+        style={hasCustom ? { width: item.width, height: item.height } : undefined}
         className={cn(
-          'h-8 text-center',
-          v ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent',
-          boxWidth[item.size],
+          'text-center',
+          item.height ? '' : 'h-8',
+          v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
+          !item.width && boxWidth[item.size],
         )}
       />
     );
   }
   const numV = getVal(item.id + ':num', item.num);
   const denV = getVal(item.id + ':den', item.den);
+  const fracW = Math.max(item.numW ?? 80, item.denW ?? 80);
   return (
     <div className="inline-flex flex-col items-center">
       <Input
         value={numV}
         onChange={(e) => setVal(item.id + ':num', e.target.value)}
-        className={cn('h-7 w-20 text-center text-xs',
-          numV ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
+        style={{ width: item.numW ?? 80, height: item.numH ?? 28 }}
+        className={cn('text-center text-xs',
+          numV ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
       />
-      <div className="my-0.5 h-px w-20 bg-foreground" />
+      <div className="my-0.5 h-px bg-foreground" style={{ width: fracW }} />
       <Input
         value={denV}
         onChange={(e) => setVal(item.id + ':den', e.target.value)}
-        className={cn('h-7 w-20 text-center text-xs',
-          denV ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
+        style={{ width: item.denW ?? 80, height: item.denH ?? 28 }}
+        className={cn('text-center text-xs',
+          denV ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
       />
     </div>
+  );
+}
+
+function ResizeHandle({ onResize }: { onResize: (dw: number, dh: number) => void }) {
+  const onMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let lastX = e.clientX;
+    let lastY = e.clientY;
+    const move = (ev: MouseEvent) => {
+      onResize(ev.clientX - lastX, ev.clientY - lastY);
+      lastX = ev.clientX;
+      lastY = ev.clientY;
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+  return (
+    <span
+      onMouseDown={onMouseDown}
+      title="Drag to resize"
+      className="absolute -bottom-1 -right-1 z-10 h-3 w-3 cursor-nwse-resize rounded-sm border border-foreground bg-white"
+    />
   );
 }
 

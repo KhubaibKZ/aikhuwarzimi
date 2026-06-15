@@ -77,6 +77,7 @@ export default function PaperEditor() {
     const ov = getOverride(questionId);
     const merged = ov ? getPastPaperQuestion(questionId) : base;
     setDraft(deepClone(merged as Editable));
+    setHistory([]);
     setWorkspaceOpen(true);
   }, [questionId]);
 

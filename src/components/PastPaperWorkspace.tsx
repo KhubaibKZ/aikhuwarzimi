@@ -99,6 +99,7 @@ interface PastPaperWorkspaceProps {
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;
+  topCenterToggle?: ReactNode;
   solutionOverride?: ReactNode;
 }
 
@@ -161,6 +162,7 @@ export function PastPaperWorkspace({
   onAddHint,
   onRemoveHint,
   headerActions,
+  topCenterToggle,
   solutionOverride,
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -2116,8 +2118,8 @@ export function PastPaperWorkspace({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          {headerActions && (
-            <div className="mb-2">{headerActions}</div>
+          {topCenterToggle && (
+            <div className="flex justify-center mb-3">{topCenterToggle}</div>
           )}
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">{question.questionNumber}</DialogTitle>
@@ -2152,6 +2154,7 @@ export function PastPaperWorkspace({
                   </Badge>
                 </>
               )}
+              {headerActions}
             </div>
           </div>
           {editMode && onEditField ? (

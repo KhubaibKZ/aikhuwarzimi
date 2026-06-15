@@ -297,39 +297,37 @@ export default function PaperEditor() {
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />
           ) : undefined}
-          headerActions={(
-            <>
-              <div className="inline-flex rounded-md border border-border overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('edit')}
-                  className={`px-3 py-1 text-xs font-medium transition-colors ${viewMode === 'edit' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('preview')}
-                  className={`px-3 py-1 text-xs font-medium transition-colors border-l border-border ${viewMode === 'preview' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
-                >
-                  Preview
-                </button>
-              </div>
-              {viewMode === 'edit' && (
-                <>
-                  <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
-                    <RotateCcw className="h-4 w-4" /> Revert
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={undo} disabled={saving || history.length === 0} className="gap-2">
-                    <Undo2 className="h-4 w-4" /> Undo
-                  </Button>
-                  <Button size="sm" onClick={save} disabled={saving} className="gap-2">
-                    <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-                  </Button>
-                </>
-              )}
-            </>
+          topCenterToggle={(
+            <div className="inline-flex rounded-lg border border-border overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setViewMode('edit')}
+                className={`px-6 py-2 text-sm font-semibold transition-colors ${viewMode === 'edit' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('preview')}
+                className={`px-6 py-2 text-sm font-semibold transition-colors border-l border-border ${viewMode === 'preview' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground hover:bg-muted'}`}
+              >
+                Preview
+              </button>
+            </div>
           )}
+          headerActions={viewMode === 'edit' ? (
+            <div className="flex items-center gap-2 ml-1">
+              <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
+                <RotateCcw className="h-4 w-4" /> Revert
+              </Button>
+              <Button size="sm" variant="outline" onClick={undo} disabled={saving || history.length === 0} className="gap-2">
+                <Undo2 className="h-4 w-4" /> Undo
+              </Button>
+              <Button size="sm" onClick={save} disabled={saving} className="gap-2">
+                <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+              </Button>
+            </div>
+          ) : null}
         />
       )}
 

@@ -99,9 +99,19 @@ export default function PaperEditor() {
   const update = (mutator: (d: Editable) => void) => {
     setDraft((prev) => {
       if (!prev) return prev;
+      setHistory((h) => [...h, prev]);
       const next = deepClone(prev);
       mutator(next);
       return next;
+    });
+  };
+
+  const undo = () => {
+    setHistory((h) => {
+      if (h.length === 0) return h;
+      const prev = h[h.length - 1];
+      setDraft(prev);
+      return h.slice(0, -1);
     });
   };
 

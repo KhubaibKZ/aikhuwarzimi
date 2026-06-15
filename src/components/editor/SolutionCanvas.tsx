@@ -515,6 +515,7 @@ function StepItemView({
     );
   }
   if (item.kind === 'box') {
+    const filled = !!(item.value && item.value.length > 0);
     return (
       <div className="group/item inline-flex items-start gap-0.5">
         <Input
@@ -522,7 +523,11 @@ function StepItemView({
           placeholder="…"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
-          className={cn('h-8 border-2 border-dashed text-center', boxWidth[item.size])}
+          className={cn(
+            'h-8 text-center',
+            filled ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent',
+            boxWidth[item.size],
+          )}
           spellCheck={false}
           autoComplete="off"
           data-gramm="false"

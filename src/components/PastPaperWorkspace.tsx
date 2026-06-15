@@ -162,6 +162,7 @@ export function PastPaperWorkspace({
   onAddHint,
   onRemoveHint,
   headerActions,
+  topCenterToggle,
   solutionOverride,
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});

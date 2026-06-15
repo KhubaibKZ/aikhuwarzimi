@@ -315,15 +315,19 @@ export default function PaperEditor() {
                   Preview
                 </button>
               </div>
-              <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
-                <BookOpen className="h-4 w-4" /> Mark scheme
-              </Button>
-              <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
-                <RotateCcw className="h-4 w-4" /> Revert
-              </Button>
-              <Button size="sm" onClick={save} disabled={saving} className="gap-2">
-                <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-              </Button>
+              {viewMode === 'edit' && (
+                <>
+                  <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
+                    <RotateCcw className="h-4 w-4" /> Revert
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={undo} disabled={saving || history.length === 0} className="gap-2">
+                    <Undo2 className="h-4 w-4" /> Undo
+                  </Button>
+                  <Button size="sm" onClick={save} disabled={saving} className="gap-2">
+                    <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+                  </Button>
+                </>
+              )}
             </>
           )}
         />

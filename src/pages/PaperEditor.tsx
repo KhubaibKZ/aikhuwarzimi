@@ -17,7 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff, BookOpen } from 'lucide-react';
+import { Trash2, Plus, ArrowUp, ArrowDown, Save, RotateCcw, Upload, Pencil, ImageOff, BookOpen, Undo2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminRole } from '@/hooks/useAdminRole';
 import { useOverridesVersion } from '@/hooks/useOverridesSync';
@@ -57,6 +57,7 @@ export default function PaperEditor() {
   const [paperId, setPaperId] = useState<string>(EDITOR_PAPER_IDS[0]);
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
+  const [history, setHistory] = useState<Editable[]>([]);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
   const [msOpen, setMsOpen] = useState(false);
@@ -76,6 +77,7 @@ export default function PaperEditor() {
     const ov = getOverride(questionId);
     const merged = ov ? getPastPaperQuestion(questionId) : base;
     setDraft(deepClone(merged as Editable));
+    setHistory([]);
     setWorkspaceOpen(true);
   }, [questionId]);
 
@@ -97,9 +99,19 @@ export default function PaperEditor() {
   const update = (mutator: (d: Editable) => void) => {
     setDraft((prev) => {
       if (!prev) return prev;
+      setHistory((h) => [...h, prev]);
       const next = deepClone(prev);
       mutator(next);
       return next;
+    });
+  };
+
+  const undo = () => {
+    setHistory((h) => {
+      if (h.length === 0) return h;
+      const prev = h[h.length - 1];
+      setDraft(prev);
+      return h.slice(0, -1);
     });
   };
 
@@ -303,15 +315,19 @@ export default function PaperEditor() {
                   Preview
                 </button>
               </div>
-              <Button size="sm" variant="secondary" onClick={() => setMsOpen(true)} className="gap-2">
-                <BookOpen className="h-4 w-4" /> Mark scheme
-              </Button>
-              <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
-                <RotateCcw className="h-4 w-4" /> Revert
-              </Button>
-              <Button size="sm" onClick={save} disabled={saving} className="gap-2">
-                <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
-              </Button>
+              {viewMode === 'edit' && (
+                <>
+                  <Button size="sm" variant="outline" onClick={revertToOriginal} disabled={saving} className="gap-2">
+                    <RotateCcw className="h-4 w-4" /> Revert
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={undo} disabled={saving || history.length === 0} className="gap-2">
+                    <Undo2 className="h-4 w-4" /> Undo
+                  </Button>
+                  <Button size="sm" onClick={save} disabled={saving} className="gap-2">
+                    <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save'}
+                  </Button>
+                </>
+              )}
             </>
           )}
         />

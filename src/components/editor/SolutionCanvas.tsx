@@ -547,7 +547,7 @@ function StepItemView({
           placeholder="num"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), num: e.target.value }))}
-          className="h-7 w-20 border-2 border-dashed text-center text-xs"
+          className={cn('h-7 w-20 text-center text-xs', item.num ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
           spellCheck={false}
           autoComplete="off"
           data-gramm="false"

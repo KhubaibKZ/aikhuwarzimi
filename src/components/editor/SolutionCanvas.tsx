@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,6 +17,7 @@ import {
   CanvasBlock,
   newBlock,
   newItem,
+  normalizeCanvas,
   SolutionCanvas as TCanvas,
   StepItem,
   SYMBOLS,
@@ -43,8 +44,13 @@ const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
   lg: { w: 192, h: 36 },
 };
 
+/** Focus target tracks where the next "Add Text/Box/Fraction/Symbol" should land. */
+type FocusTarget =
+  | { kind: 'step'; stepId: string }
+  | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
+
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
-  const canvas = value ?? empty;
+  const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
@@ -234,6 +240,58 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   );
 }
 
+/* ============================================================
+ * Helpers — list-of-items recursive update
+ * ============================================================ */
+
+function updateInList(
+  items: StepItem[],
+  id: string,
+  fn: (i: StepItem) => StepItem,
+): StepItem[] {
+  return items.map((it) => {
+    if (it.id === id) return fn(it);
+    if (it.kind === 'fraction') {
+      return { ...it, num: updateInList(it.num, id, fn), den: updateInList(it.den, id, fn) };
+    }
+    return it;
+  });
+}
+
+function removeFromList(items: StepItem[], id: string): StepItem[] {
+  const out: StepItem[] = [];
+  for (const it of items) {
+    if (it.id === id) continue;
+    if (it.kind === 'fraction') {
+      out.push({ ...it, num: removeFromList(it.num, id), den: removeFromList(it.den, id) });
+    } else {
+      out.push(it);
+    }
+  }
+  return out;
+}
+
+function appendToStack(
+  items: StepItem[],
+  fractionId: string,
+  part: 'num' | 'den',
+  newOne: StepItem,
+): StepItem[] {
+  return items.map((it) => {
+    if (it.kind === 'fraction') {
+      if (it.id === fractionId) {
+        return { ...it, [part]: [...it[part], newOne] } as StepItem;
+      }
+      return { ...it, num: appendToStack(it.num, fractionId, part, newOne), den: appendToStack(it.den, fractionId, part, newOne) };
+    }
+    return it;
+  });
+}
+
+/* ============================================================
+ * Preview rendering
+ * ============================================================ */
+
 function PreviewBlock({ block }: { block: CanvasBlock }) {
   const { toast } = useToast();
   const [values, setValues] = useState<Record<string, string>>({});
@@ -298,37 +356,32 @@ function PreviewItem({
       />
     );
   }
-  const numV = getVal(item.id + ':num', item.num);
-  const denV = getVal(item.id + ':den', item.den);
-  const numW = item.numW ?? 80, numH = item.numH ?? 28;
-  const denW = item.denW ?? 80, denH = item.denH ?? 28;
-  const fracW = Math.max(numW, denW);
+  // fraction (stack)
+  const renderStack = (stack: StepItem[]) => {
+    if (stack.length === 0) {
+      return <span className="inline-block h-5 w-4" />;
+    }
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-1">
+        {stack.map((s) => (
+          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} />
+        ))}
+      </div>
+    );
+  };
   return (
-    <div className="inline-flex flex-col items-center">
-      <Input
-        value={numV}
-        onChange={(e) => setVal(item.id + ':num', e.target.value)}
-        style={{ width: numW, height: numH }}
-        className={cn('text-center text-xs',
-          numV ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
-      />
-      <div className="my-0.5 h-px bg-foreground" style={{ width: fracW }} />
-      <Input
-        value={denV}
-        onChange={(e) => setVal(item.id + ':den', e.target.value)}
-        style={{ width: denW, height: denH }}
-        className={cn('text-center text-xs',
-          denV ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
-      />
+    <div className="inline-flex flex-col items-center px-1">
+      <div className="min-w-[2rem]">{renderStack(item.num)}</div>
+      <div className="my-0.5 h-px w-full min-w-[2rem] bg-foreground" />
+      <div className="min-w-[2rem]">{renderStack(item.den)}</div>
     </div>
   );
 }
 
-/**
- * 8-direction resize wrapper (Word/Paint style). Wraps a sized child.
- * Handles appear on hover. Computes new w/h from the original at drag start
- * so dragging from any side feels stable.
- */
+/* ============================================================
+ * Resizable wrapper (8-way Word/Paint style)
+ * ============================================================ */
+
 function Resizable({
   width,
   height,
@@ -413,7 +466,9 @@ function BlockShell({
   );
 }
 
-type FocusedFrac = { fractionId: string; part: 'num' | 'den' } | null;
+/* ============================================================
+ * Step card (editor)
+ * ============================================================ */
 
 function StepCard({
   block,
@@ -429,48 +484,52 @@ function StepCard({
   insertAtCursor: (s: string) => void;
 }) {
   const [kbOpen, setKbOpen] = useState(false);
-  const [focusedFrac, setFocusedFrac] = useState<FocusedFrac>(null);
-  const setItems = (items: StepItem[]) => update((b) => ({ ...b, items }));
-  const addItem = (it: StepItem) => setItems([...block.items, it]);
-  const updateItem = (id: string, fn: (i: StepItem) => StepItem) =>
-    setItems(block.items.map((i) => (i.id === id ? fn(i) : i)));
-  const removeItem = (id: string) => setItems(block.items.filter((i) => i.id !== id));
+  const [focus, setFocus] = useState<FocusTarget>({ kind: 'step', stepId: block.id });
 
-  /** If cursor is in a fraction half, "Add Box" resizes that half to the chosen
-   *  box size instead of adding a separate box item. */
-  const addBox = (size: BoxSize) => {
-    if (focusedFrac) {
-      const { w, h } = BOX_PX[size];
-      updateItem(focusedFrac.fractionId, (i) => {
-        const f = i as Extract<StepItem, { kind: 'fraction' }>;
-        return focusedFrac.part === 'num'
-          ? { ...f, numW: w, numH: h }
-          : { ...f, denW: w, denH: h };
-      });
-      return;
+  const setItems = (items: StepItem[]) => update((b) => ({ ...b, items }));
+
+  /** Insert a new item at the current focus target (step or fraction stack). */
+  const addToFocus = (newOne: StepItem) => {
+    if (focus.kind === 'fraction' && focus.stepId === block.id) {
+      setItems(appendToStack(block.items, focus.fractionId, focus.part, newOne));
+    } else {
+      setItems([...block.items, newOne]);
     }
-    addItem(newItem.box(size));
   };
+
+  const updateItem = (id: string, fn: (i: StepItem) => StepItem) =>
+    setItems(updateInList(block.items, id, fn));
+  const removeItem = (id: string) => setItems(removeFromList(block.items, id));
+
+  const inFraction = focus.kind === 'fraction' && focus.stepId === block.id;
+  const boxLabel = inFraction ? ` → ${focus.part}` : '';
 
   return (
     <div className="rounded-md bg-background p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
-        <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addItem(newItem.text())}>
-          <Plus className="h-3 w-3" /> Text
+        <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addToFocus(newItem.text())}>
+          <Plus className="h-3 w-3" /> Text{boxLabel}
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs">
-              <Plus className="h-3 w-3" /> Box{focusedFrac ? ` → ${focusedFrac.part}` : ''}
+              <Plus className="h-3 w-3" /> Box{boxLabel}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => addBox('sm')}>Small</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => addBox('md')}>Medium</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => addBox('lg')}>Large</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addToFocus(newItem.box('sm'))}>Small</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addToFocus(newItem.box('md'))}>Medium</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addToFocus(newItem.box('lg'))}>Large</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addItem(newItem.fraction())}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-7 gap-1 px-2 text-xs"
+          onClick={() => addToFocus(newItem.fraction())}
+          disabled={inFraction}
+          title={inFraction ? 'Nested fractions are not supported' : 'Add a fraction bar'}
+        >
           <Plus className="h-3 w-3" /> Fraction
         </Button>
         {symbolPopover}
@@ -501,8 +560,9 @@ function StepCard({
             <StepItemView
               key={it.id}
               item={it}
+              stepId={block.id}
               setFocusedRef={setFocusedRef}
-              setFocusedFrac={setFocusedFrac}
+              setFocus={setFocus}
               onChange={(fn) => updateItem(it.id, fn)}
               onRemove={() => removeItem(it.id)}
             />
@@ -542,19 +602,37 @@ function StepCard({
   );
 }
 
+/* ============================================================
+ * Step item view (editor) — recursive for fraction stacks
+ * ============================================================ */
+
 function StepItemView({
   item,
+  stepId,
   setFocusedRef,
-  setFocusedFrac,
+  setFocus,
   onChange,
   onRemove,
+  fractionContext,
 }: {
   item: StepItem;
+  stepId: string;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
-  setFocusedFrac: (f: FocusedFrac) => void;
+  setFocus: (f: FocusTarget) => void;
   onChange: (fn: (i: StepItem) => StepItem) => void;
   onRemove: () => void;
+  /** When this item lives inside a fraction stack, the parent fraction id + side. */
+  fractionContext?: { fractionId: string; part: 'num' | 'den' };
 }) {
+  const focusOnEdit = (el: HTMLInputElement | HTMLTextAreaElement) => {
+    setFocusedRef(el);
+    if (fractionContext) {
+      setFocus({ kind: 'fraction', stepId, fractionId: fractionContext.fractionId, part: fractionContext.part });
+    } else {
+      setFocus({ kind: 'step', stepId });
+    }
+  };
+
   const removeBtn = (
     <button
       type="button"
@@ -568,14 +646,14 @@ function StepItemView({
 
   if (item.kind === 'text') {
     return (
-      <div className="group/item inline-flex items-start gap-0.5">
+      <div className="group/item inline-flex items-center gap-0.5">
         <Input
           value={item.text}
           placeholder="text"
-          onFocus={(e) => { setFocusedRef(e.currentTarget); setFocusedFrac(null); }}
+          onFocus={(e) => focusOnEdit(e.currentTarget)}
           onChange={(e) => onChange((i) => ({ ...(i as any), text: e.target.value }))}
-          className="h-8 min-w-[6rem] max-w-[20rem]"
-          style={{ width: `${Math.max(6, item.text.length + 2)}ch` }}
+          className="h-8 min-w-[4rem] max-w-[20rem]"
+          style={{ width: `${Math.max(4, item.text.length + 2)}ch` }}
           spellCheck={false}
           autoComplete="off"
           data-gramm="false"
@@ -584,12 +662,13 @@ function StepItemView({
       </div>
     );
   }
+
   if (item.kind === 'box') {
     const filled = !!(item.value && item.value.length > 0);
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
     return (
-      <div className="group/item inline-flex items-start gap-0.5">
+      <div className="group/item inline-flex items-center gap-0.5">
         <Resizable
           width={w}
           height={h}
@@ -598,7 +677,7 @@ function StepItemView({
           <Input
             value={item.value ?? ''}
             placeholder="…"
-            onFocus={(e) => { setFocusedRef(e.currentTarget); setFocusedFrac(null); }}
+            onFocus={(e) => focusOnEdit(e.currentTarget)}
             onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
             style={{ width: w, height: h }}
             className={cn(
@@ -614,48 +693,59 @@ function StepItemView({
       </div>
     );
   }
-  // fraction
-  const numW = item.numW ?? 80, numH = item.numH ?? 28;
-  const denW = item.denW ?? 80, denH = item.denH ?? 28;
-  const fracW = Math.max(numW, denW);
+
+  // Fraction — empty bar with stackable items on either side
+  const renderStack = (stack: StepItem[], part: 'num' | 'den') => {
+    const isFocused = false; // visual hint handled by toolbar label
+    if (stack.length === 0) {
+      return (
+        <button
+          type="button"
+          onClick={() => setFocus({ kind: 'fraction', stepId, fractionId: item.id, part })}
+          className={cn(
+            'inline-flex h-6 min-w-[2.5rem] items-center justify-center rounded border border-dashed text-[10px] uppercase tracking-wide',
+            'border-white/40 text-muted-foreground hover:border-white hover:text-foreground',
+          )}
+          title={`Click then use + Text / + Box to fill the ${part}`}
+        >
+          {part}
+        </button>
+      );
+    }
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-1">
+        {stack.map((s) => (
+          <StepItemView
+            key={s.id}
+            item={s}
+            stepId={stepId}
+            setFocusedRef={setFocusedRef}
+            setFocus={setFocus}
+            onChange={(fn) =>
+              onChange((parent) => {
+                const p = parent as Extract<StepItem, { kind: 'fraction' }>;
+                return { ...p, [part]: updateInList(p[part], s.id, fn) } as StepItem;
+              })
+            }
+            onRemove={() =>
+              onChange((parent) => {
+                const p = parent as Extract<StepItem, { kind: 'fraction' }>;
+                return { ...p, [part]: removeFromList(p[part], s.id) } as StepItem;
+              })
+            }
+            fractionContext={{ fractionId: item.id, part }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="group/item inline-flex items-start gap-0.5">
-      <div className="inline-flex flex-col items-center">
-        <Resizable
-          width={numW}
-          height={numH}
-          onResize={(w, h) => onChange((i) => ({ ...(i as any), numW: w, numH: h }))}
-        >
-          <Input
-            value={item.num ?? ''}
-            placeholder="num"
-            onFocus={(e) => { setFocusedRef(e.currentTarget); setFocusedFrac({ fractionId: item.id, part: 'num' }); }}
-            onChange={(e) => onChange((i) => ({ ...(i as any), num: e.target.value }))}
-            style={{ width: numW, height: numH }}
-            className={cn('text-center text-xs', item.num ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
-            spellCheck={false}
-            autoComplete="off"
-            data-gramm="false"
-          />
-        </Resizable>
-        <div className="my-0.5 h-px bg-foreground" style={{ width: fracW }} />
-        <Resizable
-          width={denW}
-          height={denH}
-          onResize={(w, h) => onChange((i) => ({ ...(i as any), denW: w, denH: h }))}
-        >
-          <Input
-            value={item.den ?? ''}
-            placeholder="den"
-            onFocus={(e) => { setFocusedRef(e.currentTarget); setFocusedFrac({ fractionId: item.id, part: 'den' }); }}
-            onChange={(e) => onChange((i) => ({ ...(i as any), den: e.target.value }))}
-            style={{ width: denW, height: denH }}
-            className={cn('text-center text-xs', item.den ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent')}
-            spellCheck={false}
-            autoComplete="off"
-            data-gramm="false"
-          />
-        </Resizable>
+    <div className="group/item inline-flex items-center gap-0.5">
+      <div className="inline-flex flex-col items-center px-1">
+        <div className="min-w-[2.5rem]">{renderStack(item.num, 'num')}</div>
+        <div className="my-1 h-0.5 w-full min-w-[2.5rem] bg-foreground" />
+        <div className="min-w-[2.5rem]">{renderStack(item.den, 'den')}</div>
       </div>
       {removeBtn}
     </div>

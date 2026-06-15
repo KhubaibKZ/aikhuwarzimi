@@ -2116,10 +2116,12 @@ export function PastPaperWorkspace({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
+          {headerActions && (
+            <div className="mb-2">{headerActions}</div>
+          )}
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">{question.questionNumber}</DialogTitle>
             <div className="flex items-center gap-2">
-              {headerActions}
               <Badge variant={isSubmitted ? "secondary" : "outline"} className={cn("flex items-center gap-1 font-mono", !isSubmitted && "animate-pulse")}>
                 <Clock className="h-3 w-3" />
                 {formatTime(isSubmitted && finalTime !== null ? finalTime : elapsedSeconds)}

@@ -57,6 +57,7 @@ export default function PaperEditor() {
   const [paperId, setPaperId] = useState<string>(EDITOR_PAPER_IDS[0]);
   const [questionId, setQuestionId] = useState<string>('');
   const [draft, setDraft] = useState<Editable | null>(null);
+  const [history, setHistory] = useState<Editable[]>([]);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
   const [msOpen, setMsOpen] = useState(false);

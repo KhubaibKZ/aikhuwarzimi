@@ -2,8 +2,17 @@ export type BoxSize = 'sm' | 'md' | 'lg';
 
 export type StepItem =
   | { id: string; kind: 'text'; text: string }
-  | { id: string; kind: 'box'; size: BoxSize; value?: string }
-  | { id: string; kind: 'fraction'; num?: string; den?: string };
+  | { id: string; kind: 'box'; size: BoxSize; value?: string; width?: number; height?: number }
+  | {
+      id: string;
+      kind: 'fraction';
+      num?: string;
+      den?: string;
+      numW?: number;
+      numH?: number;
+      denW?: number;
+      denH?: number;
+    };
 
 export type CanvasBlock =
   | { id: string; kind: 'heading'; text: string }

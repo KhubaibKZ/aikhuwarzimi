@@ -289,7 +289,7 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
-          solutionOverride={paperId === CANVAS_PAPER_ID ? (
+          solutionOverride={CANVAS_PAPER_IDS.has(paperId) ? (
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}

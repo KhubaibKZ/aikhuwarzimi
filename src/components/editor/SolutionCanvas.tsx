@@ -254,7 +254,7 @@ function PreviewBlock({ block }: { block: CanvasBlock }) {
   }
   // step
   return (
-    <div className="rounded-md border border-border bg-card p-3">
+    <div className="rounded-md bg-card p-3">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
@@ -346,7 +346,7 @@ function StepCard({
   const removeItem = (id: string) => setItems(block.items.filter((i) => i.id !== id));
 
   return (
-    <div className="rounded-md border border-dashed border-border bg-background p-3">
+    <div className="rounded-md bg-background p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addItem(newItem.text())}>
           <Plus className="h-3 w-3" /> Text

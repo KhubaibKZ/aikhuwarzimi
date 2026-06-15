@@ -37,7 +37,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
 import { QuestionText } from '@/components/QuestionText';
 
-const CANVAS_PAPER_ID = 'pp_4024_on23_21';
+const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
 

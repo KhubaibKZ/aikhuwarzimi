@@ -246,6 +246,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
 }
 
 function PreviewBlock({ block }: { block: CanvasBlock }) {
+  const { toast } = useToast();
+  const [values, setValues] = useState<Record<string, string>>({});
+  const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
+  const setVal = (id: string, v: string) => setValues((p) => ({ ...p, [id]: v }));
+
   if (block.kind === 'heading') {
     return <div className="text-lg font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
   }
@@ -260,33 +265,66 @@ function PreviewBlock({ block }: { block: CanvasBlock }) {
       ) : (
         <div className="flex flex-wrap items-end gap-2">
           {block.items.map((it) => (
-            <PreviewItem key={it.id} item={it} />
+            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} />
           ))}
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-auto h-7 gap-1 px-2 text-xs"
+            onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
+          >
+            <CheckSquare className="h-3.5 w-3.5 text-primary" /> Check
+          </Button>
         </div>
       )}
     </div>
   );
 }
 
-function PreviewItem({ item }: { item: StepItem }) {
+function PreviewItem({
+  item,
+  getVal,
+  setVal,
+}: {
+  item: StepItem;
+  getVal: (id: string, fallback?: string) => string;
+  setVal: (id: string, v: string) => void;
+}) {
   if (item.kind === 'text') {
     return <span className="text-sm text-foreground">{item.text}</span>;
   }
   if (item.kind === 'box') {
+    const v = getVal(item.id, item.value);
     return (
       <Input
-        readOnly
-        value={item.value ?? ''}
+        value={v}
         placeholder="…"
-        className={cn('h-8 border-2 border-dashed text-center', boxWidth[item.size])}
+        onChange={(e) => setVal(item.id, e.target.value)}
+        className={cn(
+          'h-8 text-center',
+          v ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent',
+          boxWidth[item.size],
+        )}
       />
     );
   }
+  const numV = getVal(item.id + ':num', item.num);
+  const denV = getVal(item.id + ':den', item.den);
   return (
     <div className="inline-flex flex-col items-center">
-      <Input readOnly value={item.num ?? ''} className="h-7 w-20 border-2 border-dashed text-center text-xs" />
+      <Input
+        value={numV}
+        onChange={(e) => setVal(item.id + ':num', e.target.value)}
+        className={cn('h-7 w-20 text-center text-xs',
+          numV ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
+      />
       <div className="my-0.5 h-px w-20 bg-foreground" />
-      <Input readOnly value={item.den ?? ''} className="h-7 w-20 border-2 border-dashed text-center text-xs" />
+      <Input
+        value={denV}
+        onChange={(e) => setVal(item.id + ':den', e.target.value)}
+        className={cn('h-7 w-20 text-center text-xs',
+          denV ? 'border-0 bg-muted/30' : 'border-2 border-dashed border-foreground/60 bg-transparent')}
+      />
     </div>
   );
 }

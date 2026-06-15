@@ -6,12 +6,10 @@ export type StepItem =
   | {
       id: string;
       kind: 'fraction';
-      num?: string;
-      den?: string;
-      numW?: number;
-      numH?: number;
-      denW?: number;
-      denH?: number;
+      /** Inline items rendered above the fraction bar. */
+      num: StepItem[];
+      /** Inline items rendered below the fraction bar. */
+      den: StepItem[];
     };
 
 export type CanvasBlock =
@@ -34,8 +32,34 @@ export const newBlock = {
 export const newItem = {
   text: (): StepItem => ({ id: rid(), kind: 'text', text: '' }),
   box: (size: BoxSize): StepItem => ({ id: rid(), kind: 'box', size, value: '' }),
-  fraction: (): StepItem => ({ id: rid(), kind: 'fraction', num: '', den: '' }),
+  fraction: (): StepItem => ({ id: rid(), kind: 'fraction', num: [], den: [] }),
 };
+
+/**
+ * Backward-compat normaliser: older canvases stored fraction `num`/`den` as
+ * plain strings (+ optional width/height). Convert those to the new stack form.
+ */
+export function normalizeItem(it: any): StepItem {
+  if (!it || typeof it !== 'object') return it;
+  if (it.kind !== 'fraction') return it;
+  const wrap = (v: any): StepItem[] => {
+    if (Array.isArray(v)) return v.map(normalizeItem);
+    if (typeof v === 'string' && v.length > 0) {
+      return [{ id: rid(), kind: 'text', text: v }];
+    }
+    return [];
+  };
+  return { id: it.id ?? rid(), kind: 'fraction', num: wrap(it.num), den: wrap(it.den) };
+}
+
+export function normalizeCanvas(c: SolutionCanvas | undefined | null): SolutionCanvas {
+  if (!c || !Array.isArray(c.blocks)) return { blocks: [] };
+  return {
+    blocks: c.blocks.map((b) =>
+      b.kind === 'step' ? { ...b, items: b.items.map(normalizeItem) } : b,
+    ),
+  };
+}
 
 export const SYMBOLS: string[] = [
   '+', '-', '×', '÷', '=', '≠', '≈', '<', '>', '≤', '≥',

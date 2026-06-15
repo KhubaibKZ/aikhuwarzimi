@@ -263,7 +263,7 @@ function PreviewBlock({ block }: { block: CanvasBlock }) {
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-        <div className="flex flex-wrap items-end gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {block.items.map((it) => (
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} />
           ))}
@@ -427,7 +427,7 @@ function StepCard({
       {block.items.length === 0 ? (
         <p className="py-3 text-center text-xs text-muted-foreground">Empty step — add Text, Box, Fraction or Symbols.</p>
       ) : (
-        <div className="flex flex-wrap items-end gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {block.items.map((it) => (
             <StepItemView
               key={it.id}

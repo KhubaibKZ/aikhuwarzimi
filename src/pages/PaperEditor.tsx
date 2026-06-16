@@ -416,13 +416,12 @@ function EditorTabs({
         </div>
         <div>
           <Label>Question text</Label>
-          <Textarea
-            rows={6}
+          <QuestionTextField
             value={draft.question}
-            onChange={(e) => update((d) => { d.question = e.target.value; })}
+            onChange={(v) => update((d) => { d.question = v; })}
           />
           <p className="text-[11px] text-muted-foreground mt-1">
-            Use plain text. Newlines preserved. Math symbols: × ÷ ² ³ √ π °.
+            Use the toolbar to insert symbols and stacked fractions <code>[[num/den]]</code>. Newlines preserved.
           </p>
         </div>
         <div className="w-32">

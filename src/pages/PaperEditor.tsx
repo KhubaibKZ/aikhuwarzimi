@@ -37,10 +37,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
 import { QuestionText } from '@/components/QuestionText';
 import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
+import { themeSvgMarkup } from '@/lib/svgTheme';
 
 const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
 
-type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
+type Editable = PastPaperQuestion & { diagramImageUrl?: string | null; diagramSvgMarkup?: string | null };
 
 const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22'] as const;
 
@@ -127,6 +128,9 @@ export default function PaperEditor() {
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
         'syllabusOverride', 'solutionCanvas',
       ];
+      if ((draft as any).diagramSvgMarkup !== undefined) {
+        ov.diagramSvgMarkup = (draft as any).diagramSvgMarkup || null;
+      }
 
       for (const k of keys) {
         if (JSON.stringify((draft as any)[k]) !== JSON.stringify(base[k])) {
@@ -290,11 +294,11 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
-          solutionOverride={CANVAS_PAPER_IDS.has(paperId) ? (
+          solutionOverride={CANVAS_PAPER_IDS.has(paperId) && viewMode === 'edit' ? (
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}
-              previewMode={viewMode === 'preview'}
+              previewMode={false}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />
           ) : undefined}
@@ -399,6 +403,7 @@ function EditorTabs({
   uploading: boolean;
   uploadDiagram: (f: File) => void;
 }) {
+  const { toast } = useToast();
   return (
     <Tabs defaultValue="content" className="w-full">
       <TabsList className="mb-4 flex-wrap h-auto">
@@ -551,40 +556,92 @@ function EditorTabs({
         </div>
       </TabsContent>
 
-      <TabsContent value="diagram" className="space-y-3">
-        <p className="text-sm text-muted-foreground">
-          Upload an image to display above (or in place of) the built-in diagram for this question.
-        </p>
-        {(draft as any).diagramImageUrl ? (
-          <div className="space-y-3">
-            <div className="rounded-md border border-border p-2 bg-white">
-              <img src={(draft as any).diagramImageUrl} alt="Diagram" className="max-h-80 mx-auto" />
-            </div>
-            <Button variant="outline" size="sm"
-              onClick={() => update((d) => { (d as any).diagramImageUrl = null; })}>
-              <ImageOff className="h-4 w-4" /> Remove image
-            </Button>
-          </div>
-        ) : (
+      <TabsContent value="diagram" className="space-y-6">
+        <div className="space-y-3">
           <div>
-            <input
-              id="diagram-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) uploadDiagram(f);
-                e.currentTarget.value = '';
-              }}
-            />
-            <Button asChild variant="outline" disabled={uploading}>
-              <label htmlFor="diagram-upload" className="cursor-pointer">
-                <Upload className="h-4 w-4" /> {uploading ? 'Uploading…' : 'Upload image'}
-              </label>
-            </Button>
+            <Label className="text-sm font-semibold">Inline SVG (themed)</Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              Upload an <code>.svg</code> file. Strokes/fills set to <code>currentColor</code> (or removed) will adopt the app's text colour, so it blends with the theme. Renders in place of the built-in diagram.
+            </p>
           </div>
-        )}
+          {(draft as any).diagramSvgMarkup ? (
+            <div className="space-y-3">
+              <div
+                className="rounded-md border border-border p-3 bg-card text-foreground flex justify-center [&_svg]:max-h-80 [&_svg]:w-auto"
+                dangerouslySetInnerHTML={{ __html: themeSvgMarkup((draft as any).diagramSvgMarkup) }}
+              />
+              <Button variant="outline" size="sm"
+                onClick={() => update((d) => { (d as any).diagramSvgMarkup = null; })}>
+                <ImageOff className="h-4 w-4" /> Remove SVG
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <input
+                id="diagram-svg-upload"
+                type="file"
+                accept=".svg,image/svg+xml"
+                className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.currentTarget.value = '';
+                  if (!f) return;
+                  const text = await f.text();
+                  if (!text.includes('<svg')) {
+                    toast({ title: 'Not an SVG', description: 'File must contain an <svg> element.', variant: 'destructive' });
+                    return;
+                  }
+                  update((d) => { (d as any).diagramSvgMarkup = text; });
+                  toast({ title: 'SVG loaded', description: 'Click Save to publish.' });
+                }}
+              />
+              <Button asChild variant="outline">
+                <label htmlFor="diagram-svg-upload" className="cursor-pointer">
+                  <Upload className="h-4 w-4" /> Upload SVG
+                </label>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-border pt-4 space-y-3">
+          <div>
+            <Label className="text-sm font-semibold">Raster image (PNG / JPG)</Label>
+            <p className="text-xs text-muted-foreground mt-1">
+              Falls back to this if no inline SVG is set. Useful for screenshots from the official paper.
+            </p>
+          </div>
+          {(draft as any).diagramImageUrl ? (
+            <div className="space-y-3">
+              <div className="rounded-md border border-border p-2 bg-white">
+                <img src={(draft as any).diagramImageUrl} alt="Diagram" className="max-h-80 mx-auto" />
+              </div>
+              <Button variant="outline" size="sm"
+                onClick={() => update((d) => { (d as any).diagramImageUrl = null; })}>
+                <ImageOff className="h-4 w-4" /> Remove image
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <input
+                id="diagram-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) uploadDiagram(f);
+                  e.currentTarget.value = '';
+                }}
+              />
+              <Button asChild variant="outline" disabled={uploading}>
+                <label htmlFor="diagram-upload" className="cursor-pointer">
+                  <Upload className="h-4 w-4" /> {uploading ? 'Uploading…' : 'Upload image'}
+                </label>
+              </Button>
+            </div>
+          )}
+        </div>
       </TabsContent>
     </Tabs>
   );

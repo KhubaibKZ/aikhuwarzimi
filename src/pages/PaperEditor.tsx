@@ -270,6 +270,7 @@ export default function PaperEditor() {
           onEditField={(field, value) => update((d) => {
             if (field === 'title') { d.title = value; return; }
             if (field === 'question') { d.question = value; return; }
+            if (field === 'diagramSvgMarkup') { (d as any).diagramSvgMarkup = value || null; return; }
             if (field === 'topicTitle' || field === 'subtopicCode' || field === 'subtopicTitle') {
               d.syllabusOverride = { ...(d.syllabusOverride || {}), [field]: value };
               return;

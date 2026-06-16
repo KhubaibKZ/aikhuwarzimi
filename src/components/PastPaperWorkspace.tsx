@@ -2220,12 +2220,21 @@ export function PastPaperWorkspace({
           <>
             <div className="rounded-lg bg-muted/50 p-4">
               {editMode && onEditField ? (
-                <InlineEditableText
-                  value={question.question}
-                  onCommit={(value) => onEditField('question', value)}
-                  multiline
-                  className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
-                />
+                <>
+                  <InlineMathToolbar
+                    onInsert={(t) => insertAtCaret(questionEditableRef.current, t)}
+                    hasSvg={!!(question as any).diagramSvgMarkup}
+                    onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
+                    onClearSvg={() => onEditField('diagramSvgMarkup', '')}
+                  />
+                  <InlineEditableText
+                    ref={questionEditableRef}
+                    value={question.question}
+                    onCommit={(value) => onEditField('question', value)}
+                    multiline
+                    className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+                  />
+                </>
               ) : (
                 <QuestionText text={question.question} />
               )}

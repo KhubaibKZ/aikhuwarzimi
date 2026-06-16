@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useRef, useEffect, useCallback, forwardRef, type ReactNode, type MutableRefObject } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,6 +72,7 @@ import {
 } from '@/components/diagrams';
 import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 import { themeSvgMarkup } from '@/lib/svgTheme';
+import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
 
 export interface SubmitProgressPayload {
   questionId: string;
@@ -96,7 +97,7 @@ interface PastPaperWorkspaceProps {
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
   editMode?: boolean;
-  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | `hint:${number}`, value: string) => void;
+  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | `hint:${number}`, value: string) => void;
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;
@@ -104,22 +105,22 @@ interface PastPaperWorkspaceProps {
   solutionOverride?: ReactNode;
 }
 
-function InlineEditableText({
-  value,
-  onCommit,
-  className,
-  multiline = false,
-}: {
+const InlineEditableText = forwardRef<HTMLDivElement, {
   value: string;
   onCommit: (value: string) => void;
   className?: string;
   multiline?: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
+}>(function InlineEditableText({ value, onCommit, className, multiline = false }, forwardedRef) {
+  const innerRef = useRef<HTMLDivElement>(null);
   const lastValueRef = useRef(value);
 
   useEffect(() => {
-    const el = ref.current;
+    if (typeof forwardedRef === 'function') forwardedRef(innerRef.current);
+    else if (forwardedRef) (forwardedRef as MutableRefObject<HTMLDivElement | null>).current = innerRef.current;
+  });
+
+  useEffect(() => {
+    const el = innerRef.current;
     if (!el) return;
     if (document.activeElement === el) return;
     if (el.innerText !== value) el.innerText = value;
@@ -128,7 +129,7 @@ function InlineEditableText({
 
   return (
     <div
-      ref={ref}
+      ref={innerRef}
       contentEditable
       suppressContentEditableWarning
       role="textbox"
@@ -150,7 +151,7 @@ function InlineEditableText({
       )}
     />
   );
-}
+});
 
 export function PastPaperWorkspace({
   question,
@@ -173,6 +174,7 @@ export function PastPaperWorkspace({
   const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
   const [storedMarkingNotes, setStoredMarkingNotes] = useState<Record<string, string>>({});
   const [diagramScores, setDiagramScores] = useState<Record<string, { marks: number; note: string }>>({});
+  const questionEditableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);
@@ -2218,12 +2220,21 @@ export function PastPaperWorkspace({
           <>
             <div className="rounded-lg bg-muted/50 p-4">
               {editMode && onEditField ? (
-                <InlineEditableText
-                  value={question.question}
-                  onCommit={(value) => onEditField('question', value)}
-                  multiline
-                  className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
-                />
+                <>
+                  <InlineMathToolbar
+                    onInsert={(t) => insertAtCaret(questionEditableRef.current, t)}
+                    hasSvg={!!(question as any).diagramSvgMarkup}
+                    onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
+                    onClearSvg={() => onEditField('diagramSvgMarkup', '')}
+                  />
+                  <InlineEditableText
+                    ref={questionEditableRef}
+                    value={question.question}
+                    onCommit={(value) => onEditField('question', value)}
+                    multiline
+                    className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+                  />
+                </>
               ) : (
                 <QuestionText text={question.question} />
               )}
@@ -2250,12 +2261,21 @@ export function PastPaperWorkspace({
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             {editMode && onEditField ? (
-              <InlineEditableText
-                value={question.question}
-                onCommit={(value) => onEditField('question', value)}
-                multiline
-                className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
-              />
+              <>
+                <InlineMathToolbar
+                  onInsert={(t) => insertAtCaret(questionEditableRef.current, t)}
+                  hasSvg={!!(question as any).diagramSvgMarkup}
+                  onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
+                  onClearSvg={() => onEditField('diagramSvgMarkup', '')}
+                />
+                <InlineEditableText
+                  ref={questionEditableRef}
+                  value={question.question}
+                  onCommit={(value) => onEditField('question', value)}
+                  multiline
+                  className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+                />
+              </>
             ) : (
               <QuestionText text={question.question} />
             )}

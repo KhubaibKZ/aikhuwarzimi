@@ -3029,8 +3029,14 @@ export function PastPaperWorkspace({
             )}
           </div>
 
+          {solutionOverride ? (
+            <div className="rounded-lg border border-border bg-card overflow-hidden">
+              {solutionOverride}
+            </div>
+          ) : (<>
           {/* Answer Fields */}
           <div className="space-y-4">
+
             {question.type === 'formula-fraction' && question.formulaTemplate ? (
               /* Formula Fraction Layout - Single unified formula shape */
               <div className="space-y-4">

@@ -36,6 +36,7 @@ import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
 import { QuestionText } from '@/components/QuestionText';
+import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
 
 const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
 

@@ -71,6 +71,7 @@ import {
   TriangleOAB_4024_12_2023ON
 } from '@/components/diagrams';
 import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
+import { FunctionGraphPlotter, EMPTY_FN_GRAPH, type FunctionGraphData } from '@/components/diagrams/FunctionGraphPlotter';
 import { themeSvgMarkup } from '@/lib/svgTheme';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
 
@@ -2937,6 +2938,34 @@ export function PastPaperWorkspace({
                 </div>
               );
             })()}
+
+            {/* Q6 (4024/21 ON 2023) — Interactive function graph y = 2x + 60/x − 4 */}
+            {question.id === 'pp_4024_on23_21_q6' && (() => {
+              const raw = answers['q6_graph_data'];
+              let data: FunctionGraphData = EMPTY_FN_GRAPH;
+              try { if (raw) data = JSON.parse(raw); } catch { /* ignore */ }
+              const showFeedback = isChecked || isSubmitted;
+              return (
+                <div className="mt-4">
+                  <FunctionGraphPlotter
+                    data={data}
+                    onChange={(d) => handleAnswerChange('q6_graph_data', JSON.stringify(d))}
+                    onScore={(s) => setDiagramScores(prev => ({ ...prev, d: s.d, ...(s.e ? { e: s.e } : {}) }))}
+                    disabled={isSubmitted}
+                    showFeedback={showFeedback}
+                  />
+                  <div className="mt-3 flex justify-end">
+                    <Button type="button" variant="outline" size="sm"
+                      onClick={() => { setIsChecked(true); toast({ title: 'Check Work', description: 'Graph evaluated — see point colours and tolerance count below the plot.' }); }}
+                      disabled={isSubmitted}>
+                      Check Work
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
+
+
 
             
             {/* Q18 - 3-set Venn diagram (interactive) */}

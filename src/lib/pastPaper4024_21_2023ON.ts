@@ -65,8 +65,9 @@ export const questions4024_21_2023ON: Record<string, PastPaperQuestion> = {
     type: 'multi-part',
     parts: [
       { label: '(a) BC', key: 'a', marks: 1 }, { label: '(b) Show formula', key: 'b', marks: 3 },
-      { label: '(c) Missing value', key: 'c', marks: 1 }, { label: '(d) Graph', key: 'd', marks: 3 },
-      { label: '(e) Dimensions', key: 'e', marks: 2 }
+      { label: '(c) Missing value', key: 'c', marks: 1 },
+      { label: '(d) Graph', key: 'd', marks: 3, diagramScored: true } as any,
+      { label: '(e) Dimensions (read from graph)', key: 'e', marks: 2, diagramScored: true } as any,
     ],
     answer: { a: '30/x', b: 'y = 2x + 60/x - 4', c: '28.3', d: 'Correct curve', e: '3 cm by 10 cm' }
   },

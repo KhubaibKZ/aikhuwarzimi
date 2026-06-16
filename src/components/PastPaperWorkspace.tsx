@@ -104,22 +104,22 @@ interface PastPaperWorkspaceProps {
   solutionOverride?: ReactNode;
 }
 
-function InlineEditableText({
-  value,
-  onCommit,
-  className,
-  multiline = false,
-}: {
+const InlineEditableText = forwardRef<HTMLDivElement, {
   value: string;
   onCommit: (value: string) => void;
   className?: string;
   multiline?: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
+}>(function InlineEditableText({ value, onCommit, className, multiline = false }, forwardedRef) {
+  const innerRef = useRef<HTMLDivElement>(null);
   const lastValueRef = useRef(value);
 
   useEffect(() => {
-    const el = ref.current;
+    if (typeof forwardedRef === 'function') forwardedRef(innerRef.current);
+    else if (forwardedRef) (forwardedRef as MutableRefObject<HTMLDivElement | null>).current = innerRef.current;
+  });
+
+  useEffect(() => {
+    const el = innerRef.current;
     if (!el) return;
     if (document.activeElement === el) return;
     if (el.innerText !== value) el.innerText = value;
@@ -128,7 +128,7 @@ function InlineEditableText({
 
   return (
     <div
-      ref={ref}
+      ref={innerRef}
       contentEditable
       suppressContentEditableWarning
       role="textbox"
@@ -150,7 +150,7 @@ function InlineEditableText({
       )}
     />
   );
-}
+});
 
 export function PastPaperWorkspace({
   question,

@@ -40,7 +40,7 @@ import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
 
 const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
 
-type Editable = PastPaperQuestion & { diagramImageUrl?: string | null };
+type Editable = PastPaperQuestion & { diagramImageUrl?: string | null; diagramSvgMarkup?: string | null };
 
 const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22'] as const;
 

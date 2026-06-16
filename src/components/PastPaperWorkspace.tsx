@@ -174,6 +174,7 @@ export function PastPaperWorkspace({
   const [storedMarksEarned, setStoredMarksEarned] = useState<Record<string, number>>({});
   const [storedMarkingNotes, setStoredMarkingNotes] = useState<Record<string, string>>({});
   const [diagramScores, setDiagramScores] = useState<Record<string, { marks: number; note: string }>>({});
+  const questionEditableRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingType, setLoadingType] = useState<'hint' | 'check' | null>(null);
   const [loadingPartKey, setLoadingPartKey] = useState<string | null>(null);

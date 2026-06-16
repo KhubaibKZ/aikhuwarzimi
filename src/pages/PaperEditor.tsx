@@ -81,14 +81,14 @@ export default function PaperEditor() {
     setWorkspaceOpen(true);
   }, [questionId]);
 
-  if (!roleLoading && !isAdmin) {
+  if (!roleLoading && !user) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container mx-auto py-12 text-center">
-          <h2 className="text-2xl font-bold mb-2">Editor — Admins only</h2>
+          <h2 className="text-2xl font-bold mb-2">Editor — Sign in required</h2>
           <p className="text-muted-foreground mb-6">
-            {user ? 'Your account does not have admin access.' : 'Please sign in with an admin account.'}
+            Please sign in to access the paper editor.
           </p>
           <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
         </div>

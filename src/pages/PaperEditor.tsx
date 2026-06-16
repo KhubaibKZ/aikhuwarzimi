@@ -779,3 +779,38 @@ function ElementRow({
     </div>
   );
 }
+
+/* -------------------- Rich text field with math toolbar -------------------- */
+
+function QuestionTextField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  return (
+    <div>
+      <MathInputToolbar targetRef={ref} value={value} onChange={onChange} />
+      <Textarea ref={ref} rows={6} value={value} onChange={(e) => onChange(e.target.value)} />
+      {value && (
+        <div className="mt-2 rounded-md border border-border bg-muted/30 p-2 text-sm">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Preview</div>
+          <QuestionText text={value} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RichInputField({
+  value, onChange, placeholder,
+}: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <div>
+      <MathInputToolbar targetRef={ref} value={value} onChange={onChange} compact />
+      <Input ref={ref} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      {value && (
+        <div className="mt-1 text-xs text-muted-foreground">
+          Preview: <span className="text-foreground"><QuestionText text={value} /></span>
+        </div>
+      )}
+    </div>
+  );
+}

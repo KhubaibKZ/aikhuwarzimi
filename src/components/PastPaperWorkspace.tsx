@@ -2270,8 +2270,13 @@ export function PastPaperWorkspace({
               </p>
             )}
 
-            {/* Admin-uploaded diagram image override (from PaperEditor) */}
-            {(question as any).diagramImageUrl && (
+            {/* Admin-uploaded diagram override (from PaperEditor) */}
+            {(question as any).diagramSvgMarkup ? (
+              <div
+                className="mt-4 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+                dangerouslySetInnerHTML={{ __html: themeSvgMarkup((question as any).diagramSvgMarkup) }}
+              />
+            ) : (question as any).diagramImageUrl && (
               <div className="mt-4 flex justify-center">
                 <img
                   src={(question as any).diagramImageUrl}

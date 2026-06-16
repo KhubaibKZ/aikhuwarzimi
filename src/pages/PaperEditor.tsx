@@ -445,7 +445,10 @@ function EditorTabs({
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <Label className="text-xs">Label</Label>
-                <Input value={p.label} onChange={(e) => update((d) => { d.parts![idx].label = e.target.value; })} />
+                <RichInputField
+                  value={p.label}
+                  onChange={(v) => update((d) => { d.parts![idx].label = v; })}
+                />
               </div>
               <div className="w-24">
                 <Label className="text-xs">Key</Label>
@@ -473,15 +476,15 @@ function EditorTabs({
             </div>
             <div>
               <Label className="text-xs">Final answer for this part (used by validator)</Label>
-              <Input
+              <RichInputField
                 value={((draft.answer as any) || {})[p.key] || ''}
-                onChange={(e) => update((d) => {
+                onChange={(v) => update((d) => {
                   if (typeof d.answer !== 'object' || !d.answer) d.answer = {} as any;
-                  (d.answer as any)[p.key] = e.target.value;
+                  (d.answer as any)[p.key] = v;
                 })}
                 placeholder="e.g. 2b-a|-a+2b"
               />
-              <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives.</p>
+              <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives. Insert stacked fractions with <code>[[a/b]]</code>.</p>
             </div>
           </div>
         ))}

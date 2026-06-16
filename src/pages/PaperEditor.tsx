@@ -402,6 +402,7 @@ function EditorTabs({
   uploading: boolean;
   uploadDiagram: (f: File) => void;
 }) {
+  const { toast } = useToast();
   return (
     <Tabs defaultValue="content" className="w-full">
       <TabsList className="mb-4 flex-wrap h-auto">

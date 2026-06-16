@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ import { PastPaperWorkspace } from '@/components/PastPaperWorkspace';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
 import { QuestionText } from '@/components/QuestionText';
+import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
 
 const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
 
@@ -415,13 +416,12 @@ function EditorTabs({
         </div>
         <div>
           <Label>Question text</Label>
-          <Textarea
-            rows={6}
+          <QuestionTextField
             value={draft.question}
-            onChange={(e) => update((d) => { d.question = e.target.value; })}
+            onChange={(v) => update((d) => { d.question = v; })}
           />
           <p className="text-[11px] text-muted-foreground mt-1">
-            Use plain text. Newlines preserved. Math symbols: × ÷ ² ³ √ π °.
+            Use the toolbar to insert symbols and stacked fractions <code>[[num/den]]</code>. Newlines preserved.
           </p>
         </div>
         <div className="w-32">
@@ -445,7 +445,10 @@ function EditorTabs({
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <Label className="text-xs">Label</Label>
-                <Input value={p.label} onChange={(e) => update((d) => { d.parts![idx].label = e.target.value; })} />
+                <RichInputField
+                  value={p.label}
+                  onChange={(v) => update((d) => { d.parts![idx].label = v; })}
+                />
               </div>
               <div className="w-24">
                 <Label className="text-xs">Key</Label>
@@ -473,15 +476,15 @@ function EditorTabs({
             </div>
             <div>
               <Label className="text-xs">Final answer for this part (used by validator)</Label>
-              <Input
+              <RichInputField
                 value={((draft.answer as any) || {})[p.key] || ''}
-                onChange={(e) => update((d) => {
+                onChange={(v) => update((d) => {
                   if (typeof d.answer !== 'object' || !d.answer) d.answer = {} as any;
-                  (d.answer as any)[p.key] = e.target.value;
+                  (d.answer as any)[p.key] = v;
                 })}
                 placeholder="e.g. 2b-a|-a+2b"
               />
-              <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives.</p>
+              <p className="text-[10px] text-muted-foreground mt-1">Use <code>|</code> to accept alternatives. Insert stacked fractions with <code>[[a/b]]</code>.</p>
             </div>
           </div>
         ))}
@@ -773,6 +776,41 @@ function ElementRow({
       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMoveLeft}><ArrowUp className="h-3 w-3 rotate-[-90deg]" /></Button>
       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMoveRight}><ArrowDown className="h-3 w-3 rotate-[-90deg]" /></Button>
       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={onRemove}><Trash2 className="h-3 w-3" /></Button>
+    </div>
+  );
+}
+
+/* -------------------- Rich text field with math toolbar -------------------- */
+
+function QuestionTextField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  return (
+    <div>
+      <MathInputToolbar targetRef={ref} value={value} onChange={onChange} />
+      <Textarea ref={ref} rows={6} value={value} onChange={(e) => onChange(e.target.value)} />
+      {value && (
+        <div className="mt-2 rounded-md border border-border bg-muted/30 p-2 text-sm">
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Preview</div>
+          <QuestionText text={value} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RichInputField({
+  value, onChange, placeholder,
+}: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <div>
+      <MathInputToolbar targetRef={ref} value={value} onChange={onChange} compact />
+      <Input ref={ref} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      {value && (
+        <div className="mt-1 text-xs text-muted-foreground">
+          Preview: <span className="text-foreground"><QuestionText text={value} /></span>
+        </div>
+      )}
     </div>
   );
 }

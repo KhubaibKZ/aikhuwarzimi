@@ -2217,48 +2217,8 @@ export function PastPaperWorkspace({
         </DialogHeader>
 
         <div className="space-y-6">
-        {solutionOverride ? (
-          <>
-            <div className="rounded-lg bg-muted/50 p-4">
-              {editMode && onEditField ? (
-                <>
-                  <InlineMathToolbar
-                    onInsert={(t) => insertAtCaret(questionEditableRef.current, t)}
-                    hasSvg={!!(question as any).diagramSvgMarkup}
-                    onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
-                    onClearSvg={() => onEditField('diagramSvgMarkup', '')}
-                  />
-                  <InlineEditableText
-                    ref={questionEditableRef}
-                    value={question.question}
-                    onCommit={(value) => onEditField('question', value)}
-                    multiline
-                    className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
-                  />
-                </>
-              ) : (
-                <QuestionText text={question.question} />
-              )}
-              {(question as any).diagramSvgMarkup ? (
-                <div
-                  className="mt-4 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-                  dangerouslySetInnerHTML={{ __html: themeSvgMarkup((question as any).diagramSvgMarkup) }}
-                />
-              ) : (question as any).diagramImageUrl && (
-                <div className="mt-4 flex justify-center">
-                  <img
-                    src={(question as any).diagramImageUrl}
-                    alt="Question diagram"
-                    className="max-w-full rounded-lg border border-border bg-white"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="rounded-lg border border-border bg-card overflow-hidden">
-              {solutionOverride}
-            </div>
-          </>
-        ) : (<>
+        <>
+
           {/* Question */}
           <div className="rounded-lg bg-muted/50 p-4">
             {editMode && onEditField ? (

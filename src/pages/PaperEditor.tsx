@@ -127,6 +127,9 @@ export default function PaperEditor() {
         'answer', 'equationStages', 'equationStagesMap', 'markingCriteria',
         'syllabusOverride', 'solutionCanvas',
       ];
+      if ((draft as any).diagramSvgMarkup !== undefined) {
+        ov.diagramSvgMarkup = (draft as any).diagramSvgMarkup || null;
+      }
 
       for (const k of keys) {
         if (JSON.stringify((draft as any)[k]) !== JSON.stringify(base[k])) {

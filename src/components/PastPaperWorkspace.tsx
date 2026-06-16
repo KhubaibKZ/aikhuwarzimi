@@ -3751,6 +3751,7 @@ export function PastPaperWorkspace({
             )}
           </div>
         </>)}
+        </>
         </div>
       </DialogContent>
     </Dialog>

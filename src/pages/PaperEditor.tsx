@@ -290,11 +290,11 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
-          solutionOverride={CANVAS_PAPER_IDS.has(paperId) ? (
+          solutionOverride={CANVAS_PAPER_IDS.has(paperId) && viewMode === 'edit' ? (
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}
-              previewMode={viewMode === 'preview'}
+              previewMode={false}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />
           ) : undefined}

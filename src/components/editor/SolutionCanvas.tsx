@@ -55,6 +55,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const [canvasKbOpen, setCanvasKbOpen] = useState(false);
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
@@ -120,9 +121,20 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Popover>
   );
 
+  const keyboardButton = (
+    <Button
+      size="sm"
+      variant={canvasKbOpen ? 'default' : 'outline'}
+      onClick={() => setCanvasKbOpen((v) => !v)}
+      className="gap-1"
+    >
+      <Keyboard className="h-3.5 w-3.5" /> {canvasKbOpen ? 'Hide Keyboard' : 'Keyboard'}
+    </Button>
+  );
+
   return (
     <div className="flex h-full flex-col">
-      {!previewMode && (
+      {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
           <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
@@ -134,9 +146,15 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             <Type className="h-3.5 w-3.5" /> Text
           </Button>
           {symbolPopover}
+          {keyboardButton}
           <div className="ml-auto text-xs text-muted-foreground">
             {canvas.blocks.length} block{canvas.blocks.length === 1 ? '' : 's'}
           </div>
+        </div>
+      ) : (
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
+          {symbolPopover}
+          {keyboardButton}
         </div>
       )}
 
@@ -150,7 +168,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? canvas.blocks.map((b) => <PreviewBlock key={b.id} block={b} />)
+          ? canvas.blocks.map((b) => <PreviewBlock key={b.id} block={b} setFocusedRef={setFocusedRef} />)
           : canvas.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}
@@ -194,6 +212,35 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
               </BlockShell>
             ))}
       </div>
+
+      {canvasKbOpen && (
+        <div className="border-t border-border bg-muted/40 px-3 py-2">
+          <HorizontalKeyboard
+            keys={DEFAULT_KEYBOARD}
+            onKeyPress={(k) => {
+              if (k === '⌫') {
+                const el = focusedRef;
+                if (el && 'value' in el) {
+                  const start = el.selectionStart ?? el.value.length;
+                  if (start > 0) {
+                    const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
+                    const setter = Object.getOwnPropertyDescriptor(
+                      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                      'value',
+                    )?.set;
+                    setter?.call(el, next);
+                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                    requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
+                  }
+                }
+                return;
+              }
+              insertAtCursor(k);
+            }}
+          />
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
+        </div>
+      )}
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="grid grid-cols-2 gap-3">
@@ -292,7 +339,7 @@ function appendToStack(
  * Preview rendering
  * ============================================================ */
 
-function PreviewBlock({ block }: { block: CanvasBlock }) {
+function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void }) {
   const { toast } = useToast();
   const [values, setValues] = useState<Record<string, string>>({});
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
@@ -311,7 +358,7 @@ function PreviewBlock({ block }: { block: CanvasBlock }) {
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           {block.items.map((it) => (
-            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} />
+            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}
           <Button
             size="sm"
@@ -331,10 +378,12 @@ function PreviewItem({
   item,
   getVal,
   setVal,
+  setFocusedRef,
 }: {
   item: StepItem;
   getVal: (id: string, fallback?: string) => string;
   setVal: (id: string, v: string) => void;
+  setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
     return <span className="text-sm text-foreground">{item.text}</span>;
@@ -347,6 +396,7 @@ function PreviewItem({
       <Input
         value={v}
         placeholder="…"
+        onFocus={(e) => setFocusedRef(e.currentTarget)}
         onChange={(e) => setVal(item.id, e.target.value)}
         style={{ width: w, height: h }}
         className={cn(
@@ -364,7 +414,7 @@ function PreviewItem({
     return (
       <div className="flex flex-wrap items-center justify-center gap-1">
         {stack.map((s) => (
-          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} />
+          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
         ))}
       </div>
     );

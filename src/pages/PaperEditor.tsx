@@ -268,11 +268,12 @@ export default function PaperEditor() {
           workspaceMode="general"
           editMode={viewMode === 'edit'}
           onEditField={(field, value) => update((d) => {
-            if (field === 'title') { d.title = value; return; }
-            if (field === 'question') { d.question = value; return; }
-            if (field === 'diagramSvgMarkup') { (d as any).diagramSvgMarkup = value || null; return; }
+            if (field === 'title') { d.title = value as string; return; }
+            if (field === 'question') { d.question = value as string; return; }
+            if (field === 'diagramSvgMarkup') { (d as any).diagramSvgMarkup = (value as string) || null; return; }
+            if (field === 'extraQuestionBlocks') { (d as any).extraQuestionBlocks = Array.isArray(value) ? value : []; return; }
             if (field === 'topicTitle' || field === 'subtopicCode' || field === 'subtopicTitle') {
-              d.syllabusOverride = { ...(d.syllabusOverride || {}), [field]: value };
+              d.syllabusOverride = { ...(d.syllabusOverride || {}), [field]: value as string };
               return;
             }
             if (field === 'marks') {
@@ -284,7 +285,7 @@ export default function PaperEditor() {
               const idx = parseInt(field.slice(5), 10);
               if (!Number.isNaN(idx)) {
                 const hints = [...(d.hints || [])];
-                hints[idx] = value;
+                hints[idx] = value as string;
                 d.hints = hints;
               }
             }

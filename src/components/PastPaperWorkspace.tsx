@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion, pastPapers } from '@/lib/pastPaperData';
 import { getQuestionSyllabusRef } from '@/lib/questionTopicMap';
 import { useProgress } from '@/context/ProgressContext';
-import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle, Clock, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -98,7 +98,7 @@ interface PastPaperWorkspaceProps {
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
   editMode?: boolean;
-  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | `hint:${number}`, value: string) => void;
+  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | 'extraQuestionBlocks' | `hint:${number}`, value: string | any[]) => void;
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;
@@ -153,6 +153,108 @@ const InlineEditableText = forwardRef<HTMLDivElement, {
     />
   );
 });
+
+/**
+ * Additional editable question blocks. Each block has its own text (with
+ * symbol/fraction toolbar) and an optional uploaded SVG diagram.
+ * In preview / student mode, rendered read-only as QuestionText + SVG.
+ */
+type ExtraQB = { id: string; text: string; svgMarkup?: string };
+const newExtraQB = (): ExtraQB => ({ id: Math.random().toString(36).slice(2, 10), text: '' });
+
+function ExtraQuestionBlocks({
+  blocks,
+  editMode,
+  onChange,
+}: {
+  blocks: ExtraQB[];
+  editMode: boolean;
+  onChange: (next: ExtraQB[]) => void;
+}) {
+  const refs = useRef<Record<string, HTMLDivElement | null>>({});
+  const update = (id: string, patch: Partial<ExtraQB>) =>
+    onChange(blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)));
+  const remove = (id: string) => onChange(blocks.filter((b) => b.id !== id));
+  const move = (id: string, dir: -1 | 1) => {
+    const i = blocks.findIndex((b) => b.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= blocks.length) return;
+    const next = [...blocks];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+
+  if (!editMode) {
+    if (!blocks.length) return null;
+    return (
+      <div className="mt-4 space-y-4">
+        {blocks.map((b) => (
+          <div key={b.id} className="space-y-2">
+            {b.text && <QuestionText text={b.text} />}
+            {b.svgMarkup && (
+              <div
+                className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+                dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 space-y-3">
+      {blocks.map((b, idx) => (
+        <div key={b.id} className="group rounded-lg border border-dashed border-border bg-background/40 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Question Block {idx + 2}
+            </span>
+            <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
+              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => move(b.id, -1)} disabled={idx === 0}>
+                <ArrowUp className="h-3 w-3" />
+              </Button>
+              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => move(b.id, 1)} disabled={idx === blocks.length - 1}>
+                <ArrowDown className="h-3 w-3" />
+              </Button>
+              <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => remove(b.id)}>
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+          <InlineMathToolbar
+            onInsert={(t) => insertAtCaret(refs.current[b.id] || null, t)}
+            hasSvg={!!b.svgMarkup}
+            onUploadSvg={(svg) => update(b.id, { svgMarkup: svg })}
+            onClearSvg={() => update(b.id, { svgMarkup: undefined })}
+          />
+          <InlineEditableText
+            ref={(el) => { refs.current[b.id] = el; }}
+            value={b.text}
+            onCommit={(v) => update(b.id, { text: v })}
+            multiline
+            className="text-foreground flex min-h-[72px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
+          />
+          {b.svgMarkup && (
+            <div
+              className="mt-3 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+              dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
+            />
+          )}
+        </div>
+      ))}
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => onChange([...blocks, newExtraQB()])}
+        className="gap-1"
+      >
+        <Plus className="h-3.5 w-3.5" /> Add question block
+      </Button>
+    </div>
+  );
+}
 
 export function PastPaperWorkspace({
   question,
@@ -2266,6 +2368,16 @@ export function PastPaperWorkspace({
                 />
               </div>
             )}
+
+            {/* Extra question blocks — additional question prompts with their own SVG + symbols */}
+            <ExtraQuestionBlocks
+              blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
+              editMode={!!(editMode && onEditField)}
+              onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
+            />
+
+
+
 
 
 

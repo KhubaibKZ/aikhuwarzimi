@@ -98,7 +98,7 @@ interface PastPaperWorkspaceProps {
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
   editMode?: boolean;
-  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | `hint:${number}`, value: string) => void;
+  onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | 'extraQuestionBlocks' | `hint:${number}`, value: string | any[]) => void;
   onAddHint?: () => void;
   onRemoveHint?: (index: number) => void;
   headerActions?: ReactNode;

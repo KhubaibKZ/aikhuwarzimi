@@ -339,7 +339,7 @@ function appendToStack(
  * Preview rendering
  * ============================================================ */
 
-function PreviewBlock({ block }: { block: CanvasBlock }) {
+function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void }) {
   const { toast } = useToast();
   const [values, setValues] = useState<Record<string, string>>({});
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
@@ -358,7 +358,7 @@ function PreviewBlock({ block }: { block: CanvasBlock }) {
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           {block.items.map((it) => (
-            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} />
+            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}
           <Button
             size="sm"
@@ -378,10 +378,12 @@ function PreviewItem({
   item,
   getVal,
   setVal,
+  setFocusedRef,
 }: {
   item: StepItem;
   getVal: (id: string, fallback?: string) => string;
   setVal: (id: string, v: string) => void;
+  setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
     return <span className="text-sm text-foreground">{item.text}</span>;
@@ -394,6 +396,7 @@ function PreviewItem({
       <Input
         value={v}
         placeholder="…"
+        onFocus={(e) => setFocusedRef(e.currentTarget)}
         onChange={(e) => setVal(item.id, e.target.value)}
         style={{ width: w, height: h }}
         className={cn(
@@ -411,7 +414,7 @@ function PreviewItem({
     return (
       <div className="flex flex-wrap items-center justify-center gap-1">
         {stack.map((s) => (
-          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} />
+          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
         ))}
       </div>
     );

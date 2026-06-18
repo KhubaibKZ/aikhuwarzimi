@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { PastPaperQuestion, pastPapers } from '@/lib/pastPaperData';
 import { getQuestionSyllabusRef } from '@/lib/questionTopicMap';
 import { useProgress } from '@/context/ProgressContext';
-import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, Lightbulb, Award, RotateCcw, Send, BookOpen, HelpCircle, Clock, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';

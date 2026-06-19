@@ -129,13 +129,14 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const keyboardButton = (
     <Button
       size="sm"
-      variant={canvasKbOpen ? 'default' : 'outline'}
-      onClick={() => setCanvasKbOpen((v) => !v)}
+      variant="outline"
+      onClick={addKeyboard}
       className="gap-1"
     >
-      <Keyboard className="h-3.5 w-3.5" /> {canvasKbOpen ? 'Hide Keyboard' : 'Keyboard'}
+      <Keyboard className="h-3.5 w-3.5" /> Add Keyboard
     </Button>
   );
+
 
   return (
     <div className="flex h-full flex-col">

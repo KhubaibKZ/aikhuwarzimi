@@ -399,6 +399,21 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;
   }
+  if (block.kind === 'question') {
+    return (
+      <div className="rounded-md border border-dashed border-border bg-background/40 p-3 space-y-2">
+        {block.text && <p className="text-sm text-foreground whitespace-pre-wrap font-medium">{block.text}</p>}
+        {block.svgMarkup && (
+          <div
+            className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+            dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
+          />
+        )}
+        {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md bg-card p-3">
       {block.items.length === 0 ? (

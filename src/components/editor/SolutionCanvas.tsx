@@ -225,8 +225,16 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             ))}
       </div>
 
-      {canvasKbOpen && (
-        <div className="border-t border-border bg-muted/40 px-3 py-2">
+      {keyboardIds.map((kid, i) => (
+        <div key={kid} className="border-t border-border bg-muted/40 px-3 py-2">
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Keyboard {i + 1}
+            </span>
+            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboard(kid)}>
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
           <HorizontalKeyboard
             keys={DEFAULT_KEYBOARD}
             onKeyPress={(k) => {
@@ -252,7 +260,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           />
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
         </div>
-      )}
+      ))}
+
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="grid grid-cols-2 gap-3">

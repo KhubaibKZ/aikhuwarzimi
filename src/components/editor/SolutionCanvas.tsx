@@ -11,7 +11,10 @@ import {
 import { ArrowDown, ArrowUp, CheckCircle2, CheckSquare, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
+import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
+import { themeSvgMarkup } from '@/lib/svgTheme';
 import { cn } from '@/lib/utils';
+
 import {
   BoxSize,
   CanvasBlock,

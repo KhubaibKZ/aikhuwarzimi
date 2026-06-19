@@ -28,7 +28,9 @@ interface Props {
   onChange: (next: TCanvas) => void;
   hints?: string[];
   previewMode?: boolean;
+  onAddQuestionBlock?: () => void;
 }
+
 
 const empty: TCanvas = { blocks: [] };
 
@@ -49,13 +51,16 @@ type FocusTarget =
   | { kind: 'step'; stepId: string }
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], previewMode = false, onAddQuestionBlock }: Props) {
   const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [canvasKbOpen, setCanvasKbOpen] = useState(false);
+  const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
+  const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
+
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
@@ -124,18 +129,24 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const keyboardButton = (
     <Button
       size="sm"
-      variant={canvasKbOpen ? 'default' : 'outline'}
-      onClick={() => setCanvasKbOpen((v) => !v)}
+      variant="outline"
+      onClick={addKeyboard}
       className="gap-1"
     >
-      <Keyboard className="h-3.5 w-3.5" /> {canvasKbOpen ? 'Hide Keyboard' : 'Keyboard'}
+      <Keyboard className="h-3.5 w-3.5" /> Add Keyboard
     </Button>
   );
+
 
   return (
     <div className="flex h-full flex-col">
       {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
+          {onAddQuestionBlock && (
+            <Button size="sm" variant="outline" onClick={onAddQuestionBlock} className="gap-1">
+              <Plus className="h-3.5 w-3.5" /> Add Question
+            </Button>
+          )}
           <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>
@@ -151,6 +162,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             {canvas.blocks.length} block{canvas.blocks.length === 1 ? '' : 's'}
           </div>
         </div>
+
       ) : (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
           {symbolPopover}
@@ -213,8 +225,16 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             ))}
       </div>
 
-      {canvasKbOpen && (
-        <div className="border-t border-border bg-muted/40 px-3 py-2">
+      {keyboardIds.map((kid, i) => (
+        <div key={kid} className="border-t border-border bg-muted/40 px-3 py-2">
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              Keyboard {i + 1}
+            </span>
+            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboard(kid)}>
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
           <HorizontalKeyboard
             keys={DEFAULT_KEYBOARD}
             onKeyPress={(k) => {
@@ -240,7 +260,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           />
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
         </div>
-      )}
+      ))}
+
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
         <div className="grid grid-cols-2 gap-3">

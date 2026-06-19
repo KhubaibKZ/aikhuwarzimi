@@ -877,8 +877,8 @@ function QuestionBlockEditor({
   onChange: (patch: Partial<Extract<CanvasBlock, { kind: 'question' }>>) => void;
   onFocusBlock: () => void;
 }) {
-  const taRef = useState<HTMLTextAreaElement | null>(null);
-  const [ref, setRef] = taRef;
+  const taRef = useRef<HTMLTextAreaElement | null>(null);
+
   return (
     <div className="space-y-2">
       <InlineMathToolbar

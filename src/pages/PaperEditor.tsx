@@ -302,8 +302,13 @@ export default function PaperEditor() {
               hints={draft.hints}
               previewMode={viewMode === 'preview'}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
+              onAddQuestionBlock={viewMode === 'edit' ? () => update((d) => {
+                const cur = Array.isArray((d as any).extraQuestionBlocks) ? (d as any).extraQuestionBlocks : [];
+                (d as any).extraQuestionBlocks = [...cur, { id: Math.random().toString(36).slice(2, 10), text: '' }];
+              }) : undefined}
             />
           ) : undefined}
+
           topCenterToggle={(
             <div className="inline-flex rounded-lg border border-border overflow-hidden">
               <button

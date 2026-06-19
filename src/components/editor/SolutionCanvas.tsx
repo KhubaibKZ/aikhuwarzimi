@@ -864,3 +864,58 @@ function StepItemView({
     </div>
   );
 }
+
+/* ============================================================
+ * Inline Question Block editor
+ * ============================================================ */
+function QuestionBlockEditor({
+  block,
+  onChange,
+  onFocusBlock,
+}: {
+  block: Extract<CanvasBlock, { kind: 'question' }>;
+  onChange: (patch: Partial<Extract<CanvasBlock, { kind: 'question' }>>) => void;
+  onFocusBlock: () => void;
+}) {
+  const taRef = useState<HTMLTextAreaElement | null>(null);
+  const [ref, setRef] = taRef;
+  return (
+    <div className="space-y-2">
+      <InlineMathToolbar
+        onInsert={(t) => {
+          const el = ref;
+          if (!el) {
+            onChange({ text: (block.text || '') + t });
+            return;
+          }
+          const start = el.selectionStart ?? el.value.length;
+          const end = el.selectionEnd ?? el.value.length;
+          const next = el.value.slice(0, start) + t + el.value.slice(end);
+          onChange({ text: next });
+          requestAnimationFrame(() => {
+            el.focus();
+            el.setSelectionRange(start + t.length, start + t.length);
+          });
+        }}
+        hasSvg={!!block.svgMarkup}
+        onUploadSvg={(svg) => onChange({ svgMarkup: svg })}
+        onClearSvg={() => onChange({ svgMarkup: undefined })}
+      />
+      <textarea
+        ref={setRef}
+        value={block.text}
+        onFocus={onFocusBlock}
+        onChange={(e) => onChange({ text: e.target.value })}
+        placeholder="Question prompt…"
+        className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+        spellCheck={false}
+      />
+      {block.svgMarkup && (
+        <div
+          className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+          dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
+        />
+      )}
+    </div>
+  );
+}

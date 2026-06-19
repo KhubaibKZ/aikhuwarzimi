@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,7 +11,10 @@ import {
 import { ArrowDown, ArrowUp, CheckCircle2, CheckSquare, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
+import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
+import { themeSvgMarkup } from '@/lib/svgTheme';
 import { cn } from '@/lib/utils';
+
 import {
   BoxSize,
   CanvasBlock,
@@ -57,14 +60,30 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
+  const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
+    setFocusedRef(el);
+    setFocusedBlockId(id);
+  };
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
+  const insertAfterFocused = (b: CanvasBlock) => {
+    const i = focusedBlockId ? canvas.blocks.findIndex((x) => x.id === focusedBlockId) : -1;
+    if (i < 0) return setBlocks([...canvas.blocks, b]);
+    const next = [...canvas.blocks];
+    next.splice(i + 1, 0, b);
+    setBlocks(next);
+  };
+  const addQuestion = () => {
+    insertAfterFocused(newBlock.question());
+    onAddQuestionBlock?.();
+  };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
   const removeBlock = (id: string) => setBlocks(canvas.blocks.filter((b) => b.id !== id));
@@ -77,6 +96,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     [next[i], next[j]] = [next[j], next[i]];
     setBlocks(next);
   };
+
 
   const insertAtCursor = (s: string) => {
     const el = focusedRef;
@@ -142,11 +162,10 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     <div className="flex h-full flex-col">
       {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
-          {onAddQuestionBlock && (
-            <Button size="sm" variant="outline" onClick={onAddQuestionBlock} className="gap-1">
-              <Plus className="h-3.5 w-3.5" /> Add Question
-            </Button>
-          )}
+          <Button size="sm" variant="outline" onClick={addQuestion} className="gap-1">
+            <Plus className="h-3.5 w-3.5" /> Add Question
+          </Button>
+
           <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>
@@ -187,13 +206,13 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlock(b.id, -1) : undefined}
                 onDown={idx < canvas.blocks.length - 1 ? () => moveBlock(b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'Step'}
+                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Step'}
               >
                 {b.kind === 'heading' && (
                   <Input
                     placeholder="e.g. (a) or (b)(i)"
                     value={b.text}
-                    onFocus={(e) => setFocusedRef(e.currentTarget)}
+                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
                     className="text-lg font-bold"
                     spellCheck={false}
@@ -205,24 +224,32 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   <Input
                     placeholder="Free text…"
                     value={b.text}
-                    onFocus={(e) => setFocusedRef(e.currentTarget)}
+                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
                     spellCheck={false}
                     autoComplete="off"
                     data-gramm="false"
                   />
                 )}
+                {b.kind === 'question' && (
+                  <QuestionBlockEditor
+                    block={b}
+                    onChange={(patch) => updateBlock(b.id, (p) => ({ ...(p as any), ...patch }))}
+                    onFocusBlock={() => setFocusedBlockId(b.id)}
+                  />
+                )}
                 {b.kind === 'step' && (
                   <StepCard
                     block={b}
                     update={(fn) => updateBlock(b.id, fn as any)}
-                    setFocusedRef={setFocusedRef}
+                    setFocusedRef={focusBlock(b.id)}
                     symbolPopover={symbolPopover}
                     insertAtCursor={insertAtCursor}
                   />
                 )}
               </BlockShell>
             ))}
+
       </div>
 
       {keyboardIds.map((kid, i) => (
@@ -372,6 +399,21 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;
   }
+  if (block.kind === 'question') {
+    return (
+      <div className="rounded-md border border-dashed border-border bg-background/40 p-3 space-y-2">
+        {block.text && <p className="text-sm text-foreground whitespace-pre-wrap font-medium">{block.text}</p>}
+        {block.svgMarkup && (
+          <div
+            className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+            dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
+          />
+        )}
+        {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md bg-card p-3">
       {block.items.length === 0 ? (
@@ -819,6 +861,61 @@ function StepItemView({
         <div className="min-w-[2.5rem]">{renderStack(item.den, 'den')}</div>
       </div>
       {removeBtn}
+    </div>
+  );
+}
+
+/* ============================================================
+ * Inline Question Block editor
+ * ============================================================ */
+function QuestionBlockEditor({
+  block,
+  onChange,
+  onFocusBlock,
+}: {
+  block: Extract<CanvasBlock, { kind: 'question' }>;
+  onChange: (patch: Partial<Extract<CanvasBlock, { kind: 'question' }>>) => void;
+  onFocusBlock: () => void;
+}) {
+  const taRef = useRef<HTMLTextAreaElement | null>(null);
+
+  return (
+    <div className="space-y-2">
+      <InlineMathToolbar
+        onInsert={(t) => {
+          const el = taRef.current;
+          if (!el) {
+            onChange({ text: (block.text || '') + t });
+            return;
+          }
+          const start = el.selectionStart ?? el.value.length;
+          const end = el.selectionEnd ?? el.value.length;
+          const next = el.value.slice(0, start) + t + el.value.slice(end);
+          onChange({ text: next });
+          requestAnimationFrame(() => {
+            el.focus();
+            el.setSelectionRange(start + t.length, start + t.length);
+          });
+        }}
+        hasSvg={!!block.svgMarkup}
+        onUploadSvg={(svg) => onChange({ svgMarkup: svg })}
+        onClearSvg={() => onChange({ svgMarkup: undefined })}
+      />
+      <textarea
+        ref={taRef}
+        value={block.text}
+        onFocus={onFocusBlock}
+        onChange={(e) => onChange({ text: e.target.value })}
+        placeholder="Question prompt…"
+        className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+        spellCheck={false}
+      />
+      {block.svgMarkup && (
+        <div
+          className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
+          dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
+        />
+      )}
     </div>
   );
 }

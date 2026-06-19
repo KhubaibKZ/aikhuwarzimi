@@ -15,7 +15,8 @@ export type StepItem =
 export type CanvasBlock =
   | { id: string; kind: 'heading'; text: string }
   | { id: string; kind: 'text'; text: string }
-  | { id: string; kind: 'step'; items: StepItem[] };
+  | { id: string; kind: 'step'; items: StepItem[] }
+  | { id: string; kind: 'question'; text: string; svgMarkup?: string };
 
 export interface SolutionCanvas {
   blocks: CanvasBlock[];
@@ -27,7 +28,9 @@ export const newBlock = {
   heading: (): CanvasBlock => ({ id: rid(), kind: 'heading', text: '' }),
   text: (): CanvasBlock => ({ id: rid(), kind: 'text', text: '' }),
   step: (): CanvasBlock => ({ id: rid(), kind: 'step', items: [] }),
+  question: (): CanvasBlock => ({ id: rid(), kind: 'question', text: '' }),
 };
+
 
 export const newItem = {
   text: (): StepItem => ({ id: rid(), kind: 'text', text: '' }),

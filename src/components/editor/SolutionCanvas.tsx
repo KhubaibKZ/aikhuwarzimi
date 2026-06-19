@@ -206,13 +206,13 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlock(b.id, -1) : undefined}
                 onDown={idx < canvas.blocks.length - 1 ? () => moveBlock(b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'Step'}
+                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Step'}
               >
                 {b.kind === 'heading' && (
                   <Input
                     placeholder="e.g. (a) or (b)(i)"
                     value={b.text}
-                    onFocus={(e) => setFocusedRef(e.currentTarget)}
+                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
                     className="text-lg font-bold"
                     spellCheck={false}
@@ -224,24 +224,32 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   <Input
                     placeholder="Free text…"
                     value={b.text}
-                    onFocus={(e) => setFocusedRef(e.currentTarget)}
+                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
                     spellCheck={false}
                     autoComplete="off"
                     data-gramm="false"
                   />
                 )}
+                {b.kind === 'question' && (
+                  <QuestionBlockEditor
+                    block={b}
+                    onChange={(patch) => updateBlock(b.id, (p) => ({ ...(p as any), ...patch }))}
+                    onFocusBlock={() => setFocusedBlockId(b.id)}
+                  />
+                )}
                 {b.kind === 'step' && (
                   <StepCard
                     block={b}
                     update={(fn) => updateBlock(b.id, fn as any)}
-                    setFocusedRef={setFocusedRef}
+                    setFocusedRef={focusBlock(b.id)}
                     symbolPopover={symbolPopover}
                     insertAtCursor={insertAtCursor}
                   />
                 )}
               </BlockShell>
             ))}
+
       </div>
 
       {keyboardIds.map((kid, i) => (

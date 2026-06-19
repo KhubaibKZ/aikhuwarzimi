@@ -57,14 +57,30 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
+  const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
+    setFocusedRef(el);
+    setFocusedBlockId(id);
+  };
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
+  const insertAfterFocused = (b: CanvasBlock) => {
+    const i = focusedBlockId ? canvas.blocks.findIndex((x) => x.id === focusedBlockId) : -1;
+    if (i < 0) return setBlocks([...canvas.blocks, b]);
+    const next = [...canvas.blocks];
+    next.splice(i + 1, 0, b);
+    setBlocks(next);
+  };
+  const addQuestion = () => {
+    insertAfterFocused(newBlock.question());
+    onAddQuestionBlock?.();
+  };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
   const removeBlock = (id: string) => setBlocks(canvas.blocks.filter((b) => b.id !== id));
@@ -77,6 +93,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     [next[i], next[j]] = [next[j], next[i]];
     setBlocks(next);
   };
+
 
   const insertAtCursor = (s: string) => {
     const el = focusedRef;

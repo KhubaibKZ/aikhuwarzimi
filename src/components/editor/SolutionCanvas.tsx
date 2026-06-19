@@ -902,7 +902,7 @@ function QuestionBlockEditor({
         onClearSvg={() => onChange({ svgMarkup: undefined })}
       />
       <textarea
-        ref={setRef}
+        ref={taRef}
         value={block.text}
         onFocus={onFocusBlock}
         onChange={(e) => onChange({ text: e.target.value })}

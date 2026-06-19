@@ -883,7 +883,7 @@ function QuestionBlockEditor({
     <div className="space-y-2">
       <InlineMathToolbar
         onInsert={(t) => {
-          const el = ref;
+          const el = taRef.current;
           if (!el) {
             onChange({ text: (block.text || '') + t });
             return;

@@ -51,13 +51,16 @@ type FocusTarget =
   | { kind: 'step'; stepId: string }
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], previewMode = false, onAddQuestionBlock }: Props) {
   const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [canvasKbOpen, setCanvasKbOpen] = useState(false);
+  const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
+  const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
+
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 

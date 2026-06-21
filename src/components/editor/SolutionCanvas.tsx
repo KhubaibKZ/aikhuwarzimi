@@ -54,7 +54,14 @@ type FocusTarget =
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
-  const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
+  const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
+  const canvas = useMemo(() => {
+    const normalized = normalizeCanvas(value ?? empty);
+    if (!previewMode && normalized.blocks.length === 0) {
+      return { blocks: [{ id: initialStepId.current, kind: 'step' as const, items: [] }] };
+    }
+    return normalized;
+  }, [value, previewMode]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);

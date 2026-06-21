@@ -104,6 +104,7 @@ interface PastPaperWorkspaceProps {
   headerActions?: ReactNode;
   topCenterToggle?: ReactNode;
   solutionOverride?: ReactNode;
+  onAddQuestionSection?: () => void;
 }
 
 const InlineEditableText = forwardRef<HTMLDivElement, {
@@ -269,6 +270,7 @@ export function PastPaperWorkspace({
   headerActions,
   topCenterToggle,
   solutionOverride,
+  onAddQuestionSection,
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);

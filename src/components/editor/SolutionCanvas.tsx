@@ -852,11 +852,9 @@ function StepItemView({
 function QuestionBlockEditor({
   block,
   onChange,
-  onFocusBlock,
 }: {
   block: Extract<CanvasBlock, { kind: 'question' }>;
   onChange: (patch: Partial<Extract<CanvasBlock, { kind: 'question' }>>) => void;
-  onFocusBlock: () => void;
 }) {
   const taRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -885,7 +883,6 @@ function QuestionBlockEditor({
       <textarea
         ref={taRef}
         value={block.text}
-        onFocus={onFocusBlock}
         onChange={(e) => onChange({ text: e.target.value })}
         placeholder="Question prompt…"
         className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"

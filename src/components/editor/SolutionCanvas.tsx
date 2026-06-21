@@ -73,15 +73,17 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
-  const insertAfterFocused = (b: CanvasBlock) => {
+  const insertAfterFocused = (...bs: CanvasBlock[]) => {
     const i = focusedBlockId ? canvas.blocks.findIndex((x) => x.id === focusedBlockId) : -1;
-    if (i < 0) return setBlocks([...canvas.blocks, b]);
+    if (i < 0) return setBlocks([...canvas.blocks, ...bs]);
     const next = [...canvas.blocks];
-    next.splice(i + 1, 0, b);
+    next.splice(i + 1, 0, ...bs);
     setBlocks(next);
   };
   const addQuestion = () => {
-    insertAfterFocused(newBlock.question());
+    // Always pair a new question block with a fresh solution (step) block below it,
+    // so authors can compose alternating Question → Solution sections.
+    insertAfterFocused(newBlock.question(), newBlock.step());
     onAddQuestionBlock?.();
   };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>

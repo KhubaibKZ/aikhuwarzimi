@@ -217,7 +217,6 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   <QuestionBlockEditor
                     block={b}
                     onChange={(patch) => updateBlock(b.id, (p) => ({ ...(p as any), ...patch }))}
-                    onFocusBlock={() => setFocusedBlockId(b.id)}
                   />
                 )}
                 {b.kind === 'step' && (

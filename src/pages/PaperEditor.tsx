@@ -296,6 +296,17 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
+          onAddQuestionSection={viewMode === 'edit' ? () => update((d) => {
+            const cur = Array.isArray((d as any).solutionCanvas?.blocks) ? (d as any).solutionCanvas.blocks : [];
+            (d as any).solutionCanvas = {
+              ...((d as any).solutionCanvas || {}),
+              blocks: [
+                ...cur,
+                { id: Math.random().toString(36).slice(2, 10), kind: 'question', text: '' },
+                { id: Math.random().toString(36).slice(2, 10), kind: 'step', items: [] },
+              ],
+            };
+          }) : undefined}
           solutionOverride={CANVAS_PAPER_IDS.has(paperId) ? (
             <SolutionCanvas
               value={draft.solutionCanvas}

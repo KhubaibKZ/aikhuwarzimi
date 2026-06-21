@@ -2380,6 +2380,7 @@ export function PastPaperWorkspace({
               blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
               editMode={!!(editMode && onEditField)}
               onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
+              showAddButton={!solutionOverride}
             />
 
 
@@ -3148,9 +3149,16 @@ export function PastPaperWorkspace({
           </div>
 
           {solutionOverride ? (
-            <div className="rounded-lg border border-border bg-card overflow-hidden">
-              {solutionOverride}
-            </div>
+            <>
+              <div className="rounded-lg border border-border bg-card overflow-hidden">
+                {solutionOverride}
+              </div>
+              {editMode && onAddQuestionSection && (
+                <Button size="sm" variant="outline" onClick={onAddQuestionSection} className="gap-1">
+                  <Plus className="h-3.5 w-3.5" /> Add question block
+                </Button>
+              )}
+            </>
           ) : (<>
           {/* Answer Fields */}
           <div className="space-y-4">

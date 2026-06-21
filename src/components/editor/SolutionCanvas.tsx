@@ -59,35 +59,17 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
   const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
     setFocusedRef(el);
-    setFocusedBlockId(id);
   };
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
-  const addQuestion = () => {
-    // Always place new question sections after an existing solution block.
-    // If the canvas has no initial solution yet, create it first: Solution → Question → Solution.
-    if (!canvas.blocks.some((b) => b.kind === 'step')) {
-      setBlocks([...canvas.blocks, newBlock.step(), newBlock.question(), newBlock.step()]);
-      return;
-    }
-    const focusedIndex = focusedBlockId ? canvas.blocks.findIndex((b) => b.id === focusedBlockId) : -1;
-    const focusedIsStep = focusedIndex >= 0 && canvas.blocks[focusedIndex]?.kind === 'step';
-    const insertIndex = focusedIsStep
-      ? focusedIndex
-      : canvas.blocks.reduce((lastStepIndex, block, index) => (block.kind === 'step' ? index : lastStepIndex), -1);
-    const next = [...canvas.blocks];
-    next.splice(insertIndex + 1, 0, newBlock.question(), newBlock.step());
-    setBlocks(next);
-  };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
   const removeBlock = (id: string) => setBlocks(canvas.blocks.filter((b) => b.id !== id));
@@ -166,10 +148,6 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     <div className="flex h-full flex-col">
       {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
-          <Button size="sm" variant="outline" onClick={addQuestion} className="gap-1">
-            <Plus className="h-3.5 w-3.5" /> Add Question
-          </Button>
-
           <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>

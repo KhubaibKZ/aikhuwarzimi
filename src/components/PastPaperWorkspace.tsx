@@ -2376,12 +2376,13 @@ export function PastPaperWorkspace({
             )}
 
             {/* Extra question blocks — additional question prompts with their own SVG + symbols */}
-            <ExtraQuestionBlocks
-              blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
-              editMode={!!(editMode && onEditField)}
-              onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
-              showAddButton={!solutionOverride}
-            />
+            {!solutionOverride && (
+              <ExtraQuestionBlocks
+                blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
+                editMode={!!(editMode && onEditField)}
+                onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
+              />
+            )}
 
 
 

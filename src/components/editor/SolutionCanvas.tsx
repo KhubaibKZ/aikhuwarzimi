@@ -86,7 +86,14 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       setBlocks([...canvas.blocks, newBlock.step(), newBlock.question(), newBlock.step()]);
       return;
     }
-    insertAfterFocused(newBlock.question(), newBlock.step());
+    const focusedIndex = focusedBlockId ? canvas.blocks.findIndex((b) => b.id === focusedBlockId) : -1;
+    const focusedIsStep = focusedIndex >= 0 && canvas.blocks[focusedIndex]?.kind === 'step';
+    const insertIndex = focusedIsStep
+      ? focusedIndex
+      : canvas.blocks.reduce((lastStepIndex, block, index) => (block.kind === 'step' ? index : lastStepIndex), -1);
+    const next = [...canvas.blocks];
+    next.splice(insertIndex + 1, 0, newBlock.question(), newBlock.step());
+    setBlocks(next);
   };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));

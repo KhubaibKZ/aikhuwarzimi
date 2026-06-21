@@ -31,7 +31,6 @@ interface Props {
   onChange: (next: TCanvas) => void;
   hints?: string[];
   previewMode?: boolean;
-  onAddQuestionBlock?: () => void;
 }
 
 
@@ -54,7 +53,7 @@ type FocusTarget =
   | { kind: 'step'; stepId: string }
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false, onAddQuestionBlock }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
@@ -81,10 +80,13 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     setBlocks(next);
   };
   const addQuestion = () => {
-    // Always pair a new question block with a fresh solution (step) block below it,
-    // so authors can compose alternating Question → Solution sections.
+    // Always place new question sections after an existing solution block.
+    // If the canvas has no initial solution yet, create it first: Solution → Question → Solution.
+    if (!canvas.blocks.some((b) => b.kind === 'step')) {
+      setBlocks([...canvas.blocks, newBlock.step(), newBlock.question(), newBlock.step()]);
+      return;
+    }
     insertAfterFocused(newBlock.question(), newBlock.step());
-    onAddQuestionBlock?.();
   };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));

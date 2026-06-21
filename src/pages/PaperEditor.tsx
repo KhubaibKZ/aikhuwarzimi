@@ -296,16 +296,25 @@ export default function PaperEditor() {
             hints.splice(i, 1);
             d.hints = hints;
           })}
+          onAddQuestionSection={viewMode === 'edit' ? () => update((d) => {
+            const cur = Array.isArray((d as any).solutionCanvas?.blocks) ? (d as any).solutionCanvas.blocks : [];
+            const hasSolutionBlock = cur.some((block: any) => block?.kind === 'step');
+            (d as any).solutionCanvas = {
+              ...((d as any).solutionCanvas || {}),
+              blocks: [
+                ...cur,
+                ...(hasSolutionBlock ? [] : [{ id: Math.random().toString(36).slice(2, 10), kind: 'step', items: [] }]),
+                { id: Math.random().toString(36).slice(2, 10), kind: 'question', text: '' },
+                { id: Math.random().toString(36).slice(2, 10), kind: 'step', items: [] },
+              ],
+            };
+          }) : undefined}
           solutionOverride={CANVAS_PAPER_IDS.has(paperId) ? (
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}
               previewMode={viewMode === 'preview'}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
-              onAddQuestionBlock={viewMode === 'edit' ? () => update((d) => {
-                const cur = Array.isArray((d as any).extraQuestionBlocks) ? (d as any).extraQuestionBlocks : [];
-                (d as any).extraQuestionBlocks = [...cur, { id: Math.random().toString(36).slice(2, 10), text: '' }];
-              }) : undefined}
             />
           ) : undefined}
 

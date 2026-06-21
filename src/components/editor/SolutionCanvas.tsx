@@ -31,7 +31,6 @@ interface Props {
   onChange: (next: TCanvas) => void;
   hints?: string[];
   previewMode?: boolean;
-  onAddQuestionBlock?: () => void;
 }
 
 
@@ -54,38 +53,30 @@ type FocusTarget =
   | { kind: 'step'; stepId: string }
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false, onAddQuestionBlock }: Props) {
-  const canvas = useMemo(() => normalizeCanvas(value ?? empty), [value]);
+export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
+  const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
+  const canvas = useMemo(() => {
+    const normalized = normalizeCanvas(value ?? empty);
+    if (!previewMode && normalized.blocks.length === 0) {
+      return { blocks: [{ id: initialStepId.current, kind: 'step' as const, items: [] }] };
+    }
+    return normalized;
+  }, [value, previewMode]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [focusedBlockId, setFocusedBlockId] = useState<string | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
   const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
     setFocusedRef(el);
-    setFocusedBlockId(id);
   };
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
-  const insertAfterFocused = (...bs: CanvasBlock[]) => {
-    const i = focusedBlockId ? canvas.blocks.findIndex((x) => x.id === focusedBlockId) : -1;
-    if (i < 0) return setBlocks([...canvas.blocks, ...bs]);
-    const next = [...canvas.blocks];
-    next.splice(i + 1, 0, ...bs);
-    setBlocks(next);
-  };
-  const addQuestion = () => {
-    // Always pair a new question block with a fresh solution (step) block below it,
-    // so authors can compose alternating Question → Solution sections.
-    insertAfterFocused(newBlock.question(), newBlock.step());
-    onAddQuestionBlock?.();
-  };
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
   const removeBlock = (id: string) => setBlocks(canvas.blocks.filter((b) => b.id !== id));
@@ -164,10 +155,6 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     <div className="flex h-full flex-col">
       {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
-          <Button size="sm" variant="outline" onClick={addQuestion} className="gap-1">
-            <Plus className="h-3.5 w-3.5" /> Add Question
-          </Button>
-
           <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>
@@ -237,7 +224,6 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   <QuestionBlockEditor
                     block={b}
                     onChange={(patch) => updateBlock(b.id, (p) => ({ ...(p as any), ...patch }))}
-                    onFocusBlock={() => setFocusedBlockId(b.id)}
                   />
                 )}
                 {b.kind === 'step' && (
@@ -873,11 +859,9 @@ function StepItemView({
 function QuestionBlockEditor({
   block,
   onChange,
-  onFocusBlock,
 }: {
   block: Extract<CanvasBlock, { kind: 'question' }>;
   onChange: (patch: Partial<Extract<CanvasBlock, { kind: 'question' }>>) => void;
-  onFocusBlock: () => void;
 }) {
   const taRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -906,7 +890,6 @@ function QuestionBlockEditor({
       <textarea
         ref={taRef}
         value={block.text}
-        onFocus={onFocusBlock}
         onChange={(e) => onChange({ text: e.target.value })}
         placeholder="Question prompt…"
         className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"

@@ -104,6 +104,7 @@ interface PastPaperWorkspaceProps {
   headerActions?: ReactNode;
   topCenterToggle?: ReactNode;
   solutionOverride?: ReactNode;
+  onAddQuestionSection?: () => void;
 }
 
 const InlineEditableText = forwardRef<HTMLDivElement, {
@@ -166,10 +167,12 @@ function ExtraQuestionBlocks({
   blocks,
   editMode,
   onChange,
+  showAddButton = true,
 }: {
   blocks: ExtraQB[];
   editMode: boolean;
   onChange: (next: ExtraQB[]) => void;
+  showAddButton?: boolean;
 }) {
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
   const update = (id: string, patch: Partial<ExtraQB>) =>
@@ -244,14 +247,16 @@ function ExtraQuestionBlocks({
           )}
         </div>
       ))}
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => onChange([...blocks, newExtraQB()])}
-        className="gap-1"
-      >
-        <Plus className="h-3.5 w-3.5" /> Add question block
-      </Button>
+      {showAddButton && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onChange([...blocks, newExtraQB()])}
+          className="gap-1"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add question block
+        </Button>
+      )}
     </div>
   );
 }
@@ -269,6 +274,7 @@ export function PastPaperWorkspace({
   headerActions,
   topCenterToggle,
   solutionOverride,
+  onAddQuestionSection,
 }: PastPaperWorkspaceProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isChecked, setIsChecked] = useState(false);
@@ -2370,11 +2376,13 @@ export function PastPaperWorkspace({
             )}
 
             {/* Extra question blocks — additional question prompts with their own SVG + symbols */}
-            <ExtraQuestionBlocks
-              blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
-              editMode={!!(editMode && onEditField)}
-              onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
-            />
+            {!solutionOverride && (
+              <ExtraQuestionBlocks
+                blocks={((question as any).extraQuestionBlocks as Array<{ id: string; text: string; svgMarkup?: string }> | undefined) || []}
+                editMode={!!(editMode && onEditField)}
+                onChange={(next) => onEditField && onEditField('extraQuestionBlocks', next)}
+              />
+            )}
 
 
 
@@ -3142,9 +3150,16 @@ export function PastPaperWorkspace({
           </div>
 
           {solutionOverride ? (
-            <div className="rounded-lg border border-border bg-card overflow-hidden">
-              {solutionOverride}
-            </div>
+            <>
+              <div className="rounded-lg border border-border bg-card overflow-hidden">
+                {solutionOverride}
+              </div>
+              {editMode && onAddQuestionSection && (
+                <Button size="sm" variant="outline" onClick={onAddQuestionSection} className="gap-1">
+                  <Plus className="h-3.5 w-3.5" /> Add question block
+                </Button>
+              )}
+            </>
           ) : (<>
           {/* Answer Fields */}
           <div className="space-y-4">

@@ -167,10 +167,12 @@ function ExtraQuestionBlocks({
   blocks,
   editMode,
   onChange,
+  showAddButton = true,
 }: {
   blocks: ExtraQB[];
   editMode: boolean;
   onChange: (next: ExtraQB[]) => void;
+  showAddButton?: boolean;
 }) {
   const refs = useRef<Record<string, HTMLDivElement | null>>({});
   const update = (id: string, patch: Partial<ExtraQB>) =>
@@ -245,14 +247,16 @@ function ExtraQuestionBlocks({
           )}
         </div>
       ))}
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => onChange([...blocks, newExtraQB()])}
-        className="gap-1"
-      >
-        <Plus className="h-3.5 w-3.5" /> Add question block
-      </Button>
+      {showAddButton && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onChange([...blocks, newExtraQB()])}
+          className="gap-1"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add question block
+        </Button>
+      )}
     </div>
   );
 }

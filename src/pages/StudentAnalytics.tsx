@@ -586,8 +586,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                   <div className="font-mono text-xs md:text-sm text-foreground bg-background rounded-md p-3 border border-border mt-3 space-y-1">
                     <div>numerator = 0.5 · 4 + 1.0 · 2 = 4.0</div>
                     <div>damp = 1 / log₁₀(12 + 9) = 1 / log₁₀(21) ≈ 0.756</div>
-                    <div>TDI = (4.0 / 12) · 0.756 ≈ 0.252</div>
-                    <div>Independence = 100 − 0.252 · 60 ≈ <span className="text-success font-semibold">85</span> → 🟢 Highly Autonomous</div>
+                    <div>TDI = (4.0 / 12) · 0.756 ≈ <span className="text-success font-semibold">0.252</span> → 🟢 Highly Autonomous</div>
                   </div>
                 </div>
 

@@ -541,7 +541,6 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                         <tr>
                           <th className="text-left p-3">TDI Range</th>
-                          <th className="text-left p-3">Independence</th>
                           <th className="text-left p-3">Label</th>
                           <th className="text-left p-3">What it means</th>
                         </tr>
@@ -549,31 +548,26 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       <tbody className="text-foreground">
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">TDI = 0</td>
-                          <td className="p-3 font-mono">100</td>
                           <td className="p-3"><span className="text-success font-semibold">🌟 Absolute Autonomy</span></td>
                           <td className="p-3 text-muted-foreground">Solved every question without any AI assistance.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">0 &lt; TDI ≤ 0.5</td>
-                          <td className="p-3 font-mono">~70 – 100</td>
                           <td className="p-3"><span className="text-success font-semibold">🟢 Highly Autonomous</span></td>
                           <td className="p-3 text-muted-foreground">Occasional hint or check; strong independent work.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">0.5 &lt; TDI ≤ 1.2</td>
-                          <td className="p-3 font-mono">~28 – 70</td>
                           <td className="p-3"><span className="text-warning font-semibold">🟡 Moderately Supported</span></td>
                           <td className="p-3 text-muted-foreground">Regular use of AI support — fine, but try to attempt first.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">1.2 &lt; TDI ≤ 2.0</td>
-                          <td className="p-3 font-mono">~0 – 28</td>
                           <td className="p-3"><span className="text-orange-500 font-semibold">🟠 Heavily Dependent</span></td>
                           <td className="p-3 text-muted-foreground">Most questions involve hints or check work; build confidence in core skills.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">TDI &gt; 2.0</td>
-                          <td className="p-3 font-mono">0</td>
                           <td className="p-3"><span className="text-destructive font-semibold">🔴 Critical Over-Use</span></td>
                           <td className="p-3 text-muted-foreground">AI is doing most of the work; revisit fundamentals before progressing.</td>
                         </tr>

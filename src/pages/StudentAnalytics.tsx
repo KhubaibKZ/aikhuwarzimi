@@ -475,7 +475,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
         </h1>
 
         <Tabs defaultValue="pastpapers" className="w-full">
-          <TabsList className="mb-6 w-full max-w-md">
+          <TabsList className="mb-6 w-full max-w-2xl">
             <TabsTrigger value="syllabus" className="flex-1 gap-2" disabled>
               <BookOpen className="h-4 w-4" />
               Syllabus
@@ -484,6 +484,10 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
             <TabsTrigger value="pastpapers" className="flex-1 gap-2">
               <FileText className="h-4 w-4" />
               Past Paper Progress
+            </TabsTrigger>
+            <TabsTrigger value="aiindex" className="flex-1 gap-2">
+              <Brain className="h-4 w-4" />
+              AI Independence Index
             </TabsTrigger>
           </TabsList>
 
@@ -499,6 +503,111 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* ── AI Independence Index Explainer Tab ── */}
+          <TabsContent value="aiindex">
+            <Card className="bg-card border-border">
+              <CardContent className="p-6 md:p-8 space-y-6">
+                <div>
+                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-2">
+                    <Brain className="h-5 w-5 text-primary" />
+                    What is the AI Independence Index?
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    The AI Independence Index measures how much you solve problems on your own versus how often
+                    you lean on AI tutor hints and the Check Work assistant. A higher score means you are working
+                    more autonomously; a lower score means you are relying heavily on AI scaffolding. It is
+                    derived from the underlying <span className="text-foreground font-semibold">Tutor Dependence Index (TDI)</span>.
+                  </p>
+                </div>
+
+                <div className="rounded-lg border border-border bg-muted/30 p-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Formula</h3>
+                  <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
+                    TDI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
+                  </div>
+                  <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border mt-2">
+                    Independence = clamp( 100 − TDI · 60, 0, 100 )
+                  </div>
+                  <ul className="text-xs text-muted-foreground mt-3 space-y-1">
+                    <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span> — total AI hints used</li>
+                    <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span> — total Check Work uses (weighted higher since it reveals correctness)</li>
+                    <li><span className="text-foreground font-semibold">Q</span> — number of questions attempted</li>
+                    <li><span className="text-foreground font-semibold">log<sub>10</sub>(Q + 9)</span> — dampener so a single hint on a small set is not over-penalised</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Ranges &amp; Interpretation</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+                      <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                        <tr>
+                          <th className="text-left p-3">TDI Range</th>
+                          <th className="text-left p-3">Independence</th>
+                          <th className="text-left p-3">Label</th>
+                          <th className="text-left p-3">What it means</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-foreground">
+                        <tr className="border-t border-border">
+                          <td className="p-3 font-mono">TDI = 0</td>
+                          <td className="p-3 font-mono">100</td>
+                          <td className="p-3"><span className="text-success font-semibold">🌟 Absolute Autonomy</span></td>
+                          <td className="p-3 text-muted-foreground">Solved every question without any AI assistance.</td>
+                        </tr>
+                        <tr className="border-t border-border">
+                          <td className="p-3 font-mono">0 &lt; TDI ≤ 0.5</td>
+                          <td className="p-3 font-mono">~70 – 100</td>
+                          <td className="p-3"><span className="text-success font-semibold">🟢 Highly Autonomous</span></td>
+                          <td className="p-3 text-muted-foreground">Occasional hint or check; strong independent work.</td>
+                        </tr>
+                        <tr className="border-t border-border">
+                          <td className="p-3 font-mono">0.5 &lt; TDI ≤ 1.2</td>
+                          <td className="p-3 font-mono">~28 – 70</td>
+                          <td className="p-3"><span className="text-warning font-semibold">🟡 Moderately Supported</span></td>
+                          <td className="p-3 text-muted-foreground">Regular use of AI support — fine, but try to attempt first.</td>
+                        </tr>
+                        <tr className="border-t border-border">
+                          <td className="p-3 font-mono">1.2 &lt; TDI ≤ 2.0</td>
+                          <td className="p-3 font-mono">~0 – 28</td>
+                          <td className="p-3"><span className="text-orange-500 font-semibold">🟠 Heavily Dependent</span></td>
+                          <td className="p-3 text-muted-foreground">Most questions involve hints or check work; build confidence in core skills.</td>
+                        </tr>
+                        <tr className="border-t border-border">
+                          <td className="p-3 font-mono">TDI &gt; 2.0</td>
+                          <td className="p-3 font-mono">0</td>
+                          <td className="p-3"><span className="text-destructive font-semibold">🔴 Critical Over-Use</span></td>
+                          <td className="p-3 text-muted-foreground">AI is doing most of the work; revisit fundamentals before progressing.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border bg-muted/30 p-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wider">Worked Example</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Suppose you attempted <span className="text-foreground font-semibold">Q = 12</span> questions, used
+                    {' '}<span className="text-foreground font-semibold">ΣH<sub>q</sub> = 4</span> hints and
+                    {' '}<span className="text-foreground font-semibold">ΣS<sub>assist</sub> = 2</span> check-work calls.
+                  </p>
+                  <div className="font-mono text-xs md:text-sm text-foreground bg-background rounded-md p-3 border border-border mt-3 space-y-1">
+                    <div>numerator = 0.5 · 4 + 1.0 · 2 = 4.0</div>
+                    <div>damp = 1 / log₁₀(12 + 9) = 1 / log₁₀(21) ≈ 0.756</div>
+                    <div>TDI = (4.0 / 12) · 0.756 ≈ 0.252</div>
+                    <div>Independence = 100 − 0.252 · 60 ≈ <span className="text-success font-semibold">85</span> → 🟢 Highly Autonomous</div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground italic">
+                  Tip: aim to attempt each question once before opening a hint, and use Check Work only to confirm a final
+                  answer — this keeps your AI Independence Index high while still letting the tutor catch real misconceptions.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           {/* ── Past Paper Progress Tab ── */}
           <TabsContent value="pastpapers">

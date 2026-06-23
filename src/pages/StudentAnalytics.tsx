@@ -526,9 +526,6 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                   <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
                     TDI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
                   </div>
-                  <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border mt-2">
-                    Independence = clamp( 100 − TDI · 60, 0, 100 )
-                  </div>
                   <ul className="text-xs text-muted-foreground mt-3 space-y-1">
                     <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span> — total AI hints used</li>
                     <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span> — total Check Work uses (weighted higher since it reveals correctness)</li>

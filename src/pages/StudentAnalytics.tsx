@@ -631,17 +631,12 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <Target className="h-4 w-4 text-primary" />
                 TOPIC PERFORMANCE RADAR
               </h2>
-              {topicMastery.length === 0 || topicMastery.every(t => t.completedQuestions === 0) ? (
+              {radarData.length === 0 || radarData.every(t => !t.hasData) ? (
                 <p className="text-sm text-muted-foreground text-center py-8">No data yet. Solve past papers to see your topic radar.</p>
               ) : (
                 <div className="bg-card border border-border rounded-xl p-4">
                   <ResponsiveContainer width="100%" height={350}>
-                    <RadarChart data={topicMastery.map(t => ({
-                      topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
-                      accuracy: t.latestAccuracy,
-                      independence: t.latestReadiness,
-                      speed: t.latestSpeed,
-                    }))}>
+                    <RadarChart data={radarData}>
                       <PolarGrid stroke="hsl(var(--border))" />
                       <PolarAngleAxis dataKey="topic" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
                       <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }} />

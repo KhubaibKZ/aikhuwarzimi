@@ -514,10 +514,10 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                     What is the AI Independence Index?
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    The AI Independence Index measures how much you solve problems on your own versus how often
-                    you lean on AI tutor hints and the Check Work assistant. A higher score means you are working
-                    more autonomously; a lower score means you are relying heavily on AI scaffolding. It is
-                    derived from the underlying <span className="text-foreground font-semibold">Tutor Dependence Index (TDI)</span>.
+                    The AI Dependence Index measures how much you solve problems on your own versus how often
+                    you lean on AI tutor hints and the Check Work assistant. A lower score means you are working
+                    more autonomously; a higher score means you are relying heavily on AI scaffolding. It is
+                    expressed directly as the <span className="text-foreground font-semibold">Tutor Dependence Index (TDI)</span> in raw points.
                   </p>
                 </div>
 
@@ -525,9 +525,6 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                   <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Formula</h3>
                   <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
                     TDI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
-                  </div>
-                  <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border mt-2">
-                    Independence = clamp( 100 − TDI · 60, 0, 100 )
                   </div>
                   <ul className="text-xs text-muted-foreground mt-3 space-y-1">
                     <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span> — total AI hints used</li>
@@ -544,7 +541,6 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                         <tr>
                           <th className="text-left p-3">TDI Range</th>
-                          <th className="text-left p-3">Independence</th>
                           <th className="text-left p-3">Label</th>
                           <th className="text-left p-3">What it means</th>
                         </tr>
@@ -552,31 +548,26 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       <tbody className="text-foreground">
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">TDI = 0</td>
-                          <td className="p-3 font-mono">100</td>
                           <td className="p-3"><span className="text-success font-semibold">🌟 Absolute Autonomy</span></td>
                           <td className="p-3 text-muted-foreground">Solved every question without any AI assistance.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">0 &lt; TDI ≤ 0.5</td>
-                          <td className="p-3 font-mono">~70 – 100</td>
                           <td className="p-3"><span className="text-success font-semibold">🟢 Highly Autonomous</span></td>
                           <td className="p-3 text-muted-foreground">Occasional hint or check; strong independent work.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">0.5 &lt; TDI ≤ 1.2</td>
-                          <td className="p-3 font-mono">~28 – 70</td>
                           <td className="p-3"><span className="text-warning font-semibold">🟡 Moderately Supported</span></td>
                           <td className="p-3 text-muted-foreground">Regular use of AI support — fine, but try to attempt first.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">1.2 &lt; TDI ≤ 2.0</td>
-                          <td className="p-3 font-mono">~0 – 28</td>
                           <td className="p-3"><span className="text-orange-500 font-semibold">🟠 Heavily Dependent</span></td>
                           <td className="p-3 text-muted-foreground">Most questions involve hints or check work; build confidence in core skills.</td>
                         </tr>
                         <tr className="border-t border-border">
                           <td className="p-3 font-mono">TDI &gt; 2.0</td>
-                          <td className="p-3 font-mono">0</td>
                           <td className="p-3"><span className="text-destructive font-semibold">🔴 Critical Over-Use</span></td>
                           <td className="p-3 text-muted-foreground">AI is doing most of the work; revisit fundamentals before progressing.</td>
                         </tr>
@@ -595,8 +586,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                   <div className="font-mono text-xs md:text-sm text-foreground bg-background rounded-md p-3 border border-border mt-3 space-y-1">
                     <div>numerator = 0.5 · 4 + 1.0 · 2 = 4.0</div>
                     <div>damp = 1 / log₁₀(12 + 9) = 1 / log₁₀(21) ≈ 0.756</div>
-                    <div>TDI = (4.0 / 12) · 0.756 ≈ 0.252</div>
-                    <div>Independence = 100 − 0.252 · 60 ≈ <span className="text-success font-semibold">85</span> → 🟢 Highly Autonomous</div>
+                    <div>TDI = (4.0 / 12) · 0.756 ≈ <span className="text-success font-semibold">0.252</span> → 🟢 Highly Autonomous</div>
                   </div>
                 </div>
 

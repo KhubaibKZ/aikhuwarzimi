@@ -409,6 +409,44 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
     });
   }, [isDemoMode, data?.topicMastery, effectiveSelection, paperOptions.length]);
 
+  // Radar data — derived from the SAME per-topic stats shown in the Topic Stats list
+  // (accuracy from marks, AI Independence from hints/checkwork, speed from avg time).
+  const radarData = useMemo(() => {
+    const activeTopicMap = isDemoMode ? demoTopicMap_ : questionTopicMap;
+    return topicMastery.map(t => {
+      const topicQIds = new Set<string>();
+      Object.entries(activeTopicMap).forEach(([qId, ref]: [string, any]) => {
+        if (ref.topicId === t.topicId) topicQIds.add(qId);
+      });
+      const tRows = rows.filter((r: any) => topicQIds.has(r.question_id));
+      let mo = 0, tm = 0;
+      tRows.forEach((r: any) => {
+        if (isDemoMode) {
+          tm += r.marks_available || 0;
+          mo += r.marks_obtained || 0;
+        } else {
+          const qMarks = pastPaperQuestions[r.question_id]?.marks || 0;
+          tm += qMarks;
+          mo += (Number(r.accuracy_score) / 100) * qMarks;
+        }
+      });
+      const accuracy = tm > 0 ? Math.round((mo / tm) * 100) : 0;
+      const hints = tRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
+      const cw = tRows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
+      const independence = tRows.length > 0 ? independenceFromUsage(hints, cw, tRows.length) : 0;
+      const totalT = tRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
+      const avgT = tRows.length > 0 ? totalT / tRows.length : 0;
+      const speed = tRows.length > 0 ? Math.round(Math.max(0, Math.min(100, 100 - (avgT - 60) / 3))) : 0;
+      return {
+        topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
+        accuracy,
+        independence,
+        speed,
+        hasData: tRows.length > 0,
+      };
+    });
+  }, [topicMastery, rows, isDemoMode]);
+
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;
   const avgAccuracy = totalQs > 0 ? Math.round(rows.reduce((s, r: any) => s + Number(r.accuracy_score), 0) / totalQs) : 0;

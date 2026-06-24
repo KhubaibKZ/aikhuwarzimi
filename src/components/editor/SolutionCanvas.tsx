@@ -1068,11 +1068,6 @@ function QuestionBlockEditor({
         className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
         spellCheck={false}
       />
-      {block.text && (
-        <div className="rounded-md border border-border bg-background/60 p-3">
-          <QuestionText text={block.text} className="text-base font-medium" />
-        </div>
-      )}
       {block.svgMarkup && (
         <div
           className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"

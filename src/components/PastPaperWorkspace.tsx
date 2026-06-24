@@ -271,6 +271,7 @@ export function PastPaperWorkspace({
   workspaceMode = 'general',
   onSubmitProgress,
   restoredSubmission,
+  onResetExternal,
   editMode = false,
   onEditField,
   onAddHint,

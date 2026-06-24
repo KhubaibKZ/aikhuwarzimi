@@ -511,13 +511,10 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <div>
                   <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-2">
                     <Brain className="h-5 w-5 text-primary" />
-                    What is the AI Independence Index?
+                    What is the AI Dependence Index?
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    The AI Dependence Index measures how much you solve problems on your own versus how often
-                    you lean on AI tutor hints and the Check Work assistant. A lower score means you are working
-                    more autonomously; a higher score means you are relying heavily on AI scaffolding. It is
-                    expressed directly as the <span className="text-foreground font-semibold">Tutor Dependence Index (TDI)</span> in raw points.
+                    The AI Dependence Index (ADI) measures how much you solve problems on your own versus how often you lean on AI tutor hints and the Check Work assistant. A lower score means you are working more autonomously; a higher score means you are relying heavily on AI scaffolding. It is expressed directly as the raw points.
                   </p>
                 </div>
 

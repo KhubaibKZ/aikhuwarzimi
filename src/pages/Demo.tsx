@@ -379,12 +379,15 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
 }
 
 function DemoGate() {
-  const [visitorName, setVisitorName] = useState<string>(() => sessionStorage.getItem(NAME_KEY) || '');
+  const [visitorName, setVisitorName] = useState<string>(
+    () => localStorage.getItem(NAME_KEY) || sessionStorage.getItem(NAME_KEY) || ''
+  );
   const [nameInput, setNameInput] = useState('');
 
   const submitName = () => {
     const trimmed = nameInput.trim();
     if (!trimmed) return;
+    localStorage.setItem(NAME_KEY, trimmed);
     sessionStorage.setItem(NAME_KEY, trimmed);
     setVisitorName(trimmed);
   };

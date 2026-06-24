@@ -297,8 +297,18 @@ export default function PaperEditor() {
             d.hints = hints;
           })}
           onAddQuestionSection={viewMode === 'edit' ? () => update((d) => {
-            const cur = Array.isArray((d as any).solutionCanvas?.blocks) ? (d as any).solutionCanvas.blocks : [];
+            const cur: any[] = Array.isArray((d as any).solutionCanvas?.blocks) ? [...(d as any).solutionCanvas.blocks] : [];
             const rid = () => Math.random().toString(36).slice(2, 10);
+            // If the last block is an empty step (auto-created placeholder), drop it
+            // so the new question doesn't sit underneath an unused solution box.
+            while (cur.length > 0) {
+              const last = cur[cur.length - 1];
+              if (last?.kind === 'step' && (!last.items || last.items.length === 0)) {
+                cur.pop();
+              } else {
+                break;
+              }
+            }
             (d as any).solutionCanvas = {
               ...((d as any).solutionCanvas || {}),
               blocks: [

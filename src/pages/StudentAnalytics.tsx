@@ -772,13 +772,13 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       <PolarAngleAxis dataKey="topic" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
                       <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }} />
                       <Radar name="Accuracy" dataKey="accuracy" stroke="#22c55e" fill="#22c55e" fillOpacity={0.15} strokeWidth={2} />
-                      <Radar name="AI Independence" dataKey="independence" stroke="#a855f7" fill="#a855f7" fillOpacity={0.1} strokeWidth={2} />
+                      <Radar name="AI Dependence" dataKey="independence" stroke="#a855f7" fill="#a855f7" fillOpacity={0.1} strokeWidth={2} />
                       <Radar name="Average Time" dataKey="speed" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={2} />
                     </RadarChart>
                   </ResponsiveContainer>
                   <div className="flex justify-center gap-6 mt-2 text-xs">
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />Accuracy</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#a855f7]" />AI Independence</span>
+                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#a855f7]" />AI Dependence</span>
                     <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />Average Time</span>
                   </div>
                 </div>

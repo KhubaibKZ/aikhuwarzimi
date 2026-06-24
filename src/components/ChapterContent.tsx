@@ -5,6 +5,7 @@ import { WorkspaceModal } from './WorkspaceModal';
 import { useProgress } from '@/context/ProgressContext';
 import { ArrowLeft, List, ArrowRight, Play, BookOpen, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { QuestionText } from '@/components/QuestionText';
 
 interface ChapterContentProps {
   chapterId: number;
@@ -82,9 +83,7 @@ export function ChapterContent({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                 Question Preview
               </h3>
-              <p className="text-foreground whitespace-pre-line math-input">
-                {question.question}
-              </p>
+              <QuestionText text={question.question} />
             </div>
 
             <Button

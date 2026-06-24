@@ -3190,9 +3190,7 @@ export function PastPaperWorkspace({
 
           {solutionOverride ? (
             <>
-              <div className="rounded-lg border border-border bg-card overflow-hidden">
-                {solutionOverride}
-              </div>
+              {solutionOverride}
               {editMode && onAddQuestionSection && (
                 <Button size="sm" variant="outline" onClick={onAddQuestionSection} className="gap-1">
                   <Plus className="h-3.5 w-3.5" /> Add question block

@@ -3,10 +3,11 @@ import { Radical } from "@/components/Radical";
 import { VecText } from "@/components/VecText";
 
 /**
- * Renders question text with inline stacked fractions and proper √ vinculum.
+ * Renders question text with inline stacked fractions, √ vinculum, and Markdown tables.
  *
  *   [[num/den]]    -> stacked fraction
- *   √[[num/den]]   -> stacked fraction under a connected square-root vinculum
+ *   √[[num/den]]   -> stacked fraction under a square-root vinculum
+ *   | a | b | c |  -> rendered as an HTML table (with optional |---|---| separator row)
  */
 const FRAC_RE = /(√)?\[\[([^\]]+?)\/([^\]]+?)\]\]/g;
 
@@ -20,41 +21,101 @@ function StackedFraction({ num, den }: { num: string; den: string }) {
   );
 }
 
+function renderInline(line: string, keyPrefix: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let lastIdx = 0;
+  let m: RegExpExecArray | null;
+  FRAC_RE.lastIndex = 0;
+  while ((m = FRAC_RE.exec(line)) !== null) {
+    if (m.index > lastIdx) {
+      nodes.push(<VecText key={`${keyPrefix}-t-${lastIdx}`} value={line.slice(lastIdx, m.index)} />);
+    }
+    const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;
+    nodes.push(
+      m[1] ? (
+        <Radical key={`${keyPrefix}-f-${m.index}`}>{frac}</Radical>
+      ) : (
+        <React.Fragment key={`${keyPrefix}-f-${m.index}`}>{frac}</React.Fragment>
+      )
+    );
+    lastIdx = m.index + m[0].length;
+  }
+  if (lastIdx < line.length) {
+    nodes.push(<VecText key={`${keyPrefix}-t-end`} value={line.slice(lastIdx)} />);
+  }
+  return nodes;
+}
+
+function isTableRow(line: string) {
+  const t = line.trim();
+  return t.startsWith("|") && t.endsWith("|") && t.length > 2;
+}
+function isSeparatorRow(line: string) {
+  return /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(line);
+}
+function splitRow(line: string): string[] {
+  const t = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  return t.split("|").map((c) => c.trim());
+}
+
+function TableBlock({ rows, keyPrefix }: { rows: string[][]; keyPrefix: string }) {
+  return (
+    <div className="w-full my-2 overflow-x-auto">
+      <table className="border-collapse border border-foreground/60 text-foreground">
+        <tbody>
+          {rows.map((cells, ri) => (
+            <tr key={`${keyPrefix}-r-${ri}`}>
+              {cells.map((cell, ci) => (
+                <td
+                  key={`${keyPrefix}-r-${ri}-c-${ci}`}
+                  className="border border-foreground/60 px-3 py-1.5 text-center align-middle"
+                >
+                  {renderInline(cell, `${keyPrefix}-r-${ri}-c-${ci}`)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function QuestionText({ text, className }: { text: string; className?: string }) {
   const lines = text.split("\n");
+
+  // Group lines into blocks: contiguous table rows vs prose lines.
+  type Block =
+    | { kind: "table"; rows: string[][] }
+    | { kind: "line"; text: string };
+  const blocks: Block[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (isTableRow(l)) {
+      const rows: string[][] = [];
+      while (i < lines.length && isTableRow(lines[i])) {
+        if (!isSeparatorRow(lines[i])) rows.push(splitRow(lines[i]));
+        i++;
+      }
+      blocks.push({ kind: "table", rows });
+    } else {
+      blocks.push({ kind: "line", text: l });
+      i++;
+    }
+  }
+
   return (
-    <p className={`text-foreground flex flex-wrap items-center gap-x-1 gap-y-2 ${className ?? ""}`}>
-      {lines.map((line, li) => {
-        const nodes: React.ReactNode[] = [];
-        let lastIdx = 0;
-        let m: RegExpExecArray | null;
-        FRAC_RE.lastIndex = 0;
-        while ((m = FRAC_RE.exec(line)) !== null) {
-          if (m.index > lastIdx) {
-            nodes.push(
-              <VecText key={`t-${li}-${lastIdx}`} value={line.slice(lastIdx, m.index)} />
-            );
-          }
-          const frac = <StackedFraction num={m[2].trim()} den={m[3].trim()} />;
-          nodes.push(
-            m[1] ? (
-              <Radical key={`f-${li}-${m.index}`}>{frac}</Radical>
-            ) : (
-              <React.Fragment key={`f-${li}-${m.index}`}>{frac}</React.Fragment>
-            )
-          );
-          lastIdx = m.index + m[0].length;
-        }
-        if (lastIdx < line.length) {
-          nodes.push(<VecText key={`t-${li}-end`} value={line.slice(lastIdx)} />);
-        }
-        return (
-          <React.Fragment key={`l-${li}`}>
-            {nodes}
-            {li < lines.length - 1 && <span className="basis-full" />}
-          </React.Fragment>
-        );
-      })}
-    </p>
+    <div className={`text-foreground ${className ?? ""}`}>
+      {blocks.map((b, bi) =>
+        b.kind === "table" ? (
+          <TableBlock key={`b-${bi}`} rows={b.rows} keyPrefix={`b-${bi}`} />
+        ) : (
+          <p key={`b-${bi}`} className="flex flex-wrap items-center gap-x-1 gap-y-2">
+            {renderInline(b.text, `b-${bi}`)}
+          </p>
+        )
+      )}
+    </div>
   );
 }

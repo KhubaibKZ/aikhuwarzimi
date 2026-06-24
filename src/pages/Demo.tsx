@@ -95,6 +95,14 @@ function DemoInner({ visitorName }: { visitorName: string }) {
     }
   };
 
+  const resetOne = (questionId: string) => {
+    setProgressByPaper(prev => {
+      const cur = { ...(prev[paperId] || {}) };
+      delete cur[questionId];
+      return { ...prev, [paperId]: cur };
+    });
+  };
+
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');

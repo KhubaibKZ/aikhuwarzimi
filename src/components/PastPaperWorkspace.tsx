@@ -2377,7 +2377,9 @@ export function PastPaperWorkspace({
                   hasSvg={!!(question as any).diagramSvgMarkup}
                   onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
                   onClearSvg={() => onEditField('diagramSvgMarkup', '')}
+                  onReplaceText={(t) => onEditField('question', t)}
                 />
+
                 <InlineEditableText
                   ref={questionEditableRef}
                   value={question.question}

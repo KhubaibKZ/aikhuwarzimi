@@ -112,6 +112,63 @@ export function InlineMathToolbar({ onInsert, hasSvg, onUploadSvg, onClearSvg, o
           )}
         </>
       )}
+
+      {onReplaceText && (
+        <>
+          <span className="mx-1 self-center h-5 w-px bg-border" />
+          <input
+            ref={qImgRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              e.currentTarget.value = '';
+              if (!f) return;
+              setExtracting(true);
+              try {
+                const dataUrl: string = await new Promise((resolve, reject) => {
+                  const r = new FileReader();
+                  r.onload = () => resolve(r.result as string);
+                  r.onerror = reject;
+                  r.readAsDataURL(f);
+                });
+                const { data, error } = await supabase.functions.invoke('extract-question', {
+                  body: { imageBase64: dataUrl, mimeType: f.type },
+                });
+                if (error) throw error;
+                const text = (data as { text?: string; error?: string })?.text;
+                if (!text) throw new Error((data as { error?: string })?.error || 'No text extracted');
+                onReplaceText(text);
+                toast({ title: 'Question extracted', description: 'Review and edit the extracted text as needed.' });
+              } catch (err) {
+                toast({
+                  title: 'Extraction failed',
+                  description: err instanceof Error ? err.message : 'Could not read question from image.',
+                  variant: 'destructive',
+                });
+              } finally {
+                setExtracting(false);
+              }
+            }}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            disabled={extracting}
+            onClick={() => qImgRef.current?.click()}
+            title="Upload a question image; AI will transcribe with proper symbols"
+          >
+            {extracting ? (
+              <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Reading…</>
+            ) : (
+              <><ImagePlus className="h-3.5 w-3.5 mr-1" /> Upload Question</>
+            )}
+          </Button>
+        </>
+      )}
     </div>
   );
 }

@@ -218,12 +218,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             {section.blocks.length} block{section.blocks.length === 1 ? '' : 's'}
           </div>
         </div>
-      ) : (
-        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
-          {symbolPopover}
-          {keyboardButton}
-        </div>
-      )}
+      ) : null}
 
       <div className="p-4 space-y-3">
         {section.blocks.length === 0 && (

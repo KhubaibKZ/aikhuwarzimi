@@ -59,6 +59,25 @@ type CanvasSection = {
   blocks: CanvasBlock[];
 };
 
+function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
+  const sections: CanvasSection[] = [];
+
+  blocks.forEach((block) => {
+    if (block.kind === 'question') {
+      sections.push({ key: block.id, question: block, blocks: [] });
+      return;
+    }
+
+    if (sections.length === 0) {
+      sections.push({ key: 'main-solution', blocks: [] });
+    }
+
+    sections[sections.length - 1].blocks.push(block);
+  });
+
+  return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
+}
+
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
@@ -604,6 +623,28 @@ function BlockShell({
             <Trash2 className="h-3 w-3" />
           </Button>
         </div>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function QuestionSectionShell({
+  children,
+  label,
+  onDelete,
+}: {
+  children: React.ReactNode;
+  label: string;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="group rounded-lg border border-dashed border-border bg-background/40 p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive opacity-60 transition-opacity group-hover:opacity-100" onClick={onDelete}>
+          <Trash2 className="h-3 w-3" />
+        </Button>
       </div>
       {children}
     </div>

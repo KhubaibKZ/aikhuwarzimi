@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, CheckCircle2, CheckSquare, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -138,6 +138,36 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     replaceSectionBlocks(sectionKey, next);
   };
 
+  const deepCloneStepItem = (item: StepItem): StepItem => {
+    const newId = Math.random().toString(36).slice(2, 10);
+    if (item.kind === 'text') return { ...item, id: newId };
+    if (item.kind === 'box') return { ...item, id: newId };
+    if (item.kind === 'fraction') {
+      return {
+        ...item,
+        id: newId,
+        num: item.num.map(deepCloneStepItem),
+        den: item.den.map(deepCloneStepItem),
+      };
+    }
+    return item;
+  };
+
+  const duplicateBlock = (id: string) => {
+    const idx = canvas.blocks.findIndex((b) => b.id === id);
+    if (idx < 0) return;
+    const original = canvas.blocks[idx];
+    const newId = Math.random().toString(36).slice(2, 10);
+    let cloned: CanvasBlock;
+    if (original.kind === 'step') {
+      cloned = { ...original, id: newId, items: original.items.map(deepCloneStepItem) };
+    } else {
+      cloned = { ...original, id: newId };
+    }
+    const next = [...canvas.blocks];
+    next.splice(idx + 1, 0, cloned);
+    setBlocks(next);
+  };
 
   const insertAtCursor = (s: string) => {
     const el = focusedRef;
@@ -237,6 +267,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
                 onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
+                onDuplicate={() => duplicateBlock(b.id)}
                 label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
               >
                 {b.kind === 'heading' && (
@@ -596,12 +627,14 @@ function BlockShell({
   onUp,
   onDown,
   onDelete,
+  onDuplicate,
 }: {
   children: React.ReactNode;
   label: string;
   onUp?: () => void;
   onDown?: () => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
 }) {
   return (
     <div className="group rounded-lg border border-border bg-card p-3">
@@ -613,6 +646,9 @@ function BlockShell({
           </Button>
           <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDown} disabled={!onDown}>
             <ArrowDown className="h-3 w-3" />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDuplicate} disabled={!onDuplicate} title="Duplicate">
+            <Copy className="h-3 w-3" />
           </Button>
           <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={onDelete}>
             <Trash2 className="h-3 w-3" />

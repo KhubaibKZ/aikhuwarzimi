@@ -1057,6 +1057,7 @@ function QuestionBlockEditor({
         hasSvg={!!block.svgMarkup}
         onUploadSvg={(svg) => onChange({ svgMarkup: svg })}
         onClearSvg={() => onChange({ svgMarkup: undefined })}
+        onReplaceText={(t) => onChange({ text: t })}
       />
       <textarea
         ref={taRef}

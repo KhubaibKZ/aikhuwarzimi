@@ -525,7 +525,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'question') {
     return (
       <div className="rounded-md border border-dashed border-border bg-background/40 p-3 space-y-2">
-        {block.text && <QuestionText text={block.text} className="text-sm font-medium" />}
+        {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
         {block.svgMarkup && (
           <div
             className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"

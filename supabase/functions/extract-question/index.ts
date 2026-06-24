@@ -33,11 +33,12 @@ Deno.serve(async (req) => {
       `- Output ONLY the question wording, no explanations, no answers, no commentary.\n` +
       `- Preserve part labels exactly: (a), (b), (i), (ii), etc., each on its own line.\n` +
       `- Use proper Unicode math symbols: × ÷ − ± ° π √ ² ³ ⁿ ≤ ≥ ≠ ≈ ∞ → ↔ ∠ △.\n` +
-      `- Render fractions as [[num/den]] (e.g. [[x/4]], [[3/(x-5)]]).\n` +
-      `- Render square root over fraction as √[[num/den]].\n` +
-      `- Use plain ASCII for variables and exponents like 6x² - 2x - 9 = 0.\n` +
-      `- If the image contains a table, render it as a Markdown table.\n` +
-      `- Do NOT include diagrams; just describe nothing for them.\n` +
+      `- Render any fraction (including ones inside an equation) as [[num/den]] with NO extra brackets around it. Example: y = 2x + [[60/x]] − 4.\n` +
+      `- Render square root over a fraction as √[[num/den]].\n` +
+      `- Use plain ASCII for variables and exponents like 6x² − 2x − 9 = 0.\n` +
+      `- If the image contains a table, render it as a GitHub-flavoured Markdown table with a header row, a |---|---| separator row, and one data row per table row. Every row MUST start and end with '|'. Match the exact column order and values in the image.\n` +
+      `- Do NOT wrap fractions in [[ ... ]] more than once (never output [[[[..]]]] or [[ [[..]] ]]).\n` +
+      `- Do NOT include diagrams; omit them silently.\n` +
       `Return ONLY the transcribed question text.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {

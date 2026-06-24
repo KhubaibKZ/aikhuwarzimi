@@ -43,6 +43,7 @@ const DEFAULT_KEYBOARD: string[][] = [
 ];
 
 const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
+  sym: { w: 32, h: 32 },
   sm: { w: 64, h: 32 },
   md: { w: 112, h: 32 },
   lg: { w: 192, h: 36 },
@@ -658,6 +659,9 @@ function Resizable({
   return (
     <div className="group/rsz relative inline-block">
       {children}
+      <span className="pointer-events-none absolute -top-4 right-0 rounded bg-foreground/80 px-1 text-[9px] font-mono leading-tight text-background opacity-0 transition-opacity group-hover/rsz:opacity-100">
+        {Math.round(width)}×{Math.round(height)}
+      </span>
       <span onMouseDown={startDrag(-1, -1)} className={cn(handleCls, '-top-1 -left-1 cursor-nwse-resize')} />
       <span onMouseDown={startDrag(0, -1)} className={cn(handleCls, '-top-1 left-1/2 -translate-x-1/2 cursor-ns-resize')} />
       <span onMouseDown={startDrag(1, -1)} className={cn(handleCls, '-top-1 -right-1 cursor-nesw-resize')} />
@@ -782,6 +786,7 @@ function StepCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => addToFocus(newItem.box('sym'))}>Symbol (32×32)</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('sm'))}>Small</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('md'))}>Medium</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('lg'))}>Large</DropdownMenuItem>

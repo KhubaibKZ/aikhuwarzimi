@@ -191,14 +191,18 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               {paper.sections.map((section, sectionIndex) => {
                 const rec = progress[section.questionId];
                 const done = !!rec;
+                const openOrLock = () => {
+                  if (done) setLockedQid(section.questionId);
+                  else setOpenQid(section.questionId);
+                };
                 return (
                   <div
                     key={section.id}
                     data-tour={sectionIndex === 0 ? 'demo-q1' : undefined}
                     role="button"
                     tabIndex={0}
-                    onClick={() => setOpenQid(section.questionId)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenQid(section.questionId); } }}
+                    onClick={openOrLock}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openOrLock(); } }}
                     className={`relative text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 cursor-pointer ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -211,14 +215,9 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                         <p className="text-[10px] font-semibold text-success">
                           {rec.marksObtained}/{rec.marksAvailable} marks
                         </p>
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); resetOne(section.questionId); }}
-                          title="Reset this question"
-                          className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-destructive transition-colors"
-                        >
-                          <RotateCcw className="h-3 w-3" /> Reset
-                        </button>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+                          <Lock className="h-3 w-3" /> Submitted
+                        </span>
                       </div>
                     )}
                   </div>
@@ -226,13 +225,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
               })}
             </div>
 
-            {solvedQs > 0 && (
-              <div className="mt-6 flex justify-end">
-                <Button variant="outline" size="sm" onClick={resetAll} className="gap-2">
-                  <RotateCcw className="h-3.5 w-3.5" /> Reset demo progress
-                </Button>
-              </div>
-            )}
           </TabsContent>
 
           {/* ─── Learning Analytics (live from working) — mirrors Student Demo Analytics interface ─── */}

@@ -442,7 +442,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
         topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
         accuracy,
         independence,
-        tdi: Math.min(5, Number(tdi.toFixed(2))),
+        tdi: Number(tdi.toFixed(2)),
         speed,
         avgTimeMin: Number((avgT / 60).toFixed(2)),
         hasData: tRows.length > 0,
@@ -451,10 +451,23 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
   }, [topicMastery, rows, isDemoMode]);
 
   const [radarMetric, setRadarMetric] = useState<'accuracy' | 'tdi' | 'time'>('accuracy');
+  const niceCeil = (v: number, step: number) => Math.max(step, Math.ceil(v / step) * step);
+  const tdiMax = useMemo(() => {
+    const m = Math.max(0, ...radarData.map(d => Number(d.tdi) || 0));
+    if (m <= 1) return 1;
+    if (m <= 5) return niceCeil(m, 1);
+    return niceCeil(m, Math.max(1, Math.ceil(m / 5)));
+  }, [radarData]);
+  const timeMax = useMemo(() => {
+    const m = Math.max(0, ...radarData.map(d => Number(d.avgTimeMin) || 0));
+    if (m <= 1) return 1;
+    if (m <= 10) return niceCeil(m, 1);
+    return niceCeil(m, 5);
+  }, [radarData]);
   const radarMetricConfig = {
     accuracy: { label: 'Accuracy', unit: '%', dataKey: 'accuracy', domain: [0, 100] as [number, number] },
-    tdi: { label: 'AI Dependence', unit: 'pts', dataKey: 'tdi', domain: [0, 5] as [number, number] },
-    time: { label: 'Average Time', unit: 'min', dataKey: 'avgTimeMin', domain: [0, 10] as [number, number] },
+    tdi: { label: 'AI Dependence', unit: 'pts', dataKey: 'tdi', domain: [0, tdiMax] as [number, number] },
+    time: { label: 'Average Time', unit: 'min', dataKey: 'avgTimeMin', domain: [0, timeMax] as [number, number] },
   };
 
 

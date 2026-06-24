@@ -511,26 +511,23 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <div>
                   <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-2">
                     <Brain className="h-5 w-5 text-primary" />
-                    What is the AI Independence Index?
+                    What is the AI Dependence Index?
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    The AI Dependence Index measures how much you solve problems on your own versus how often
-                    you lean on AI tutor hints and the Check Work assistant. A lower score means you are working
-                    more autonomously; a higher score means you are relying heavily on AI scaffolding. It is
-                    expressed directly as the <span className="text-foreground font-semibold">Tutor Dependence Index (TDI)</span> in raw points.
+                    The AI Dependence Index (ADI) measures how much you solve problems on your own versus how often you lean on AI tutor hints and the Check Work assistant. A lower score means you are working more autonomously; a higher score means you are relying heavily on AI scaffolding. It is expressed directly as the raw points.
                   </p>
                 </div>
 
                 <div className="rounded-lg border border-border bg-muted/30 p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Formula</h3>
                   <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
-                    TDI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
+                    ADI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
                   </div>
                   <ul className="text-xs text-muted-foreground mt-3 space-y-1">
-                    <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span> — total AI hints used</li>
-                    <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span> — total Check Work uses (weighted higher since it reveals correctness)</li>
-                    <li><span className="text-foreground font-semibold">Q</span> — number of questions attempted</li>
-                    <li><span className="text-foreground font-semibold">log<sub>10</sub>(Q + 9)</span> — dampener so a single hint on a small set is not over-penalised</li>
+                    <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span>{"\u00a0"} Total AI hints used</li>
+                    <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span>{"\u00a0"}Total Check Work uses (weighted higher since it reveals correctness)</li>
+                    <li><span className="text-foreground font-semibold">Q</span>{"\u00a0"} Number of questions attempted</li>
+                    <li><span className="text-foreground font-semibold">log<sub>10</sub>(Q + 9)</span>{"\u00a0"}Dampener so a single hint on a small set is not over-penalised</li>
                   </ul>
                 </div>
 
@@ -547,27 +544,27 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                       </thead>
                       <tbody className="text-foreground">
                         <tr className="border-t border-border">
-                          <td className="p-3 font-mono">TDI = 0</td>
+                          <td className="p-3 font-mono">ADI = 0</td>
                           <td className="p-3"><span className="text-success font-semibold">🌟 Absolute Autonomy</span></td>
                           <td className="p-3 text-muted-foreground">Solved every question without any AI assistance.</td>
                         </tr>
                         <tr className="border-t border-border">
-                          <td className="p-3 font-mono">0 &lt; TDI ≤ 0.5</td>
+                          <td className="p-3 font-mono">0 &lt; ADI ≤ 0.5</td>
                           <td className="p-3"><span className="text-success font-semibold">🟢 Highly Autonomous</span></td>
                           <td className="p-3 text-muted-foreground">Occasional hint or check; strong independent work.</td>
                         </tr>
                         <tr className="border-t border-border">
-                          <td className="p-3 font-mono">0.5 &lt; TDI ≤ 1.2</td>
+                          <td className="p-3 font-mono">0.5 &lt; ADI ≤ 1.2</td>
                           <td className="p-3"><span className="text-warning font-semibold">🟡 Moderately Supported</span></td>
-                          <td className="p-3 text-muted-foreground">Regular use of AI support — fine, but try to attempt first.</td>
+                          <td className="p-3 text-muted-foreground">Regular use of AI support is fine, but try to attempt first.</td>
                         </tr>
                         <tr className="border-t border-border">
-                          <td className="p-3 font-mono">1.2 &lt; TDI ≤ 2.0</td>
+                          <td className="p-3 font-mono">1.2 &lt; ADI ≤ 2.0</td>
                           <td className="p-3"><span className="text-orange-500 font-semibold">🟠 Heavily Dependent</span></td>
                           <td className="p-3 text-muted-foreground">Most questions involve hints or check work; build confidence in core skills.</td>
                         </tr>
                         <tr className="border-t border-border">
-                          <td className="p-3 font-mono">TDI &gt; 2.0</td>
+                          <td className="p-3 font-mono">ADI &gt; 2.0</td>
                           <td className="p-3"><span className="text-destructive font-semibold">🔴 Critical Over-Use</span></td>
                           <td className="p-3 text-muted-foreground">AI is doing most of the work; revisit fundamentals before progressing.</td>
                         </tr>
@@ -592,7 +589,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
 
                 <p className="text-xs text-muted-foreground italic">
                   Tip: aim to attempt each question once before opening a hint, and use Check Work only to confirm a final
-                  answer — this keeps your AI Independence Index high while still letting the tutor catch real misconceptions.
+                  answer ,this keeps your AI Independence Index high while still letting the tutor catch real misconceptions.
                 </p>
               </CardContent>
             </Card>

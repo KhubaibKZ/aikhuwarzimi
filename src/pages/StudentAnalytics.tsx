@@ -521,13 +521,13 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <div className="rounded-lg border border-border bg-muted/30 p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Formula</h3>
                   <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
-                    TDI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
+                    ADI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
                   </div>
                   <ul className="text-xs text-muted-foreground mt-3 space-y-1">
-                    <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span> — total AI hints used</li>
-                    <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span> — total Check Work uses (weighted higher since it reveals correctness)</li>
-                    <li><span className="text-foreground font-semibold">Q</span> — number of questions attempted</li>
-                    <li><span className="text-foreground font-semibold">log<sub>10</sub>(Q + 9)</span> — dampener so a single hint on a small set is not over-penalised</li>
+                    <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span>{"\u00a0"} Total AI hints used</li>
+                    <li><span className="text-foreground font-semibold">ΣS<sub>assist</sub></span>{"\u00a0"}Total Check Work uses (weighted higher since it reveals correctness)</li>
+                    <li><span className="text-foreground font-semibold">Q</span>{"\u00a0"} Number of questions attempted</li>
+                    <li><span className="text-foreground font-semibold">log<sub>10</sub>(Q + 9)</span>{"\u00a0"}Dampener so a single hint on a small set is not over-penalised</li>
                   </ul>
                 </div>
 

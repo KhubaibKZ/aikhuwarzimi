@@ -1,6 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, ImageOff } from 'lucide-react';
+import { Upload, ImageOff, ImagePlus, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const SYMBOLS = [
   '×', '÷', '−', '±', '·',
@@ -17,14 +19,19 @@ interface Props {
   hasSvg?: boolean;
   onUploadSvg?: (markup: string) => void;
   onClearSvg?: () => void;
+  /** Optional: replace the entire question text from an uploaded question image. */
+  onReplaceText?: (text: string) => void;
 }
 
 /**
  * Compact symbol + stacked-fraction toolbar for inline-edit (contentEditable)
  * question text inside the workspace dialog.
  */
-export function InlineMathToolbar({ onInsert, hasSvg, onUploadSvg, onClearSvg }: Props) {
+export function InlineMathToolbar({ onInsert, hasSvg, onUploadSvg, onClearSvg, onReplaceText }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const qImgRef = useRef<HTMLInputElement>(null);
+  const [extracting, setExtracting] = useState(false);
+  const { toast } = useToast();
 
   return (
     <div className="mb-2 flex flex-wrap items-center gap-1 rounded-md border border-border bg-muted/40 p-1.5">

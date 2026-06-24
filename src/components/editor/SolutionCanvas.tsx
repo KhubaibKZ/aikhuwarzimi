@@ -48,6 +48,51 @@ const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
   lg: { w: 192, h: 36 },
 };
 
+const RADICAND_RE = /^([A-Za-z0-9π().]+)/;
+
+function RadicalText({ children }: { children?: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-stretch align-middle leading-none">
+      <svg viewBox="0 0 14 28" preserveAspectRatio="none" aria-hidden="true" className="self-stretch h-[1.15em] w-[0.8em] text-current">
+        <polyline points="0,18 4,16 7,27 13,1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="miter" strokeLinecap="square" />
+      </svg>
+      <span className="flex min-w-[0.55em] items-center border-t-2 border-current px-0.5 pt-0.5 -ml-px">
+        {children}
+      </span>
+    </span>
+  );
+}
+
+function MathValueOverlay({ value }: { value: string }) {
+  if (!value.includes('√')) return null;
+
+  const nodes: React.ReactNode[] = [];
+  let rest = value;
+  let key = 0;
+
+  while (rest.length > 0) {
+    const rootIndex = rest.indexOf('√');
+    if (rootIndex === -1) {
+      nodes.push(<span key={key++}>{rest}</span>);
+      break;
+    }
+    if (rootIndex > 0) {
+      nodes.push(<span key={key++}>{rest.slice(0, rootIndex)}</span>);
+    }
+    const afterRoot = rest.slice(rootIndex + 1);
+    const match = afterRoot.match(RADICAND_RE);
+    const radicand = match?.[1] ?? '';
+    nodes.push(<RadicalText key={key++}>{radicand}</RadicalText>);
+    rest = afterRoot.slice(radicand.length);
+  }
+
+  return (
+    <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden px-2 text-center text-sm font-medium text-foreground">
+      <span className="inline-flex max-w-full items-center overflow-hidden whitespace-pre">{nodes}</span>
+    </span>
+  );
+}
+
 /** Focus target tracks where the next "Add Text/Box/Fraction/Symbol" should land. */
 type FocusTarget =
   | { kind: 'step'; stepId: string }
@@ -532,17 +577,21 @@ function PreviewItem({
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
     return (
-      <Input
-        value={v}
-        placeholder="…"
-        onFocus={(e) => setFocusedRef(e.currentTarget)}
-        onChange={(e) => setVal(item.id, e.target.value)}
-        style={{ width: w, height: h }}
-        className={cn(
-          'text-center',
-          v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
-        )}
-      />
+      <span className="relative inline-block" style={{ width: w, height: h }}>
+        <Input
+          value={v}
+          placeholder="…"
+          onFocus={(e) => setFocusedRef(e.currentTarget)}
+          onChange={(e) => setVal(item.id, e.target.value)}
+          style={{ width: w, height: h }}
+          className={cn(
+            'text-center',
+            v.includes('√') && 'text-transparent caret-foreground',
+            v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
+          )}
+        />
+        <MathValueOverlay value={v} />
+      </span>
     );
   }
   // fraction (stack)
@@ -898,12 +947,14 @@ function StepItemView({
             style={{ width: w, height: h }}
             className={cn(
               'text-center',
+              (item.value ?? '').includes('√') && 'text-transparent caret-foreground',
               filled ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
             )}
             spellCheck={false}
             autoComplete="off"
             data-gramm="false"
           />
+          <MathValueOverlay value={item.value ?? ''} />
         </Resizable>
         {removeBtn}
       </div>

@@ -2,3 +2,6 @@ project_id = "rveybwtdmzkxaofmotjp"
 
 [functions.ai-tutor]
 verify_jwt = false
+
+[functions.extract-question]
+verify_jwt = false

@@ -191,8 +191,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 const openOrLock = () => {
-                  if (done) setLockedQid(section.questionId);
-                  else setOpenQid(section.questionId);
+                  setOpenQid(section.questionId);
                 };
                 return (
                   <div

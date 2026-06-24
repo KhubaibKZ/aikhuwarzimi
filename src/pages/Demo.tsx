@@ -127,7 +127,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
             <img src={logoImg} alt="AI Khuwarizmi" className="h-10 w-10 rounded-xl object-contain" />
             <div>
               <h1 className="text-lg font-bold text-foreground">AI KHUWARIZMI · Demo</h1>
-              <p className="text-xs text-muted-foreground">Cambridge O Level {paper.code} — {paper.session} {paper.year}</p>
+              <p className="text-xs text-muted-foreground">{"\n"}</p>
             </div>
             <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-semibold">
               <Sparkles className="h-3 w-3" /> Research & Demo

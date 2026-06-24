@@ -352,6 +352,43 @@ function DemoInner({ visitorName }: { visitorName: string }) {
         />
       )}
 
+      {/* Locked dialog for already-submitted questions */}
+      <Dialog open={!!lockedQid} onOpenChange={(o) => { if (!o) setLockedQid(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-4 w-4 text-muted-foreground" /> Question already submitted
+            </DialogTitle>
+            <DialogDescription>
+              {(() => {
+                const r = lockedQid ? progress[lockedQid] : null;
+                const q = lockedQid ? getPastPaperQuestion(lockedQid) : null;
+                if (!r || !q) return 'This question has been submitted.';
+                return `Q${q.questionNumber} — ${r.marksObtained}/${r.marksAvailable} marks. Workspace is locked. Reset to attempt again.`;
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setLockedQid(null)}>Close</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (lockedQid) {
+                  const qid = lockedQid;
+                  resetOne(qid);
+                  setLockedQid(null);
+                  setOpenQid(qid);
+                }
+              }}
+              className="gap-2"
+            >
+              <RotateCcw className="h-3.5 w-3.5" /> Reset & reopen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
     </div>
   );
 }

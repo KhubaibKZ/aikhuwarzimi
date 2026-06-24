@@ -626,12 +626,14 @@ function BlockShell({
   onUp,
   onDown,
   onDelete,
+  onDuplicate,
 }: {
   children: React.ReactNode;
   label: string;
   onUp?: () => void;
   onDown?: () => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
 }) {
   return (
     <div className="group rounded-lg border border-border bg-card p-3">
@@ -643,6 +645,9 @@ function BlockShell({
           </Button>
           <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDown} disabled={!onDown}>
             <ArrowDown className="h-3 w-3" />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDuplicate} disabled={!onDuplicate} title="Duplicate">
+            <Copy className="h-3 w-3" />
           </Button>
           <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={onDelete}>
             <Trash2 className="h-3 w-3" />

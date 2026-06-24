@@ -18,24 +18,15 @@ import StudentAnalytics from './StudentAnalytics';
 import { computeTDI, tdiStatus, tdiToneClass } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
-const STORAGE_KEY = 'demo_progress_v1';
 const PAPER_KEY = 'demo_paper_id_v1';
 const NAME_KEY = 'demo_visitor_name';
 
+// Per-visitor localStorage key so progress persists across refresh & revisits.
+const progressKeyFor = (name: string) =>
+  `demo_progress_v2:${name.trim().toLowerCase()}`;
+
 
 interface DemoRecord extends SubmitProgressPayload {}
-
-function loadProgress(): Record<string, DemoRecord> {
-  // Use sessionStorage so progress only lives for the current visit.
-  // Clear any legacy persisted progress so questions are never green by default.
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
-  } catch { return {}; }
-}
-function saveProgress(map: Record<string, DemoRecord>) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(map));
-}
 
 
 function fmtTime(secs: number) {
@@ -51,16 +42,11 @@ function DemoInner({ visitorName }: { visitorName: string }) {
     return saved && (DEMO_PAPER_IDS as readonly string[]).includes(saved) ? saved : DEMO_PAPER_IDS[0];
   });
   const paper = pastPapers.find(p => p.id === paperId);
+  const storageKey = progressKeyFor(visitorName);
   const [progressByPaper, setProgressByPaper] = useState<Record<string, Record<string, DemoRecord>>>(() => {
-    const legacy = loadProgress();
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      // Migrate legacy flat shape into per-paper shape under first paper
-      if (parsed && !parsed[DEMO_PAPER_IDS[0]] && Object.keys(legacy).length) {
-        return { [DEMO_PAPER_IDS[0]]: legacy };
-      }
-      return parsed;
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : {};
     } catch { return {}; }
   });
   const progress = progressByPaper[paperId] || {};
@@ -72,7 +58,9 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   // Track this demo visit (who, when, how long).
   useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
 
-  useEffect(() => { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progressByPaper)); }, [progressByPaper]);
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(progressByPaper));
+  }, [progressByPaper, storageKey]);
   useEffect(() => { sessionStorage.setItem(PAPER_KEY, paperId); }, [paperId]);
 
   if (!paper) return <div className="p-8">Paper not found.</div>;
@@ -105,6 +93,14 @@ function DemoInner({ visitorName }: { visitorName: string }) {
     if (confirm('Reset progress for this paper?')) {
       setProgressByPaper(prev => ({ ...prev, [paperId]: {} }));
     }
+  };
+
+  const resetOne = (questionId: string) => {
+    setProgressByPaper(prev => {
+      const cur = { ...(prev[paperId] || {}) };
+      delete cur[questionId];
+      return { ...prev, [paperId]: cur };
+    });
   };
 
 
@@ -194,12 +190,14 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 return (
-                  <button
+                  <div
                     key={section.id}
                     data-tour={sectionIndex === 0 ? 'demo-q1' : undefined}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setOpenQid(section.questionId)}
-                    className={`text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
-
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenQid(section.questionId); } }}
+                    className={`relative text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 cursor-pointer ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-foreground">{section.title.split('–')[0].trim()}</span>
@@ -207,11 +205,21 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                     </div>
                     <p className="text-[11px] text-muted-foreground line-clamp-2 min-h-[28px]">{section.title.split('–')[1]?.trim() || ''}</p>
                     {done && (
-                      <p className="text-[10px] mt-2 font-semibold text-success">
-                        {rec.marksObtained}/{rec.marksAvailable} marks
-                      </p>
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-semibold text-success">
+                          {rec.marksObtained}/{rec.marksAvailable} marks
+                        </p>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); resetOne(section.questionId); }}
+                          title="Reset this question"
+                          className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <RotateCcw className="h-3 w-3" /> Reset
+                        </button>
+                      </div>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -371,12 +379,15 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
 }
 
 function DemoGate() {
-  const [visitorName, setVisitorName] = useState<string>(() => sessionStorage.getItem(NAME_KEY) || '');
+  const [visitorName, setVisitorName] = useState<string>(
+    () => localStorage.getItem(NAME_KEY) || sessionStorage.getItem(NAME_KEY) || ''
+  );
   const [nameInput, setNameInput] = useState('');
 
   const submitName = () => {
     const trimmed = nameInput.trim();
     if (!trimmed) return;
+    localStorage.setItem(NAME_KEY, trimmed);
     sessionStorage.setItem(NAME_KEY, trimmed);
     setVisitorName(trimmed);
   };

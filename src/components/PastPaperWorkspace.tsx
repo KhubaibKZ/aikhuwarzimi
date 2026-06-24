@@ -329,7 +329,37 @@ export function PastPaperWorkspace({
 
   // Check if this question was already submitted when opening — restore answers & feedback
   useEffect(() => {
-    if (!isOpen || !user) return;
+    if (!isOpen) return;
+
+    // Demo / unauth path: restore from prop if provided, otherwise fresh
+    if (!user) {
+      if (restoredSubmission && restoredSubmission.answers) {
+        const restoredAnswers = restoredSubmission.answers;
+        setAnswers(restoredAnswers);
+        const evaluation = checkAnswersInternal(restoredAnswers);
+        setFeedback(evaluation.newFeedback);
+        setStoredMarksEarned(evaluation.marksEarned);
+        setStoredMarkingNotes(evaluation.markingNotes);
+        setFinalTime(restoredSubmission.timeSpentSeconds ?? null);
+        setIsSubmitted(true);
+        setIsChecked(true);
+      } else {
+        setIsSubmitted(false);
+        setIsChecked(false);
+        setAnswers({});
+        setFeedback({});
+        setStoredMarksEarned({});
+        setStoredMarkingNotes({});
+        setAiResponse(null);
+        setAttemptCount({});
+        setFinalTime(null);
+        startTimeRef.current = Date.now();
+        aiUsageRef.current = 0;
+        checkworkUsageRef.current = 0;
+      }
+      return;
+    }
+
     const checkExistingSubmission = async () => {
       const { data } = await supabase
         .from('student_paper_progress')
@@ -375,7 +405,7 @@ export function PastPaperWorkspace({
       }
     };
     checkExistingSubmission();
-  }, [isOpen, user, question.id, workspaceMode]);
+  }, [isOpen, user, question.id, workspaceMode, restoredSubmission]);
 
   const handleAnswerChange = (key: string, value: string) => {
     if (isSubmitted) return; // Don't allow changes once submitted

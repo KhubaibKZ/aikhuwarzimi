@@ -267,6 +267,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
                 onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
+                onDuplicate={() => duplicateBlock(b.id)}
                 label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
               >
                 {b.kind === 'heading' && (

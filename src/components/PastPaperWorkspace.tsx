@@ -89,6 +89,7 @@ export interface SubmitProgressPayload {
   marksObtained: number;
   marksAvailable: number;
   submittedAt: string;
+  submittedAnswers?: Record<string, string>;
 }
 
 interface PastPaperWorkspaceProps {

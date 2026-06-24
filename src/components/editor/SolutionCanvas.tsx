@@ -138,6 +138,36 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     replaceSectionBlocks(sectionKey, next);
   };
 
+  const deepCloneStepItem = (item: StepItem): StepItem => {
+    const newId = Math.random().toString(36).slice(2, 10);
+    if (item.kind === 'text') return { ...item, id: newId };
+    if (item.kind === 'box') return { ...item, id: newId };
+    if (item.kind === 'fraction') {
+      return {
+        ...item,
+        id: newId,
+        num: item.num.map(deepCloneStepItem),
+        den: item.den.map(deepCloneStepItem),
+      };
+    }
+    return item;
+  };
+
+  const duplicateBlock = (id: string) => {
+    const idx = canvas.blocks.findIndex((b) => b.id === id);
+    if (idx < 0) return;
+    const original = canvas.blocks[idx];
+    const newId = Math.random().toString(36).slice(2, 10);
+    let cloned: CanvasBlock;
+    if (original.kind === 'step') {
+      cloned = { ...original, id: newId, items: original.items.map(deepCloneStepItem) };
+    } else {
+      cloned = { ...original, id: newId };
+    }
+    const next = [...canvas.blocks];
+    next.splice(idx + 1, 0, cloned);
+    setBlocks(next);
+  };
 
   const insertAtCursor = (s: string) => {
     const el = focusedRef;

@@ -2369,7 +2369,7 @@ export function PastPaperWorkspace({
         <>
 
           {/* Question */}
-          <div className="rounded-lg bg-muted/50 p-4">
+          <div className="rounded-md border border-dashed border-border bg-background/40 p-3">
             {editMode && onEditField ? (
               <>
                 <InlineMathToolbar

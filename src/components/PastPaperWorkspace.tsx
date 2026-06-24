@@ -2139,6 +2139,7 @@ export function PastPaperWorkspace({
         marksObtained,
         marksAvailable,
         submittedAt: new Date().toISOString(),
+        submittedAnswers: answers,
       });
     }
 

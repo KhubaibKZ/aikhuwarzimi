@@ -11,7 +11,7 @@ interface Body {
 }
 
 function cleanExtractedQuestion(raw: string) {
-  return raw
+  const cleaned = raw
     .trim()
     .replace(/^```(?:text|markdown)?\s*/i, '')
     .replace(/```\s*$/i, '')
@@ -22,6 +22,27 @@ function cleanExtractedQuestion(raw: string) {
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+
+  const lines = cleaned.split('\n').filter((line) => line.trim().toLowerCase() !== '(empty step)');
+  while (lines.length && /^\s*\([a-z]\)\s*$/i.test(lines[lines.length - 1])) lines.pop();
+
+  const out: string[] = [];
+  for (let i = 0; i < lines.length;) {
+    if (lines[i].trim().startsWith('|')) {
+      const table: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) table.push(lines[i++]);
+      const rows = table.map((line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()));
+      const max = Math.max(...rows.map((row) => row.length));
+      rows.forEach((row) => {
+        while (row.length < max) row.push('');
+      });
+      out.push(...rows.map((row) => `| ${row.join(' | ')} |`));
+    } else {
+      out.push(lines[i++]);
+    }
+  }
+
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
 Deno.serve(async (req) => {
@@ -45,6 +66,7 @@ Deno.serve(async (req) => {
       `You are an OCR transcription engine for Cambridge O Level / IGCSE maths exam questions.\n` +
       `STRICT RULES:\n` +
       `- Output ONLY what is visible in the image. Do not solve, infer, paraphrase, correct, or add missing values.\n` +
+      `- If the image is a screenshot of this app/editor, transcribe only the actual question text inside the question box. Ignore app UI such as empty answer boxes, "(empty step)", next question labels, toolbars, buttons, borders, and placeholders.\n` +
       `- Preserve the exact wording, line breaks, numbers, variables, signs, punctuation, and table values from the image.\n` +
       `- Preserve part labels exactly: (a), (b), (i), (ii), etc., each on its own line.\n` +
       `- Use proper Unicode math symbols where they are visible: × ÷ − ± ° π √ ² ³ ⁿ ≤ ≥ ≠ ≈ ∞ → ↔ ∠ △.\n` +
@@ -53,6 +75,7 @@ Deno.serve(async (req) => {
       `- Render square root over a fraction as √[[num/den]].\n` +
       `- Use plain ASCII for variables and exponents like 6x² − 2x − 9 = 0.\n` +
       `- If the image contains a table, render ONLY the visible table rows as a Markdown table. Use the first visible row as the first table row, then a |---|---| separator row with the same number of columns, then the remaining visible rows. Every row MUST start and end with '|'. Match the exact column order and values in the image.\n` +
+      `- Table rows must all have the same number of cells. If the last visible table cell is blank, keep it as an empty Markdown cell before the final |.\n` +
       `- For a two-row x/y table, the output must look like:\n| x | 2 | 3 | 4 |\n|---|---|---|---|\n| y | 30 | 22 | 19 |\n` +
       `- Do NOT wrap fractions in [[ ... ]] more than once (never output [[[[..]]]] or [[ [[..]] ]]).\n` +
       `- Do NOT output LaTeX, code fences, bullet points, commentary, or answers.\n` +

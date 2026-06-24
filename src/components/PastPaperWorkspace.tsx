@@ -234,7 +234,9 @@ function ExtraQuestionBlocks({
             hasSvg={!!b.svgMarkup}
             onUploadSvg={(svg) => update(b.id, { svgMarkup: svg })}
             onClearSvg={() => update(b.id, { svgMarkup: undefined })}
+            onReplaceText={(t) => update(b.id, { text: t })}
           />
+
           <InlineEditableText
             ref={(el) => { refs.current[b.id] = el; }}
             value={b.text}
@@ -2375,7 +2377,9 @@ export function PastPaperWorkspace({
                   hasSvg={!!(question as any).diagramSvgMarkup}
                   onUploadSvg={(svg) => onEditField('diagramSvgMarkup', svg)}
                   onClearSvg={() => onEditField('diagramSvgMarkup', '')}
+                  onReplaceText={(t) => onEditField('question', t)}
                 />
+
                 <InlineEditableText
                   ref={questionEditableRef}
                   value={question.question}

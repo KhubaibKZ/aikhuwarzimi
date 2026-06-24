@@ -53,6 +53,16 @@ function renderKeyContent(key: string) {
       </span>
     );
   }
+  if (key === '√') {
+    return (
+      <span className="inline-flex items-stretch leading-none">
+        <svg viewBox="0 0 14 28" preserveAspectRatio="none" aria-hidden="true" className="self-stretch w-[0.85em] h-[1.3em] text-current">
+          <polyline points="0,18 4,16 7,27 13,1" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="miter" strokeLinecap="square" />
+        </svg>
+        <span className="flex items-center border-t-[1.5px] border-current pt-0.5 px-1 -ml-px min-w-[0.6em]" />
+      </span>
+    );
+  }
   return key;
 }
 

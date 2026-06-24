@@ -53,6 +53,31 @@ type FocusTarget =
   | { kind: 'step'; stepId: string }
   | { kind: 'fraction'; stepId: string; fractionId: string; part: 'num' | 'den' };
 
+type CanvasSection = {
+  key: string;
+  question?: Extract<CanvasBlock, { kind: 'question' }>;
+  blocks: CanvasBlock[];
+};
+
+function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
+  const sections: CanvasSection[] = [];
+
+  blocks.forEach((block) => {
+    if (block.kind === 'question') {
+      sections.push({ key: block.id, question: block, blocks: [] });
+      return;
+    }
+
+    if (sections.length === 0) {
+      sections.push({ key: 'main-solution', blocks: [] });
+    }
+
+    sections[sections.length - 1].blocks.push(block);
+  });
+
+  return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
+}
+
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
@@ -76,18 +101,41 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
 
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
-  const addBlock = (b: CanvasBlock) => setBlocks([...canvas.blocks, b]);
+  const sections = useMemo(() => splitCanvasSections(canvas.blocks), [canvas.blocks]);
+
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
   const removeBlock = (id: string) => setBlocks(canvas.blocks.filter((b) => b.id !== id));
-  const moveBlock = (id: string, dir: -1 | 1) => {
-    const i = canvas.blocks.findIndex((b) => b.id === id);
+
+  const flattenSections = (nextSections: CanvasSection[]) =>
+    nextSections.flatMap((section) => [
+      ...(section.question ? [section.question] : []),
+      ...section.blocks,
+    ]);
+
+  const replaceSectionBlocks = (sectionKey: string, blocks: CanvasBlock[]) =>
+    setBlocks(flattenSections(sections.map((section) => (
+      section.key === sectionKey ? { ...section, blocks } : section
+    ))));
+
+  const addBlockToSection = (sectionKey: string, b: CanvasBlock) => {
+    const section = sections.find((s) => s.key === sectionKey);
+    replaceSectionBlocks(sectionKey, [...(section?.blocks || []), b]);
+  };
+
+  const removeSection = (sectionKey: string) =>
+    setBlocks(flattenSections(sections.filter((section) => section.key !== sectionKey)));
+
+  const moveBlockInSection = (sectionKey: string, id: string, dir: -1 | 1) => {
+    const section = sections.find((s) => s.key === sectionKey);
+    if (!section) return;
+    const i = section.blocks.findIndex((b) => b.id === id);
     if (i < 0) return;
     const j = i + dir;
-    if (j < 0 || j >= canvas.blocks.length) return;
-    const next = [...canvas.blocks];
+    if (j < 0 || j >= section.blocks.length) return;
+    const next = [...section.blocks];
     [next[i], next[j]] = [next[j], next[i]];
-    setBlocks(next);
+    replaceSectionBlocks(sectionKey, next);
   };
 
 
@@ -151,26 +199,25 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   );
 
 
-  return (
-    <div className="flex h-full flex-col">
+  const renderSolutionBox = (section: CanvasSection) => (
+    <div key={`${section.key}-solution`} className="rounded-lg border border-border bg-card overflow-hidden">
       {!previewMode ? (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
-          <Button size="sm" variant="secondary" onClick={() => addBlock(newBlock.heading())} className="gap-1">
+          <Button size="sm" variant="secondary" onClick={() => addBlockToSection(section.key, newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>
-          <Button size="sm" onClick={() => addBlock(newBlock.step())} className="gap-1">
+          <Button size="sm" onClick={() => addBlockToSection(section.key, newBlock.step())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Step
           </Button>
-          <Button size="sm" variant="outline" onClick={() => addBlock(newBlock.text())} className="gap-1">
+          <Button size="sm" variant="outline" onClick={() => addBlockToSection(section.key, newBlock.text())} className="gap-1">
             <Type className="h-3.5 w-3.5" /> Text
           </Button>
           {symbolPopover}
           {keyboardButton}
           <div className="ml-auto text-xs text-muted-foreground">
-            {canvas.blocks.length} block{canvas.blocks.length === 1 ? '' : 's'}
+            {section.blocks.length} block{section.blocks.length === 1 ? '' : 's'}
           </div>
         </div>
-
       ) : (
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
           {symbolPopover}
@@ -178,8 +225,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {canvas.blocks.length === 0 && (
+      <div className="p-4 space-y-3">
+        {section.blocks.length === 0 && (
           <div className="rounded-lg border-2 border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             {previewMode
               ? 'No solution content has been authored yet.'
@@ -188,14 +235,14 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? canvas.blocks.map((b) => <PreviewBlock key={b.id} block={b} setFocusedRef={setFocusedRef} />)
-          : canvas.blocks.map((b, idx) => (
+          ? section.blocks.map((b) => <PreviewBlock key={b.id} block={b} setFocusedRef={setFocusedRef} />)
+          : section.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}
-                onUp={idx > 0 ? () => moveBlock(b.id, -1) : undefined}
-                onDown={idx < canvas.blocks.length - 1 ? () => moveBlock(b.id, 1) : undefined}
+                onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
+                onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Solution'}
+                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'Solution'}
               >
                 {b.kind === 'heading' && (
                   <Input
@@ -220,12 +267,6 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                     data-gramm="false"
                   />
                 )}
-                {b.kind === 'question' && (
-                  <QuestionBlockEditor
-                    block={b}
-                    onChange={(patch) => updateBlock(b.id, (p) => ({ ...(p as any), ...patch }))}
-                  />
-                )}
                 {b.kind === 'step' && (
                   <StepCard
                     block={b}
@@ -237,8 +278,29 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 )}
               </BlockShell>
             ))}
-
       </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      {sections.map((section, sectionIdx) => (
+        <div key={section.key} className="space-y-3">
+          {section.question && (
+            previewMode ? (
+              <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
+            ) : (
+              <QuestionSectionShell onDelete={() => removeSection(section.key)} label={`Question Block ${sectionIdx + 1}`}>
+                <QuestionBlockEditor
+                  block={section.question}
+                  onChange={(patch) => updateBlock(section.question!.id, (p) => ({ ...(p as any), ...patch }))}
+                />
+              </QuestionSectionShell>
+            )
+          )}
+          {renderSolutionBox(section)}
+        </div>
+      ))}
 
       {keyboardIds.map((kid, i) => (
         <div key={kid} className="border-t border-border bg-muted/40 px-3 py-2">
@@ -561,6 +623,28 @@ function BlockShell({
             <Trash2 className="h-3 w-3" />
           </Button>
         </div>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function QuestionSectionShell({
+  children,
+  label,
+  onDelete,
+}: {
+  children: React.ReactNode;
+  label: string;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="group rounded-lg border border-dashed border-border bg-background/40 p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
+        <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive opacity-60 transition-opacity group-hover:opacity-100" onClick={onDelete}>
+          <Trash2 className="h-3 w-3" />
+        </Button>
       </div>
       {children}
     </div>

@@ -442,7 +442,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
         topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
         accuracy,
         independence,
-        tdi: Math.min(5, Number(tdi.toFixed(2))),
+        tdi: Number(tdi.toFixed(2)),
         speed,
         avgTimeMin: Number((avgT / 60).toFixed(2)),
         hasData: tRows.length > 0,

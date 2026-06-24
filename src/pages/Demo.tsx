@@ -52,7 +52,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   });
   const progress = progressByPaper[paperId] || {};
   const [openQid, setOpenQid] = useState<string | null>(null);
-  const [lockedQid, setLockedQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 

@@ -577,17 +577,21 @@ function PreviewItem({
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
     return (
-      <Input
-        value={v}
-        placeholder="…"
-        onFocus={(e) => setFocusedRef(e.currentTarget)}
-        onChange={(e) => setVal(item.id, e.target.value)}
-        style={{ width: w, height: h }}
-        className={cn(
-          'text-center',
-          v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
-        )}
-      />
+      <span className="relative inline-block" style={{ width: w, height: h }}>
+        <Input
+          value={v}
+          placeholder="…"
+          onFocus={(e) => setFocusedRef(e.currentTarget)}
+          onChange={(e) => setVal(item.id, e.target.value)}
+          style={{ width: w, height: h }}
+          className={cn(
+            'text-center',
+            v.includes('√') && 'text-transparent caret-foreground',
+            v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
+          )}
+        />
+        <MathValueOverlay value={v} />
+      </span>
     );
   }
   // fraction (stack)
@@ -943,12 +947,14 @@ function StepItemView({
             style={{ width: w, height: h }}
             className={cn(
               'text-center',
+              (item.value ?? '').includes('√') && 'text-transparent caret-foreground',
               filled ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
             )}
             spellCheck={false}
             autoComplete="off"
             data-gramm="false"
           />
+          <MathValueOverlay value={item.value ?? ''} />
         </Resizable>
         {removeBtn}
       </div>

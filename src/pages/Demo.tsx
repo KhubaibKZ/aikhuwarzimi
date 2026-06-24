@@ -347,6 +347,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
           onClose={() => setOpenQid(null)}
           workspaceMode="general"
           onSubmitProgress={handleSubmitProgress}
+          onResetExternal={() => { if (openQid) resetOne(openQid); }}
           restoredSubmission={(() => {
             const rec = openQid ? progress[openQid] : null;
             if (!rec || !rec.submittedAnswers) return null;

@@ -195,7 +195,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlock(b.id, -1) : undefined}
                 onDown={idx < canvas.blocks.length - 1 ? () => moveBlock(b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Step'}
+                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Solution'}
               >
                 {b.kind === 'heading' && (
                   <Input

@@ -42,16 +42,11 @@ function DemoInner({ visitorName }: { visitorName: string }) {
     return saved && (DEMO_PAPER_IDS as readonly string[]).includes(saved) ? saved : DEMO_PAPER_IDS[0];
   });
   const paper = pastPapers.find(p => p.id === paperId);
+  const storageKey = progressKeyFor(visitorName);
   const [progressByPaper, setProgressByPaper] = useState<Record<string, Record<string, DemoRecord>>>(() => {
-    const legacy = loadProgress();
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      // Migrate legacy flat shape into per-paper shape under first paper
-      if (parsed && !parsed[DEMO_PAPER_IDS[0]] && Object.keys(legacy).length) {
-        return { [DEMO_PAPER_IDS[0]]: legacy };
-      }
-      return parsed;
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : {};
     } catch { return {}; }
   });
   const progress = progressByPaper[paperId] || {};
@@ -63,7 +58,9 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   // Track this demo visit (who, when, how long).
   useUsageTracker({ enabled: true, accountType: 'demo', displayName: visitorName });
 
-  useEffect(() => { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(progressByPaper)); }, [progressByPaper]);
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(progressByPaper));
+  }, [progressByPaper, storageKey]);
   useEffect(() => { sessionStorage.setItem(PAPER_KEY, paperId); }, [paperId]);
 
   if (!paper) return <div className="p-8">Paper not found.</div>;

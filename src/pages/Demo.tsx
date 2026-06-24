@@ -347,6 +347,11 @@ function DemoInner({ visitorName }: { visitorName: string }) {
           onClose={() => setOpenQid(null)}
           workspaceMode="general"
           onSubmitProgress={handleSubmitProgress}
+          restoredSubmission={(() => {
+            const rec = openQid ? progress[openQid] : null;
+            if (!rec || !rec.submittedAnswers) return null;
+            return { answers: rec.submittedAnswers, timeSpentSeconds: rec.timeSpentSeconds };
+          })()}
         />
       )}
 

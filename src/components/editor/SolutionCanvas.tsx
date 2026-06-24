@@ -43,6 +43,7 @@ const DEFAULT_KEYBOARD: string[][] = [
 ];
 
 const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
+  sym: { w: 32, h: 32 },
   sm: { w: 64, h: 32 },
   md: { w: 112, h: 32 },
   lg: { w: 192, h: 36 },
@@ -782,6 +783,7 @@ function StepCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => addToFocus(newItem.box('sym'))}>Symbol (32×32)</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('sm'))}>Small</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('md'))}>Medium</DropdownMenuItem>
             <DropdownMenuItem onClick={() => addToFocus(newItem.box('lg'))}>Large</DropdownMenuItem>

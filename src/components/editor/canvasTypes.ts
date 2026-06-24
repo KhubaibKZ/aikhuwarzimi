@@ -1,4 +1,4 @@
-export type BoxSize = 'sm' | 'md' | 'lg';
+export type BoxSize = 'sym' | 'sm' | 'md' | 'lg';
 
 export type StepItem =
   | { id: string; kind: 'text'; text: string }

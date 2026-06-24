@@ -589,7 +589,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
 
                 <p className="text-xs text-muted-foreground italic">
                   Tip: aim to attempt each question once before opening a hint, and use Check Work only to confirm a final
-                  answer — this keeps your AI Independence Index high while still letting the tutor catch real misconceptions.
+                  answer ,this keeps your AI Independence Index high while still letting the tutor catch real misconceptions.
                 </p>
               </CardContent>
             </Card>

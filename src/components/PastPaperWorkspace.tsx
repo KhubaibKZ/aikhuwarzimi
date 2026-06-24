@@ -2234,16 +2234,19 @@ export function PastPaperWorkspace({
 
   // Reset individual question (dashboard/general mode only)
   const handleResetQuestion = async () => {
-    if (!user || workspaceMode !== 'general') return;
+    if (workspaceMode !== 'general') return;
     try {
-      await supabase
-        .from('student_paper_progress')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('question_id', question.id)
-        .eq('workspace_mode', 'general');
+      if (user) {
+        await supabase
+          .from('student_paper_progress')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('question_id', question.id)
+          .eq('workspace_mode', 'general');
+        queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      }
+      if (onResetExternal) onResetExternal();
       resetWorkspace();
-      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
       toast({ title: 'Question reset', description: 'You can now re-attempt this question.' });
     } catch {
       toast({ title: 'Reset failed', variant: 'destructive' });

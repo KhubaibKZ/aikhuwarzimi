@@ -69,11 +69,18 @@ function splitRow(line: string): string[] {
 }
 
 function TableBlock({ rows, keyPrefix }: { rows: string[][]; keyPrefix: string }) {
+  const colCount = Math.max(...rows.map((row) => row.length), 0);
+  const normalizedRows = rows.map((row) => {
+    const next = [...row];
+    while (next.length < colCount) next.push("");
+    return next;
+  });
+
   return (
     <div className="w-full my-2 overflow-x-auto">
       <table className="border-collapse border border-foreground/60 text-foreground">
         <tbody>
-          {rows.map((cells, ri) => (
+          {normalizedRows.map((cells, ri) => (
             <tr key={`${keyPrefix}-r-${ri}`}>
               {cells.map((cell, ci) => (
                 <td
@@ -120,8 +127,10 @@ export function QuestionText({ text, className }: { text: string; className?: st
       {blocks.map((b, bi) =>
         b.kind === "table" ? (
           <TableBlock key={`b-${bi}`} rows={b.rows} keyPrefix={`b-${bi}`} />
+        ) : b.text.trim() === "" ? (
+          <div key={`b-${bi}`} className="h-3" aria-hidden="true" />
         ) : (
-          <p key={`b-${bi}`} className="flex flex-wrap items-center gap-x-1 gap-y-2">
+          <p key={`b-${bi}`} className="flex flex-wrap items-center gap-x-1 gap-y-2 leading-7">
             {renderInline(b.text, `b-${bi}`)}
           </p>
         )

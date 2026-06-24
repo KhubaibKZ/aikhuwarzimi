@@ -10,6 +10,7 @@ import { useProgress } from '@/context/ProgressContext';
 import { Lightbulb, CheckCircle, Send, X, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { QuestionText } from '@/components/QuestionText';
 
 interface WorkspaceModalProps {
   isOpen: boolean;
@@ -349,9 +350,7 @@ export function WorkspaceModal({ isOpen, onClose, question, sectionType }: Works
                   Question
                 </h3>
                 <div className="rounded-xl bg-secondary/50 p-4 border border-border">
-                  <p className="text-foreground whitespace-pre-line math-input">
-                    {question.question}
-                  </p>
+                  <QuestionText text={question.question} />
                 </div>
               </div>
 

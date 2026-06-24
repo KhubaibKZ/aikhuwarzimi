@@ -31,12 +31,19 @@ function cleanExtractedQuestion(raw: string) {
     if (lines[i].trim().startsWith('|')) {
       const table: string[] = [];
       while (i < lines.length && lines[i].trim().startsWith('|')) table.push(lines[i++]);
-      const rows = table.map((line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()));
+      const isSeparator = (line: string) => /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(line.trim());
+      const rows = table
+        .filter((line) => !isSeparator(line))
+        .map((line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()));
       const max = Math.max(...rows.map((row) => row.length));
       rows.forEach((row) => {
         while (row.length < max) row.push('');
       });
-      out.push(...rows.map((row) => `| ${row.join(' | ')} |`));
+      if (rows.length > 0) {
+        out.push(`| ${rows[0].join(' | ')} |`);
+        if (rows.length > 1) out.push(`| ${Array(max).fill('---').join(' | ')} |`);
+        out.push(...rows.slice(1).map((row) => `| ${row.join(' | ')} |`));
+      }
     } else {
       out.push(lines[i++]);
     }

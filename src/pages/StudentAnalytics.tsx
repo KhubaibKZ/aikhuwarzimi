@@ -775,22 +775,48 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <p className="text-sm text-muted-foreground text-center py-8">No data yet. Solve past papers to see your topic radar.</p>
               ) : (
                 <div className="bg-card border border-border rounded-xl p-4">
+                  <div className="flex justify-center gap-2 mb-3 flex-wrap">
+                    {(['accuracy', 'independence', 'time'] as const).map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setRadarMetric(m)}
+                        className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                          radarMetric === m
+                            ? 'bg-[#a855f7] text-white border-[#a855f7]'
+                            : 'bg-transparent text-muted-foreground border-border hover:border-[#a855f7]/60'
+                        }`}
+                      >
+                        {radarMetricConfig[m].label}
+                      </button>
+                    ))}
+                  </div>
                   <ResponsiveContainer width="100%" height={350}>
                     <RadarChart data={radarData}>
                       <PolarGrid stroke="hsl(var(--border))" />
                       <PolarAngleAxis dataKey="topic" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-                      <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }} />
-                      <Radar name="Accuracy" dataKey="accuracy" stroke="#22c55e" fill="#22c55e" fillOpacity={0.15} strokeWidth={2} />
-                      <Radar name="AI Dependence" dataKey="independence" stroke="#a855f7" fill="#a855f7" fillOpacity={0.1} strokeWidth={2} />
-                      <Radar name="Average Time" dataKey="speed" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={2} />
+                      <PolarRadiusAxis
+                        angle={90}
+                        domain={radarMetricConfig[radarMetric].domain as any}
+                        tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 9 }}
+                      />
+                      <Radar
+                        name={radarMetricConfig[radarMetric].label}
+                        dataKey={radarMetricConfig[radarMetric].dataKey}
+                        stroke="#a855f7"
+                        fill="#a855f7"
+                        fillOpacity={0.2}
+                        strokeWidth={2}
+                      />
                     </RadarChart>
                   </ResponsiveContainer>
-                  <div className="flex justify-center gap-6 mt-2 text-xs">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />Accuracy</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#a855f7]" />AI Dependence</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]" />Average Time</span>
+                  <div className="flex justify-center gap-2 mt-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#a855f7]" />
+                      {radarMetricConfig[radarMetric].label} ({radarMetricConfig[radarMetric].unit})
+                    </span>
                   </div>
                 </div>
+
               )}
             </section>
           </TabsContent>

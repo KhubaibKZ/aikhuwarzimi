@@ -11,6 +11,14 @@ import { VecText } from "@/components/VecText";
  */
 const FRAC_RE = /(√)?\[\[([^\]]+?)\/([^\]]+?)\]\]/g;
 
+function normalizeQuestionMarkup(text: string) {
+  return text
+    .replace(/^```(?:text|markdown)?\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .replace(/\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g, "[[$1/$2]]")
+    .replace(/\[\[\s*\[\[([^\]]+?)\]\]\s*\]\]/g, "[[$1]]");
+}
+
 function StackedFraction({ num, den }: { num: string; den: string }) {
   return (
     <span className="inline-flex flex-col items-center mx-1 align-middle">
@@ -48,10 +56,12 @@ function renderInline(line: string, keyPrefix: string): React.ReactNode[] {
 
 function isTableRow(line: string) {
   const t = line.trim();
-  return t.startsWith("|") && t.endsWith("|") && t.length > 2;
+  if (t.length <= 2) return false;
+  const pipeCount = (t.match(/\|/g) || []).length;
+  return pipeCount >= 2 && splitRow(t).length >= 2;
 }
 function isSeparatorRow(line: string) {
-  return /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(line);
+  return /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(line.trim());
 }
 function splitRow(line: string): string[] {
   const t = line.trim().replace(/^\|/, "").replace(/\|$/, "");
@@ -82,7 +92,7 @@ function TableBlock({ rows, keyPrefix }: { rows: string[][]; keyPrefix: string }
 }
 
 export function QuestionText({ text, className }: { text: string; className?: string }) {
-  const lines = text.split("\n");
+  const lines = normalizeQuestionMarkup(text).split("\n");
 
   // Group lines into blocks: contiguous table rows vs prose lines.
   type Block =

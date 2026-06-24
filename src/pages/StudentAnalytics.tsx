@@ -521,7 +521,20 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                 <div className="rounded-lg border border-border bg-muted/30 p-4">
                   <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">Formula</h3>
                   <div className="font-mono text-sm text-foreground bg-background rounded-md p-3 border border-border overflow-x-auto">
-                    ADI = [ (0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub>) / Q ] · 1 / log<sub>10</sub>(Q + 9)
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span>ADI =</span>
+                      <span className="inline-flex flex-col items-center align-middle">
+                        <span>0.5 · ΣH<sub>q</sub> + 1.0 · ΣS<sub>assist</sub></span>
+                        <span className="w-full border-t border-foreground" />
+                        <span>Q</span>
+                      </span>
+                      <span>·</span>
+                      <span className="inline-flex flex-col items-center align-middle">
+                        <span>1</span>
+                        <span className="w-full border-t border-foreground" />
+                        <span>log<sub>10</sub>(Q + 9)</span>
+                      </span>
+                    </div>
                   </div>
                   <ul className="text-xs text-muted-foreground mt-3 space-y-1">
                     <li><span className="text-foreground font-semibold">ΣH<sub>q</sub></span>{"\u00a0"} Total AI hints used</li>
@@ -537,7 +550,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                     <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
                       <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                         <tr>
-                          <th className="text-left p-3">TDI Range</th>
+                          <th className="text-left p-3">ADI Range</th>
                           <th className="text-left p-3">Label</th>
                           <th className="text-left p-3">What it means</th>
                         </tr>
@@ -580,10 +593,32 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
                     {' '}<span className="text-foreground font-semibold">ΣH<sub>q</sub> = 4</span> hints and
                     {' '}<span className="text-foreground font-semibold">ΣS<sub>assist</sub> = 2</span> check-work calls.
                   </p>
-                  <div className="font-mono text-xs md:text-sm text-foreground bg-background rounded-md p-3 border border-border mt-3 space-y-1">
+                  <div className="font-mono text-xs md:text-sm text-foreground bg-background rounded-md p-3 border border-border mt-3 space-y-3">
                     <div>numerator = 0.5 · 4 + 1.0 · 2 = 4.0</div>
-                    <div>damp = 1 / log₁₀(12 + 9) = 1 / log₁₀(21) ≈ 0.756</div>
-                    <div>TDI = (4.0 / 12) · 0.756 ≈ <span className="text-success font-semibold">0.252</span> → 🟢 Highly Autonomous</div>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <span>damp =</span>
+                      <span className="inline-flex flex-col items-center align-middle">
+                        <span>1</span>
+                        <span className="w-full border-t border-foreground" />
+                        <span>log₁₀(12 + 9)</span>
+                      </span>
+                      <span>=</span>
+                      <span className="inline-flex flex-col items-center align-middle">
+                        <span>1</span>
+                        <span className="w-full border-t border-foreground" />
+                        <span>log₁₀(21)</span>
+                      </span>
+                      <span>≈ 0.756</span>
+                    </div>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      <span>ADI =</span>
+                      <span className="inline-flex flex-col items-center align-middle">
+                        <span>4.0</span>
+                        <span className="w-full border-t border-foreground" />
+                        <span>12</span>
+                      </span>
+                      <span>· 0.756 ≈ <span className="text-success font-semibold">0.252</span> → 🟢 Highly Autonomous</span>
+                    </div>
                   </div>
                 </div>
 

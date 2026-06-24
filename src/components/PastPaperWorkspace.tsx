@@ -2387,12 +2387,6 @@ export function PastPaperWorkspace({
                   multiline
                   className="text-foreground flex min-h-[96px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
                 />
-                {question.question && (
-                  <div className="mt-3 rounded-md border border-border bg-background/60 p-3">
-                    <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">Rendered preview</div>
-                    <QuestionText text={question.question} />
-                  </div>
-                )}
               </>
 
             ) : (

@@ -434,6 +434,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
       const hints = tRows.reduce((s: number, r: any) => s + (r.ai_usage_count || 0), 0);
       const cw = tRows.reduce((s: number, r: any) => s + (r.checkwork_count || 0), 0);
       const independence = tRows.length > 0 ? independenceFromUsage(hints, cw, tRows.length) : 0;
+      const tdi = tRows.length > 0 ? computeTDI(hints, cw, tRows.length) : 0;
       const totalT = tRows.reduce((s: number, r: any) => s + (r.time_spent_seconds || 0), 0);
       const avgT = tRows.length > 0 ? totalT / tRows.length : 0;
       const speed = tRows.length > 0 ? Math.round(Math.max(0, Math.min(100, 100 - (avgT - 60) / 3))) : 0;
@@ -441,19 +442,21 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
         topic: t.topic.length > 12 ? t.topic.substring(0, 12) + '…' : t.topic,
         accuracy,
         independence,
+        tdi: Math.min(5, Number(tdi.toFixed(2))),
         speed,
-        avgTimeSec: Math.round(avgT),
+        avgTimeMin: Number((avgT / 60).toFixed(2)),
         hasData: tRows.length > 0,
       };
     });
   }, [topicMastery, rows, isDemoMode]);
 
-  const [radarMetric, setRadarMetric] = useState<'accuracy' | 'independence' | 'time'>('accuracy');
+  const [radarMetric, setRadarMetric] = useState<'accuracy' | 'tdi' | 'time'>('accuracy');
   const radarMetricConfig = {
     accuracy: { label: 'Accuracy', unit: '%', dataKey: 'accuracy', domain: [0, 100] as [number, number] },
-    independence: { label: 'AI Dependence', unit: 'pts', dataKey: 'independence', domain: [0, 'auto'] as [number, number | 'auto'] },
-    time: { label: 'Average Time', unit: 's', dataKey: 'avgTimeSec', domain: [0, 'auto'] as [number, number | 'auto'] },
+    tdi: { label: 'AI Dependence', unit: 'pts', dataKey: 'tdi', domain: [0, 5] as [number, number] },
+    time: { label: 'Average Time', unit: 'min', dataKey: 'avgTimeMin', domain: [0, 10] as [number, number] },
   };
+
 
 
   // Overall = average across ALL individual questions (not average of topics)

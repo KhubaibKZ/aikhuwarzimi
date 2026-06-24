@@ -190,12 +190,14 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 return (
-                  <button
+                  <div
                     key={section.id}
                     data-tour={sectionIndex === 0 ? 'demo-q1' : undefined}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setOpenQid(section.questionId)}
-                    className={`text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
-
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenQid(section.questionId); } }}
+                    className={`relative text-left rounded-xl border p-3 transition-all hover:shadow-md hover:border-primary/50 cursor-pointer ${done ? 'border-success/50 bg-success/5' : 'border-border bg-card'}`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-bold text-foreground">{section.title.split('–')[0].trim()}</span>
@@ -203,11 +205,21 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                     </div>
                     <p className="text-[11px] text-muted-foreground line-clamp-2 min-h-[28px]">{section.title.split('–')[1]?.trim() || ''}</p>
                     {done && (
-                      <p className="text-[10px] mt-2 font-semibold text-success">
-                        {rec.marksObtained}/{rec.marksAvailable} marks
-                      </p>
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-semibold text-success">
+                          {rec.marksObtained}/{rec.marksAvailable} marks
+                        </p>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); resetOne(section.questionId); }}
+                          title="Reset this question"
+                          className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <RotateCcw className="h-3 w-3" /> Reset
+                        </button>
+                      </div>
                     )}
-                  </button>
+                  </div>
                 );
               })}
             </div>

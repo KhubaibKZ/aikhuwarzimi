@@ -8,9 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CheckCircle2, FileText, BarChart3, Sparkles, RotateCcw, Moon, Sun, Target, Lock } from 'lucide-react';
+import { CheckCircle2, FileText, BarChart3, Sparkles, Moon, Sun, Target, Lock } from 'lucide-react';
 import { ProgressProvider } from '@/context/ProgressContext';
 import { PastPaperWorkspace, type SubmitProgressPayload } from '@/components/PastPaperWorkspace';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
@@ -52,7 +51,6 @@ function DemoInner({ visitorName }: { visitorName: string }) {
   });
   const progress = progressByPaper[paperId] || {};
   const [openQid, setOpenQid] = useState<string | null>(null);
-  const [lockedQid, setLockedQid] = useState<string | null>(null);
   const [tab, setTab] = useState('paper');
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
 
@@ -192,8 +190,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                 const rec = progress[section.questionId];
                 const done = !!rec;
                 const openOrLock = () => {
-                  if (done) setLockedQid(section.questionId);
-                  else setOpenQid(section.questionId);
+                  setOpenQid(section.questionId);
                 };
                 return (
                   <div
@@ -349,44 +346,15 @@ function DemoInner({ visitorName }: { visitorName: string }) {
           onClose={() => setOpenQid(null)}
           workspaceMode="general"
           onSubmitProgress={handleSubmitProgress}
+          onResetExternal={() => { if (openQid) resetOne(openQid); }}
+          restoredSubmission={(() => {
+            const rec = openQid ? progress[openQid] : null;
+            if (!rec || !rec.submittedAnswers) return null;
+            return { answers: rec.submittedAnswers, timeSpentSeconds: rec.timeSpentSeconds };
+          })()}
         />
       )}
 
-      {/* Locked dialog for already-submitted questions */}
-      <Dialog open={!!lockedQid} onOpenChange={(o) => { if (!o) setLockedQid(null); }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-muted-foreground" /> Question already submitted
-            </DialogTitle>
-            <DialogDescription>
-              {(() => {
-                const r = lockedQid ? progress[lockedQid] : null;
-                const q = lockedQid ? getPastPaperQuestion(lockedQid) : null;
-                if (!r || !q) return 'This question has been submitted.';
-                return `Q${q.questionNumber} — ${r.marksObtained}/${r.marksAvailable} marks. Workspace is locked. Reset to attempt again.`;
-              })()}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setLockedQid(null)}>Close</Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (lockedQid) {
-                  const qid = lockedQid;
-                  resetOne(qid);
-                  setLockedQid(null);
-                  setOpenQid(qid);
-                }
-              }}
-              className="gap-2"
-            >
-              <RotateCcw className="h-3.5 w-3.5" /> Reset & reopen
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
 
     </div>

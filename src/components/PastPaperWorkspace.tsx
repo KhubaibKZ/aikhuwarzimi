@@ -89,6 +89,7 @@ export interface SubmitProgressPayload {
   marksObtained: number;
   marksAvailable: number;
   submittedAt: string;
+  submittedAnswers?: Record<string, string>;
 }
 
 interface PastPaperWorkspaceProps {
@@ -97,6 +98,8 @@ interface PastPaperWorkspaceProps {
   onClose: () => void;
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
+  restoredSubmission?: { answers: Record<string, string>; timeSpentSeconds: number } | null;
+  onResetExternal?: () => void;
   editMode?: boolean;
   onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | 'extraQuestionBlocks' | `hint:${number}`, value: string | any[]) => void;
   onAddHint?: () => void;
@@ -267,6 +270,8 @@ export function PastPaperWorkspace({
   onClose,
   workspaceMode = 'general',
   onSubmitProgress,
+  restoredSubmission,
+  onResetExternal,
   editMode = false,
   onEditField,
   onAddHint,
@@ -326,7 +331,37 @@ export function PastPaperWorkspace({
 
   // Check if this question was already submitted when opening — restore answers & feedback
   useEffect(() => {
-    if (!isOpen || !user) return;
+    if (!isOpen) return;
+
+    // Demo / unauth path: restore from prop if provided, otherwise fresh
+    if (!user) {
+      if (restoredSubmission && restoredSubmission.answers) {
+        const restoredAnswers = restoredSubmission.answers;
+        setAnswers(restoredAnswers);
+        const evaluation = checkAnswersInternal(restoredAnswers);
+        setFeedback(evaluation.newFeedback);
+        setStoredMarksEarned(evaluation.marksEarned);
+        setStoredMarkingNotes(evaluation.markingNotes);
+        setFinalTime(restoredSubmission.timeSpentSeconds ?? null);
+        setIsSubmitted(true);
+        setIsChecked(true);
+      } else {
+        setIsSubmitted(false);
+        setIsChecked(false);
+        setAnswers({});
+        setFeedback({});
+        setStoredMarksEarned({});
+        setStoredMarkingNotes({});
+        setAiResponse(null);
+        setAttemptCount({});
+        setFinalTime(null);
+        startTimeRef.current = Date.now();
+        aiUsageRef.current = 0;
+        checkworkUsageRef.current = 0;
+      }
+      return;
+    }
+
     const checkExistingSubmission = async () => {
       const { data } = await supabase
         .from('student_paper_progress')
@@ -372,7 +407,7 @@ export function PastPaperWorkspace({
       }
     };
     checkExistingSubmission();
-  }, [isOpen, user, question.id, workspaceMode]);
+  }, [isOpen, user, question.id, workspaceMode, restoredSubmission]);
 
   const handleAnswerChange = (key: string, value: string) => {
     if (isSubmitted) return; // Don't allow changes once submitted
@@ -2138,6 +2173,7 @@ export function PastPaperWorkspace({
         marksObtained,
         marksAvailable,
         submittedAt: new Date().toISOString(),
+        submittedAnswers: answers,
       });
     }
 
@@ -2198,16 +2234,19 @@ export function PastPaperWorkspace({
 
   // Reset individual question (dashboard/general mode only)
   const handleResetQuestion = async () => {
-    if (!user || workspaceMode !== 'general') return;
+    if (workspaceMode !== 'general') return;
     try {
-      await supabase
-        .from('student_paper_progress')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('question_id', question.id)
-        .eq('workspace_mode', 'general');
+      if (user) {
+        await supabase
+          .from('student_paper_progress')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('question_id', question.id)
+          .eq('workspace_mode', 'general');
+        queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+      }
+      if (onResetExternal) onResetExternal();
       resetWorkspace();
-      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
       toast({ title: 'Question reset', description: 'You can now re-attempt this question.' });
     } catch {
       toast({ title: 'Reset failed', variant: 'destructive' });

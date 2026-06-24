@@ -99,6 +99,7 @@ interface PastPaperWorkspaceProps {
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
   restoredSubmission?: { answers: Record<string, string>; timeSpentSeconds: number } | null;
+  onResetExternal?: () => void;
   editMode?: boolean;
   onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | 'extraQuestionBlocks' | `hint:${number}`, value: string | any[]) => void;
   onAddHint?: () => void;

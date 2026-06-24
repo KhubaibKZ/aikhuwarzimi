@@ -212,7 +212,7 @@ function ExtraQuestionBlocks({
   return (
     <div className="mt-4 space-y-3">
       {blocks.map((b, idx) => (
-        <div key={b.id} className="group rounded-lg border border-dashed border-border bg-background/40 p-3">
+        <div key={b.id} className="group rounded-lg bg-muted/40 p-3">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Question Block {idx + 2}
@@ -2369,7 +2369,7 @@ export function PastPaperWorkspace({
         <>
 
           {/* Question */}
-          <div className="rounded-md border border-dashed border-border bg-background/40 p-3">
+          <div className="rounded-md bg-muted/40 p-3">
             {editMode && onEditField ? (
               <>
                 <InlineMathToolbar

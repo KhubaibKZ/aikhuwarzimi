@@ -524,7 +524,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
   if (block.kind === 'question') {
     return (
-      <div className="rounded-md border border-dashed border-border bg-background/40 p-3 space-y-2">
+      <div className="rounded-md bg-muted/40 p-3 space-y-2">
         {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
         {block.svgMarkup && (
           <div
@@ -724,7 +724,7 @@ function QuestionSectionShell({
   onDelete: () => void;
 }) {
   return (
-    <div className="group rounded-lg border border-dashed border-border bg-background/40 p-3">
+    <div className="group rounded-lg bg-muted/40 p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
         <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive opacity-60 transition-opacity group-hover:opacity-100" onClick={onDelete}>
@@ -775,7 +775,7 @@ function StepCard({
   const boxLabel = inFraction ? ` → ${focus.part}` : '';
 
   return (
-    <div className="rounded-md border border-dashed border-border bg-background p-3">
+    <div className="rounded-md bg-muted/40 p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addToFocus(newItem.text())}>
           <Plus className="h-3 w-3" /> Text{boxLabel}

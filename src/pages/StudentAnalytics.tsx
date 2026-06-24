@@ -442,10 +442,19 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
         accuracy,
         independence,
         speed,
+        avgTimeSec: Math.round(avgT),
         hasData: tRows.length > 0,
       };
     });
   }, [topicMastery, rows, isDemoMode]);
+
+  const [radarMetric, setRadarMetric] = useState<'accuracy' | 'independence' | 'time'>('accuracy');
+  const radarMetricConfig = {
+    accuracy: { label: 'Accuracy', unit: '%', dataKey: 'accuracy', domain: [0, 100] as [number, number] },
+    independence: { label: 'AI Dependence', unit: 'pts', dataKey: 'independence', domain: [0, 'auto'] as [number, number | 'auto'] },
+    time: { label: 'Average Time', unit: 's', dataKey: 'avgTimeSec', domain: [0, 'auto'] as [number, number | 'auto'] },
+  };
+
 
   // Overall = average across ALL individual questions (not average of topics)
   const totalQs = rows.length;

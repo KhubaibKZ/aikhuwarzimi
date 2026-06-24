@@ -779,7 +779,7 @@ export default function StudentAnalytics({ studentMode = false, embedded = false
               ) : (
                 <div className="bg-card border border-border rounded-xl p-4">
                   <div className="flex justify-center gap-2 mb-3 flex-wrap">
-                    {(['accuracy', 'independence', 'time'] as const).map(m => (
+                    {(['accuracy', 'tdi', 'time'] as const).map(m => (
                       <button
                         key={m}
                         onClick={() => setRadarMetric(m)}

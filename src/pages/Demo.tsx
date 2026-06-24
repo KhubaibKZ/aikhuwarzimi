@@ -18,24 +18,15 @@ import StudentAnalytics from './StudentAnalytics';
 import { computeTDI, tdiStatus, tdiToneClass } from '@/lib/aiDependenceIndex';
 
 const DEMO_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12'] as const;
-const STORAGE_KEY = 'demo_progress_v1';
 const PAPER_KEY = 'demo_paper_id_v1';
 const NAME_KEY = 'demo_visitor_name';
 
+// Per-visitor localStorage key so progress persists across refresh & revisits.
+const progressKeyFor = (name: string) =>
+  `demo_progress_v2:${name.trim().toLowerCase()}`;
+
 
 interface DemoRecord extends SubmitProgressPayload {}
-
-function loadProgress(): Record<string, DemoRecord> {
-  // Use sessionStorage so progress only lives for the current visit.
-  // Clear any legacy persisted progress so questions are never green by default.
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
-  } catch { return {}; }
-}
-function saveProgress(map: Record<string, DemoRecord>) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(map));
-}
 
 
 function fmtTime(secs: number) {

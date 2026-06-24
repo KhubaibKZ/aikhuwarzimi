@@ -195,7 +195,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 onUp={idx > 0 ? () => moveBlock(b.id, -1) : undefined}
                 onDown={idx < canvas.blocks.length - 1 ? () => moveBlock(b.id, 1) : undefined}
                 onDelete={() => removeBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Step'}
+                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : b.kind === 'question' ? 'Question' : 'Solution'}
               >
                 {b.kind === 'heading' && (
                   <Input
@@ -606,7 +606,7 @@ function StepCard({
   const boxLabel = inFraction ? ` → ${focus.part}` : '';
 
   return (
-    <div className="rounded-md bg-background p-3">
+    <div className="rounded-md border border-dashed border-border bg-background p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addToFocus(newItem.text())}>
           <Plus className="h-3 w-3" /> Text{boxLabel}

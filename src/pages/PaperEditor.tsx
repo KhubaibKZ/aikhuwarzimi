@@ -298,14 +298,13 @@ export default function PaperEditor() {
           })}
           onAddQuestionSection={viewMode === 'edit' ? () => update((d) => {
             const cur = Array.isArray((d as any).solutionCanvas?.blocks) ? (d as any).solutionCanvas.blocks : [];
-            const hasSolutionBlock = cur.some((block: any) => block?.kind === 'step');
+            const rid = () => Math.random().toString(36).slice(2, 10);
             (d as any).solutionCanvas = {
               ...((d as any).solutionCanvas || {}),
               blocks: [
                 ...cur,
-                ...(hasSolutionBlock ? [] : [{ id: Math.random().toString(36).slice(2, 10), kind: 'step', items: [] }]),
-                { id: Math.random().toString(36).slice(2, 10), kind: 'question', text: '' },
-                { id: Math.random().toString(36).slice(2, 10), kind: 'step', items: [] },
+                { id: rid(), kind: 'question', text: '' },
+                { id: rid(), kind: 'step', items: [] },
               ],
             };
           }) : undefined}

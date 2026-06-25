@@ -527,12 +527,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
     return (
       <div className="rounded-md bg-muted/40 p-3 space-y-2">
         {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
-        {block.svgMarkup && (
-          <div
-            className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-            dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
-          />
-        )}
+        {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
       </div>
     );

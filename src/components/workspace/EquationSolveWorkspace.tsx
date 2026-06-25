@@ -9,7 +9,7 @@ import { Radical } from '@/components/Radical';
 import { VecText } from '@/components/VecText';
 
 const inlineValueWidth = (value: string) =>
-  `calc(${Math.max(1, value.trim().length || value.length || 1)}ch + 0.45rem)`;
+  `calc(${Math.max(1, value.trim().length || value.length || 1)}ch + 0.12rem)`;
 
 interface StructuredExtraStep {
   afterStepKey: string; // insert rows after this stage
@@ -480,68 +480,66 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="grid grid-cols-[4.6rem_minmax(0,1fr)] items-center gap-x-1">
+        <div className="flex flex-wrap items-center gap-x-1 gap-y-0 leading-none">
           {stage.label ? (
-            <span className="text-xs leading-none text-foreground/70">{stage.label}</span>
-          ) : (
-            <span aria-hidden="true" />
-          )}
-          <div className="flex min-w-0 flex-wrap items-center gap-0.5 leading-none">
-          {stage.elements.map((el, i) => {
-            if (el.type === 'text') {
-              return (
-                <VecText key={i} value={el.value} className="font-mono text-xs leading-none" />
-              );
-            }
-            if (el.type === 'box' && el.key) {
-              return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
-            }
-            if (el.type === 'fraction') {
-              const renderSubElements = (elements: typeof el.numElements) => (
-                <div className="flex items-center gap-0.5">
-                  {elements?.map((subEl, j) => {
-                    if (subEl.type === 'text')
-                      return (
-                        <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />
-                      );
-                    if (subEl.type === 'box' && subEl.key)
-                      return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
-                    return null;
-                  })}
-                </div>
-              );
-              const frac = (
-                <span className="inline-flex flex-col items-center mx-1">
-                  {renderSubElements(el.numElements)}
-                  <div className="w-full border-t border-foreground my-0.5" />
-                  {renderSubElements(el.denElements)}
-                </span>
-              );
-              if (el.sqrt) {
-                return <Radical key={i}>{frac}</Radical>;
+            <span className="mr-0.5 text-xs leading-none text-foreground/70">{stage.label}</span>
+          ) : null}
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-0 leading-none">
+            {stage.elements.map((el, i) => {
+              if (el.type === 'text') {
+                return (
+                  <VecText key={i} value={el.value} className="font-mono text-xs leading-none" />
+                );
               }
-              return <span key={i}>{frac}</span>;
-            }
-            if (el.type === 'sqrt') {
-              return (
-                <Radical key={i}>
-                  <span className="flex items-center gap-0.5">
-                    {el.innerElements?.map((subEl, j) => {
+              if (el.type === 'box' && el.key) {
+                return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
+              }
+              if (el.type === 'fraction') {
+                const renderSubElements = (elements: typeof el.numElements) => (
+                  <div className="flex items-center gap-0">
+                    {elements?.map((subEl, j) => {
                       if (subEl.type === 'text')
-                        return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;
+                        return (
+                          <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />
+                        );
                       if (subEl.type === 'box' && subEl.key)
-                        return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
+                        return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
                       return null;
                     })}
+                  </div>
+                );
+                const frac = (
+                  <span className="inline-flex flex-col items-center mx-0.5 leading-none">
+                    {renderSubElements(el.numElements)}
+                    <div className="w-full border-t border-foreground my-px" />
+                    {renderSubElements(el.denElements)}
                   </span>
-                </Radical>
-              );
-            }
-            return null;
-          })}
-          {hasCheckable && checkBtn(fullStepKey, stage.label || stage.stepKey)}
-          {hasCheckable && stepFeedbackIcon(fullStepKey)}
-          </div>
+                );
+                if (el.sqrt) {
+                  return <Radical key={i}>{frac}</Radical>;
+                }
+                return <span key={i}>{frac}</span>;
+              }
+              if (el.type === 'sqrt') {
+                return (
+                  <Radical key={i}>
+                    <span className="flex items-center gap-0">
+                      {el.innerElements?.map((subEl, j) => {
+                        if (subEl.type === 'text')
+                          return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;
+                        if (subEl.type === 'box' && subEl.key)
+                          return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
+                        return null;
+                      })}
+                    </span>
+                  </Radical>
+                );
+              }
+              return null;
+            })}
+            {hasCheckable && checkBtn(fullStepKey, stage.label || stage.stepKey)}
+            {hasCheckable && stepFeedbackIcon(fullStepKey)}
+          </span>
         </div>
         {renderAiResponse(fullStepKey)}
       </div>

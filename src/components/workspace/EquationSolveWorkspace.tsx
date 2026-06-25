@@ -468,10 +468,10 @@ export function EquationSolveWorkspace({
       (el) => el.type === 'box' || el.type === 'fraction' || el.type === 'sqrt',
     );
     return (
-      <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex items-center gap-1 flex-wrap">
+      <div key={stage.stepKey} className="space-y-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {stage.label && (
-            <span className="text-sm text-foreground font-medium mr-1"><VecText value={stage.label} /></span>
+            <VecText value={stage.label} className="text-xs text-muted-foreground font-medium mr-1" />
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {

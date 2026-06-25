@@ -579,16 +579,20 @@ function PreviewItem({
     const v = getVal(item.id, item.value);
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
+    const filled = v.trim().length > 0;
     return (
-      <span className="relative inline-block" style={{ width: w, height: h }}>
+      <span className="relative inline-block" style={{ width: filled ? 'auto' : w, height: h, minWidth: filled ? undefined : w }}>
         <Input
           value={v}
           placeholder="…"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
-          style={{ width: w, height: h }}
+          style={{ width: filled ? 'auto' : w, height: h, minWidth: filled ? '1.5rem' : w }}
           className={cn(
-            'text-center rounded-xl border-2 border-border/70 bg-transparent text-foreground placeholder:text-muted-foreground/40 focus-visible:border-primary',
+            'text-center text-foreground placeholder:text-muted-foreground/40',
+            filled
+              ? 'border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0'
+              : 'rounded-xl border-2 border-border/70 bg-transparent focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
           )}
         />

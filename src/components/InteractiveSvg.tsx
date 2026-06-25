@@ -118,7 +118,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
         markup={blackBackdropMarkup}
         width={dispW}
         height={dispH}
-        className={`w-full bg-black ${className ?? ''}`}
+        className={`w-full ${className ?? ''}`}
       />
     );
   }
@@ -126,7 +126,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
   // Non-interactive: theme & inline on pitch-black backdrop.
   return (
     <div
-      className={`flex justify-center text-foreground w-full bg-black ${className ?? ''}`}
+      className={`flex justify-center text-foreground w-full ${className ?? ''}`}
     >
       <div
         style={{ width: dispW, height: dispH, maxWidth: '100%' }}

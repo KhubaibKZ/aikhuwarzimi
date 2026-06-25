@@ -73,6 +73,7 @@ import {
 import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 
 import { themeSvgMarkup } from '@/lib/svgTheme';
+import { InteractiveSvg } from '@/components/InteractiveSvg';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
 
 export interface SubmitProgressPayload {
@@ -197,12 +198,7 @@ function ExtraQuestionBlocks({
         {blocks.map((b) => (
           <div key={b.id} className="space-y-2">
             {b.text && <QuestionText text={b.text} />}
-            {b.svgMarkup && (
-              <div
-                className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-                dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
-              />
-            )}
+            {b.svgMarkup && <InteractiveSvg markup={b.svgMarkup} />}
           </div>
         ))}
       </div>
@@ -245,10 +241,9 @@ function ExtraQuestionBlocks({
             className="text-foreground flex min-h-[72px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
           />
           {b.svgMarkup && (
-            <div
-              className="mt-3 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-              dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
-            />
+            <div className="mt-3">
+              <InteractiveSvg markup={b.svgMarkup} />
+            </div>
           )}
         </div>
       ))}
@@ -2405,10 +2400,9 @@ export function PastPaperWorkspace({
 
             {/* Admin-uploaded diagram override (from PaperEditor) */}
             {(question as any).diagramSvgMarkup ? (
-              <div
-                className="mt-4 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-                dangerouslySetInnerHTML={{ __html: themeSvgMarkup((question as any).diagramSvgMarkup) }}
-              />
+              <div className="mt-4">
+                <InteractiveSvg markup={(question as any).diagramSvgMarkup} />
+              </div>
             ) : (question as any).diagramImageUrl && (
               <div className="mt-4 flex justify-center">
                 <img

@@ -14,6 +14,7 @@ import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
 import { QuestionText } from '@/components/QuestionText';
 import { themeSvgMarkup } from '@/lib/svgTheme';
+import { InteractiveSvg } from '@/components/InteractiveSvg';
 import { cn } from '@/lib/utils';
 
 import {
@@ -526,12 +527,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
     return (
       <div className="rounded-md bg-muted/40 p-3 space-y-2">
         {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
-        {block.svgMarkup && (
-          <div
-            className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-            dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
-          />
-        )}
+        {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
       </div>
     );
@@ -1068,12 +1064,7 @@ function QuestionBlockEditor({
         className="w-full min-h-[72px] resize-y rounded-md border border-border bg-background px-3 py-2 text-base leading-7 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
         spellCheck={false}
       />
-      {block.svgMarkup && (
-        <div
-          className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-          dangerouslySetInnerHTML={{ __html: themeSvgMarkup(block.svgMarkup) }}
-        />
-      )}
+      {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
     </div>
   );
 }

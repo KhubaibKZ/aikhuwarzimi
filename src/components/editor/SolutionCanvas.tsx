@@ -844,7 +844,7 @@ function StepCard({
       )}
 
       {kbOpen && (
-        <div className="mt-3 rounded-md border border-border bg-muted/40 p-2">
+        <div className="mt-3 rounded-md border border-border/40 bg-black p-2">
           <HorizontalKeyboard
             keys={DEFAULT_KEYBOARD}
             onKeyPress={(k) => {

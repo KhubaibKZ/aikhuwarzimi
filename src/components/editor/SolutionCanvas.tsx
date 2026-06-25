@@ -357,9 +357,9 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   );
 
   return (
-    <div className="space-y-4">
+    <div className={cn(previewMode ? 'space-y-2' : 'space-y-4')}>
       {sections.map((section, sectionIdx) => (
-        <div key={section.key} className="space-y-3">
+        <div key={section.key} className={cn(previewMode ? 'space-y-1' : 'space-y-3')}>
           {section.question && (
             previewMode ? (
               <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />

@@ -364,7 +364,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             previewMode ? (
               <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
             ) : (
-              <QuestionSectionShell onDelete={() => removeSection(section.key)} label={`Question Block ${sectionIdx + 1}`}>
+              <QuestionSectionShell
+                onDelete={() => removeSection(section.key)}
+                label={`Question Block ${sectionIdx + 1}`}
+                className={section.question?.svgMarkup ? 'bg-black' : 'bg-muted/40'}
+              >
                 <QuestionBlockEditor
                   block={section.question}
                   onChange={(patch) => updateBlock(section.question!.id, (p) => ({ ...(p as any), ...patch }))}
@@ -525,7 +529,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
   if (block.kind === 'question') {
     return (
-      <div className="rounded-md bg-muted/40 p-3 space-y-2">
+      <div className={`rounded-md p-3 space-y-2 ${block.svgMarkup ? 'bg-black' : 'bg-muted/40'}`}>
         {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
         {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
@@ -714,13 +718,15 @@ function QuestionSectionShell({
   children,
   label,
   onDelete,
+  className,
 }: {
   children: React.ReactNode;
   label: string;
   onDelete: () => void;
+  className?: string;
 }) {
   return (
-    <div className="group rounded-lg bg-muted/40 p-3">
+    <div className={`group rounded-lg p-3 ${className ?? 'bg-muted/40'}`}>
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
         <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive opacity-60 transition-opacity group-hover:opacity-100" onClick={onDelete}>

@@ -433,7 +433,7 @@ export function EquationSolveWorkspace({
           style={{ width: `${widthCh}ch` }}
           className={cn(
             minW,
-            'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base bg-transparent text-foreground text-center outline-none',
+            'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm bg-transparent text-foreground text-center outline-none',
             isFocused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
           )}
         />

@@ -176,11 +176,12 @@ function InteractiveSvgFrame({
         onLoad={() => setReady(true)}
         sandbox="allow-scripts allow-same-origin"
         style={{
-          width,
-          height,
-          maxWidth: '100%',
+          width: '100%',
+          maxWidth: width,
+          aspectRatio: `${width} / ${height}`,
           border: 0,
           background: '#000000',
+          display: 'block',
           opacity: ready ? 1 : 0,
           transition: 'opacity 120ms',
         }}

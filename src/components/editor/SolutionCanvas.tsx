@@ -278,9 +278,9 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
 
 
   const renderSolutionBox = (section: CanvasSection) => (
-    <div key={`${section.key}-solution`} className="rounded-lg border border-border bg-card overflow-hidden">
+    <div key={`${section.key}-solution`} className="rounded-lg border border-border bg-black overflow-hidden">
       {!previewMode ? (
-        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-black/95 px-3 py-2 backdrop-blur">
           <Button size="sm" variant="secondary" onClick={() => addBlockToSection(section.key, newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>
@@ -320,11 +320,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
               >
                 {b.kind === 'heading' && (
                   <Input
-                    placeholder="e.g. (a) or (b)(i)"
+                    placeholder="e.g. Estimate, Round & Set up…"
                     value={b.text}
                     onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    className="text-lg font-bold"
+                    className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
                     spellCheck={false}
                     autoComplete="off"
                     data-gramm="false"
@@ -381,7 +381,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       ))}
 
       {keyboardIds.map((kid, i) => (
-        <div key={kid} className="border-t border-border bg-muted/40 px-3 py-2">
+        <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
           <div className="mb-1 flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Keyboard {i + 1}
@@ -691,7 +691,7 @@ function BlockShell({
   onDuplicate?: () => void;
 }) {
   return (
-    <div className="group rounded-lg border border-border bg-card p-3">
+    <div className="group rounded-lg border border-border/40 bg-transparent p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
         <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">
@@ -777,7 +777,7 @@ function StepCard({
   const boxLabel = inFraction ? ` → ${focus.part}` : '';
 
   return (
-    <div className="rounded-md bg-muted/40 p-3">
+    <div className="rounded-md bg-transparent p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addToFocus(newItem.text())}>
           <Plus className="h-3 w-3" /> Text{boxLabel}
@@ -844,7 +844,7 @@ function StepCard({
       )}
 
       {kbOpen && (
-        <div className="mt-3 rounded-md border border-border bg-muted/40 p-2">
+        <div className="mt-3 rounded-md border border-border/40 bg-black p-2">
           <HorizontalKeyboard
             keys={DEFAULT_KEYBOARD}
             onKeyPress={(k) => {

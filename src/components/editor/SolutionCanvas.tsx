@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -538,7 +538,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   return (
-    <div className="rounded-md bg-card p-3">
+    <div className="rounded-md bg-transparent p-3">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
@@ -547,12 +547,13 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}
           <Button
-            size="sm"
-            variant="outline"
-            className="ml-auto h-7 gap-1 px-2 text-xs"
+            size="icon"
+            variant="ghost"
+            className="ml-auto h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
+            title="Check Work"
             onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
           >
-            <CheckSquare className="h-3.5 w-3.5 text-primary" /> Check
+            <BookOpen className="h-4 w-4" />
           </Button>
         </div>
       )}
@@ -587,9 +588,8 @@ function PreviewItem({
           onChange={(e) => setVal(item.id, e.target.value)}
           style={{ width: w, height: h }}
           className={cn(
-            'text-center',
+            'text-center rounded-xl border-2 border-border/70 bg-transparent text-foreground placeholder:text-muted-foreground/40 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
-            v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
           )}
         />
         <MathValueOverlay value={v} />
@@ -815,13 +815,13 @@ function StepCard({
           <Keyboard className="h-3.5 w-3.5" /> {kbOpen ? 'Hide' : 'Keyboard'}
         </Button>
         <Button
-          size="sm"
-          variant="outline"
-          className="ml-auto h-7 gap-1 px-2 text-xs"
+          size="icon"
+          variant="ghost"
+          className="ml-auto h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
           title="Check Work (preview)"
           onClick={() => {}}
         >
-          <CheckSquare className="h-3.5 w-3.5 text-primary" /> Check
+          <BookOpen className="h-4 w-4" />
         </Button>
       </div>
 
@@ -954,9 +954,8 @@ function StepItemView({
             onChange={(e) => onChange((i) => ({ ...(i as any), value: e.target.value }))}
             style={{ width: w, height: h }}
             className={cn(
-              'text-center',
+              'text-center rounded-xl border-2 border-border/70 bg-transparent text-foreground placeholder:text-muted-foreground/40 focus-visible:border-primary',
               (item.value ?? '').includes('√') && 'text-transparent caret-foreground',
-              filled ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
             )}
             spellCheck={false}
             autoComplete="off"

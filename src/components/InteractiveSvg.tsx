@@ -71,20 +71,12 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
 
   if (interactive) {
     return (
-      <div
-        className={`flex justify-center w-full ${className ?? ''}`}
-      >
-        <div
-          className="rounded-lg p-4 flex justify-center"
-          style={{ background: '#000', maxWidth: '100%' }}
-        >
-          <InteractiveSvgFrame
-            markup={markup}
-            width={dispW}
-            height={dispH}
-          />
-        </div>
-      </div>
+      <InteractiveSvgFrame
+        markup={markup}
+        width={dispW}
+        height={dispH}
+        className={`w-full bg-black ${className ?? ''}`}
+      />
     );
   }
 

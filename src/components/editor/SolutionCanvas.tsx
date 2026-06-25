@@ -41,7 +41,7 @@ const empty: TCanvas = { blocks: [] };
 const DEFAULT_KEYBOARD: string[][] = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
   ['+', '-', '×', '÷', '=', '.', '(', ')', '<', '>'],
-  ['√', 'π', '²', '³', '°', '±', '½', '¼', '¾', '⌫'],
+  ['√', 'π', '²', '³', '°', '±', '½', '¼', '¾', 'a/b', '⌫'],
 ];
 
 const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
@@ -410,7 +410,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 }
                 return;
               }
-              insertAtCursor(k);
+              insertAtCursor(k === 'a/b' ? '/' : k);
             }}
           />
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
@@ -865,7 +865,7 @@ function StepCard({
                 }
                 return;
               }
-              insertAtCursor(k);
+              insertAtCursor(k === 'a/b' ? '/' : k);
             }}
           />
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>

@@ -51,6 +51,9 @@ const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
   lg: { w: 192, h: 36 },
 };
 
+const inlineValueWidth = (value: string) =>
+  `calc(${Math.max(1, value.trim().length || value.length || 1)}ch + 0.45rem)`;
+
 const RADICAND_RE = /^([A-Za-z0-9π().]+)/;
 
 function RadicalText({ children }: { children?: React.ReactNode }) {
@@ -538,18 +541,18 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   return (
-    <div className="rounded-md bg-transparent p-1">
+      <div className="rounded-md bg-transparent p-0.5">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-      <div className="flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-baseline gap-0.5">
           {block.items.map((it) => (
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}
           <Button
             size="icon"
             variant="ghost"
-            className="ml-auto h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
+            className="ml-auto h-8 w-8 self-center rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
             onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
           >
@@ -573,7 +576,7 @@ function PreviewItem({
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
-    return <span className="text-sm text-foreground/80">{item.text}</span>;
+    return <span className="text-xs leading-none text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);
@@ -581,17 +584,20 @@ function PreviewItem({
     const h = item.height ?? BOX_PX[item.size].h;
     const filled = v.trim().length > 0;
     return (
-      <span className="relative inline-block" style={{ width: filled ? 'auto' : w, height: h, minWidth: filled ? undefined : w }}>
+      <span
+        className="relative inline-flex items-baseline align-baseline"
+        style={{ width: filled ? inlineValueWidth(v) : w, height: filled ? '1rem' : h, minWidth: filled ? inlineValueWidth(v) : w }}
+      >
         <Input
           value={v}
           placeholder="…"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
-          style={{ width: filled ? 'auto' : w, height: h, minWidth: filled ? '1.5rem' : w }}
+          style={{ width: filled ? inlineValueWidth(v) : w, height: filled ? '1rem' : h, minWidth: filled ? inlineValueWidth(v) : w }}
           className={cn(
-            'text-center text-foreground placeholder:text-muted-foreground/40',
+            'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40',
             filled
-              ? 'border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0'
+              ? 'h-4 min-h-0 border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0'
               : 'rounded-xl border-2 border-border/70 bg-transparent focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
           )}
@@ -614,7 +620,7 @@ function PreviewItem({
     );
   };
   return (
-    <div className="inline-flex flex-col items-center">
+    <div className="inline-flex flex-col items-center align-middle leading-none">
       <div className="min-w-[2rem]">{renderStack(item.num)}</div>
       <div className="my-0.5 h-px w-full min-w-[2rem] bg-foreground" />
       <div className="min-w-[2rem]">{renderStack(item.den)}</div>

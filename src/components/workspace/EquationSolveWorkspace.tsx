@@ -777,7 +777,7 @@ export function EquationSolveWorkspace({
   }, [focusedInput, focusedSlot, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-2">
       {customStepsBefore && allowCustomSteps && customStepsBlock}
 
       {(useSplit ? stagesBefore : stages).map(renderStage)}

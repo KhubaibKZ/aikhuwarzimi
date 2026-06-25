@@ -101,6 +101,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
   const blackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(markup), [markup]);
+  const themedBlackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(themeSvgMarkup(markup)), [markup]);
 
   // Compute display box honoring aspect ratio.
   const aspect = dims ? dims.w / dims.h : 4 / 3;
@@ -130,7 +131,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
       <div
         style={{ width: dispW, height: dispH, maxWidth: '100%' }}
         className="[&>svg]:w-full [&>svg]:h-full"
-        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themeSvgMarkup(blackBackdropMarkup)) }}
+        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themedBlackBackdropMarkup) }}
       />
     </div>
   );

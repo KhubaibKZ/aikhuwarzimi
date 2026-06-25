@@ -298,7 +298,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         </div>
       ) : null}
 
-      <div className="p-4 space-y-3">
+      <div className={cn(previewMode ? 'p-2 space-y-1' : 'p-4 space-y-3')}>
         {section.blocks.length === 0 && (
           <div className="rounded-lg border-2 border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             {previewMode

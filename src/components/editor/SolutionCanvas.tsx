@@ -542,7 +542,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1">
           {block.items.map((it) => (
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}

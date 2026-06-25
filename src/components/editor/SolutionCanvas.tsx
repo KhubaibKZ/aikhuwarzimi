@@ -777,7 +777,7 @@ function StepCard({
   const boxLabel = inFraction ? ` → ${focus.part}` : '';
 
   return (
-    <div className="rounded-md bg-muted/40 p-3">
+    <div className="rounded-md bg-transparent p-3">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={() => addToFocus(newItem.text())}>
           <Plus className="h-3 w-3" /> Text{boxLabel}

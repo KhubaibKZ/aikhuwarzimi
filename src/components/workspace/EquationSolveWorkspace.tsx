@@ -725,7 +725,7 @@ export function EquationSolveWorkspace({
                   }
                   if (part.kind === 'sep') {
                     return (
-                      <span key={`sep-${pi}`} className="font-mono text-base px-1">
+                      <span key={`sep-${pi}`} className="font-mono text-sm px-1">
                         {part.v}
                       </span>
                     );

@@ -293,7 +293,7 @@ export function EquationSolveWorkspace({
         }}
         disabled={isSubmitted}
         className={cn(
-          `${width} h-9 text-center font-mono text-base p-0 bg-transparent`,
+          `${width} h-7 text-center font-mono text-sm p-0 bg-transparent`,
           filled
             ? 'border-0 shadow-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0'
             : 'rounded-xl border-2 border-border/70',

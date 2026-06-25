@@ -8,6 +8,9 @@ import { EquationStage } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
 import { VecText } from '@/components/VecText';
 
+const inlineValueWidth = (value: string) =>
+  `calc(${Math.max(1, value.trim().length || value.length || 1)}ch + 0.45rem)`;
+
 interface StructuredExtraStep {
   afterStepKey: string; // insert rows after this stage
   initialBoxes: number; // e.g. 3
@@ -292,10 +295,11 @@ export function EquationSolveWorkspace({
           setFocusedSlot(null);
         }}
         disabled={isSubmitted}
+        style={filled ? { width: inlineValueWidth(val), minWidth: inlineValueWidth(val) } : undefined}
         className={cn(
-          `${width} h-6 text-center font-mono text-xs p-0 bg-transparent`,
+          `${width} h-6 text-center font-mono text-xs leading-none p-0 bg-transparent`,
           filled
-            ? 'border-0 shadow-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0'
+            ? 'h-4 min-h-0 border-0 shadow-none rounded-none px-0 py-0 focus-visible:ring-0 focus-visible:ring-offset-0'
             : 'rounded-xl border-2 border-border/70',
           feedback[id] === 'correct' && 'border-2 rounded-xl border-green-500 bg-green-500/5',
           feedback[id] === 'incorrect' && 'border-2 rounded-xl border-destructive bg-destructive/5',
@@ -476,14 +480,15 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex items-baseline gap-0.5 flex-wrap">
+        <div className="grid grid-cols-[4.6rem_minmax(0,1fr)] items-center gap-x-1">
           {stage.label && (
-            <span className="text-[11px] text-foreground/60">{stage.label}</span>
+            <span className="text-xs leading-none text-foreground/70">{stage.label}</span>
           )}
+          <div className="flex min-w-0 flex-wrap items-center gap-0.5 leading-none">
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <VecText key={i} value={el.value} className="font-mono text-xs" />
+                <VecText key={i} value={el.value} className="font-mono text-xs leading-none" />
               );
             }
             if (el.type === 'box' && el.key) {
@@ -495,7 +500,7 @@ export function EquationSolveWorkspace({
                   {elements?.map((subEl, j) => {
                     if (subEl.type === 'text')
                       return (
-                        <VecText key={j} value={subEl.value} className="font-mono text-xs" />
+                        <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />
                       );
                     if (subEl.type === 'box' && subEl.key)
                       return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
@@ -521,7 +526,7 @@ export function EquationSolveWorkspace({
                   <span className="flex items-center gap-0.5">
                     {el.innerElements?.map((subEl, j) => {
                       if (subEl.type === 'text')
-                        return <VecText key={j} value={subEl.value} className="font-mono text-xs" />;
+                        return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;
                       if (subEl.type === 'box' && subEl.key)
                         return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
                       return null;
@@ -534,6 +539,7 @@ export function EquationSolveWorkspace({
           })}
           {hasCheckable && checkBtn(fullStepKey, stage.label || stage.stepKey)}
           {hasCheckable && stepFeedbackIcon(fullStepKey)}
+          </div>
         </div>
         {renderAiResponse(fullStepKey)}
       </div>

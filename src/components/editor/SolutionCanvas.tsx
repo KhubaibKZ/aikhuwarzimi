@@ -298,7 +298,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         </div>
       ) : null}
 
-      <div className="p-4 space-y-3">
+      <div className={cn(previewMode ? 'p-2 space-y-1' : 'p-4 space-y-3')}>
         {section.blocks.length === 0 && (
           <div className="rounded-lg border-2 border-dashed border-border p-10 text-center text-sm text-muted-foreground">
             {previewMode
@@ -357,9 +357,9 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   );
 
   return (
-    <div className="space-y-4">
+    <div className={cn(previewMode ? 'space-y-2' : 'space-y-4')}>
       {sections.map((section, sectionIdx) => (
-        <div key={section.key} className="space-y-3">
+        <div key={section.key} className={cn(previewMode ? 'space-y-1' : 'space-y-3')}>
           {section.question && (
             previewMode ? (
               <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
@@ -542,7 +542,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1">
           {block.items.map((it) => (
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}

@@ -353,7 +353,7 @@ export function EquationSolveWorkspace({
     const focused = focusedSlot === slot;
     return cn(
       baseW,
-      'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm cursor-text whitespace-pre',
+      'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-xs cursor-text whitespace-pre',
       focused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
       content === '' && 'text-muted-foreground/50',
     );
@@ -433,7 +433,7 @@ export function EquationSolveWorkspace({
           style={{ width: `${widthCh}ch` }}
           className={cn(
             minW,
-            'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm bg-transparent text-foreground text-center outline-none',
+            'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-xs bg-transparent text-foreground text-center outline-none',
             isFocused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
           )}
         />
@@ -483,7 +483,7 @@ export function EquationSolveWorkspace({
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <VecText key={i} value={el.value} className="font-mono text-sm" />
+                <VecText key={i} value={el.value} className="font-mono text-xs" />
               );
             }
             if (el.type === 'box' && el.key) {
@@ -495,7 +495,7 @@ export function EquationSolveWorkspace({
                   {elements?.map((subEl, j) => {
                     if (subEl.type === 'text')
                       return (
-                        <VecText key={j} value={subEl.value} className="font-mono text-sm" />
+                        <VecText key={j} value={subEl.value} className="font-mono text-xs" />
                       );
                     if (subEl.type === 'box' && subEl.key)
                       return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
@@ -521,7 +521,7 @@ export function EquationSolveWorkspace({
                   <span className="flex items-center gap-0.5">
                     {el.innerElements?.map((subEl, j) => {
                       if (subEl.type === 'text')
-                        return <VecText key={j} value={subEl.value} className="font-mono text-sm" />;
+                        return <VecText key={j} value={subEl.value} className="font-mono text-xs" />;
                       if (subEl.type === 'box' && subEl.key)
                         return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
                       return null;
@@ -600,7 +600,7 @@ export function EquationSolveWorkspace({
         )}
         {!structuredExtraStep.noTrailingEquals && (
           <>
-        <span className="font-mono text-sm">=</span>
+        <span className="font-mono text-xs">=</span>
             {box(k(`extra_${rowIdx}_eq`), boxW)}
           </>
         )}
@@ -717,7 +717,7 @@ export function EquationSolveWorkspace({
                       setFocusedInput(null);
                     }}
                     placeholder="Write your step here..."
-                    className="flex-1 w-full min-h-[1.5rem] bg-transparent font-mono text-sm text-foreground outline-none border-0 px-1"
+                    className="flex-1 w-full min-h-[1.5rem] bg-transparent font-mono text-xs text-foreground outline-none border-0 px-1"
                   />
                 ) : step.map((part, pi) => {
                   if (part.kind === 'txt') {
@@ -725,7 +725,7 @@ export function EquationSolveWorkspace({
                   }
                   if (part.kind === 'sep') {
                     return (
-                      <span key={`sep-${pi}`} className="font-mono text-sm px-1">
+                      <span key={`sep-${pi}`} className="font-mono text-xs px-1">
                         {part.v}
                       </span>
                     );

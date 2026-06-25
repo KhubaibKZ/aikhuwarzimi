@@ -600,7 +600,7 @@ export function EquationSolveWorkspace({
         )}
         {!structuredExtraStep.noTrailingEquals && (
           <>
-            <span className="font-mono text-base">=</span>
+        <span className="font-mono text-sm">=</span>
             {box(k(`extra_${rowIdx}_eq`), boxW)}
           </>
         )}

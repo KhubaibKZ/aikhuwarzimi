@@ -118,7 +118,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
         markup={blackBackdropMarkup}
         width={dispW}
         height={dispH}
-        className={`w-full bg-black ${className ?? ''}`}
+        className={`w-full ${className ?? ''}`}
       />
     );
   }

@@ -530,7 +530,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'question') {
     return (
       <div className={`rounded-md p-3 space-y-2 bg-muted/40`}>
-        {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
+        {block.text && <QuestionText text={block.text} className="text-sm font-medium" />}
         {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
       </div>
@@ -573,7 +573,7 @@ function PreviewItem({
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
-    return <span className="text-base text-foreground/80">{item.text}</span>;
+    return <span className="text-sm text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);

@@ -293,7 +293,7 @@ export function EquationSolveWorkspace({
         }}
         disabled={isSubmitted}
         className={cn(
-          `${width} h-9 text-center font-mono text-base p-0 bg-transparent`,
+          `${width} h-7 text-center font-mono text-sm p-0 bg-transparent`,
           filled
             ? 'border-0 shadow-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0'
             : 'rounded-xl border-2 border-border/70',
@@ -353,7 +353,7 @@ export function EquationSolveWorkspace({
     const focused = focusedSlot === slot;
     return cn(
       baseW,
-      'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base cursor-text whitespace-pre',
+      'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm cursor-text whitespace-pre',
       focused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
       content === '' && 'text-muted-foreground/50',
     );
@@ -433,7 +433,7 @@ export function EquationSolveWorkspace({
           style={{ width: `${widthCh}ch` }}
           className={cn(
             minW,
-            'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base bg-transparent text-foreground text-center outline-none',
+            'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm bg-transparent text-foreground text-center outline-none',
             isFocused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
           )}
         />
@@ -600,7 +600,7 @@ export function EquationSolveWorkspace({
         )}
         {!structuredExtraStep.noTrailingEquals && (
           <>
-            <span className="font-mono text-base">=</span>
+        <span className="font-mono text-sm">=</span>
             {box(k(`extra_${rowIdx}_eq`), boxW)}
           </>
         )}
@@ -647,7 +647,7 @@ export function EquationSolveWorkspace({
   const useSplit = !!splitAfterKey;
 
   const customStepsBlock = allowCustomSteps ? (
-    <div className="space-y-3 border-t pt-4">
+    <div className="space-y-1 border-t pt-2">
       <div className="flex items-center justify-end">
 
         <Button
@@ -717,7 +717,7 @@ export function EquationSolveWorkspace({
                       setFocusedInput(null);
                     }}
                     placeholder="Write your step here..."
-                    className="flex-1 w-full min-h-[1.75rem] bg-transparent font-mono text-base text-foreground outline-none border-0 px-1"
+                    className="flex-1 w-full min-h-[1.5rem] bg-transparent font-mono text-sm text-foreground outline-none border-0 px-1"
                   />
                 ) : step.map((part, pi) => {
                   if (part.kind === 'txt') {
@@ -725,7 +725,7 @@ export function EquationSolveWorkspace({
                   }
                   if (part.kind === 'sep') {
                     return (
-                      <span key={`sep-${pi}`} className="font-mono text-base px-1">
+                      <span key={`sep-${pi}`} className="font-mono text-sm px-1">
                         {part.v}
                       </span>
                     );
@@ -777,13 +777,13 @@ export function EquationSolveWorkspace({
   }, [focusedInput, focusedSlot, handleKeyPress, hideOwnKeyboard, onActiveKeyHandler]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-2">
       {customStepsBefore && allowCustomSteps && customStepsBlock}
 
       {(useSplit ? stagesBefore : stages).map(renderStage)}
 
       {structuredExtraStep && (
-        <div className="space-y-2">
+        <div className="space-y-0.5">
           {extraRows.map((_, idx) => renderExtraRow(idx))}
           <Button
             type="button"

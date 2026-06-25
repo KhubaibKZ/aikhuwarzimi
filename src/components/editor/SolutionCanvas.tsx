@@ -364,7 +364,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             previewMode ? (
               <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
             ) : (
-              <QuestionSectionShell onDelete={() => removeSection(section.key)} label={`Question Block ${sectionIdx + 1}`}>
+              <QuestionSectionShell
+                onDelete={() => removeSection(section.key)}
+                label={`Question Block ${sectionIdx + 1}`}
+                className={section.question?.svgMarkup ? 'bg-black' : 'bg-muted/40'}
+              >
                 <QuestionBlockEditor
                   block={section.question}
                   onChange={(patch) => updateBlock(section.question!.id, (p) => ({ ...(p as any), ...patch }))}

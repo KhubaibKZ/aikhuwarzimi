@@ -538,7 +538,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   return (
-    <div className="rounded-md bg-transparent p-3">
+    <div className="rounded-md bg-transparent p-1">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
@@ -573,7 +573,7 @@ function PreviewItem({
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
-    return <span className="text-sm text-foreground">{item.text}</span>;
+    return <span className="text-base text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);
@@ -602,7 +602,7 @@ function PreviewItem({
       return <span className="inline-block h-5 w-4" />;
     }
     return (
-      <div className="flex flex-wrap items-center justify-center gap-1">
+        <div className="flex flex-wrap items-center justify-center gap-0.5">
         {stack.map((s) => (
           <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
         ))}
@@ -610,7 +610,7 @@ function PreviewItem({
     );
   };
   return (
-    <div className="inline-flex flex-col items-center px-1">
+    <div className="inline-flex flex-col items-center">
       <div className="min-w-[2rem]">{renderStack(item.num)}</div>
       <div className="my-0.5 h-px w-full min-w-[2rem] bg-foreground" />
       <div className="min-w-[2rem]">{renderStack(item.den)}</div>

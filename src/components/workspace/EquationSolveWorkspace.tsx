@@ -290,7 +290,7 @@ export function EquationSolveWorkspace({
       }}
       disabled={isSubmitted}
       className={cn(
-        `${width} h-9 text-center font-mono text-base p-0 border-muted-foreground/40`,
+        `${width} h-9 text-center font-mono text-base p-0 rounded-xl border-2 border-border/70 bg-transparent`,
         feedback[id] === 'correct' && 'border-green-500 bg-green-500/5',
         feedback[id] === 'incorrect' && 'border-destructive bg-destructive/5',
         focusedInput === id && 'ring-2 ring-primary/30',
@@ -468,10 +468,10 @@ export function EquationSolveWorkspace({
       (el) => el.type === 'box' || el.type === 'fraction' || el.type === 'sqrt',
     );
     return (
-      <div key={stage.stepKey} className="space-y-1">
-        <div className="flex items-center gap-1.5 flex-wrap">
+      <div key={stage.stepKey} className="space-y-0.5">
+        <div className="flex items-center gap-1 flex-wrap">
           {stage.label && (
-            <VecText value={stage.label} className="text-xs text-muted-foreground font-medium mr-1" />
+            <span className="text-sm text-foreground/80 font-medium mr-1">{stage.label}</span>
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {

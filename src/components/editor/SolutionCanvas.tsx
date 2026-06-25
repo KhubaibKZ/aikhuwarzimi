@@ -815,13 +815,13 @@ function StepCard({
           <Keyboard className="h-3.5 w-3.5" /> {kbOpen ? 'Hide' : 'Keyboard'}
         </Button>
         <Button
-          size="sm"
-          variant="outline"
-          className="ml-auto h-7 gap-1 px-2 text-xs"
+          size="icon"
+          variant="ghost"
+          className="ml-auto h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
           title="Check Work (preview)"
           onClick={() => {}}
         >
-          <CheckSquare className="h-3.5 w-3.5 text-primary" /> Check
+          <BookOpen className="h-4 w-4" />
         </Button>
       </div>
 

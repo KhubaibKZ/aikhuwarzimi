@@ -290,7 +290,7 @@ export function EquationSolveWorkspace({
       }}
       disabled={isSubmitted}
       className={cn(
-        `${width} h-9 text-center font-mono text-base p-0 border-muted-foreground/40`,
+        `${width} h-9 text-center font-mono text-base p-0 rounded-xl border-2 border-border/70 bg-transparent`,
         feedback[id] === 'correct' && 'border-green-500 bg-green-500/5',
         feedback[id] === 'incorrect' && 'border-destructive bg-destructive/5',
         focusedInput === id && 'ring-2 ring-primary/30',

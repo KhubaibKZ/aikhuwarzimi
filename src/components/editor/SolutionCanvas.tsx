@@ -610,7 +610,7 @@ function PreviewItem({
     );
   };
   return (
-    <div className="inline-flex flex-col items-center px-1">
+    <div className="inline-flex flex-col items-center">
       <div className="min-w-[2rem]">{renderStack(item.num)}</div>
       <div className="my-0.5 h-px w-full min-w-[2rem] bg-foreground" />
       <div className="min-w-[2rem]">{renderStack(item.den)}</div>

@@ -480,11 +480,11 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex flex-wrap items-center gap-x-0.5 gap-y-0 leading-none">
+        <div className="flex flex-wrap items-center gap-x-1 gap-y-0 leading-none">
           {stage.label ? (
-            <span className="mr-0.5 text-xs leading-none text-foreground/70">{stage.label}</span>
+            <span className="mr-1 text-xs leading-none text-foreground/70">{stage.label}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-0.5 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {stage.elements.map((el, i) => {
               if (el.type === 'text') {
                 return (
@@ -496,7 +496,7 @@ export function EquationSolveWorkspace({
               }
               if (el.type === 'fraction') {
                 const renderSubElements = (elements: typeof el.numElements) => (
-                    <div className="flex items-center gap-x-0.5">
+                    <div className="flex items-center gap-x-1">
                     {elements?.map((subEl, j) => {
                       if (subEl.type === 'text')
                         return (
@@ -523,7 +523,7 @@ export function EquationSolveWorkspace({
               if (el.type === 'sqrt') {
                 return (
                   <Radical key={i}>
-                    <span className="flex items-center gap-x-0.5">
+                    <span className="flex items-center gap-x-1">
                       {el.innerElements?.map((subEl, j) => {
                         if (subEl.type === 'text')
                           return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;
@@ -582,7 +582,7 @@ export function EquationSolveWorkspace({
     }
 
     return (
-      <div key={`extra_${rowIdx}`} className="flex items-center gap-0.5 flex-wrap">
+      <div key={`extra_${rowIdx}`} className="flex items-center gap-1 flex-wrap">
         {presence.map((present, bi) =>
           present ? (
             <span key={bi} className="inline-flex flex-col items-center gap-0.5">

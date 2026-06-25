@@ -320,11 +320,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
               >
                 {b.kind === 'heading' && (
                   <Input
-                    placeholder="e.g. (a) or (b)(i)"
+                    placeholder="e.g. Estimate, Round & Set up…"
                     value={b.text}
                     onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
                     onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    className="text-lg font-bold"
+                    className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
                     spellCheck={false}
                     autoComplete="off"
                     data-gramm="false"

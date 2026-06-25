@@ -353,7 +353,7 @@ export function EquationSolveWorkspace({
     const focused = focusedSlot === slot;
     return cn(
       baseW,
-      'inline-flex items-center justify-center px-1.5 min-h-[1.75rem] rounded border font-mono text-base cursor-text whitespace-pre',
+      'inline-flex items-center justify-center px-1.5 min-h-[1.5rem] rounded border font-mono text-sm cursor-text whitespace-pre',
       focused ? 'border-primary ring-2 ring-primary/30 bg-primary/5' : 'border-muted-foreground/30',
       content === '' && 'text-muted-foreground/50',
     );

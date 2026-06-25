@@ -410,7 +410,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                 }
                 return;
               }
-              insertAtCursor(k);
+              insertAtCursor(k === 'a/b' ? '/' : k);
             }}
           />
           <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>

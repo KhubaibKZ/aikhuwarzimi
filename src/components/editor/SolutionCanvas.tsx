@@ -553,11 +553,11 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-        <div className="flex flex-wrap items-center gap-x-0.5 gap-y-0 leading-none">
+        <div className="flex flex-wrap items-center gap-x-1 gap-y-0 leading-none">
           {hasRowLabel ? (
-            <span className="mr-0.5 text-xs leading-none text-foreground/80">{rowLabel}</span>
+            <span className="mr-1 text-xs leading-none text-foreground/80">{rowLabel}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-0.5 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {rowItems.map((it) => (
               <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
             ))}
@@ -605,6 +605,7 @@ function PreviewItem({
         <Input
           value={v}
           placeholder="…"
+          disabled={filled}
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
           style={{ width: renderedWidth, height: h, minWidth: renderedWidth }}

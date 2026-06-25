@@ -479,7 +479,7 @@ export function EquationSolveWorkspace({
           {stage.label ? (
             <span className="mr-0.5 text-xs leading-none text-foreground/70">{stage.label}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-0 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {stage.elements.map((el, i) => {
               if (el.type === 'text') {
                 return (

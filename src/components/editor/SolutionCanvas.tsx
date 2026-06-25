@@ -588,9 +588,8 @@ function PreviewItem({
           onChange={(e) => setVal(item.id, e.target.value)}
           style={{ width: w, height: h }}
           className={cn(
-            'text-center',
+            'text-center rounded-xl border-2 border-border/70 bg-transparent text-foreground placeholder:text-muted-foreground/40 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
-            v ? 'border-0 bg-muted/30' : 'border-2 border-solid border-white bg-transparent',
           )}
         />
         <MathValueOverlay value={v} />

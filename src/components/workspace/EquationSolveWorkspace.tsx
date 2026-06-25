@@ -717,7 +717,7 @@ export function EquationSolveWorkspace({
                       setFocusedInput(null);
                     }}
                     placeholder="Write your step here..."
-                    className="flex-1 w-full min-h-[1.75rem] bg-transparent font-mono text-base text-foreground outline-none border-0 px-1"
+                    className="flex-1 w-full min-h-[1.5rem] bg-transparent font-mono text-sm text-foreground outline-none border-0 px-1"
                   />
                 ) : step.map((part, pi) => {
                   if (part.kind === 'txt') {

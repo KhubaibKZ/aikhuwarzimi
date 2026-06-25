@@ -553,11 +553,11 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-        <div className="flex flex-wrap items-center gap-x-1 gap-y-0 leading-none">
+        <div className="flex flex-wrap items-center gap-x-0.5 gap-y-0 leading-none">
           {hasRowLabel ? (
             <span className="mr-0.5 text-xs leading-none text-foreground/80">{rowLabel}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-0.5 leading-none">
             {rowItems.map((it) => (
               <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
             ))}
@@ -593,21 +593,26 @@ function PreviewItem({
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);
+    const filled = v.trim().length > 0;
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
+    const renderedWidth = filled ? inlineValueWidth(v) : w;
     return (
       <span
         className="relative inline-flex items-center align-middle leading-none"
-        style={{ width: w, height: h, minWidth: w }}
+        style={{ width: renderedWidth, height: h, minWidth: renderedWidth }}
       >
         <Input
           value={v}
           placeholder="…"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
-          style={{ width: w, height: h, minWidth: w }}
+          style={{ width: renderedWidth, height: h, minWidth: renderedWidth }}
           className={cn(
-            'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 rounded-xl border-2 border-border/70 bg-transparent focus-visible:border-primary',
+            'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 bg-transparent',
+            filled
+              ? 'rounded-none border-0 px-[0.06rem] focus-visible:ring-0 focus-visible:ring-offset-0'
+              : 'rounded-xl border-2 border-border/70 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
           )}
         />

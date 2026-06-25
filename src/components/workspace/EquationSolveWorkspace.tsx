@@ -481,8 +481,10 @@ export function EquationSolveWorkspace({
     return (
       <div key={stage.stepKey} className="space-y-0.5">
         <div className="grid grid-cols-[4.6rem_minmax(0,1fr)] items-center gap-x-1">
-          {stage.label && (
+          {stage.label ? (
             <span className="text-xs leading-none text-foreground/70">{stage.label}</span>
+          ) : (
+            <span aria-hidden="true" />
           )}
           <div className="flex min-w-0 flex-wrap items-center gap-0.5 leading-none">
           {stage.elements.map((el, i) => {

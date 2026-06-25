@@ -530,7 +530,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'question') {
     return (
       <div className={`rounded-md p-3 space-y-2 bg-muted/40`}>
-        {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
+        {block.text && <QuestionText text={block.text} className="text-sm font-medium" />}
         {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
       </div>

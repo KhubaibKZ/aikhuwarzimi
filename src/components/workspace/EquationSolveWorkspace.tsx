@@ -284,7 +284,6 @@ export function EquationSolveWorkspace({
 
   const box = (id: string, width: string = 'w-12') => {
     const val = answers[id] || '';
-    const filled = val.trim().length > 0 && !feedback[id];
     return (
       <Input
         ref={setRef(id)}
@@ -295,15 +294,11 @@ export function EquationSolveWorkspace({
           setFocusedSlot(null);
         }}
         disabled={isSubmitted}
-        style={filled ? { width: inlineValueWidth(val), minWidth: inlineValueWidth(val) } : undefined}
         className={cn(
-          `${width} h-6 text-center font-mono text-xs leading-none p-0 bg-transparent`,
-          filled
-            ? 'h-4 min-h-0 border-0 shadow-none rounded-none px-0 py-0 focus-visible:ring-0 focus-visible:ring-offset-0'
-            : 'rounded-xl border-2 border-border/70',
+          `${width} h-6 text-center font-mono text-xs leading-none p-0 bg-transparent rounded-xl border-2 border-border/70`,
           feedback[id] === 'correct' && 'border-2 rounded-xl border-green-500 bg-green-500/5',
           feedback[id] === 'incorrect' && 'border-2 rounded-xl border-destructive bg-destructive/5',
-          focusedInput === id && !filled && 'ring-2 ring-primary/30',
+          focusedInput === id && 'ring-2 ring-primary/30',
         )}
       />
     );

@@ -538,7 +538,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   return (
-    <div className="rounded-md bg-transparent p-3">
+    <div className="rounded-md bg-transparent p-1">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (

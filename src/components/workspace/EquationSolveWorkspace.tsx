@@ -582,7 +582,7 @@ export function EquationSolveWorkspace({
     }
 
     return (
-      <div key={`extra_${rowIdx}`} className="flex items-center gap-0.5 flex-wrap">
+      <div key={`extra_${rowIdx}`} className="flex items-center gap-1 flex-wrap">
         {presence.map((present, bi) =>
           present ? (
             <span key={bi} className="inline-flex flex-col items-center gap-0.5">

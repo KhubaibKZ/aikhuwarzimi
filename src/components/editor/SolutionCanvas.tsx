@@ -573,7 +573,7 @@ function PreviewItem({
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
 }) {
   if (item.kind === 'text') {
-    return <span className="text-sm text-foreground">{item.text}</span>;
+    return <span className="text-base text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
     const v = getVal(item.id, item.value);

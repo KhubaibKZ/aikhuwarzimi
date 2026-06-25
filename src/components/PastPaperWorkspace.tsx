@@ -241,10 +241,9 @@ function ExtraQuestionBlocks({
             className="text-foreground flex min-h-[72px] items-start px-0 py-0 text-base leading-7 hover:border-primary/40 focus:border-primary"
           />
           {b.svgMarkup && (
-            <div
-              className="mt-3 flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-              dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
-            />
+            <div className="mt-3">
+              <InteractiveSvg markup={b.svgMarkup} />
+            </div>
           )}
         </div>
       ))}

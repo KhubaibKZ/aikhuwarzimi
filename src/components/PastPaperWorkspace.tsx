@@ -73,6 +73,7 @@ import {
 import { InequalityRegionBuilder, evaluateQ16, Q16_EXPECTED, EMPTY_Q16, type Q16Data } from '@/components/diagrams/InequalityRegionBuilder';
 
 import { themeSvgMarkup } from '@/lib/svgTheme';
+import { InteractiveSvg } from '@/components/InteractiveSvg';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
 
 export interface SubmitProgressPayload {

@@ -557,7 +557,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
           {hasRowLabel ? (
             <span className="mr-0.5 text-xs leading-none text-foreground/80">{rowLabel}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-0 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {rowItems.map((it) => (
               <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
             ))}
@@ -595,23 +595,19 @@ function PreviewItem({
     const v = getVal(item.id, item.value);
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
-    const filled = v.trim().length > 0;
     return (
       <span
         className="relative inline-flex items-center align-middle leading-none"
-        style={{ width: filled ? inlineValueWidth(v) : w, height: filled ? '0.9rem' : h, minWidth: filled ? inlineValueWidth(v) : w }}
+        style={{ width: w, height: h, minWidth: w }}
       >
         <Input
           value={v}
           placeholder="…"
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
-          style={{ width: filled ? inlineValueWidth(v) : w, height: filled ? '0.9rem' : h, minWidth: filled ? inlineValueWidth(v) : w }}
+          style={{ width: w, height: h, minWidth: w }}
           className={cn(
-            'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40',
-            filled
-              ? 'h-3.5 min-h-0 border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0'
-              : 'rounded-xl border-2 border-border/70 bg-transparent focus-visible:border-primary',
+            'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 rounded-xl border-2 border-border/70 bg-transparent focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
           )}
         />
@@ -625,7 +621,7 @@ function PreviewItem({
       return <span className="inline-block h-5 w-4" />;
     }
     return (
-        <div className="flex flex-wrap items-center justify-center gap-0">
+        <div className="flex flex-wrap items-center justify-center gap-x-1">
         {stack.map((s) => (
           <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
         ))}

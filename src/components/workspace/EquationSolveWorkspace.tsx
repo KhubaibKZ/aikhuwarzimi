@@ -303,7 +303,7 @@ export function EquationSolveWorkspace({
             : `${width} rounded-xl border-2 border-border/70`,
           !filled && feedback[id] === 'correct' && 'border-2 rounded-xl border-green-500 bg-green-500/5',
           !filled && feedback[id] === 'incorrect' && 'border-2 rounded-xl border-destructive bg-destructive/5',
-          focusedInput === id && 'ring-2 ring-primary/30',
+          !filled && focusedInput === id && 'ring-2 ring-primary/30',
         )}
       />
     );

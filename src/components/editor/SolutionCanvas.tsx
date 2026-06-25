@@ -381,7 +381,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       ))}
 
       {keyboardIds.map((kid, i) => (
-        <div key={kid} className="border-t border-border bg-muted/40 px-3 py-2">
+        <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
           <div className="mb-1 flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Keyboard {i + 1}

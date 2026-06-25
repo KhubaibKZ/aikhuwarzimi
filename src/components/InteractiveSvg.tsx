@@ -71,38 +71,25 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
 
   if (interactive) {
     return (
-      <div
-        className={`flex justify-center w-full ${className ?? ''}`}
-      >
-        <div
-          className="rounded-lg p-4 flex justify-center"
-          style={{ background: '#000', maxWidth: '100%' }}
-        >
-          <InteractiveSvgFrame
-            markup={markup}
-            width={dispW}
-            height={dispH}
-          />
-        </div>
-      </div>
+      <InteractiveSvgFrame
+        markup={markup}
+        width={dispW}
+        height={dispH}
+        className={`w-full bg-black ${className ?? ''}`}
+      />
     );
   }
 
   // Non-interactive: theme & inline on pitch-black backdrop.
   return (
     <div
-      className={`flex justify-center text-foreground w-full ${className ?? ''}`}
+      className={`flex justify-center text-foreground w-full bg-black ${className ?? ''}`}
     >
       <div
-        className="rounded-lg p-4 flex justify-center"
-        style={{ background: '#000', maxWidth: '100%' }}
-      >
-        <div
-          style={{ width: dispW, height: dispH, maxWidth: '100%' }}
-          className="[&>svg]:w-full [&>svg]:h-full"
-          dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themeSvgMarkup(markup)) }}
-        />
-      </div>
+        style={{ width: dispW, height: dispH, maxWidth: '100%' }}
+        className="[&>svg]:w-full [&>svg]:h-full"
+        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themeSvgMarkup(markup)) }}
+      />
     </div>
   );
 }

@@ -56,7 +56,7 @@ function normalizeRootSvg(markup: string): string {
   });
 }
 
-export function InteractiveSvg({ markup, maxWidth = 640, maxHeight = 480, className }: Props) {
+export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, className }: Props) {
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
 

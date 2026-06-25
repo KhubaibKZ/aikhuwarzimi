@@ -97,7 +97,7 @@ function forcePitchBlackSvgBackground(markup: string): string {
   });
 }
 
-export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, className }: Props) {
+export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, className }: Props) {
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
   const blackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(markup), [markup]);

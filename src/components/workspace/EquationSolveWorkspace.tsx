@@ -476,14 +476,14 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex items-center gap-1 flex-wrap">
+        <div className="flex items-center gap-0.5 flex-wrap">
           {stage.label && (
-            <span className="text-sm text-foreground/80 font-medium mr-1">{stage.label}</span>
+            <span className="text-xs text-foreground/80 font-medium mr-0.5">{stage.label}</span>
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <VecText key={i} value={el.value} className="font-mono text-base" />
+                <VecText key={i} value={el.value} className="font-mono text-sm" />
               );
             }
             if (el.type === 'box' && el.key) {

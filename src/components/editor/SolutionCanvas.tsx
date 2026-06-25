@@ -602,7 +602,7 @@ function PreviewItem({
       return <span className="inline-block h-5 w-4" />;
     }
     return (
-      <div className="flex flex-wrap items-center justify-center gap-1">
+        <div className="flex flex-wrap items-center justify-center gap-0.5">
         {stack.map((s) => (
           <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
         ))}

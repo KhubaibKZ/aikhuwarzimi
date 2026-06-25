@@ -518,7 +518,7 @@ export function EquationSolveWorkspace({
               if (el.type === 'sqrt') {
                 return (
                   <Radical key={i}>
-                    <span className="flex items-center gap-0">
+                    <span className="flex items-center gap-x-1">
                       {el.innerElements?.map((subEl, j) => {
                         if (subEl.type === 'text')
                           return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;

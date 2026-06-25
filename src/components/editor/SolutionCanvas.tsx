@@ -691,7 +691,7 @@ function BlockShell({
   onDuplicate?: () => void;
 }) {
   return (
-    <div className="group rounded-lg border border-border bg-card p-3">
+    <div className="group rounded-lg border border-border/40 bg-transparent p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
         <div className="flex items-center gap-1 opacity-60 transition-opacity group-hover:opacity-100">

@@ -279,24 +279,31 @@ export function EquationSolveWorkspace({
     [],
   );
 
-  const box = (id: string, width: string = 'w-12') => (
-    <Input
-      ref={setRef(id)}
-      value={answers[id] || ''}
-      onChange={(e) => onAnswerChange(id, e.target.value)}
-      onFocus={() => {
-        setFocusedInput(id);
-        setFocusedSlot(null);
-      }}
-      disabled={isSubmitted}
-      className={cn(
-        `${width} h-9 text-center font-mono text-base p-0 rounded-xl border-2 border-border/70 bg-transparent`,
-        feedback[id] === 'correct' && 'border-green-500 bg-green-500/5',
-        feedback[id] === 'incorrect' && 'border-destructive bg-destructive/5',
-        focusedInput === id && 'ring-2 ring-primary/30',
-      )}
-    />
-  );
+  const box = (id: string, width: string = 'w-12') => {
+    const val = answers[id] || '';
+    const filled = val.trim().length > 0 && !feedback[id];
+    return (
+      <Input
+        ref={setRef(id)}
+        value={val}
+        onChange={(e) => onAnswerChange(id, e.target.value)}
+        onFocus={() => {
+          setFocusedInput(id);
+          setFocusedSlot(null);
+        }}
+        disabled={isSubmitted}
+        className={cn(
+          `${width} h-9 text-center font-mono text-base p-0 bg-transparent`,
+          filled
+            ? 'border-0 shadow-none rounded-none focus-visible:ring-0 focus-visible:ring-offset-0'
+            : 'rounded-xl border-2 border-border/70',
+          feedback[id] === 'correct' && 'border-2 rounded-xl border-green-500 bg-green-500/5',
+          feedback[id] === 'incorrect' && 'border-2 rounded-xl border-destructive bg-destructive/5',
+          focusedInput === id && !filled && 'ring-2 ring-primary/30',
+        )}
+      />
+    );
+  };
 
   const stepFeedbackIcon = (stepKey: string) => {
     const fb = feedback[stepKey];

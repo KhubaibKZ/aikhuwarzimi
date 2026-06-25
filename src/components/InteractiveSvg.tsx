@@ -56,9 +56,51 @@ function normalizeRootSvg(markup: string): string {
   });
 }
 
+function forcePitchBlackSvgBackground(markup: string): string {
+  const dims = parseViewBox(markup);
+  const isBackgroundSizedRect = (attrs: string) => {
+    const attr = (name: string) => attrs.match(new RegExp(`\\b${name}=["']([^"']+)["']`, 'i'))?.[1] ?? '';
+    const width = attr('width');
+    const height = attr('height');
+    if (width.trim() === '100%' && height.trim() === '100%') return true;
+    if (!dims) return false;
+    const w = parseFloat(width);
+    const h = parseFloat(height);
+    return Number.isFinite(w) && Number.isFinite(h) && w >= dims.w * 0.8 && h >= dims.h * 0.8;
+  };
+
+  const withBlackBackgroundRects = markup.replace(/<rect\b([^>]*)>/gi, (match, attrs) => {
+    if (!isBackgroundSizedRect(attrs)) return match;
+    let next = attrs as string;
+    if (/\bfill=["'][^"']*["']/i.test(next)) {
+      next = next.replace(/\bfill=["'][^"']*["']/i, 'fill="#000000"');
+    } else {
+      next += ' fill="#000000"';
+    }
+    if (/\bstyle=["'][^"']*["']/i.test(next)) {
+      next = next.replace(/\bstyle=["']([^"']*)["']/i, (_m, style) => {
+        const cleaned = String(style).replace(/(?:^|;)\s*fill\s*:[^;]+;?/i, ';');
+        return `style="${cleaned};fill:#000000"`;
+      });
+    }
+    return `<rect${next}>`;
+  });
+
+  return withBlackBackgroundRects.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
+    let next = attrs as string;
+    if (/\bstyle=["'][^"']*["']/i.test(next)) {
+      next = next.replace(/\bstyle=["']([^"']*)["']/i, (_styleMatch, style) => `style="${style};background:#000000"`);
+    } else {
+      next += ' style="background:#000000"';
+    }
+    return `<svg${next}>`;
+  });
+}
+
 export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, className }: Props) {
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
+  const blackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(markup), [markup]);
 
   // Compute display box honoring aspect ratio.
   const aspect = dims ? dims.w / dims.h : 4 / 3;
@@ -72,7 +114,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
   if (interactive) {
     return (
       <InteractiveSvgFrame
-        markup={markup}
+        markup={blackBackdropMarkup}
         width={dispW}
         height={dispH}
         className={`w-full bg-black ${className ?? ''}`}
@@ -88,7 +130,7 @@ export function InteractiveSvg({ markup, maxWidth = 880, maxHeight = 680, classN
       <div
         style={{ width: dispW, height: dispH, maxWidth: '100%' }}
         className="[&>svg]:w-full [&>svg]:h-full"
-        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themeSvgMarkup(markup)) }}
+        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themeSvgMarkup(blackBackdropMarkup)) }}
       />
     </div>
   );
@@ -113,9 +155,9 @@ function InteractiveSvgFrame({
     return `<!doctype html>
 <html><head><meta charset="utf-8"/>
 <style>
-  html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:inherit;overflow:hidden;}
+  html,body{margin:0;padding:0;width:100%;height:100%;background:#000000;color:inherit;overflow:hidden;}
   body{display:flex;align-items:center;justify-content:center;font-family:inherit;}
-  svg{display:block;max-width:100%;max-height:100%;}
+  svg{display:block;max-width:100%;max-height:100%;background:#000000;}
 </style></head>
 <body>${normalized}</body></html>`;
   }, [markup]);
@@ -137,7 +179,7 @@ function InteractiveSvgFrame({
           height,
           maxWidth: '100%',
           border: 0,
-          background: 'transparent',
+          background: '#000000',
           opacity: ready ? 1 : 0,
           transition: 'opacity 120ms',
         }}

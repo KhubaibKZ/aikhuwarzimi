@@ -718,13 +718,15 @@ function QuestionSectionShell({
   children,
   label,
   onDelete,
+  className,
 }: {
   children: React.ReactNode;
   label: string;
   onDelete: () => void;
+  className?: string;
 }) {
   return (
-    <div className="group rounded-lg bg-muted/40 p-3">
+    <div className={`group rounded-lg p-3 ${className ?? 'bg-muted/40'}`}>
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
         <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive opacity-60 transition-opacity group-hover:opacity-100" onClick={onDelete}>

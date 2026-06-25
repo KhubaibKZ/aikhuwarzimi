@@ -783,7 +783,7 @@ export function EquationSolveWorkspace({
       {(useSplit ? stagesBefore : stages).map(renderStage)}
 
       {structuredExtraStep && (
-        <div className="space-y-2">
+        <div className="space-y-0.5">
           {extraRows.map((_, idx) => renderExtraRow(idx))}
           <Button
             type="button"

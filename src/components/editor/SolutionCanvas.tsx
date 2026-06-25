@@ -540,19 +540,31 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
     );
   }
 
+  const first = block.items[0];
+  const hasRowLabel = first?.kind === 'text' && block.items.length > 1;
+  const rowLabel = hasRowLabel ? first.text : '';
+  const rowItems = hasRowLabel ? block.items.slice(1) : block.items;
+
   return (
-      <div className="rounded-md bg-transparent p-0.5">
+    <div className="rounded-md bg-transparent p-0.5">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
-      <div className="flex flex-wrap items-baseline gap-0.5">
-          {block.items.map((it) => (
-            <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
-          ))}
+        <div className="grid grid-cols-[4.6rem_minmax(0,1fr)_2.25rem] items-center gap-x-1">
+          {hasRowLabel ? (
+            <span className="text-xs leading-none text-foreground/80">{rowLabel}</span>
+          ) : (
+            <span aria-hidden="true" />
+          )}
+          <div className="flex min-w-0 flex-wrap items-center gap-0.5 leading-none">
+            {rowItems.map((it) => (
+              <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
+            ))}
+          </div>
           <Button
             size="icon"
             variant="ghost"
-            className="ml-auto h-8 w-8 self-center rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
+            className="h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
             onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
           >

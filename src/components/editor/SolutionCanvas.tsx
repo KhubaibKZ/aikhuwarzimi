@@ -613,7 +613,7 @@ function PreviewItem({
             'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 bg-transparent',
             filled
               ? 'rounded-none border-0 px-[0.06rem] focus-visible:ring-0 focus-visible:ring-offset-0'
-              : 'rounded-xl border-2 border-border/70 focus-visible:border-primary',
+              : 'rounded-xl border-2 border-white/25 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
           )}
         />

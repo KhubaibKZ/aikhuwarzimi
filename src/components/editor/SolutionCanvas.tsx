@@ -278,9 +278,9 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
 
 
   const renderSolutionBox = (section: CanvasSection) => (
-    <div key={`${section.key}-solution`} className="rounded-lg border border-border bg-card overflow-hidden">
+    <div key={`${section.key}-solution`} className="rounded-lg border border-border bg-black overflow-hidden">
       {!previewMode ? (
-        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-border bg-black/95 px-3 py-2 backdrop-blur">
           <Button size="sm" variant="secondary" onClick={() => addBlockToSection(section.key, newBlock.heading())} className="gap-1">
             <Plus className="h-3.5 w-3.5" /> Part Heading
           </Button>

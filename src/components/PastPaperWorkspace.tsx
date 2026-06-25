@@ -2364,7 +2364,7 @@ export function PastPaperWorkspace({
         <>
 
           {/* Question */}
-          <div className="rounded-md bg-muted/40 p-3">
+          <div className={`rounded-md p-3 ${(question as any).diagramSvgMarkup ? 'bg-black' : 'bg-muted/40'}`}>
             {editMode && onEditField ? (
               <>
                 <InlineMathToolbar

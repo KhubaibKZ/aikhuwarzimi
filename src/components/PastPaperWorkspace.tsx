@@ -198,12 +198,7 @@ function ExtraQuestionBlocks({
         {blocks.map((b) => (
           <div key={b.id} className="space-y-2">
             {b.text && <QuestionText text={b.text} />}
-            {b.svgMarkup && (
-              <div
-                className="flex justify-center text-foreground [&_svg]:max-w-full [&_svg]:max-h-[60vh] [&_svg]:h-auto"
-                dangerouslySetInnerHTML={{ __html: themeSvgMarkup(b.svgMarkup) }}
-              />
-            )}
+            {b.svgMarkup && <InteractiveSvg markup={b.svgMarkup} />}
           </div>
         ))}
       </div>

@@ -538,7 +538,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   return (
-    <div className="rounded-md bg-card p-3">
+    <div className="rounded-md bg-transparent p-3">
       {block.items.length === 0 ? (
         <p className="text-xs text-muted-foreground italic">(empty step)</p>
       ) : (
@@ -547,12 +547,13 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
             <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
           ))}
           <Button
-            size="sm"
-            variant="outline"
-            className="ml-auto h-7 gap-1 px-2 text-xs"
+            size="icon"
+            variant="ghost"
+            className="ml-auto h-8 w-8 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
+            title="Check Work"
             onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
           >
-            <CheckSquare className="h-3.5 w-3.5 text-primary" /> Check
+            <BookOpen className="h-4 w-4" />
           </Button>
         </div>
       )}

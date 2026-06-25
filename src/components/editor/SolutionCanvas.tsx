@@ -557,7 +557,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
           {hasRowLabel ? (
             <span className="mr-0.5 text-xs leading-none text-foreground/80">{rowLabel}</span>
           ) : null}
-          <span className="inline-flex min-w-0 flex-wrap items-center gap-0 leading-none">
+          <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {rowItems.map((it) => (
               <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
             ))}

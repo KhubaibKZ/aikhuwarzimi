@@ -54,6 +54,9 @@ const BOX_PX: Record<BoxSize, { w: number; h: number }> = {
 const inlineValueWidth = (value: string) =>
   `calc(${Math.max(1, value.trim().length || value.length || 1)}ch + 0.45rem)`;
 
+const isStepRowLabel = (text: string) =>
+  /^(solve(?:\s+for\s+[a-z])?|evaluate|answer|simplify|expand|factorise|factorize|estimate|round)\s*:?$/i.test(text.trim());
+
 const RADICAND_RE = /^([A-Za-z0-9π().]+)/;
 
 function RadicalText({ children }: { children?: React.ReactNode }) {
@@ -541,7 +544,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   }
 
   const first = block.items[0];
-  const hasRowLabel = first?.kind === 'text' && block.items.length > 1;
+  const hasRowLabel = first?.kind === 'text' && block.items.length > 1 && isStepRowLabel(first.text);
   const rowLabel = hasRowLabel ? first.text : '';
   const rowItems = hasRowLabel ? block.items.slice(1) : block.items;
 

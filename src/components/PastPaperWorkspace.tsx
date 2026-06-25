@@ -208,7 +208,7 @@ function ExtraQuestionBlocks({
   return (
     <div className="mt-4 space-y-3">
       {blocks.map((b, idx) => (
-        <div key={b.id} className={`group rounded-lg p-3 ${b.svgMarkup ? 'bg-black' : 'bg-muted/40'}`}>
+        <div key={b.id} className={`group rounded-lg p-3 bg-muted/40`}>
           <div className="mb-2 flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Question Block {idx + 2}
@@ -2364,7 +2364,7 @@ export function PastPaperWorkspace({
         <>
 
           {/* Question */}
-          <div className={`rounded-md p-3 ${(question as any).diagramSvgMarkup ? 'bg-black' : 'bg-muted/40'}`}>
+          <div className={`rounded-md p-3 bg-muted/40`}>
             {editMode && onEditField ? (
               <>
                 <InlineMathToolbar

@@ -476,14 +476,14 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex items-center gap-1 flex-wrap">
+        <div className="flex items-center gap-0.5 flex-wrap">
           {stage.label && (
-            <span className="text-sm text-foreground/80 font-medium mr-1">{stage.label}</span>
+            <span className="text-xs text-foreground/80 font-medium mr-0.5">{stage.label}</span>
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {
               return (
-                <VecText key={i} value={el.value} className="font-mono text-base" />
+                <VecText key={i} value={el.value} className="font-mono text-sm" />
               );
             }
             if (el.type === 'box' && el.key) {
@@ -518,10 +518,10 @@ export function EquationSolveWorkspace({
             if (el.type === 'sqrt') {
               return (
                 <Radical key={i}>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-0.5">
                     {el.innerElements?.map((subEl, j) => {
                       if (subEl.type === 'text')
-                        return <VecText key={j} value={subEl.value} className="font-mono text-base" />;
+                        return <VecText key={j} value={subEl.value} className="font-mono text-sm" />;
                       if (subEl.type === 'box' && subEl.key)
                         return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
                       return null;
@@ -576,7 +576,7 @@ export function EquationSolveWorkspace({
     }
 
     return (
-      <div key={`extra_${rowIdx}`} className="flex items-center gap-1.5 flex-wrap">
+      <div key={`extra_${rowIdx}`} className="flex items-center gap-0.5 flex-wrap">
         {presence.map((present, bi) =>
           present ? (
             <span key={bi} className="inline-flex flex-col items-center gap-0.5">

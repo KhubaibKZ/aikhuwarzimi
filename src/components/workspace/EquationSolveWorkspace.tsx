@@ -476,9 +476,9 @@ export function EquationSolveWorkspace({
     );
     return (
       <div key={stage.stepKey} className="space-y-0.5">
-        <div className="flex items-center gap-0.5 flex-wrap">
+        <div className="flex items-baseline gap-0.5 flex-wrap">
           {stage.label && (
-            <span className="text-xs text-foreground/80 font-medium mr-0.5">{stage.label}</span>
+            <span className="text-[11px] text-foreground/60">{stage.label}</span>
           )}
           {stage.elements.map((el, i) => {
             if (el.type === 'text') {

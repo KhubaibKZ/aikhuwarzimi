@@ -647,7 +647,7 @@ export function EquationSolveWorkspace({
   const useSplit = !!splitAfterKey;
 
   const customStepsBlock = allowCustomSteps ? (
-    <div className="space-y-3 border-t pt-4">
+    <div className="space-y-1 border-t pt-2">
       <div className="flex items-center justify-end">
 
         <Button

@@ -139,10 +139,6 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
     </div>
   );
 }
-      />
-    </div>
-  );
-}
 
 function InteractiveSvgFrame({
   markup,

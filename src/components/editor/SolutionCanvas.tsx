@@ -528,7 +528,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   const setVal = (id: string, v: string) => setValues((p) => ({ ...p, [id]: v }));
 
   if (block.kind === 'heading') {
-    return <div className="text-lg font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
+    return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
   }
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;
@@ -536,7 +536,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   if (block.kind === 'question') {
     return (
       <div className={`rounded-md p-3 space-y-2 bg-muted/40`}>
-        {block.text && <QuestionText text={block.text} className="text-sm font-medium" />}
+        {block.text && <QuestionText text={block.text} className="text-base font-medium" />}
         {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
         {!block.text && !block.svgMarkup && <p className="text-xs italic text-muted-foreground">(empty question block)</p>}
       </div>

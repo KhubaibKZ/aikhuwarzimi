@@ -161,8 +161,11 @@ function InteractiveSvgFrame({
     const svgDocument = normalized.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
       let next = attrs as string;
       if (!/xmlns=/i.test(next)) next += ' xmlns="http://www.w3.org/2000/svg"';
-      if (/\bstyle=["'][^"']*["']/i.test(next)) {
-        next = next.replace(/\bstyle=["']([^"']*)["']/i, (_styleMatch, style) => `style="${style};display:block;touch-action:none"`);
+      if (/\bstyle\s*=\s*(["'])[\s\S]*?\1/i.test(next)) {
+        next = next.replace(/\bstyle\s*=\s*(["'])([\s\S]*?)\1/i, (_styleMatch, quote, style) => {
+          const safeStyle = String(style).replace(/;?\s*$/, '');
+          return `style=${quote}${safeStyle};display:block;touch-action:none${quote}`;
+        });
       } else {
         next += ' style="display:block;touch-action:none"';
       }

@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { themeSvgMarkup } from '@/lib/svgTheme';
+
+/** Strip only <script> tags and on* handlers — no color/background rewrites. */
+function sanitizeSvg(raw: string): string {
+  return raw
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/\son[a-z]+="[^"]*"/gi, '');
+}
 
 /**
  * Renders an uploaded SVG with full interactivity support.
@@ -100,8 +106,7 @@ function forcePitchBlackSvgBackground(markup: string): string {
 export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, className }: Props) {
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
-  const blackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(markup), [markup]);
-  const themedBlackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(themeSvgMarkup(markup)), [markup]);
+  const cleanMarkup = useMemo(() => sanitizeSvg(markup), [markup]);
 
   // Compute display box honoring aspect ratio.
   const aspect = dims ? dims.w / dims.h : 4 / 3;
@@ -115,7 +120,7 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
   if (interactive) {
     return (
       <InteractiveSvgFrame
-        markup={blackBackdropMarkup}
+        markup={cleanMarkup}
         width={dispW}
         height={dispH}
         className={`w-full ${className ?? ''}`}
@@ -123,15 +128,13 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
     );
   }
 
-  // Non-interactive: theme & inline on pitch-black backdrop.
+  // Non-interactive: render the uploaded SVG exactly as authored.
   return (
-    <div
-      className={`flex justify-center text-foreground w-full ${className ?? ''}`}
-    >
+    <div className={`flex justify-center w-full ${className ?? ''}`}>
       <div
         style={{ width: dispW, height: dispH, maxWidth: '100%' }}
         className="[&>svg]:w-full [&>svg]:h-full"
-        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themedBlackBackdropMarkup) }}
+        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(cleanMarkup) }}
       />
     </div>
   );
@@ -156,9 +159,9 @@ function InteractiveSvgFrame({
     return `<!doctype html>
 <html><head><meta charset="utf-8"/>
 <style>
-  html,body{margin:0;padding:0;width:100%;height:100%;background:#000000;color:inherit;overflow:hidden;}
+  html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:inherit;overflow:hidden;}
   body{display:flex;align-items:center;justify-content:center;font-family:inherit;}
-  svg{display:block;max-width:100%;max-height:100%;background:#000000;}
+  svg{display:block;max-width:100%;max-height:100%;}
 </style></head>
 <body>${normalized}</body></html>`;
   }, [markup]);
@@ -180,7 +183,7 @@ function InteractiveSvgFrame({
           maxWidth: width,
           aspectRatio: `${width} / ${height}`,
           border: 0,
-          background: '#000000',
+          background: 'transparent',
           display: 'block',
           opacity: ready ? 1 : 0,
           transition: 'opacity 120ms',

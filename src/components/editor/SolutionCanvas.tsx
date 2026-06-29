@@ -528,7 +528,7 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
   const setVal = (id: string, v: string) => setValues((p) => ({ ...p, [id]: v }));
 
   if (block.kind === 'heading') {
-    return <div className="text-lg font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
+    return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
   }
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;

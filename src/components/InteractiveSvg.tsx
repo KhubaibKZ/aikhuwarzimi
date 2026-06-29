@@ -183,7 +183,7 @@ function InteractiveSvgFrame({
           maxWidth: width,
           aspectRatio: `${width} / ${height}`,
           border: 0,
-          background: '#000000',
+          background: 'transparent',
           display: 'block',
           opacity: ready ? 1 : 0,
           transition: 'opacity 120ms',

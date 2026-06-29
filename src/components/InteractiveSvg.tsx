@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { themeSvgMarkup } from '@/lib/svgTheme';
+
+/** Strip only <script> tags and on* handlers — no color/background rewrites. */
+function sanitizeSvg(raw: string): string {
+  return raw
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/\son[a-z]+="[^"]*"/gi, '');
+}
 
 /**
  * Renders an uploaded SVG with full interactivity support.

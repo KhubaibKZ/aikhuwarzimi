@@ -156,30 +156,38 @@ function InteractiveSvgFrame({
   const ref = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
 
-  const srcDoc = useMemo(() => {
+  const src = useMemo(() => {
     const normalized = normalizeRootSvg(markup);
-    return `<!doctype html>
-<html><head><meta charset="utf-8"/>
-<style>
-  html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:inherit;overflow:hidden;}
-  body{display:flex;align-items:center;justify-content:center;font-family:inherit;}
-  svg{display:block;max-width:100%;max-height:100%;}
-</style></head>
-<body>${normalized}</body></html>`;
+    const svgDocument = normalized.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
+      let next = attrs as string;
+      if (!/xmlns=/i.test(next)) next += ' xmlns="http://www.w3.org/2000/svg"';
+      if (/\bstyle\s*=\s*(["'])[\s\S]*?\1/i.test(next)) {
+        next = next.replace(/\bstyle\s*=\s*(["'])([\s\S]*?)\1/i, (_styleMatch, quote, style) => {
+          const safeStyle = String(style).replace(/;?\s*$/, '');
+          return `style=${quote}${safeStyle};display:block;touch-action:none${quote}`;
+        });
+      } else {
+        next += ' style="display:block;touch-action:none"';
+      }
+      return `<svg${next}>`;
+    });
+
+    return URL.createObjectURL(new Blob([svgDocument], { type: 'image/svg+xml' }));
   }, [markup]);
 
   useEffect(() => {
     setReady(false);
-  }, [srcDoc]);
+    return () => URL.revokeObjectURL(src);
+  }, [src]);
 
   return (
     <div className={`flex justify-center ${className ?? ''}`} style={{ width: '100%' }}>
       <iframe
         ref={ref}
         title="Interactive diagram"
-        srcDoc={srcDoc}
+        src={src}
         onLoad={() => setReady(true)}
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts allow-same-origin allow-pointer-lock"
         style={{
           width: '100%',
           maxWidth: width,

@@ -106,8 +106,7 @@ function forcePitchBlackSvgBackground(markup: string): string {
 export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, className }: Props) {
   const interactive = useMemo(() => isInteractive(markup), [markup]);
   const dims = useMemo(() => parseViewBox(markup), [markup]);
-  const blackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(markup), [markup]);
-  const themedBlackBackdropMarkup = useMemo(() => forcePitchBlackSvgBackground(themeSvgMarkup(markup)), [markup]);
+  const cleanMarkup = useMemo(() => sanitizeSvg(markup), [markup]);
 
   // Compute display box honoring aspect ratio.
   const aspect = dims ? dims.w / dims.h : 4 / 3;
@@ -121,7 +120,7 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
   if (interactive) {
     return (
       <InteractiveSvgFrame
-        markup={blackBackdropMarkup}
+        markup={cleanMarkup}
         width={dispW}
         height={dispH}
         className={`w-full ${className ?? ''}`}
@@ -129,15 +128,17 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
     );
   }
 
-  // Non-interactive: theme & inline on pitch-black backdrop.
+  // Non-interactive: render the uploaded SVG exactly as authored.
   return (
-    <div
-      className={`flex justify-center text-foreground w-full ${className ?? ''}`}
-    >
+    <div className={`flex justify-center w-full ${className ?? ''}`}>
       <div
         style={{ width: dispW, height: dispH, maxWidth: '100%' }}
         className="[&>svg]:w-full [&>svg]:h-full"
-        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(themedBlackBackdropMarkup) }}
+        dangerouslySetInnerHTML={{ __html: normalizeRootSvg(cleanMarkup) }}
+      />
+    </div>
+  );
+}
       />
     </div>
   );

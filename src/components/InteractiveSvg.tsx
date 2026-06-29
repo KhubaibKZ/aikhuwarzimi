@@ -159,9 +159,9 @@ function InteractiveSvgFrame({
     return `<!doctype html>
 <html><head><meta charset="utf-8"/>
 <style>
-  html,body{margin:0;padding:0;width:100%;height:100%;background:#000000;color:inherit;overflow:hidden;}
+  html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:inherit;overflow:hidden;}
   body{display:flex;align-items:center;justify-content:center;font-family:inherit;}
-  svg{display:block;max-width:100%;max-height:100%;background:#000000;}
+  svg{display:block;max-width:100%;max-height:100%;}
 </style></head>
 <body>${normalized}</body></html>`;
   }, [markup]);

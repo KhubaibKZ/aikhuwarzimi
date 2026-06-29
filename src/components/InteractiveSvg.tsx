@@ -118,9 +118,11 @@ export function InteractiveSvg({ markup, maxWidth = 560, maxHeight = 420, classN
   }
 
   if (interactive) {
+    // Keep <script> tags and on* handlers intact — the sandboxed iframe
+    // isolates them safely and they are required for interactivity.
     return (
       <InteractiveSvgFrame
-        markup={cleanMarkup}
+        markup={markup}
         width={dispW}
         height={dispH}
         className={`w-full ${className ?? ''}`}

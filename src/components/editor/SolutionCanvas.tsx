@@ -237,31 +237,38 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
 
   const handleCheckBlock = async (block: CanvasBlock, questionText?: string, hints?: string[]) => {
     if (block.kind !== 'step') return;
-    const boxes = collectBoxes(block.items).filter((b) => b.expected);
+    const boxes = collectBoxes(block.items);
     const stats = { total: boxes.length, correct: 0, incorrect: 0, empty: 0 };
     const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
     const userAnswers: Record<string, string> = {};
     const correctAnswers: Record<string, string> = {};
+    let checkedAgainstExpected = 0;
+    let filledCount = 0;
     boxes.forEach((b, i) => {
       const v = (previewValues[b.id] ?? '').trim();
       const key = `box_${i + 1}`;
+      const expected = (b.expected ?? '').trim();
       userAnswers[key] = v;
-      correctAnswers[key] = b.expected;
+      if (expected) correctAnswers[key] = expected;
       if (!v) { stats.empty++; return; }
-      if (answersEqual(v, b.expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
+      filledCount++;
+      if (!expected) return;
+      checkedAgainstExpected++;
+      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
 
     if (stats.total === 0) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'No fillable boxes with expected answers in this step yet.' } }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'No fillable boxes in this step yet.' } }));
       return;
     }
-    if (stats.correct + stats.incorrect === 0) {
+    if (filledCount === 0) {
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Fill in the boxes in this step before checking.' } }));
       return;
     }
-    const allCorrect = stats.incorrect === 0 && stats.empty === 0;
+    const everyBoxHasExpectedAnswer = checkedAgainstExpected === stats.total;
+    const allCorrect = everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
     if (allCorrect) {
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
       return;
@@ -283,6 +290,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           attemptCount: attempt,
           hasMissing: stats.empty > 0,
           hasWrong: stats.incorrect > 0,
+          evaluateNeutral: checkedAgainstExpected === 0,
+          specificPart: `This step has ${stats.total} fillable boxes; ${filledCount} currently filled. Check all filled boxes together, not just one box.`,
           workingContent: stepToText(block, previewValues),
           previousFeedback: previousFeedbackRef.current[block.id] || [],
         },

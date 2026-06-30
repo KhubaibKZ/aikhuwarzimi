@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -16,6 +16,7 @@ import { QuestionText } from '@/components/QuestionText';
 import { themeSvgMarkup } from '@/lib/svgTheme';
 import { InteractiveSvg } from '@/components/InteractiveSvg';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 import {
   BoxSize,

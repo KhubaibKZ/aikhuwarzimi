@@ -726,6 +726,7 @@ function PreviewBlock({
   feedback,
   submitted,
   onCheck,
+  isCheckLoading,
 }: {
   block: CanvasBlock;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
@@ -734,6 +735,7 @@ function PreviewBlock({
   feedback: Record<string, 'correct' | 'incorrect'>;
   submitted: boolean;
   onCheck: () => void;
+  isCheckLoading?: boolean;
 }) {
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
 

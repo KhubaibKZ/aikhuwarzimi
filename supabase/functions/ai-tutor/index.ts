@@ -203,11 +203,32 @@ Provide teacher-like guidance ${specificPart ? `specifically for "${specificPart
     }
 
     const data = await response.json();
-    const hint = data.choices?.[0]?.message?.content || "Think about the concepts involved and try again.";
+    const raw = data.choices?.[0]?.message?.content || "";
 
-    console.log("Generated response:", hint);
+    let hint = raw;
+    let assessments: Record<string, 'correct' | 'incorrect'> | undefined;
+    if (actionType === "checkWork") {
+      try {
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (typeof parsed?.hint === 'string') hint = parsed.hint;
+          if (parsed?.assessments && typeof parsed.assessments === 'object') {
+            assessments = {};
+            for (const [k, v] of Object.entries(parsed.assessments)) {
+              if (v === 'correct' || v === 'incorrect') assessments[k] = v;
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse JSON assessments:", e);
+      }
+    }
+    if (!hint || !hint.trim()) hint = "Think about the concepts involved and try again.";
 
-    return new Response(JSON.stringify({ hint }), {
+    console.log("Generated response:", hint, "Assessments:", assessments);
+
+    return new Response(JSON.stringify({ hint, assessments }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {

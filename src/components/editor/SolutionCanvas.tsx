@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -16,6 +16,7 @@ import { QuestionText } from '@/components/QuestionText';
 import { themeSvgMarkup } from '@/lib/svgTheme';
 import { InteractiveSvg } from '@/components/InteractiveSvg';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 import {
   BoxSize,
@@ -182,6 +183,10 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
+  const [stepFeedback, setStepFeedback] = useState<Record<string, { type: 'guidance'; content: string } | null>>({});
+  const [loadingStepId, setLoadingStepId] = useState<string | null>(null);
+  const attemptCountRef = useRef<Record<string, number>>({});
+  const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
@@ -219,39 +224,79 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     return stats;
   };
 
-  const handleCheckBlock = (_block: CanvasBlock) => {
-    // Match other papers (4024/11, /12): Check Work evaluates ALL filled boxes across
-    // every step in the solution and gives a single summary comment.
-    let total = 0, correct = 0, incorrect = 0, empty = 0;
-    for (const section of sections) {
-      for (const b of section.blocks) {
-        const s = validateBlock(b);
-        total += s.total; correct += s.correct; incorrect += s.incorrect; empty += s.empty;
-      }
-    }
-    if (total === 0) {
-      toast({ title: 'Nothing to check', description: 'No fillable boxes with expected answers yet.' });
-      return;
-    }
-    if (correct + incorrect === 0) {
-      toast({ title: 'Check Work', description: 'Fill in some boxes before checking.' });
-      return;
-    }
-    const allCorrect = incorrect === 0 && empty === 0;
-    const allFilledCorrect = incorrect === 0 && empty > 0;
-    let description: string;
-    if (allCorrect) {
-      description = `All ${total} boxes are correct. Excellent work!`;
-    } else if (allFilledCorrect) {
-      description = `${correct}/${total} correct so far · ${empty} still blank. Keep going!`;
-    } else {
-      description = `${correct}/${total} correct · ${incorrect} incorrect${empty ? ` · ${empty} blank` : ''}. Review the highlighted boxes.`;
-    }
-    toast({
-      title: allCorrect ? '✅ All correct' : 'Check Work',
-      description,
-      variant: incorrect > 0 ? 'destructive' : 'default',
+  const stepToText = (block: CanvasBlock, vals: Record<string, string>): string => {
+    if (block.kind !== 'step') return '';
+    const render = (items: StepItem[]): string => items.map((it) => {
+      if (it.kind === 'text') return it.text;
+      if (it.kind === 'box') return (vals[it.id] ?? '').trim() || '▢';
+      if (it.kind === 'fraction') return `(${render(it.num)})/(${render(it.den)})`;
+      return '';
+    }).join(' ');
+    return render(block.items);
+  };
+
+  const handleCheckBlock = async (block: CanvasBlock, questionText?: string, hints?: string[]) => {
+    if (block.kind !== 'step') return;
+    const boxes = collectBoxes(block.items).filter((b) => b.expected);
+    const stats = { total: boxes.length, correct: 0, incorrect: 0, empty: 0 };
+    const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
+    const userAnswers: Record<string, string> = {};
+    const correctAnswers: Record<string, string> = {};
+    boxes.forEach((b, i) => {
+      const v = (previewValues[b.id] ?? '').trim();
+      const key = `box_${i + 1}`;
+      userAnswers[key] = v;
+      correctAnswers[key] = b.expected;
+      if (!v) { stats.empty++; return; }
+      if (answersEqual(v, b.expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
+      else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
+    setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
+
+    if (stats.total === 0) {
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'No fillable boxes with expected answers in this step yet.' } }));
+      return;
+    }
+    if (stats.correct + stats.incorrect === 0) {
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Fill in the boxes in this step before checking.' } }));
+      return;
+    }
+    const allCorrect = stats.incorrect === 0 && stats.empty === 0;
+    if (allCorrect) {
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
+      return;
+    }
+
+    // Call AI tutor for guidance on this step
+    const attempt = (attemptCountRef.current[block.id] || 0) + 1;
+    attemptCountRef.current[block.id] = attempt;
+    setLoadingStepId(block.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-tutor', {
+        body: {
+          question: questionText || 'Solve the problem above.',
+          actionType: 'checkWork',
+          userAnswers,
+          correctAnswers,
+          topic: 'Mathematics',
+          hints: hints || [],
+          attemptCount: attempt,
+          hasMissing: stats.empty > 0,
+          hasWrong: stats.incorrect > 0,
+          workingContent: stepToText(block, previewValues),
+          previousFeedback: previousFeedbackRef.current[block.id] || [],
+        },
+      });
+      if (error) throw error;
+      const hint = data?.hint || 'Review the highlighted boxes and re-check your working.';
+      previousFeedbackRef.current[block.id] = [...(previousFeedbackRef.current[block.id] || []), hint].slice(-5);
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: hint } }));
+    } catch (e) {
+      console.error('Check work error:', e);
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Review the highlighted boxes and re-check your working carefully.' } }));
+    } finally {
+      setLoadingStepId(null);
+    }
   };
 
   const handleSubmitAll = () => {
@@ -429,18 +474,39 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? section.blocks.map((b) => (
-              <PreviewBlock
-                key={b.id}
-                block={b}
-                setFocusedRef={setFocusedRef}
-                values={previewValues}
-                setVal={setPreviewVal}
-                feedback={previewFeedback}
-                submitted={submitted}
-                onCheck={() => handleCheckBlock(b)}
-              />
-            ))
+          ? section.blocks.map((b) => {
+              const qText = section.question?.text || '';
+              const fb = stepFeedback[b.id];
+              const isLoading = loadingStepId === b.id;
+              return (
+                <div key={b.id} className="space-y-1">
+                  <PreviewBlock
+                    block={b}
+                    setFocusedRef={setFocusedRef}
+                    values={previewValues}
+                    setVal={setPreviewVal}
+                    feedback={previewFeedback}
+                    submitted={submitted}
+                    isCheckLoading={isLoading}
+                    onCheck={() => handleCheckBlock(b, qText, hints)}
+                  />
+                  {(fb || isLoading) && b.kind === 'step' && (
+                    <div className="ml-1 rounded-lg border border-primary/50 bg-primary/10 p-3 text-sm shadow-sm">
+                      <div className="flex items-start gap-2">
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 mt-0.5 shrink-0 text-primary animate-spin" />
+                        ) : (
+                          <BookOpen className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+                        )}
+                        <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                          {isLoading ? 'Checking your step…' : fb?.content}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
           : section.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}
@@ -660,6 +726,7 @@ function PreviewBlock({
   feedback,
   submitted,
   onCheck,
+  isCheckLoading,
 }: {
   block: CanvasBlock;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
@@ -668,6 +735,7 @@ function PreviewBlock({
   feedback: Record<string, 'correct' | 'incorrect'>;
   submitted: boolean;
   onCheck: () => void;
+  isCheckLoading?: boolean;
 }) {
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
 
@@ -719,10 +787,10 @@ function PreviewBlock({
             variant="ghost"
             className="ml-1 h-7 w-7 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
-            disabled={submitted}
+            disabled={submitted || isCheckLoading}
             onClick={onCheck}
           >
-            <BookOpen className="h-3.5 w-3.5" />
+            {isCheckLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BookOpen className="h-3.5 w-3.5" />}
           </Button>
         </div>
       )}

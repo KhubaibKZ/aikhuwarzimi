@@ -411,7 +411,18 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? section.blocks.map((b) => <PreviewBlock key={b.id} block={b} setFocusedRef={setFocusedRef} />)
+          ? section.blocks.map((b) => (
+              <PreviewBlock
+                key={b.id}
+                block={b}
+                setFocusedRef={setFocusedRef}
+                values={previewValues}
+                setVal={setPreviewVal}
+                feedback={previewFeedback}
+                submitted={submitted}
+                onCheck={() => handleCheckBlock(b)}
+              />
+            ))
           : section.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}

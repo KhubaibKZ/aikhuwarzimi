@@ -626,11 +626,24 @@ function appendToStack(
  * Preview rendering
  * ============================================================ */
 
-function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void }) {
-  const { toast } = useToast();
-  const [values, setValues] = useState<Record<string, string>>({});
+function PreviewBlock({
+  block,
+  setFocusedRef,
+  values,
+  setVal,
+  feedback,
+  submitted,
+  onCheck,
+}: {
+  block: CanvasBlock;
+  setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
+  values: Record<string, string>;
+  setVal: (id: string, v: string) => void;
+  feedback: Record<string, 'correct' | 'incorrect'>;
+  submitted: boolean;
+  onCheck: () => void;
+}) {
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
-  const setVal = (id: string, v: string) => setValues((p) => ({ ...p, [id]: v }));
 
   if (block.kind === 'heading') {
     return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
@@ -664,7 +677,15 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
           ) : null}
           <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {rowItems.map((it) => (
-              <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
+              <PreviewItem
+                key={it.id}
+                item={it}
+                getVal={getVal}
+                setVal={setVal}
+                setFocusedRef={setFocusedRef}
+                feedback={feedback}
+                submitted={submitted}
+              />
             ))}
           </span>
           <Button
@@ -672,7 +693,8 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
             variant="ghost"
             className="ml-1 h-7 w-7 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
-            onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
+            disabled={submitted}
+            onClick={onCheck}
           >
             <BookOpen className="h-3.5 w-3.5" />
           </Button>

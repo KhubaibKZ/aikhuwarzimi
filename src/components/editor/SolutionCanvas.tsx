@@ -717,19 +717,24 @@ function PreviewItem({
   getVal,
   setVal,
   setFocusedRef,
+  feedback,
+  submitted,
 }: {
   item: StepItem;
   getVal: (id: string, fallback?: string) => string;
   setVal: (id: string, v: string) => void;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
+  feedback: Record<string, 'correct' | 'incorrect'>;
+  submitted: boolean;
 }) {
   if (item.kind === 'text') {
     return <span className="whitespace-pre text-xs leading-none text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
-    const v = getVal(item.id, item.value);
+    const v = getVal(item.id, '');
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
+    const fb = feedback[item.id];
     return (
       <span
         className="relative inline-flex items-center align-middle leading-none"
@@ -738,12 +743,15 @@ function PreviewItem({
         <Input
           value={v}
           placeholder="…"
+          disabled={submitted}
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
           style={{ width: w, height: h, minWidth: w }}
           className={cn(
             'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 bg-transparent rounded-xl border-2 border-border/70 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
+            fb === 'correct' && 'border-green-500 bg-green-500/10 text-green-300',
+            fb === 'incorrect' && 'border-red-500 bg-red-500/10 text-red-300',
           )}
         />
         <MathValueOverlay value={v} />
@@ -758,7 +766,15 @@ function PreviewItem({
     return (
         <div className="flex flex-wrap items-center justify-center gap-x-1">
         {stack.map((s) => (
-          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
+          <PreviewItem
+            key={s.id}
+            item={s}
+            getVal={getVal}
+            setVal={setVal}
+            setFocusedRef={setFocusedRef}
+            feedback={feedback}
+            submitted={submitted}
+          />
         ))}
       </div>
     );

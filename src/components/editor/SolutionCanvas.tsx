@@ -474,18 +474,39 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? section.blocks.map((b) => (
-              <PreviewBlock
-                key={b.id}
-                block={b}
-                setFocusedRef={setFocusedRef}
-                values={previewValues}
-                setVal={setPreviewVal}
-                feedback={previewFeedback}
-                submitted={submitted}
-                onCheck={() => handleCheckBlock(b)}
-              />
-            ))
+          ? section.blocks.map((b) => {
+              const qText = section.question?.text || '';
+              const fb = stepFeedback[b.id];
+              const isLoading = loadingStepId === b.id;
+              return (
+                <div key={b.id} className="space-y-1">
+                  <PreviewBlock
+                    block={b}
+                    setFocusedRef={setFocusedRef}
+                    values={previewValues}
+                    setVal={setPreviewVal}
+                    feedback={previewFeedback}
+                    submitted={submitted}
+                    isCheckLoading={isLoading}
+                    onCheck={() => handleCheckBlock(b, qText, hints)}
+                  />
+                  {(fb || isLoading) && b.kind === 'step' && (
+                    <div className="ml-1 rounded-lg border border-primary/50 bg-primary/10 p-3 text-sm shadow-sm">
+                      <div className="flex items-start gap-2">
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 mt-0.5 shrink-0 text-primary animate-spin" />
+                        ) : (
+                          <BookOpen className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+                        )}
+                        <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                          {isLoading ? 'Checking your step…' : fb?.content}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
           : section.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}

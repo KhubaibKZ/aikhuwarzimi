@@ -787,10 +787,10 @@ function PreviewBlock({
             variant="ghost"
             className="ml-1 h-7 w-7 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
-            disabled={submitted}
+            disabled={submitted || isCheckLoading}
             onClick={onCheck}
           >
-            <BookOpen className="h-3.5 w-3.5" />
+            {isCheckLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BookOpen className="h-3.5 w-3.5" />}
           </Button>
         </div>
       )}

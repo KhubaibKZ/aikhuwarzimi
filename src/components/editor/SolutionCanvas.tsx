@@ -219,20 +219,38 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     return stats;
   };
 
-  const handleCheckBlock = (block: CanvasBlock) => {
-    const s = validateBlock(block);
-    if (s.total === 0) {
-      toast({ title: 'Nothing to check', description: 'This step has no fillable boxes with expected answers.' });
+  const handleCheckBlock = (_block: CanvasBlock) => {
+    // Match other papers (4024/11, /12): Check Work evaluates ALL filled boxes across
+    // every step in the solution and gives a single summary comment.
+    let total = 0, correct = 0, incorrect = 0, empty = 0;
+    for (const section of sections) {
+      for (const b of section.blocks) {
+        const s = validateBlock(b);
+        total += s.total; correct += s.correct; incorrect += s.incorrect; empty += s.empty;
+      }
+    }
+    if (total === 0) {
+      toast({ title: 'Nothing to check', description: 'No fillable boxes with expected answers yet.' });
       return;
     }
-    const desc =
-      s.empty === s.total
-        ? 'Fill in the boxes before checking.'
-        : `${s.correct}/${s.total} correct${s.incorrect ? ` · ${s.incorrect} incorrect` : ''}${s.empty ? ` · ${s.empty} blank` : ''}`;
+    if (correct + incorrect === 0) {
+      toast({ title: 'Check Work', description: 'Fill in some boxes before checking.' });
+      return;
+    }
+    const allCorrect = incorrect === 0 && empty === 0;
+    const allFilledCorrect = incorrect === 0 && empty > 0;
+    let description: string;
+    if (allCorrect) {
+      description = `All ${total} boxes are correct. Excellent work!`;
+    } else if (allFilledCorrect) {
+      description = `${correct}/${total} correct so far · ${empty} still blank. Keep going!`;
+    } else {
+      description = `${correct}/${total} correct · ${incorrect} incorrect${empty ? ` · ${empty} blank` : ''}. Review the highlighted boxes.`;
+    }
     toast({
-      title: s.incorrect === 0 && s.empty === 0 ? '✅ All correct' : 'Check Work',
-      description: desc,
-      variant: s.incorrect > 0 ? 'destructive' : 'default',
+      title: allCorrect ? '✅ All correct' : 'Check Work',
+      description,
+      variant: incorrect > 0 ? 'destructive' : 'default',
     });
   };
 

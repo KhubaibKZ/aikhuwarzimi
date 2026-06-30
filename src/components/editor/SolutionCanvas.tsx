@@ -554,10 +554,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           <Button
             disabled={submitted}
             className={cn('flex items-center gap-2', submitted && 'bg-green-600 hover:bg-green-600 text-white')}
-            onClick={() => {
-              setSubmitted(true);
-              toast({ title: 'Answer Submitted', description: 'Solution canvas submitted (preview).' });
-            }}
+            onClick={handleSubmitAll}
           >
             {submitted ? (
               <>

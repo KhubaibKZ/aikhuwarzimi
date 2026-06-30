@@ -242,11 +242,13 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
     const userAnswers: Record<string, string> = {};
     const correctAnswers: Record<string, string> = {};
+    const keyToBoxId: Record<string, string> = {};
     let checkedAgainstExpected = 0;
     let filledCount = 0;
     boxes.forEach((b, i) => {
       const v = (previewValues[b.id] ?? '').trim();
       const key = `box_${i + 1}`;
+      keyToBoxId[key] = b.id;
       const expected = (b.expected ?? '').trim();
       userAnswers[key] = v;
       if (expected) correctAnswers[key] = expected;
@@ -274,7 +276,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       return;
     }
 
-    // Call AI tutor for guidance on this step
+    // Call AI tutor for guidance + per-box assessments
     const attempt = (attemptCountRef.current[block.id] || 0) + 1;
     attemptCountRef.current[block.id] = attempt;
     setLoadingStepId(block.id);
@@ -291,13 +293,25 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           hasMissing: stats.empty > 0,
           hasWrong: stats.incorrect > 0,
           evaluateNeutral: checkedAgainstExpected === 0,
-          specificPart: `This step has ${stats.total} fillable boxes; ${filledCount} currently filled. Check all filled boxes together, not just one box.`,
+          specificPart: `This step has ${stats.total} fillable boxes; ${filledCount} currently filled. Check ALL filled boxes and mark each one correct/incorrect by mathematically evaluating the student's value.`,
           workingContent: stepToText(block, previewValues),
           previousFeedback: previousFeedbackRef.current[block.id] || [],
         },
       });
       if (error) throw error;
       const hint = data?.hint || 'Review the highlighted boxes and re-check your working.';
+      const assessments = (data?.assessments || {}) as Record<string, 'correct' | 'incorrect'>;
+      const aiFb: Record<string, 'correct' | 'incorrect'> = {};
+      for (const [key, verdict] of Object.entries(assessments)) {
+        const id = keyToBoxId[key];
+        if (!id) continue;
+        // Local exact-match wins (already in fbUpdate); only fill what we didn't already grade.
+        if (fbUpdate[id]) continue;
+        const v = (previewValues[id] ?? '').trim();
+        if (!v) continue;
+        aiFb[id] = verdict;
+      }
+      if (Object.keys(aiFb).length) setPreviewFeedback((p) => ({ ...p, ...aiFb }));
       previousFeedbackRef.current[block.id] = [...(previousFeedbackRef.current[block.id] || []), hint].slice(-5);
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: hint } }));
     } catch (e) {

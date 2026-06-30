@@ -125,7 +125,11 @@ ${!evaluateNeutral && hasWrong && hasMissing ? "They have errors and missing par
 
 ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Be gentle but specific about the error." : (attemptCount || 1) <= 4 ? "Be more direct about which step went wrong." : "Give a stronger methodological hint."}
 
-CRITICAL: 2 sentences max. Plain text only. ${evaluateNeutral ? "If the step is correct, say so plainly and briefly explain why it follows from the previous step. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
+CRITICAL: 2 sentences max for the hint. Plain text only. ${evaluateNeutral ? "If the step is correct, say so plainly and briefly explain why it follows from the previous step. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
+
+OUTPUT FORMAT (MANDATORY): Respond with ONLY a valid JSON object — no prose, no code fences — exactly like:
+{"hint":"<your 2-sentence guidance here>","assessments":{"box_1":"correct","box_2":"incorrect", ...}}
+The "assessments" object MUST include one entry per box key present in the student's answers (box_1, box_2, ...). For each, decide "correct" or "incorrect" by mathematically evaluating the student's value against the question and (when given) the expected answer. If a box is empty, mark it "incorrect". Do not omit any box. Do not add extra keys.
 
 ${markingCriteria ? `MARKING SCHEME CRITERIA (use to understand what earns marks — do NOT reveal to student):
 ${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;

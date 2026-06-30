@@ -132,6 +132,40 @@ function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
   return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
 }
 
+// Normalize answer string for comparison
+const normAns = (s: string) =>
+  (s ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[,]/g, '')
+    .replace(/\*/g, '×')
+    .replace(/\//g, '÷');
+
+const answersEqual = (a: string, b: string) => {
+  const na = normAns(a);
+  const nb = normAns(b);
+  if (na === nb) return true;
+  const fa = parseFloat(na);
+  const fb = parseFloat(nb);
+  if (!isNaN(fa) && !isNaN(fb) && Math.abs(fa - fb) < 1e-6) return true;
+  return false;
+};
+
+// Collect [boxId, expectedValue] pairs from a step block's items, recursing fractions.
+function collectBoxes(items: StepItem[]): Array<{ id: string; expected: string }> {
+  const out: Array<{ id: string; expected: string }> = [];
+  const walk = (list: StepItem[]) => {
+    for (const it of list) {
+      if (it.kind === 'box') out.push({ id: it.id, expected: it.value ?? '' });
+      else if (it.kind === 'fraction') { walk(it.num); walk(it.den); }
+    }
+  };
+  walk(items);
+  return out;
+}
+
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
@@ -146,6 +180,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
+  const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
@@ -156,6 +192,67 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const sections = useMemo(() => splitCanvasSections(canvas.blocks), [canvas.blocks]);
+
+  const setPreviewVal = (id: string, v: string) => {
+    setPreviewValues((p) => ({ ...p, [id]: v }));
+    // clear feedback for this box on edit
+    setPreviewFeedback((p) => {
+      if (!(id in p)) return p;
+      const next = { ...p }; delete next[id]; return next;
+    });
+  };
+
+  const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number } => {
+    const stats = { total: 0, correct: 0, incorrect: 0, empty: 0 };
+    if (block.kind !== 'step') return stats;
+    const boxes = collectBoxes(block.items);
+    const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
+    for (const { id, expected } of boxes) {
+      if (!expected) continue; // skip boxes with no authored expected answer
+      stats.total++;
+      const v = (previewValues[id] ?? '').trim();
+      if (!v) { stats.empty++; continue; }
+      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
+      else { stats.incorrect++; fbUpdate[id] = 'incorrect'; }
+    }
+    setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
+    return stats;
+  };
+
+  const handleCheckBlock = (block: CanvasBlock) => {
+    const s = validateBlock(block);
+    if (s.total === 0) {
+      toast({ title: 'Nothing to check', description: 'This step has no fillable boxes with expected answers.' });
+      return;
+    }
+    const desc =
+      s.empty === s.total
+        ? 'Fill in the boxes before checking.'
+        : `${s.correct}/${s.total} correct${s.incorrect ? ` · ${s.incorrect} incorrect` : ''}${s.empty ? ` · ${s.empty} blank` : ''}`;
+    toast({
+      title: s.incorrect === 0 && s.empty === 0 ? '✅ All correct' : 'Check Work',
+      description: desc,
+      variant: s.incorrect > 0 ? 'destructive' : 'default',
+    });
+  };
+
+  const handleSubmitAll = () => {
+    let total = 0, correct = 0, incorrect = 0, empty = 0;
+    for (const section of sections) {
+      for (const b of section.blocks) {
+        const s = validateBlock(b);
+        total += s.total; correct += s.correct; incorrect += s.incorrect; empty += s.empty;
+      }
+    }
+    setSubmitted(true);
+    toast({
+      title: 'Answer Submitted',
+      description: total === 0
+        ? 'Solution recorded.'
+        : `Score: ${correct}/${total}${incorrect ? ` · ${incorrect} incorrect` : ''}${empty ? ` · ${empty} blank` : ''}`,
+      variant: incorrect > 0 ? 'destructive' : 'default',
+    });
+  };
 
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));
@@ -314,7 +411,18 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         )}
 
         {previewMode
-          ? section.blocks.map((b) => <PreviewBlock key={b.id} block={b} setFocusedRef={setFocusedRef} />)
+          ? section.blocks.map((b) => (
+              <PreviewBlock
+                key={b.id}
+                block={b}
+                setFocusedRef={setFocusedRef}
+                values={previewValues}
+                setVal={setPreviewVal}
+                feedback={previewFeedback}
+                submitted={submitted}
+                onCheck={() => handleCheckBlock(b)}
+              />
+            ))
           : section.blocks.map((b, idx) => (
               <BlockShell
                 key={b.id}
@@ -368,7 +476,15 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         <div key={section.key} className={cn(previewMode ? 'space-y-1' : 'space-y-3')}>
           {section.question && (
             previewMode ? (
-              <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
+              <PreviewBlock
+                block={section.question}
+                setFocusedRef={setFocusedRef}
+                values={previewValues}
+                setVal={setPreviewVal}
+                feedback={previewFeedback}
+                submitted={submitted}
+                onCheck={() => {}}
+              />
             ) : (
               <QuestionSectionShell
                 onDelete={() => removeSection(section.key)}
@@ -446,10 +562,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           <Button
             disabled={submitted}
             className={cn('flex items-center gap-2', submitted && 'bg-green-600 hover:bg-green-600 text-white')}
-            onClick={() => {
-              setSubmitted(true);
-              toast({ title: 'Answer Submitted', description: 'Solution canvas submitted (preview).' });
-            }}
+            onClick={handleSubmitAll}
           >
             {submitted ? (
               <>
@@ -521,11 +634,24 @@ function appendToStack(
  * Preview rendering
  * ============================================================ */
 
-function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void }) {
-  const { toast } = useToast();
-  const [values, setValues] = useState<Record<string, string>>({});
+function PreviewBlock({
+  block,
+  setFocusedRef,
+  values,
+  setVal,
+  feedback,
+  submitted,
+  onCheck,
+}: {
+  block: CanvasBlock;
+  setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
+  values: Record<string, string>;
+  setVal: (id: string, v: string) => void;
+  feedback: Record<string, 'correct' | 'incorrect'>;
+  submitted: boolean;
+  onCheck: () => void;
+}) {
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
-  const setVal = (id: string, v: string) => setValues((p) => ({ ...p, [id]: v }));
 
   if (block.kind === 'heading') {
     return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
@@ -559,7 +685,15 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
           ) : null}
           <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {rowItems.map((it) => (
-              <PreviewItem key={it.id} item={it} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
+              <PreviewItem
+                key={it.id}
+                item={it}
+                getVal={getVal}
+                setVal={setVal}
+                setFocusedRef={setFocusedRef}
+                feedback={feedback}
+                submitted={submitted}
+              />
             ))}
           </span>
           <Button
@@ -567,7 +701,8 @@ function PreviewBlock({ block, setFocusedRef }: { block: CanvasBlock; setFocused
             variant="ghost"
             className="ml-1 h-7 w-7 rounded-md border border-border/60 bg-transparent text-foreground hover:bg-muted/20"
             title="Check Work"
-            onClick={() => toast({ title: 'Check Work', description: 'Step checked (preview).' })}
+            disabled={submitted}
+            onClick={onCheck}
           >
             <BookOpen className="h-3.5 w-3.5" />
           </Button>
@@ -582,19 +717,24 @@ function PreviewItem({
   getVal,
   setVal,
   setFocusedRef,
+  feedback,
+  submitted,
 }: {
   item: StepItem;
   getVal: (id: string, fallback?: string) => string;
   setVal: (id: string, v: string) => void;
   setFocusedRef: (el: HTMLInputElement | HTMLTextAreaElement | null) => void;
+  feedback: Record<string, 'correct' | 'incorrect'>;
+  submitted: boolean;
 }) {
   if (item.kind === 'text') {
     return <span className="whitespace-pre text-xs leading-none text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
-    const v = getVal(item.id, item.value);
+    const v = getVal(item.id, '');
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;
+    const fb = feedback[item.id];
     return (
       <span
         className="relative inline-flex items-center align-middle leading-none"
@@ -603,12 +743,15 @@ function PreviewItem({
         <Input
           value={v}
           placeholder="…"
+          disabled={submitted}
           onFocus={(e) => setFocusedRef(e.currentTarget)}
           onChange={(e) => setVal(item.id, e.target.value)}
           style={{ width: w, height: h, minWidth: w }}
           className={cn(
             'p-0 text-center font-mono text-xs leading-none text-foreground placeholder:text-muted-foreground/40 bg-transparent rounded-xl border-2 border-border/70 focus-visible:border-primary',
             v.includes('√') && 'text-transparent caret-foreground',
+            fb === 'correct' && 'border-green-500 bg-green-500/10 text-green-300',
+            fb === 'incorrect' && 'border-red-500 bg-red-500/10 text-red-300',
           )}
         />
         <MathValueOverlay value={v} />
@@ -623,7 +766,15 @@ function PreviewItem({
     return (
         <div className="flex flex-wrap items-center justify-center gap-x-1">
         {stack.map((s) => (
-          <PreviewItem key={s.id} item={s} getVal={getVal} setVal={setVal} setFocusedRef={setFocusedRef} />
+          <PreviewItem
+            key={s.id}
+            item={s}
+            getVal={getVal}
+            setVal={setVal}
+            setFocusedRef={setFocusedRef}
+            feedback={feedback}
+            submitted={submitted}
+          />
         ))}
       </div>
     );

@@ -183,6 +183,10 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
+  const [stepFeedback, setStepFeedback] = useState<Record<string, { type: 'guidance'; content: string } | null>>({});
+  const [loadingStepId, setLoadingStepId] = useState<string | null>(null);
+  const attemptCountRef = useRef<Record<string, number>>({});
+  const previousFeedbackRef = useRef<Record<string, string[]>>({});
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 

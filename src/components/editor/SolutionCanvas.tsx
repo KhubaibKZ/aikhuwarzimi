@@ -132,6 +132,40 @@ function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
   return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
 }
 
+// Normalize answer string for comparison
+const normAns = (s: string) =>
+  (s ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[,]/g, '')
+    .replace(/\*/g, '×')
+    .replace(/\//g, '÷');
+
+const answersEqual = (a: string, b: string) => {
+  const na = normAns(a);
+  const nb = normAns(b);
+  if (na === nb) return true;
+  const fa = parseFloat(na);
+  const fb = parseFloat(nb);
+  if (!isNaN(fa) && !isNaN(fb) && Math.abs(fa - fb) < 1e-6) return true;
+  return false;
+};
+
+// Collect [boxId, expectedValue] pairs from a step block's items, recursing fractions.
+function collectBoxes(items: StepItem[]): Array<{ id: string; expected: string }> {
+  const out: Array<{ id: string; expected: string }> = [];
+  const walk = (list: StepItem[]) => {
+    for (const it of list) {
+      if (it.kind === 'box') out.push({ id: it.id, expected: it.value ?? '' });
+      else if (it.kind === 'fraction') { walk(it.num); walk(it.den); }
+    }
+  };
+  walk(items);
+  return out;
+}
+
 export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
@@ -146,6 +180,8 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
+  const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
   const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
   const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
 
@@ -156,6 +192,67 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const setBlocks = (blocks: CanvasBlock[]) => onChange({ ...canvas, blocks });
 
   const sections = useMemo(() => splitCanvasSections(canvas.blocks), [canvas.blocks]);
+
+  const setPreviewVal = (id: string, v: string) => {
+    setPreviewValues((p) => ({ ...p, [id]: v }));
+    // clear feedback for this box on edit
+    setPreviewFeedback((p) => {
+      if (!(id in p)) return p;
+      const next = { ...p }; delete next[id]; return next;
+    });
+  };
+
+  const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number } => {
+    const stats = { total: 0, correct: 0, incorrect: 0, empty: 0 };
+    if (block.kind !== 'step') return stats;
+    const boxes = collectBoxes(block.items);
+    const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
+    for (const { id, expected } of boxes) {
+      if (!expected) continue; // skip boxes with no authored expected answer
+      stats.total++;
+      const v = (previewValues[id] ?? '').trim();
+      if (!v) { stats.empty++; continue; }
+      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
+      else { stats.incorrect++; fbUpdate[id] = 'incorrect'; }
+    }
+    setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
+    return stats;
+  };
+
+  const handleCheckBlock = (block: CanvasBlock) => {
+    const s = validateBlock(block);
+    if (s.total === 0) {
+      toast({ title: 'Nothing to check', description: 'This step has no fillable boxes with expected answers.' });
+      return;
+    }
+    const desc =
+      s.empty === s.total
+        ? 'Fill in the boxes before checking.'
+        : `${s.correct}/${s.total} correct${s.incorrect ? ` · ${s.incorrect} incorrect` : ''}${s.empty ? ` · ${s.empty} blank` : ''}`;
+    toast({
+      title: s.incorrect === 0 && s.empty === 0 ? '✅ All correct' : 'Check Work',
+      description: desc,
+      variant: s.incorrect > 0 ? 'destructive' : 'default',
+    });
+  };
+
+  const handleSubmitAll = () => {
+    let total = 0, correct = 0, incorrect = 0, empty = 0;
+    for (const section of sections) {
+      for (const b of section.blocks) {
+        const s = validateBlock(b);
+        total += s.total; correct += s.correct; incorrect += s.incorrect; empty += s.empty;
+      }
+    }
+    setSubmitted(true);
+    toast({
+      title: 'Answer Submitted',
+      description: total === 0
+        ? 'Solution recorded.'
+        : `Score: ${correct}/${total}${incorrect ? ` · ${incorrect} incorrect` : ''}${empty ? ` · ${empty} blank` : ''}`,
+      variant: incorrect > 0 ? 'destructive' : 'default',
+    });
+  };
 
   const updateBlock = (id: string, fn: (b: CanvasBlock) => CanvasBlock) =>
     setBlocks(canvas.blocks.map((b) => (b.id === id ? fn(b) : b)));

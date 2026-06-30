@@ -39,7 +39,7 @@ import { QuestionText } from '@/components/QuestionText';
 import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
 import { themeSvgMarkup } from '@/lib/svgTheme';
 
-const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_11']);
+const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_22', 'pp_4024_on23_11']);
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null; diagramSvgMarkup?: string | null };
 

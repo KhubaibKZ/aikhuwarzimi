@@ -476,7 +476,15 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         <div key={section.key} className={cn(previewMode ? 'space-y-1' : 'space-y-3')}>
           {section.question && (
             previewMode ? (
-              <PreviewBlock block={section.question} setFocusedRef={setFocusedRef} />
+              <PreviewBlock
+                block={section.question}
+                setFocusedRef={setFocusedRef}
+                values={previewValues}
+                setVal={setPreviewVal}
+                feedback={previewFeedback}
+                submitted={submitted}
+                onCheck={() => {}}
+              />
             ) : (
               <QuestionSectionShell
                 onDelete={() => removeSection(section.key)}

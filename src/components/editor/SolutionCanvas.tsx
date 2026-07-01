@@ -154,12 +154,34 @@ const answersEqual = (a: string, b: string) => {
   return false;
 };
 
+// Set of symbol characters that identify "static display" boxes (operators,
+// math symbols, punctuation). If a box's authored value contains only these
+// characters, it is rendered as inline static text in preview instead of a
+// fillable input, and is skipped during validation.
+const STATIC_SYMBOL_CHARS = new Set<string>([
+  ...SYMBOLS,
+  ' ', '\t',
+]);
+
+export function isStaticSymbolBox(item: StepItem): boolean {
+  if (item.kind !== 'box') return false;
+  if (item.size === 'sym') return (item.value ?? '').trim().length > 0;
+  const v = (item.value ?? '').trim();
+  if (!v || v.length > 4) return false;
+  for (const ch of v) if (!STATIC_SYMBOL_CHARS.has(ch)) return false;
+  return true;
+}
+
 // Collect [boxId, expectedValue] pairs from a step block's items, recursing fractions.
+// Static-symbol boxes are excluded — they are display-only and not user input.
 function collectBoxes(items: StepItem[]): Array<{ id: string; expected: string }> {
   const out: Array<{ id: string; expected: string }> = [];
   const walk = (list: StepItem[]) => {
     for (const it of list) {
-      if (it.kind === 'box') out.push({ id: it.id, expected: it.value ?? '' });
+      if (it.kind === 'box') {
+        if (isStaticSymbolBox(it)) continue;
+        out.push({ id: it.id, expected: it.value ?? '' });
+      }
       else if (it.kind === 'fraction') { walk(it.num); walk(it.den); }
     }
   };

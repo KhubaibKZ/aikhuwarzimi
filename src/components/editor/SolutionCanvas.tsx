@@ -700,42 +700,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         </div>
       ))}
 
-      {keyboardIds.map((kid, i) => (
-        <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              Keyboard {i + 1}
-            </span>
-            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboard(kid)}>
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
-          <HorizontalKeyboard
-            keys={DEFAULT_KEYBOARD}
-            onKeyPress={(k) => {
-              if (k === '⌫') {
-                const el = focusedRef;
-                if (el && 'value' in el) {
-                  const start = el.selectionStart ?? el.value.length;
-                  if (start > 0) {
-                    const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
-                    const setter = Object.getOwnPropertyDescriptor(
-                      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
-                      'value',
-                    )?.set;
-                    setter?.call(el, next);
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                    requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
-                  }
-                }
-                return;
-              }
-              insertAtCursor(k === 'a/b' ? '/' : k);
-            }}
-          />
-          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
-        </div>
-      ))}
+
 
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">

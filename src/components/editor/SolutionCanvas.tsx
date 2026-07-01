@@ -484,16 +484,63 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Popover>
   );
 
-  const keyboardButton = (
+  const renderKeyboardsFor = (blockId: string) => {
+    const ids = keyboardIdsByBlock[blockId] ?? [];
+    if (ids.length === 0) return null;
+    return (
+      <div className="mt-2 space-y-2">
+        {ids.map((kid, i) => (
+          <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Keyboard {i + 1}
+              </span>
+              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+            <HorizontalKeyboard
+              keys={DEFAULT_KEYBOARD}
+              onKeyPress={(k) => {
+                if (k === '⌫') {
+                  const el = focusedRef;
+                  if (el && 'value' in el) {
+                    const start = el.selectionStart ?? el.value.length;
+                    if (start > 0) {
+                      const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
+                      const setter = Object.getOwnPropertyDescriptor(
+                        el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                        'value',
+                      )?.set;
+                      setter?.call(el, next);
+                      el.dispatchEvent(new Event('input', { bubbles: true }));
+                      requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
+                    }
+                  }
+                  return;
+                }
+                insertAtCursor(k === 'a/b' ? '/' : k);
+              }}
+            />
+            <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const addKeyboardButton = (blockId: string) => (
     <Button
       size="sm"
       variant="outline"
-      onClick={addKeyboard}
-      className="gap-1"
+      onClick={() => addKeyboardTo(blockId)}
+      className="h-7 gap-1 px-2 text-xs"
+      title="Add a keyboard beneath this step"
     >
       <Keyboard className="h-3.5 w-3.5" /> Add Keyboard
     </Button>
   );
+
 
 
   const renderSolutionBox = (section: CanvasSection) => (

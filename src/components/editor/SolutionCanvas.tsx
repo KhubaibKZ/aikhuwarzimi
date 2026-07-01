@@ -484,7 +484,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Popover>
   );
 
-  const renderKeyboardsFor = (blockId: string) => {
+  const renderKeyboardsFor = (blockId: string, showRemove = true) => {
     const ids = keyboardIdsByBlock[blockId] ?? [];
     if (ids.length === 0) return null;
     return (
@@ -495,9 +495,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
               <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Keyboard {i + 1}
               </span>
-              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
-                <Trash2 className="h-3 w-3" />
-              </Button>
+              {showRemove && (
+                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              )}
             </div>
             <HorizontalKeyboard
               keys={DEFAULT_KEYBOARD}
@@ -540,6 +542,26 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       <Keyboard className="h-3.5 w-3.5" /> Add Keyboard
     </Button>
   );
+
+  const keyboardToggleButton = (blockId: string) => {
+    const hasKeyboards = (keyboardIdsByBlock[blockId] ?? []).length > 0;
+    return (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          if (hasKeyboards) {
+            setKeyboardIdsByBlock((prev) => ({ ...prev, [blockId]: [] }));
+          } else {
+            addKeyboardTo(blockId);
+          }
+        }}
+        className="h-7 gap-1 px-2 text-xs"
+      >
+        {hasKeyboards ? 'Hide Keyboard' : <><Keyboard className="h-3.5 w-3.5" /> Add Keyboard</>}
+      </Button>
+    );
+  };
 
 
 
@@ -606,10 +628,10 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   )}
                   {b.kind === 'step' && (
                     <div className="flex justify-end pt-1">
-                      {addKeyboardButton(b.id)}
+                      {keyboardToggleButton(b.id)}
                     </div>
                   )}
-                  {b.kind === 'step' && renderKeyboardsFor(b.id)}
+                  {b.kind === 'step' && renderKeyboardsFor(b.id, false)}
                 </div>
               );
             })

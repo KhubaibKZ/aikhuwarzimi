@@ -628,10 +628,10 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                   )}
                   {b.kind === 'step' && (
                     <div className="flex justify-end pt-1">
-                      {addKeyboardButton(b.id)}
+                      {keyboardToggleButton(b.id)}
                     </div>
                   )}
-                  {b.kind === 'step' && renderKeyboardsFor(b.id)}
+                  {b.kind === 'step' && renderKeyboardsFor(b.id, false)}
                 </div>
               );
             })

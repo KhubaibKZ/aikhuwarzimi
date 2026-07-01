@@ -202,15 +202,23 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const [keyboardIdsByBlock, setKeyboardIdsByBlock] = useState<Record<string, string[]>>({});
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
   const [stepFeedback, setStepFeedback] = useState<Record<string, { type: 'guidance'; content: string } | null>>({});
   const [loadingStepId, setLoadingStepId] = useState<string | null>(null);
   const attemptCountRef = useRef<Record<string, number>>({});
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
-  const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
-  const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
+  const addKeyboardTo = (blockId: string) =>
+    setKeyboardIdsByBlock((prev) => ({
+      ...prev,
+      [blockId]: [...(prev[blockId] ?? []), Math.random().toString(36).slice(2, 9)],
+    }));
+  const removeKeyboardFrom = (blockId: string, id: string) =>
+    setKeyboardIdsByBlock((prev) => ({
+      ...prev,
+      [blockId]: (prev[blockId] ?? []).filter((k) => k !== id),
+    }));
 
   const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
     setFocusedRef(el);

@@ -202,15 +202,23 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const [hintIdx, setHintIdx] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
-  const [keyboardIds, setKeyboardIds] = useState<string[]>([]);
+  const [keyboardIdsByBlock, setKeyboardIdsByBlock] = useState<Record<string, string[]>>({});
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
   const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
   const [stepFeedback, setStepFeedback] = useState<Record<string, { type: 'guidance'; content: string } | null>>({});
   const [loadingStepId, setLoadingStepId] = useState<string | null>(null);
   const attemptCountRef = useRef<Record<string, number>>({});
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
-  const addKeyboard = () => setKeyboardIds((prev) => [...prev, Math.random().toString(36).slice(2, 9)]);
-  const removeKeyboard = (id: string) => setKeyboardIds((prev) => prev.filter((k) => k !== id));
+  const addKeyboardTo = (blockId: string) =>
+    setKeyboardIdsByBlock((prev) => ({
+      ...prev,
+      [blockId]: [...(prev[blockId] ?? []), Math.random().toString(36).slice(2, 9)],
+    }));
+  const removeKeyboardFrom = (blockId: string, id: string) =>
+    setKeyboardIdsByBlock((prev) => ({
+      ...prev,
+      [blockId]: (prev[blockId] ?? []).filter((k) => k !== id),
+    }));
 
   const focusBlock = (id: string) => (el: HTMLInputElement | HTMLTextAreaElement | null) => {
     setFocusedRef(el);
@@ -476,16 +484,63 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Popover>
   );
 
-  const keyboardButton = (
+  const renderKeyboardsFor = (blockId: string) => {
+    const ids = keyboardIdsByBlock[blockId] ?? [];
+    if (ids.length === 0) return null;
+    return (
+      <div className="mt-2 space-y-2">
+        {ids.map((kid, i) => (
+          <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Keyboard {i + 1}
+              </span>
+              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </div>
+            <HorizontalKeyboard
+              keys={DEFAULT_KEYBOARD}
+              onKeyPress={(k) => {
+                if (k === '⌫') {
+                  const el = focusedRef;
+                  if (el && 'value' in el) {
+                    const start = el.selectionStart ?? el.value.length;
+                    if (start > 0) {
+                      const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
+                      const setter = Object.getOwnPropertyDescriptor(
+                        el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
+                        'value',
+                      )?.set;
+                      setter?.call(el, next);
+                      el.dispatchEvent(new Event('input', { bubbles: true }));
+                      requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
+                    }
+                  }
+                  return;
+                }
+                insertAtCursor(k === 'a/b' ? '/' : k);
+              }}
+            />
+            <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const addKeyboardButton = (blockId: string) => (
     <Button
       size="sm"
       variant="outline"
-      onClick={addKeyboard}
-      className="gap-1"
+      onClick={() => addKeyboardTo(blockId)}
+      className="h-7 gap-1 px-2 text-xs"
+      title="Add a keyboard beneath this step"
     >
       <Keyboard className="h-3.5 w-3.5" /> Add Keyboard
     </Button>
   );
+
 
 
   const renderSolutionBox = (section: CanvasSection) => (
@@ -502,7 +557,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             <Type className="h-3.5 w-3.5" /> Text
           </Button>
           {symbolPopover}
-          {keyboardButton}
+
           <div className="ml-auto text-xs text-muted-foreground">
             {section.blocks.length} block{section.blocks.length === 1 ? '' : 's'}
           </div>
@@ -549,52 +604,66 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                       </div>
                     </div>
                   )}
+                  {b.kind === 'step' && (
+                    <div className="flex justify-end pt-1">
+                      {addKeyboardButton(b.id)}
+                    </div>
+                  )}
+                  {b.kind === 'step' && renderKeyboardsFor(b.id)}
                 </div>
               );
             })
           : section.blocks.map((b, idx) => (
-              <BlockShell
-                key={b.id}
-                onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
-                onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
-                onDelete={() => removeBlock(b.id)}
-                onDuplicate={() => duplicateBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
-              >
-                {b.kind === 'heading' && (
-                  <Input
-                    placeholder="e.g. Estimate, Round & Set up…"
-                    value={b.text}
-                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                    onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
-                    spellCheck={false}
-                    autoComplete="off"
-                    data-gramm="false"
-                  />
-                )}
-                {b.kind === 'text' && (
-                  <Input
-                    placeholder="Free text…"
-                    value={b.text}
-                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                    onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    spellCheck={false}
-                    autoComplete="off"
-                    data-gramm="false"
-                  />
-                )}
+              <div key={b.id}>
+                <BlockShell
+                  onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
+                  onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
+                  onDelete={() => removeBlock(b.id)}
+                  onDuplicate={() => duplicateBlock(b.id)}
+                  label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
+                >
+                  {b.kind === 'heading' && (
+                    <Input
+                      placeholder="e.g. Estimate, Round & Set up…"
+                      value={b.text}
+                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                      className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
+                      spellCheck={false}
+                      autoComplete="off"
+                      data-gramm="false"
+                    />
+                  )}
+                  {b.kind === 'text' && (
+                    <Input
+                      placeholder="Free text…"
+                      value={b.text}
+                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                      spellCheck={false}
+                      autoComplete="off"
+                      data-gramm="false"
+                    />
+                  )}
+                  {b.kind === 'step' && (
+                    <StepCard
+                      block={b}
+                      update={(fn) => updateBlock(b.id, fn as any)}
+                      setFocusedRef={focusBlock(b.id)}
+                      symbolPopover={symbolPopover}
+                      insertAtCursor={insertAtCursor}
+                    />
+                  )}
+                </BlockShell>
                 {b.kind === 'step' && (
-                  <StepCard
-                    block={b}
-                    update={(fn) => updateBlock(b.id, fn as any)}
-                    setFocusedRef={focusBlock(b.id)}
-                    symbolPopover={symbolPopover}
-                    insertAtCursor={insertAtCursor}
-                  />
+                  <div className="mt-2 flex justify-end">
+                    {addKeyboardButton(b.id)}
+                  </div>
                 )}
-              </BlockShell>
+                {b.kind === 'step' && renderKeyboardsFor(b.id)}
+              </div>
             ))}
+
       </div>
     </div>
   );
@@ -631,42 +700,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         </div>
       ))}
 
-      {keyboardIds.map((kid, i) => (
-        <div key={kid} className="rounded-lg border border-border/40 bg-black px-3 py-2">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-              Keyboard {i + 1}
-            </span>
-            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboard(kid)}>
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
-          <HorizontalKeyboard
-            keys={DEFAULT_KEYBOARD}
-            onKeyPress={(k) => {
-              if (k === '⌫') {
-                const el = focusedRef;
-                if (el && 'value' in el) {
-                  const start = el.selectionStart ?? el.value.length;
-                  if (start > 0) {
-                    const next = el.value.slice(0, start - 1) + el.value.slice(el.selectionEnd ?? start);
-                    const setter = Object.getOwnPropertyDescriptor(
-                      el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
-                      'value',
-                    )?.set;
-                    setter?.call(el, next);
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                    requestAnimationFrame(() => el.setSelectionRange(start - 1, start - 1));
-                  }
-                }
-                return;
-              }
-              insertAtCursor(k === 'a/b' ? '/' : k);
-            }}
-          />
-          <p className="mt-1.5 text-center text-[10px] text-muted-foreground">Click a field above, then tap a key.</p>
-        </div>
-      ))}
+
 
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">

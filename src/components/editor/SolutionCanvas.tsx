@@ -543,6 +543,26 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Button>
   );
 
+  const keyboardToggleButton = (blockId: string) => {
+    const hasKeyboards = (keyboardIdsByBlock[blockId] ?? []).length > 0;
+    return (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          if (hasKeyboards) {
+            setKeyboardIdsByBlock((prev) => ({ ...prev, [blockId]: [] }));
+          } else {
+            addKeyboardTo(blockId);
+          }
+        }}
+        className="h-7 gap-1 px-2 text-xs"
+      >
+        {hasKeyboards ? 'Hide Keyboard' : <><Keyboard className="h-3.5 w-3.5" /> Add Keyboard</>}
+      </Button>
+    );
+  };
+
 
 
   const renderSolutionBox = (section: CanvasSection) => (

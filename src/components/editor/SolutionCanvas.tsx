@@ -557,7 +557,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
             <Type className="h-3.5 w-3.5" /> Text
           </Button>
           {symbolPopover}
-          {keyboardButton}
+
           <div className="ml-auto text-xs text-muted-foreground">
             {section.blocks.length} block{section.blocks.length === 1 ? '' : 's'}
           </div>

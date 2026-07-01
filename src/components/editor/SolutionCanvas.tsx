@@ -840,6 +840,16 @@ function PreviewItem({
     return <span className="whitespace-pre text-xs leading-none text-foreground/80">{item.text}</span>;
   }
   if (item.kind === 'box') {
+    const authored = (item.value ?? '').trim();
+    // Symbol boxes are author-authored static glyphs (operators, symbols) —
+    // render them as inline text so they are visible in preview.
+    if (item.size === 'sym' && authored.length > 0) {
+      return (
+        <span className="inline-flex items-center px-0.5 font-mono text-xs leading-none text-foreground align-middle">
+          {authored}
+        </span>
+      );
+    }
     const v = getVal(item.id, '');
     const w = item.width ?? BOX_PX[item.size].w;
     const h = item.height ?? BOX_PX[item.size].h;

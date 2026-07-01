@@ -484,7 +484,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     </Popover>
   );
 
-  const renderKeyboardsFor = (blockId: string) => {
+  const renderKeyboardsFor = (blockId: string, showRemove = true) => {
     const ids = keyboardIdsByBlock[blockId] ?? [];
     if (ids.length === 0) return null;
     return (
@@ -495,9 +495,11 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
               <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Keyboard {i + 1}
               </span>
-              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
-                <Trash2 className="h-3 w-3" />
-              </Button>
+              {showRemove && (
+                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => removeKeyboardFrom(blockId, kid)}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              )}
             </div>
             <HorizontalKeyboard
               keys={DEFAULT_KEYBOARD}

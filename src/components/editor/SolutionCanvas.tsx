@@ -863,9 +863,10 @@ function PreviewItem({
   }
   if (item.kind === 'box') {
     const authored = (item.value ?? '').trim();
-    // Symbol boxes are author-authored static glyphs (operators, symbols) —
-    // render them as inline text so they are visible in preview.
-    if (item.size === 'sym' && authored.length > 0) {
+    // Symbol boxes (or any small box containing only math symbols) are
+    // author-authored static glyphs — render them as inline text so they are
+    // visible in preview.
+    if (isStaticSymbolBox(item)) {
       return (
         <span className="inline-flex items-center px-0.5 font-mono text-xs leading-none text-foreground align-middle">
           {authored}

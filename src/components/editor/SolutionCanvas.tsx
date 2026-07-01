@@ -604,52 +604,66 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
                       </div>
                     </div>
                   )}
+                  {b.kind === 'step' && (
+                    <div className="flex justify-end pt-1">
+                      {addKeyboardButton(b.id)}
+                    </div>
+                  )}
+                  {b.kind === 'step' && renderKeyboardsFor(b.id)}
                 </div>
               );
             })
           : section.blocks.map((b, idx) => (
-              <BlockShell
-                key={b.id}
-                onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
-                onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
-                onDelete={() => removeBlock(b.id)}
-                onDuplicate={() => duplicateBlock(b.id)}
-                label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
-              >
-                {b.kind === 'heading' && (
-                  <Input
-                    placeholder="e.g. Estimate, Round & Set up…"
-                    value={b.text}
-                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                    onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
-                    spellCheck={false}
-                    autoComplete="off"
-                    data-gramm="false"
-                  />
-                )}
-                {b.kind === 'text' && (
-                  <Input
-                    placeholder="Free text…"
-                    value={b.text}
-                    onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                    onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                    spellCheck={false}
-                    autoComplete="off"
-                    data-gramm="false"
-                  />
-                )}
+              <div key={b.id}>
+                <BlockShell
+                  onUp={idx > 0 ? () => moveBlockInSection(section.key, b.id, -1) : undefined}
+                  onDown={idx < section.blocks.length - 1 ? () => moveBlockInSection(section.key, b.id, 1) : undefined}
+                  onDelete={() => removeBlock(b.id)}
+                  onDuplicate={() => duplicateBlock(b.id)}
+                  label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
+                >
+                  {b.kind === 'heading' && (
+                    <Input
+                      placeholder="e.g. Estimate, Round & Set up…"
+                      value={b.text}
+                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                      className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
+                      spellCheck={false}
+                      autoComplete="off"
+                      data-gramm="false"
+                    />
+                  )}
+                  {b.kind === 'text' && (
+                    <Input
+                      placeholder="Free text…"
+                      value={b.text}
+                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                      spellCheck={false}
+                      autoComplete="off"
+                      data-gramm="false"
+                    />
+                  )}
+                  {b.kind === 'step' && (
+                    <StepCard
+                      block={b}
+                      update={(fn) => updateBlock(b.id, fn as any)}
+                      setFocusedRef={focusBlock(b.id)}
+                      symbolPopover={symbolPopover}
+                      insertAtCursor={insertAtCursor}
+                    />
+                  )}
+                </BlockShell>
                 {b.kind === 'step' && (
-                  <StepCard
-                    block={b}
-                    update={(fn) => updateBlock(b.id, fn as any)}
-                    setFocusedRef={focusBlock(b.id)}
-                    symbolPopover={symbolPopover}
-                    insertAtCursor={insertAtCursor}
-                  />
+                  <div className="mt-2 flex justify-end">
+                    {addKeyboardButton(b.id)}
+                  </div>
                 )}
-              </BlockShell>
+                {b.kind === 'step' && renderKeyboardsFor(b.id)}
+              </div>
             ))}
+
       </div>
     </div>
   );

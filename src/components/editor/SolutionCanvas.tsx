@@ -28,11 +28,21 @@ import {
   StepItem,
   SYMBOLS,
 } from './canvasTypes';
+import {
+  analyzeStep,
+  answersEquivalent,
+  collectStepBoxes,
+  isStaticSymbolBox,
+  localGuidance,
+  type PreviousStepEvidence,
+} from './checkWorkValidation';
 
 interface Props {
   value?: TCanvas;
   onChange: (next: TCanvas) => void;
   hints?: string[];
+  questionText?: string;
+  markingCriteria?: Record<string, string>;
   previewMode?: boolean;
 }
 
@@ -133,179 +143,7 @@ function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
   return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
 }
 
-// Normalize answer string for comparison
-const normAns = (s: string) =>
-  (s ?? '')
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '')
-    .replace(/[,]/g, '')
-    .replace(/\*/g, '×')
-    .replace(/\//g, '÷');
-
-const answersEqual = (a: string, b: string) => {
-  const na = normAns(a);
-  const nb = normAns(b);
-  if (na === nb) return true;
-  const fa = parseFloat(na);
-  const fb = parseFloat(nb);
-  if (!isNaN(fa) && !isNaN(fb) && Math.abs(fa - fb) < 1e-6) return true;
-  return false;
-};
-
-// --- Mathematical-consistency evaluator ---------------------------------
-// Turns a step's items (with the student's current values) into a math
-// expression string and evaluates each side of `=` to decide if the line is
-// mathematically consistent. Returns 'correct' when every `=`-separated side
-// evaluates to the same number, 'incorrect' when they differ, 'unknown' when
-// the expression cannot be parsed / has empty fillable boxes / has no `=`.
-function buildStepExpression(items: StepItem[], values: Record<string, string>): string {
-  const walk = (list: StepItem[]): string => list.map((it) => {
-    if (it.kind === 'text') return ` ${it.text} `;
-    if (it.kind === 'box') {
-      if (isStaticSymbolBox(it)) return ` ${(it.value ?? '').trim()} `;
-      const v = (values[it.id] ?? '').trim();
-      return v ? ` ${v} ` : ' ▢ ';
-    }
-    if (it.kind === 'fraction') return ` ((${walk(it.num)})/(${walk(it.den)})) `;
-    return '';
-  }).join('');
-  return walk(items);
-}
-
-function tokensToJs(expr: string): string {
-  let s = expr;
-  s = s.replace(/(\d),(?=\d{3}(\D|$))/g, '$1');
-  s = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-  s = s.replace(/π/g, '(Math.PI)');
-  s = s.replace(/²/g, '**2').replace(/³/g, '**3').replace(/⁴/g, '**4');
-  s = s.replace(/½/g, '(1/2)').replace(/¼/g, '(1/4)').replace(/¾/g, '(3/4)')
-       .replace(/⅓/g, '(1/3)').replace(/⅔/g, '(2/3)');
-  s = s.replace(/√\s*\(/g, 'Math.sqrt(');
-  s = s.replace(/√\s*([0-9.]+)/g, 'Math.sqrt($1)');
-  s = s.replace(/(\d+(?:\.\d+)?)\s*%/g, '($1/100)');
-  return s;
-}
-
-function safeEval(js: string): number | null {
-  if (!js.trim()) return null;
-  // Allow only digits, math ops, dots, parens, commas, spaces, and
-  // Math.sqrt / Math.PI tokens.
-  const stripped = js.replace(/Math\.sqrt/g, '').replace(/Math\.PI/g, '');
-  if (!/^[\d\s+\-*/().,]*$/.test(stripped.replace(/\*\*/g, ''))) return null;
-  try {
-    // eslint-disable-next-line no-new-func
-    const val = Function(`"use strict"; return (${js});`)();
-    if (typeof val === 'number' && isFinite(val)) return val;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function evaluateStepEquation(
-  items: StepItem[],
-  values: Record<string, string>,
-  priorResults: number[] = [],
-): 'correct' | 'incorrect' | 'notation' | 'unknown' {
-  const raw = buildStepExpression(items, values);
-  if (raw.includes('▢')) return 'unknown';
-  // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".
-  const parts = raw
-    .split('=')
-    .map((p) => p.trim())
-    .filter((p) => p && /\d/.test(p));
-  if (parts.length === 0) return 'unknown';
-  const nums: number[] = [];
-  for (const p of parts) {
-    const n = safeEval(tokensToJs(p));
-    if (n === null) return 'unknown';
-    nums.push(n);
-  }
-  // Multi-sided equation: every side must agree.
-  if (nums.length >= 2) {
-    const agree = (a: number, b: number) => {
-      const tol = Math.max(1e-4, Math.max(Math.abs(a), Math.abs(b)) * 1e-3);
-      return Math.abs(a - b) <= tol;
-    };
-    const ref = nums[0];
-    let allMatch = true;
-    for (const n of nums) if (!agree(n, ref)) { allMatch = false; break; }
-    if (allMatch) return 'correct';
-    // Percentage-aware retry: a step like "23 × 36400 = 8372" really means
-    // 23% × 36400 = 8372. If any integer side in [1..100] could be a
-    // percentage (a common student shorthand where "%" is dropped), try
-    // scaling by /100 and check whether all sides then agree.
-    const variants = (n: number): number[] => {
-      const opts = new Set<number>([n]);
-      if (Number.isInteger(n) && n > 0 && n <= 100) opts.add(n / 100);
-      return [...opts];
-    };
-    const tryAlign = (idx: number, chosen: number[]): boolean => {
-      if (idx === nums.length) {
-        const r = chosen[0];
-        return chosen.every((c) => agree(c, r));
-      }
-      for (const v of variants(nums[idx])) {
-        chosen.push(v);
-        if (tryAlign(idx + 1, chosen)) return true;
-        chosen.pop();
-      }
-      return false;
-    };
-    if (tryAlign(0, [])) return 'notation';
-    return 'incorrect';
-  }
-  // Single-sided expression (e.g. "36400 − 8372" or a labelled answer
-  // "Number of People = 28028"). If prior steps produced numeric results,
-  // the single value MUST match one of them (it's meant to be a
-  // continuation). Otherwise there's no baseline to judge against.
-  const val = nums[0];
-  if (priorResults.length) {
-    const tol = Math.max(1e-4, Math.abs(val) * 1e-4);
-    for (const pr of priorResults) if (Math.abs(pr - val) <= tol) return 'correct';
-    return 'incorrect';
-  }
-  return 'correct';
-}
-
-// Set of symbol characters that identify "static display" boxes (operators,
-// math symbols, punctuation). If a box's authored value contains only these
-// characters, it is rendered as inline static text in preview instead of a
-// fillable input, and is skipped during validation.
-const STATIC_SYMBOL_CHARS = new Set<string>([
-  ...SYMBOLS,
-  ' ', '\t',
-]);
-
-export function isStaticSymbolBox(item: StepItem): boolean {
-  if (item.kind !== 'box') return false;
-  if (item.size === 'sym') return (item.value ?? '').trim().length > 0;
-  const v = (item.value ?? '').trim();
-  if (!v || v.length > 4) return false;
-  for (const ch of v) if (!STATIC_SYMBOL_CHARS.has(ch)) return false;
-  return true;
-}
-
-// Collect [boxId, expectedValue] pairs from a step block's items, recursing fractions.
-// Static-symbol boxes are excluded — they are display-only and not user input.
-function collectBoxes(items: StepItem[]): Array<{ id: string; expected: string }> {
-  const out: Array<{ id: string; expected: string }> = [];
-  const walk = (list: StepItem[]) => {
-    for (const it of list) {
-      if (it.kind === 'box') {
-        if (isStaticSymbolBox(it)) continue;
-        out.push({ id: it.id, expected: it.value ?? '' });
-      }
-      else if (it.kind === 'fraction') { walk(it.num); walk(it.den); }
-    }
-  };
-  walk(items);
-  return out;
-}
-
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], questionText = '', markingCriteria, previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
     const normalized = normalizeCanvas(value ?? empty);
@@ -356,14 +194,14 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number } => {
     const stats = { total: 0, correct: 0, incorrect: 0, empty: 0 };
     if (block.kind !== 'step') return stats;
-    const boxes = collectBoxes(block.items);
+    const boxes = collectStepBoxes(block.items);
     const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
     for (const { id, expected } of boxes) {
       if (!expected) continue; // skip boxes with no authored expected answer
       stats.total++;
       const v = (previewValues[id] ?? '').trim();
       if (!v) { stats.empty++; continue; }
-      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
+      if (answersEquivalent(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[id] = 'incorrect'; }
     }
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
@@ -381,225 +219,85 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
     return render(block.items);
   };
 
-  const handleCheckBlock = async (block: CanvasBlock, questionText?: string, hints?: string[]) => {
+  const handleCheckBlock = async (block: CanvasBlock, sectionQuestionText?: string, sectionHints?: string[]) => {
     if (block.kind !== 'step') return;
-    const boxes = collectBoxes(block.items);
-    const stats = { total: boxes.length, correct: 0, incorrect: 0, empty: 0 };
-    const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
-    const userAnswers: Record<string, string> = {};
-    const correctAnswers: Record<string, string> = {};
-    const keyToBoxId: Record<string, string> = {};
-    let checkedAgainstExpected = 0;
-    let filledCount = 0;
-    boxes.forEach((b, i) => {
-      const v = (previewValues[b.id] ?? '').trim();
-      const key = `box_${i + 1}`;
-      keyToBoxId[key] = b.id;
-      const expected = (b.expected ?? '').trim();
-      userAnswers[key] = v;
-      if (expected) correctAnswers[key] = expected;
-      if (!v) { stats.empty++; return; }
-      filledCount++;
-      if (!expected) return;
-      checkedAgainstExpected++;
-      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
-      else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
+    const boxes = collectStepBoxes(block.items);
+    if (boxes.length === 0) {
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: 'No fillable boxes in this step yet.' } }));
+      return;
+    }
+
+    const activeQuestion = sectionQuestionText || questionText || 'Solve the problem above.';
+    const owningSection = sections.find((section) => section.blocks.some((candidate) => candidate.id === block.id));
+    const priorLines: string[] = [];
+    let previousEvidence: PreviousStepEvidence | undefined;
+
+    if (owningSection) {
+      for (const candidate of owningSection.blocks) {
+        if (candidate.id === block.id) break;
+        if (candidate.kind !== 'step') continue;
+        const line = stepToText(candidate, previewValues).trim();
+        if (!line || line.includes('▢')) continue;
+        const evidence = analyzeStep(candidate.items, previewValues, previousEvidence, activeQuestion);
+        previousEvidence = { result: evidence.result, hasOriginalError: evidence.hasOriginalError || previousEvidence?.hasOriginalError === true };
+        priorLines.push(`${line} [${evidence.category}]`);
+      }
+    }
+
+    const evidence = analyzeStep(block.items, previewValues, previousEvidence, activeQuestion);
+    const deterministicFeedback: Record<string, 'correct' | 'incorrect'> = {};
+    Object.values(evidence.boxes).forEach((box) => {
+      if (box.verdict === 'correct') deterministicFeedback[box.id] = 'correct';
+      if (box.verdict === 'incorrect') deterministicFeedback[box.id] = 'incorrect';
+    });
+    setPreviewFeedback((current) => {
+      const next = { ...current };
+      boxes.forEach((box) => delete next[box.id]);
+      return { ...next, ...deterministicFeedback };
     });
 
-    // Collect prior-step numeric results (in this section) so that a single
-    // expression like "36400 − 8372" or a labelled answer like
-    // "Number of People = 28028" can be recognised as a valid continuation.
-    const owningSectionForPrior = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
-    const priorResults: number[] = [];
-    if (owningSectionForPrior) {
-      for (const bb of owningSectionForPrior.blocks) {
-        if (bb.id === block.id) break;
-        if (bb.kind !== 'step') continue;
-        const expr = buildStepExpression(bb.items, previewValues);
-        if (expr.includes('▢')) continue;
-        for (const p of expr.split('=').map((x) => x.trim()).filter((x) => x && /\d/.test(x))) {
-          const n = safeEval(tokensToJs(p));
-          if (n !== null) priorResults.push(n);
-        }
-      }
-    }
-    // --- Math-consistency check (source of truth when the step is an equation).
-    // If the mathematical calculation is fully valid, mark every filled box
-    // correct regardless of the authored expected values.
-    const mathVerdict = evaluateStepEquation(block.items, previewValues, priorResults);
-    if (mathVerdict === 'correct') {
-      const overrideFb: Record<string, 'correct'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v) overrideFb[b.id] = 'correct';
-      });
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
-      return;
-    }
-    // Helper: split step items into sides by top-level `=` text tokens, and
-    // return each side's evaluated value plus the ids of its fillable boxes.
-    const splitSides = (): Array<{ value: number | null; boxIds: string[] }> => {
-      const sides: Array<{ items: StepItem[]; boxIds: string[] }> = [{ items: [], boxIds: [] }];
-      for (const it of block.items) {
-        if (it.kind === 'text' && it.text.includes('=')) {
-          const segs = it.text.split('=');
-          for (let i = 0; i < segs.length; i++) {
-            if (segs[i].trim()) sides[sides.length - 1].items.push({ ...it, text: segs[i] });
-            if (i < segs.length - 1) sides.push({ items: [], boxIds: [] });
-          }
-          continue;
-        }
-        const side = sides[sides.length - 1];
-        side.items.push(it);
-        if (it.kind === 'box' && !isStaticSymbolBox(it)) side.boxIds.push(it.id);
-        else if (it.kind === 'fraction') {
-          const collect = (list: StepItem[]) => {
-            for (const x of list) {
-              if (x.kind === 'box' && !isStaticSymbolBox(x)) side.boxIds.push(x.id);
-              else if (x.kind === 'fraction') { collect(x.num); collect(x.den); }
-            }
-          };
-          collect(it.num); collect(it.den);
-        }
-      }
-      return sides.map((s) => {
-        const expr = buildStepExpression(s.items, previewValues);
-        const val = expr.includes('▢') ? null : safeEval(tokensToJs(expr));
-        return { value: val, boxIds: s.boxIds };
-      });
-    };
-
-    if (mathVerdict === 'notation') {
-      // Only mark the RESULT-side boxes red (student's answer notation),
-      // leaving operand boxes untouched.
-      const sidesN = splitSides();
-      const wrongIds = new Set<string>(sidesN.length > 1 ? sidesN[sidesN.length - 1].boxIds : sidesN.flatMap((s) => s.boxIds));
-      const overrideFb: Record<string, 'incorrect'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
-      });
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Check the notation of your percentage — a percent value must be written with the % sign or converted to its decimal form (e.g. 45% → 0.45) before multiplying.` } }));
-      return;
-    }
-    if (mathVerdict === 'incorrect') {
-      // Find the disagreeing side(s): the majority of sides that agree are
-      // treated as "trusted"; boxes on the odd side(s) get flagged red.
-      const sidesI = splitSides().filter((s) => s.value !== null) as Array<{ value: number; boxIds: string[] }>;
-      const wrongIds = new Set<string>();
-      if (sidesI.length >= 2) {
-        const tol = (x: number) => Math.max(1e-4, Math.abs(x) * 1e-3);
-        // group by approximate value
-        const groups: Array<{ value: number; sides: typeof sidesI }> = [];
-        for (const s of sidesI) {
-          const g = groups.find((gr) => Math.abs(gr.value - s.value) <= tol(gr.value));
-          if (g) g.sides.push(s); else groups.push({ value: s.value, sides: [s] });
-        }
-        // largest group = "trusted"; everything else is wrong
-        groups.sort((a, b) => b.sides.length - a.sides.length);
-        const trusted = groups[0];
-        for (const g of groups) {
-          if (g === trusted) continue;
-          for (const s of g.sides) s.boxIds.forEach((id) => wrongIds.add(id));
-        }
-        // If nothing got flagged (all sides tied but disagree pairwise — rare),
-        // fall back to flagging the last side (the student's stated result).
-        if (wrongIds.size === 0) sidesI[sidesI.length - 1].boxIds.forEach((id) => wrongIds.add(id));
-      } else {
-        boxes.forEach((b) => wrongIds.add(b.id));
-      }
-      const overrideFb: Record<string, 'incorrect'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
-      });
-      Object.assign(fbUpdate, overrideFb);
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-    }
-
-    setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
-
-    if (stats.total === 0) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'No fillable boxes in this step yet.' } }));
-      return;
-    }
-    if (filledCount === 0) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Fill in the boxes in this step before checking.' } }));
-      return;
-    }
-    const everyBoxHasExpectedAnswer = checkedAgainstExpected === stats.total;
-    const allCorrect = mathVerdict !== 'incorrect' && everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
-    if (allCorrect) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
-      return;
-    }
-
-    // Build previous-steps context so the AI can judge this step as a
-    // logical continuation of the student's prior work rather than in
-    // isolation.
-    const owningSection = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
-    const priorLines: string[] = [];
-    if (owningSection) {
-      for (const bb of owningSection.blocks) {
-        if (bb.id === block.id) break;
-        if (bb.kind !== 'step') continue;
-        const line = stepToText(bb, previewValues).trim();
-        if (!line || line.includes('▢')) continue;
-        const verdict = evaluateStepEquation(bb.items, previewValues);
-        const numericVal = safeEval(tokensToJs(buildStepExpression(bb.items, previewValues)));
-        const tag = verdict === 'correct' ? ' [checks out]' : verdict === 'incorrect' ? ' [inconsistent]' : (numericVal !== null ? ` [evaluates to ${numericVal}]` : '');
-        priorLines.push(`${line}${tag}`);
-      }
-    }
-    const currentLine = stepToText(block, previewValues).trim();
-    const currentValue = safeEval(tokensToJs(buildStepExpression(block.items, previewValues)));
-    const previousStepsContext = priorLines.length
-      ? `PRIOR STEPS in this question (in order):\n${priorLines.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nCURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`
-      : `CURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`;
-
-    // Call AI tutor for guidance + per-box assessments
     const attempt = (attemptCountRef.current[block.id] || 0) + 1;
     attemptCountRef.current[block.id] = attempt;
+    const fallback = localGuidance(evidence.category, attempt);
+    if (evidence.category === 'correct' || evidence.category === 'incomplete') {
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: fallback } }));
+      return;
+    }
+
+    const currentLine = stepToText(block, previewValues).trim();
     setLoadingStepId(block.id);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
-          question: questionText || 'Solve the problem above.',
+          question: activeQuestion,
           actionType: 'checkWork',
-          userAnswers,
-          correctAnswers,
           topic: 'Mathematics',
-          hints: hints || [],
+          hints: sectionHints || hints,
           attemptCount: attempt,
-          hasMissing: stats.empty > 0,
-          hasWrong: stats.incorrect > 0,
-          evaluateNeutral: true,
-          specificPart: `Judge whether the CURRENT STEP is a mathematically valid continuation of the PRIOR STEPS. If it is, mark every filled box "correct". Only mark boxes "incorrect" when the current step is genuinely inconsistent with the prior working or with valid mathematics.`,
-          workingContent: previousStepsContext,
+          markingCriteria,
           previousFeedback: previousFeedbackRef.current[block.id] || [],
+          workingContent: priorLines.length
+            ? `PRIOR STEPS in order:\n${priorLines.map((line, index) => `${index + 1}. ${line}`).join('\n')}\nCURRENT STEP: ${currentLine}`
+            : `CURRENT STEP: ${currentLine}`,
+          deterministicDiagnosis: {
+            verdict: evidence.verdict,
+            category: evidence.category,
+            summary: evidence.summary,
+            affectedBoxKeys: boxes
+              .map((box, index) => evidence.affectedBoxIds.includes(box.id) ? `box_${index + 1}` : null)
+              .filter(Boolean),
+            internallyConsistent: evidence.internallyConsistent,
+            propagatedFromEarlierError: evidence.category === 'propagated_error',
+          },
         },
       });
       if (error) throw error;
-      const hint = data?.hint || 'Review the highlighted boxes and re-check your working.';
-      const assessments = (data?.assessments || {}) as Record<string, 'correct' | 'incorrect'>;
-      const aiFb: Record<string, 'correct' | 'incorrect'> = {};
-      for (const [key, verdict] of Object.entries(assessments)) {
-        const id = keyToBoxId[key];
-        if (!id) continue;
-        // Local exact-match wins (already in fbUpdate); only fill what we didn't already grade.
-        if (fbUpdate[id]) continue;
-        const v = (previewValues[id] ?? '').trim();
-        if (!v) continue;
-        aiFb[id] = verdict;
-      }
-      if (Object.keys(aiFb).length) setPreviewFeedback((p) => ({ ...p, ...aiFb }));
+      const hint = typeof data?.hint === 'string' && data.hint.trim() ? data.hint.trim() : fallback;
       previousFeedbackRef.current[block.id] = [...(previousFeedbackRef.current[block.id] || []), hint].slice(-5);
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: hint } }));
-    } catch (e) {
-      console.error('Check work error:', e);
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Review the highlighted boxes and re-check your working carefully.' } }));
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: hint } }));
+    } catch (error) {
+      console.error('Check work error:', error);
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: fallback } }));
     } finally {
       setLoadingStepId(null);
     }

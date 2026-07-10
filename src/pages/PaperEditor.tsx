@@ -313,6 +313,8 @@ export default function PaperEditor() {
             <SolutionCanvas
               value={draft.solutionCanvas}
               hints={draft.hints}
+              questionText={draft.question}
+              markingCriteria={draft.markingCriteria}
               previewMode={viewMode === 'preview'}
               onChange={(next) => update((d) => { (d as any).solutionCanvas = next; })}
             />

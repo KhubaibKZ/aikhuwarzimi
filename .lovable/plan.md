@@ -1,52 +1,52 @@
-# Editor: Multiple Question Blocks + Solution Keyboard
+## Goal
+Make every Book-icon check in editor preview evaluate the student’s current step and its logical connection to earlier work, color only the relevant boxes, and provide specific adaptive guidance without revealing an answer.
 
-Two focused additions to the in-workspace editor (left "Question" pane and right "Solution" canvas).
+## Implementation plan
 
-## 1. Multiple Question Blocks (left pane)
+1. **Create one deterministic step-analysis engine**
+   - Extract the parsing and grading logic from `SolutionCanvas.tsx` into a pure, testable module.
+   - Parse each step into mathematical sides while retaining which input box contributed each value.
+   - Support the editor’s common forms: arithmetic, brackets, fractions, percentages, roots, powers, equivalent decimals/fractions, tolerances, and answer-key alternatives.
+   - Return a structured result per box and step: `correct`, `incorrect`, `empty`, or `unverified`, plus an error category and non-answer diagnostic context.
 
-Today the question area shows **one** editable question text + one optional uploaded SVG. We'll let admins append additional question blocks — each block is an independent unit with its own text, math/symbols toolbar, and SVG upload.
+2. **Evaluate evidence in a strict order**
+   - Check each filled box independently against its authored expected value/equivalent alternatives.
+   - Check the mathematical relationship inside the current line.
+   - Check continuity only against the immediately relevant preceding validated step and the question’s stated data—not against an undifferentiated pool of every earlier number.
+   - Recognize a valid intermediate result without requiring it to equal the final answer.
+   - Track the original error separately from valid error-carried working so the same misconception is not penalized repeatedly.
+   - Never mark a box green unless its value is positively verified, and never mark unrelated boxes red. Ambiguous/unparseable fields remain neutral rather than receiving a false judgment.
 
-**Data model** (stored on the question override, same path as `diagramSvgMarkup`):
-```
-extraQuestionBlocks: Array<{
-  id: string;
-  text: string;            // contentEditable, supports [[num/den]] + symbols
-  svgMarkup?: string;      // optional uploaded SVG
-}>
-```
-Backward compatible — absent on existing questions, treated as `[]`.
+3. **Make box coloring fully deterministic**
+   - Remove AI authority over red/green states; AI output will not be allowed to overwrite local mathematical evidence.
+   - If only the result is wrong, only the result box is red while verified operands stay green.
+   - If an operand, sign, percentage notation, or fraction component is wrong, mark only the box(es) responsible.
+   - Clear stale states whenever a student edits a field and recompute all relevant statuses on every click.
 
-**UI in `PastPaperWorkspace.tsx` (edit mode only):**
-- The existing default question text + SVG upload stays exactly as-is (block #1, always present).
-- Below it, render each `extraQuestionBlocks[i]` as a card containing:
-  - `InlineMathToolbar` (same symbols + `[[num/den]]` + Upload/Remove SVG buttons it already exposes)
-  - `InlineEditableText multiline` bound to that block's `text`
-  - The block's `svgMarkup` rendered with `themeSvgMarkup(...)` (same path used for `diagramSvgMarkup`)
-  - A small header row with ↑ / ↓ / 🗑 controls
-- An "**+ Add question block**" button at the bottom of the question section.
+4. **Use AI only for adaptive pedagogy**
+   - Send the backend a structured, deterministic diagnosis containing the current step, ordered prior steps, question context, error category, affected box roles, attempt number, and prior feedback—but never expose expected answers in the student-facing response.
+   - Require exactly two short student-friendly sentences: identify the specific issue, then give a Socratic next-check without an answer or exact next calculation.
+   - On repeated clicks, vary the guidance and progressively name the relevant rule or method more directly while still withholding the solution.
+   - Add safe local feedback for unavailable or malformed AI responses, based on the deterministic diagnosis rather than a generic or potentially contradictory message.
 
-**Preview / student mode** (non-edit): render each extra block as a read-only `<QuestionText>` followed by its SVG, stacked under the main question — so students see the additional prompts and diagrams in order.
+5. **Provide the full question context**
+   - Pass the active editor question, hints, and marking criteria into `SolutionCanvas`, including the first section where no embedded question block currently exists.
+   - Keep each question section isolated so prior work from another question cannot influence its validation.
 
-## 2. Keyboard option in the Solution canvas toolbar
+6. **Add regression tests for known failures and core maths patterns**
+   - Verify cases such as a correct percentage step, omitted/misused percentage notation, a wrong result with correct operands, and a subtraction derived from the previous step where an unrelated value such as `20000` must be rejected.
+   - Cover equivalent fractions/decimals, commutative multiplication, negative values, roots/powers, multiple equals signs, blanks, malformed expressions, intermediate answers, and propagated errors.
+   - Test that only responsible boxes change color and that feedback never contains the expected/final numerical answer.
 
-`SolutionCanvas.tsx` already imports `HorizontalKeyboard` and uses it inside individual `StepCard`s. We'll surface it at the **canvas level** so it's available regardless of which field is focused.
+## Primary files
+- `src/components/editor/SolutionCanvas.tsx`
+- New pure validation module and focused tests under `src/components/editor/`
+- `src/pages/PaperEditor.tsx`
+- `supabase/functions/ai-tutor/index.ts`
 
-**Changes in `SolutionCanvas.tsx`:**
-- Add a new top-toolbar button next to *Part Heading / Step / Text / Symbols*:
-  - `<Button>` with the `Keyboard` icon (already imported) labelled "Keyboard", toggles a `kbOpen` state.
-- When open, render `<HorizontalKeyboard onKey={insertAtCursor} onClose={() => setKbOpen(false)} />` docked above the bottom Hint/Submit bar.
-- `insertAtCursor` already exists and routes keys to the last-focused input/textarea (covers heading, text, step boxes, fraction numerators/denominators).
-- Also expose this same toolbar button in `previewMode` so students get the keyboard while filling answers — that's the user-facing half of the request.
-
-## Files touched
-
-- `src/components/editor/canvasTypes.ts` — no change (question blocks live on the question override, not the solution canvas).
-- `src/lib/questionOverrides.ts` — extend the override shape to allow `extraQuestionBlocks`.
-- `src/components/PastPaperWorkspace.tsx` — render extra blocks (edit + preview), wire add/remove/reorder via `onEditField('extraQuestionBlocks', …)`.
-- `src/pages/PaperEditor.tsx` — pass through the new field on save (it already uses a generic `onEditField` mechanism, so likely only a type tweak).
-- `src/components/editor/SolutionCanvas.tsx` — add canvas-level Keyboard toggle button + docked `HorizontalKeyboard` panel; available in both edit and preview modes.
-
-## Out of scope
-
-- No changes to validation, scoring, or the StepCard-level mini-keyboard (kept as-is).
-- No schema/DB migration — overrides are JSONB and already accept arbitrary fields.
+## Acceptance criteria
+- Every Check Work click re-evaluates the current student work from fresh input.
+- Correct boxes are green, incorrect boxes are red, and unrelated/uncertain boxes are not falsely colored.
+- Step continuity uses the correct prior dependency and does not accept arbitrary earlier numbers.
+- Feedback identifies the actual mistake and gives a changing, student-friendly hint without supplying the answer.
+- Deterministic grading remains correct even if the AI request fails.

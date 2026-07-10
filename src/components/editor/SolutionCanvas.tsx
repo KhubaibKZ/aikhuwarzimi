@@ -254,7 +254,7 @@ export function evaluateStepEquation(
       }
       return false;
     };
-    if (tryAlign(0, [])) return 'correct';
+    if (tryAlign(0, [])) return 'notation';
     return 'incorrect';
   }
   // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):

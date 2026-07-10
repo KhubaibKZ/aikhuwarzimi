@@ -443,7 +443,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
         if (v) overrideFb[b.id] = 'incorrect';
       });
       setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Notation issue — a percentage cannot be used as a whole number in multiplication. Rewrite the percent value as "23%" or as its decimal form "0.23" before multiplying.` } }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Notation issue — a percentage cannot be multiplied as a whole number. Rewrite the percent as its decimal form (e.g. 45% → 0.45) or divide by 100 before multiplying.` } }));
       return;
     }
     if (mathVerdict === 'incorrect') {

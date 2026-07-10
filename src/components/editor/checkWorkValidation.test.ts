@@ -52,6 +52,35 @@ describe('analyzeStep', () => {
     expect(evidence.boxes.result.verdict).toBe('incorrect');
   });
 
+  it('rejects an internally calculable line when a question operand was copied incorrectly', () => {
+    const items = [box('whole'), text('minus', '−'), box('part')];
+    const evidence = analyzeStep(
+      items,
+      { whole: '3640', part: '8372' },
+      { result: 8372, hasOriginalError: false },
+      'Population 36400, 23% aged 18 and under. Find number over 18.',
+    );
+
+    expect(evidence.category).toBe('wrong_operand');
+    expect(evidence.boxes.whole.verdict).toBe('incorrect');
+    expect(evidence.boxes.part.verdict).toBe('correct');
+  });
+
+  it('accepts the same line when both operands come from trusted evidence', () => {
+    const items = [box('whole'), text('minus', '−'), box('part')];
+    const evidence = analyzeStep(
+      items,
+      { whole: '36400', part: '8372' },
+      { result: 8372, hasOriginalError: false },
+      'Population 36400, 23% aged 18 and under. Find number over 18.',
+    );
+
+    expect(evidence.category).toBe('correct');
+    expect(evidence.boxes.whole.verdict).toBe('correct');
+    expect(evidence.boxes.part.verdict).toBe('correct');
+    expect(evidence.result).toBe(28028);
+  });
+
   it('checks a labelled answer against only the immediately previous result', () => {
     const subtraction = [box('whole', '36400'), text('minus', '−'), box('part', '8372')];
     const prior = analyzeStep(subtraction, { whole: '36400', part: '8372' });
@@ -73,7 +102,12 @@ describe('analyzeStep', () => {
 
   it('keeps a valid propagated line green and points back to the original error', () => {
     const items = [box('whole'), text('minus', '−'), box('part')];
-    const evidence = analyzeStep(items, { whole: '36400', part: '8000' }, { result: 8000, hasOriginalError: true });
+    const evidence = analyzeStep(
+      items,
+      { whole: '36400', part: '8000' },
+      { result: 8000, hasOriginalError: true },
+      'Population 36400',
+    );
 
     expect(evidence.category).toBe('propagated_error');
     expect(evidence.verdict).toBe('correct');

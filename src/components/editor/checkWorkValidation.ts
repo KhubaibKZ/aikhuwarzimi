@@ -254,6 +254,7 @@ export function analyzeStep(
   const sourceBoxes = collectStepBoxes(items);
   const sides = evaluateSides(items, values);
   const trustedContextValues = contextNumbers(questionText, previous);
+  const isSingleSideCalculation = sides.length === 1 && hasCalculationOperator(sides[0]?.expression ?? '');
   const boxes: Record<string, BoxEvidence> = {};
   sourceBoxes.forEach((box) => {
     const value = (values[box.id] ?? '').trim();
@@ -270,10 +271,13 @@ export function analyzeStep(
 
   const finalSideIndex = Math.max(0, sides.length - 1);
   Object.values(boxes).forEach((box) => {
-    if (box.verdict !== 'unverified' || box.sideIndex >= finalSideIndex) return;
+    const isOperand = isSingleSideCalculation || box.sideIndex < finalSideIndex;
+    if (box.verdict !== 'unverified' || !isOperand) return;
     const number = safeEval(box.value);
-    if (number !== null && trustedContextValues.some((trusted) => approximatelyEqual(number, trusted))) {
-      box.verdict = 'correct';
+    if (number !== null) {
+      box.verdict = trustedContextValues.some((trusted) => approximatelyEqual(number, trusted))
+        ? 'correct'
+        : 'incorrect';
     }
   });
 
@@ -344,11 +348,13 @@ export function analyzeStep(
       affected = new Set();
       Object.values(boxes).forEach((box) => { if (box.value && box.verdict === 'unverified') box.verdict = 'correct'; });
     } else if (directWrong.length > 0) {
-      category = directWrong.some((box) => box.sideIndex < Math.max(0, sides.length - 1)) ? 'wrong_operand' : 'wrong_result';
+      category = isSingleSideCalculation
+        || directWrong.some((box) => box.sideIndex < Math.max(0, sides.length - 1))
+        ? 'wrong_operand'
+        : 'wrong_result';
     } else if (
       internallyConsistent === true
       || filled.every((box) => box.verdict === 'correct')
-      || (numericSides.length === 1 && hasCalculationOperator(numericSides[0].expression))
     ) {
       category = 'correct';
       if (internallyConsistent === true) {

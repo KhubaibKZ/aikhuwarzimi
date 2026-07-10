@@ -42,6 +42,16 @@ describe('analyzeStep', () => {
     expect(evidence.boxes.result.verdict).toBe('incorrect');
   });
 
+  it('uses question data to verify operands when authored answers are blank', () => {
+    const items = [box('rate'), text('multiply', '×'), box('total'), text('equals', '='), box('result')];
+    const evidence = analyzeStep(items, { rate: '0.23', total: '36400', result: '8000' }, undefined, '23% of a population of 36400');
+
+    expect(evidence.category).toBe('wrong_result');
+    expect(evidence.boxes.rate.verdict).toBe('correct');
+    expect(evidence.boxes.total.verdict).toBe('correct');
+    expect(evidence.boxes.result.verdict).toBe('incorrect');
+  });
+
   it('checks a labelled answer against only the immediately previous result', () => {
     const subtraction = [box('whole', '36400'), text('minus', '−'), box('part', '8372')];
     const prior = analyzeStep(subtraction, { whole: '36400', part: '8372' });

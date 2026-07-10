@@ -28,11 +28,22 @@ import {
   StepItem,
   SYMBOLS,
 } from './canvasTypes';
+import {
+  analyzeStep,
+  answersEquivalent,
+  buildStepExpression,
+  collectStepBoxes,
+  isStaticSymbolBox,
+  localGuidance,
+  type PreviousStepEvidence,
+} from './checkWorkValidation';
 
 interface Props {
   value?: TCanvas;
   onChange: (next: TCanvas) => void;
   hints?: string[];
+  questionText?: string;
+  markingCriteria?: Record<string, string>;
   previewMode?: boolean;
 }
 
@@ -133,179 +144,7 @@ function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
   return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
 }
 
-// Normalize answer string for comparison
-const normAns = (s: string) =>
-  (s ?? '')
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '')
-    .replace(/[,]/g, '')
-    .replace(/\*/g, '×')
-    .replace(/\//g, '÷');
-
-const answersEqual = (a: string, b: string) => {
-  const na = normAns(a);
-  const nb = normAns(b);
-  if (na === nb) return true;
-  const fa = parseFloat(na);
-  const fb = parseFloat(nb);
-  if (!isNaN(fa) && !isNaN(fb) && Math.abs(fa - fb) < 1e-6) return true;
-  return false;
-};
-
-// --- Mathematical-consistency evaluator ---------------------------------
-// Turns a step's items (with the student's current values) into a math
-// expression string and evaluates each side of `=` to decide if the line is
-// mathematically consistent. Returns 'correct' when every `=`-separated side
-// evaluates to the same number, 'incorrect' when they differ, 'unknown' when
-// the expression cannot be parsed / has empty fillable boxes / has no `=`.
-function buildStepExpression(items: StepItem[], values: Record<string, string>): string {
-  const walk = (list: StepItem[]): string => list.map((it) => {
-    if (it.kind === 'text') return ` ${it.text} `;
-    if (it.kind === 'box') {
-      if (isStaticSymbolBox(it)) return ` ${(it.value ?? '').trim()} `;
-      const v = (values[it.id] ?? '').trim();
-      return v ? ` ${v} ` : ' ▢ ';
-    }
-    if (it.kind === 'fraction') return ` ((${walk(it.num)})/(${walk(it.den)})) `;
-    return '';
-  }).join('');
-  return walk(items);
-}
-
-function tokensToJs(expr: string): string {
-  let s = expr;
-  s = s.replace(/(\d),(?=\d{3}(\D|$))/g, '$1');
-  s = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-  s = s.replace(/π/g, '(Math.PI)');
-  s = s.replace(/²/g, '**2').replace(/³/g, '**3').replace(/⁴/g, '**4');
-  s = s.replace(/½/g, '(1/2)').replace(/¼/g, '(1/4)').replace(/¾/g, '(3/4)')
-       .replace(/⅓/g, '(1/3)').replace(/⅔/g, '(2/3)');
-  s = s.replace(/√\s*\(/g, 'Math.sqrt(');
-  s = s.replace(/√\s*([0-9.]+)/g, 'Math.sqrt($1)');
-  s = s.replace(/(\d+(?:\.\d+)?)\s*%/g, '($1/100)');
-  return s;
-}
-
-function safeEval(js: string): number | null {
-  if (!js.trim()) return null;
-  // Allow only digits, math ops, dots, parens, commas, spaces, and
-  // Math.sqrt / Math.PI tokens.
-  const stripped = js.replace(/Math\.sqrt/g, '').replace(/Math\.PI/g, '');
-  if (!/^[\d\s+\-*/().,]*$/.test(stripped.replace(/\*\*/g, ''))) return null;
-  try {
-    // eslint-disable-next-line no-new-func
-    const val = Function(`"use strict"; return (${js});`)();
-    if (typeof val === 'number' && isFinite(val)) return val;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function evaluateStepEquation(
-  items: StepItem[],
-  values: Record<string, string>,
-  priorResults: number[] = [],
-): 'correct' | 'incorrect' | 'notation' | 'unknown' {
-  const raw = buildStepExpression(items, values);
-  if (raw.includes('▢')) return 'unknown';
-  // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".
-  const parts = raw
-    .split('=')
-    .map((p) => p.trim())
-    .filter((p) => p && /\d/.test(p));
-  if (parts.length === 0) return 'unknown';
-  const nums: number[] = [];
-  for (const p of parts) {
-    const n = safeEval(tokensToJs(p));
-    if (n === null) return 'unknown';
-    nums.push(n);
-  }
-  // Multi-sided equation: every side must agree.
-  if (nums.length >= 2) {
-    const agree = (a: number, b: number) => {
-      const tol = Math.max(1e-4, Math.max(Math.abs(a), Math.abs(b)) * 1e-3);
-      return Math.abs(a - b) <= tol;
-    };
-    const ref = nums[0];
-    let allMatch = true;
-    for (const n of nums) if (!agree(n, ref)) { allMatch = false; break; }
-    if (allMatch) return 'correct';
-    // Percentage-aware retry: a step like "23 × 36400 = 8372" really means
-    // 23% × 36400 = 8372. If any integer side in [1..100] could be a
-    // percentage (a common student shorthand where "%" is dropped), try
-    // scaling by /100 and check whether all sides then agree.
-    const variants = (n: number): number[] => {
-      const opts = new Set<number>([n]);
-      if (Number.isInteger(n) && n > 0 && n <= 100) opts.add(n / 100);
-      return [...opts];
-    };
-    const tryAlign = (idx: number, chosen: number[]): boolean => {
-      if (idx === nums.length) {
-        const r = chosen[0];
-        return chosen.every((c) => agree(c, r));
-      }
-      for (const v of variants(nums[idx])) {
-        chosen.push(v);
-        if (tryAlign(idx + 1, chosen)) return true;
-        chosen.pop();
-      }
-      return false;
-    };
-    if (tryAlign(0, [])) return 'notation';
-    return 'incorrect';
-  }
-  // Single-sided expression (e.g. "36400 − 8372" or a labelled answer
-  // "Number of People = 28028"). If prior steps produced numeric results,
-  // the single value MUST match one of them (it's meant to be a
-  // continuation). Otherwise there's no baseline to judge against.
-  const val = nums[0];
-  if (priorResults.length) {
-    const tol = Math.max(1e-4, Math.abs(val) * 1e-4);
-    for (const pr of priorResults) if (Math.abs(pr - val) <= tol) return 'correct';
-    return 'incorrect';
-  }
-  return 'correct';
-}
-
-// Set of symbol characters that identify "static display" boxes (operators,
-// math symbols, punctuation). If a box's authored value contains only these
-// characters, it is rendered as inline static text in preview instead of a
-// fillable input, and is skipped during validation.
-const STATIC_SYMBOL_CHARS = new Set<string>([
-  ...SYMBOLS,
-  ' ', '\t',
-]);
-
-export function isStaticSymbolBox(item: StepItem): boolean {
-  if (item.kind !== 'box') return false;
-  if (item.size === 'sym') return (item.value ?? '').trim().length > 0;
-  const v = (item.value ?? '').trim();
-  if (!v || v.length > 4) return false;
-  for (const ch of v) if (!STATIC_SYMBOL_CHARS.has(ch)) return false;
-  return true;
-}
-
-// Collect [boxId, expectedValue] pairs from a step block's items, recursing fractions.
-// Static-symbol boxes are excluded — they are display-only and not user input.
-function collectBoxes(items: StepItem[]): Array<{ id: string; expected: string }> {
-  const out: Array<{ id: string; expected: string }> = [];
-  const walk = (list: StepItem[]) => {
-    for (const it of list) {
-      if (it.kind === 'box') {
-        if (isStaticSymbolBox(it)) continue;
-        out.push({ id: it.id, expected: it.value ?? '' });
-      }
-      else if (it.kind === 'fraction') { walk(it.num); walk(it.den); }
-    }
-  };
-  walk(items);
-  return out;
-}
-
-export function SolutionCanvas({ value, onChange, hints = [], previewMode = false }: Props) {
+export function SolutionCanvas({ value, onChange, hints = [], questionText = '', markingCriteria, previewMode = false }: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
     const normalized = normalizeCanvas(value ?? empty);
@@ -356,14 +195,14 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
   const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number } => {
     const stats = { total: 0, correct: 0, incorrect: 0, empty: 0 };
     if (block.kind !== 'step') return stats;
-    const boxes = collectBoxes(block.items);
+    const boxes = collectStepBoxes(block.items);
     const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
     for (const { id, expected } of boxes) {
       if (!expected) continue; // skip boxes with no authored expected answer
       stats.total++;
       const v = (previewValues[id] ?? '').trim();
       if (!v) { stats.empty++; continue; }
-      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
+      if (answersEquivalent(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[id] = 'incorrect'; }
     }
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));

@@ -96,6 +96,21 @@ function approximatelyEqual(a: number, b: number): boolean {
   return Math.abs(a - b) <= tolerance;
 }
 
+function contextNumbers(questionText: string, previous?: PreviousStepEvidence): number[] {
+  const values: number[] = [];
+  const matches = questionText.matchAll(/-?\d[\d,]*(?:\.\d+)?\s*%?/g);
+  for (const match of matches) {
+    const token = match[0].replace(/,/g, '').trim();
+    const isPercentage = token.endsWith('%');
+    const number = Number(token.replace('%', ''));
+    if (!Number.isFinite(number)) continue;
+    values.push(number);
+    if (isPercentage) values.push(number / 100);
+  }
+  if (previous?.result !== null && previous?.result !== undefined) values.push(previous.result);
+  return values;
+}
+
 export function answersEquivalent(student: string, expectedAlternatives: string): boolean {
   const studentNormalized = normalizeAnswer(student);
   if (!studentNormalized) return false;
@@ -238,6 +253,7 @@ export function analyzeStep(
 ): StepEvidence {
   const sourceBoxes = collectStepBoxes(items);
   const sides = evaluateSides(items, values);
+  const trustedContextValues = contextNumbers(questionText, previous);
   const boxes: Record<string, BoxEvidence> = {};
   sourceBoxes.forEach((box) => {
     const value = (values[box.id] ?? '').trim();
@@ -250,6 +266,15 @@ export function analyzeStep(
         ? (answersEquivalent(value, box.expected) ? 'correct' : 'incorrect')
         : 'unverified',
     };
+  });
+
+  const finalSideIndex = Math.max(0, sides.length - 1);
+  Object.values(boxes).forEach((box) => {
+    if (box.verdict !== 'unverified' || box.sideIndex >= finalSideIndex) return;
+    const number = safeEval(box.value);
+    if (number !== null && trustedContextValues.some((trusted) => approximatelyEqual(number, trusted))) {
+      box.verdict = 'correct';
+    }
   });
 
   const filled = Object.values(boxes).filter((box) => box.verdict !== 'empty');

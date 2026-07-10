@@ -257,14 +257,15 @@ export function evaluateStepEquation(
     if (tryAlign(0, [])) return 'notation';
     return 'incorrect';
   }
-  // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):
-  // it is a well-formed arithmetic continuation. If any prior step yielded
-  // this value, it's definitively correct; otherwise still treat as correct
-  // because the calculation itself is valid.
+  // Single-sided expression (e.g. "36400 − 8372" or a labelled answer
+  // "Number of People = 28028"). If prior steps produced numeric results,
+  // the single value MUST match one of them (it's meant to be a
+  // continuation). Otherwise there's no baseline to judge against.
   const val = nums[0];
   if (priorResults.length) {
     const tol = Math.max(1e-4, Math.abs(val) * 1e-4);
     for (const pr of priorResults) if (Math.abs(pr - val) <= tol) return 'correct';
+    return 'incorrect';
   }
   return 'correct';
 }

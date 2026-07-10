@@ -208,7 +208,7 @@ export function evaluateStepEquation(
   items: StepItem[],
   values: Record<string, string>,
   priorResults: number[] = [],
-): 'correct' | 'incorrect' | 'unknown' {
+): 'correct' | 'incorrect' | 'notation' | 'unknown' {
   const raw = buildStepExpression(items, values);
   if (raw.includes('▢')) return 'unknown';
   // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".
@@ -254,7 +254,7 @@ export function evaluateStepEquation(
       }
       return false;
     };
-    if (tryAlign(0, [])) return 'correct';
+    if (tryAlign(0, [])) return 'notation';
     return 'incorrect';
   }
   // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):
@@ -434,6 +434,16 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       });
       setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
+      return;
+    }
+    if (mathVerdict === 'notation') {
+      const overrideFb: Record<string, 'incorrect'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'incorrect';
+      });
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Notation issue — a percentage cannot be multiplied as a whole number. Rewrite the percent as its decimal form (e.g. 45% → 0.45) or divide by 100 before multiplying.` } }));
       return;
     }
     if (mathVerdict === 'incorrect') {

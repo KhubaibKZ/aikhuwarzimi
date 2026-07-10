@@ -225,10 +225,37 @@ export function evaluateStepEquation(
   }
   // Multi-sided equation: every side must agree.
   if (nums.length >= 2) {
+    const agree = (a: number, b: number) => {
+      const tol = Math.max(1e-4, Math.max(Math.abs(a), Math.abs(b)) * 1e-3);
+      return Math.abs(a - b) <= tol;
+    };
     const ref = nums[0];
-    const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
-    for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
-    return 'correct';
+    let allMatch = true;
+    for (const n of nums) if (!agree(n, ref)) { allMatch = false; break; }
+    if (allMatch) return 'correct';
+    // Percentage-aware retry: a step like "23 × 36400 = 8372" really means
+    // 23% × 36400 = 8372. If any integer side in [1..100] could be a
+    // percentage (a common student shorthand where "%" is dropped), try
+    // scaling by /100 and check whether all sides then agree.
+    const variants = (n: number): number[] => {
+      const opts = new Set<number>([n]);
+      if (Number.isInteger(n) && n > 0 && n <= 100) opts.add(n / 100);
+      return [...opts];
+    };
+    const tryAlign = (idx: number, chosen: number[]): boolean => {
+      if (idx === nums.length) {
+        const r = chosen[0];
+        return chosen.every((c) => agree(c, r));
+      }
+      for (const v of variants(nums[idx])) {
+        chosen.push(v);
+        if (tryAlign(idx + 1, chosen)) return true;
+        chosen.pop();
+      }
+      return false;
+    };
+    if (tryAlign(0, [])) return 'correct';
+    return 'incorrect';
   }
   // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):
   // it is a well-formed arithmetic continuation. If any prior step yielded

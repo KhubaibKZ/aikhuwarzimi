@@ -436,6 +436,16 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
       return;
     }
+    if (mathVerdict === 'notation') {
+      const overrideFb: Record<string, 'incorrect'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'incorrect';
+      });
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Notation issue — a percentage cannot be used as a whole number in multiplication. Rewrite the percent value as "23%" or as its decimal form "0.23" before multiplying.` } }));
+      return;
+    }
     if (mathVerdict === 'incorrect') {
       const overrideFb: Record<string, 'correct' | 'incorrect'> = {};
       boxes.forEach((b) => {

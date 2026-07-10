@@ -207,20 +207,38 @@ function safeEval(js: string): number | null {
 export function evaluateStepEquation(
   items: StepItem[],
   values: Record<string, string>,
+  priorResults: number[] = [],
 ): 'correct' | 'incorrect' | 'unknown' {
   const raw = buildStepExpression(items, values);
   if (raw.includes('▢')) return 'unknown';
-  const parts = raw.split('=').map((p) => p.trim()).filter(Boolean);
-  if (parts.length < 2) return 'unknown';
+  // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".
+  const parts = raw
+    .split('=')
+    .map((p) => p.trim())
+    .filter((p) => p && /\d/.test(p));
+  if (parts.length === 0) return 'unknown';
   const nums: number[] = [];
   for (const p of parts) {
     const n = safeEval(tokensToJs(p));
     if (n === null) return 'unknown';
     nums.push(n);
   }
-  const ref = nums[0];
-  const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
-  for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
+  // Multi-sided equation: every side must agree.
+  if (nums.length >= 2) {
+    const ref = nums[0];
+    const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
+    for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
+    return 'correct';
+  }
+  // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):
+  // it is a well-formed arithmetic continuation. If any prior step yielded
+  // this value, it's definitively correct; otherwise still treat as correct
+  // because the calculation itself is valid.
+  const val = nums[0];
+  if (priorResults.length) {
+    const tol = Math.max(1e-4, Math.abs(val) * 1e-4);
+    for (const pr of priorResults) if (Math.abs(pr - val) <= tol) return 'correct';
+  }
   return 'correct';
 }
 
@@ -360,10 +378,27 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
 
+    // Collect prior-step numeric results (in this section) so that a single
+    // expression like "36400 − 8372" or a labelled answer like
+    // "Number of People = 28028" can be recognised as a valid continuation.
+    const owningSectionForPrior = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
+    const priorResults: number[] = [];
+    if (owningSectionForPrior) {
+      for (const bb of owningSectionForPrior.blocks) {
+        if (bb.id === block.id) break;
+        if (bb.kind !== 'step') continue;
+        const expr = buildStepExpression(bb.items, previewValues);
+        if (expr.includes('▢')) continue;
+        for (const p of expr.split('=').map((x) => x.trim()).filter((x) => x && /\d/.test(x))) {
+          const n = safeEval(tokensToJs(p));
+          if (n !== null) priorResults.push(n);
+        }
+      }
+    }
     // --- Math-consistency check (source of truth when the step is an equation).
     // If the mathematical calculation is fully valid, mark every filled box
     // correct regardless of the authored expected values.
-    const mathVerdict = evaluateStepEquation(block.items, previewValues);
+    const mathVerdict = evaluateStepEquation(block.items, previewValues, priorResults);
     if (mathVerdict === 'correct') {
       const overrideFb: Record<string, 'correct'> = {};
       boxes.forEach((b) => {

@@ -294,8 +294,8 @@ export function analyzeStep(
           if (boxes[id]?.verdict === 'unverified') boxes[id].verdict = 'incorrect';
         });
       }
-    } else if (sides.length === 1 && sides[0].value !== null && !hasCalculationOperator(sides[0].expression) && previous?.result !== null && previous?.result !== undefined) {
-      if (approximatelyEqual(sides[0].value, previous.result)) {
+    } else if (numericSides.length === 1 && !hasCalculationOperator(numericSides[0].expression) && previous?.result !== null && previous?.result !== undefined) {
+      if (approximatelyEqual(numericSides[0].value as number, previous.result)) {
         if (previous.hasOriginalError) {
           category = 'propagated_error';
           affected = new Set();
@@ -311,7 +311,11 @@ export function analyzeStep(
       }
     } else if (directWrong.length > 0) {
       category = directWrong.some((box) => box.sideIndex < Math.max(0, sides.length - 1)) ? 'wrong_operand' : 'wrong_result';
-    } else if (internallyConsistent === true || filled.every((box) => box.verdict === 'correct')) {
+    } else if (
+      internallyConsistent === true
+      || filled.every((box) => box.verdict === 'correct')
+      || (numericSides.length === 1 && hasCalculationOperator(numericSides[0].expression))
+    ) {
       category = 'correct';
       if (internallyConsistent === true) {
         const resultSide = sides[sides.length - 1];

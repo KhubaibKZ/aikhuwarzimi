@@ -378,10 +378,27 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
 
+    // Collect prior-step numeric results (in this section) so that a single
+    // expression like "36400 − 8372" or a labelled answer like
+    // "Number of People = 28028" can be recognised as a valid continuation.
+    const owningSectionForPrior = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
+    const priorResults: number[] = [];
+    if (owningSectionForPrior) {
+      for (const bb of owningSectionForPrior.blocks) {
+        if (bb.id === block.id) break;
+        if (bb.kind !== 'step') continue;
+        const expr = buildStepExpression(bb.items, previewValues);
+        if (expr.includes('▢')) continue;
+        for (const p of expr.split('=').map((x) => x.trim()).filter((x) => x && /\d/.test(x))) {
+          const n = safeEval(tokensToJs(p));
+          if (n !== null) priorResults.push(n);
+        }
+      }
+    }
     // --- Math-consistency check (source of truth when the step is an equation).
     // If the mathematical calculation is fully valid, mark every filled box
     // correct regardless of the authored expected values.
-    const mathVerdict = evaluateStepEquation(block.items, previewValues);
+    const mathVerdict = evaluateStepEquation(block.items, previewValues, priorResults);
     if (mathVerdict === 'correct') {
       const overrideFb: Record<string, 'correct'> = {};
       boxes.forEach((b) => {

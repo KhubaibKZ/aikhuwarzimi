@@ -220,225 +220,85 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
     return render(block.items);
   };
 
-  const handleCheckBlock = async (block: CanvasBlock, questionText?: string, hints?: string[]) => {
+  const handleCheckBlock = async (block: CanvasBlock, sectionQuestionText?: string, sectionHints?: string[]) => {
     if (block.kind !== 'step') return;
-    const boxes = collectBoxes(block.items);
-    const stats = { total: boxes.length, correct: 0, incorrect: 0, empty: 0 };
-    const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
-    const userAnswers: Record<string, string> = {};
-    const correctAnswers: Record<string, string> = {};
-    const keyToBoxId: Record<string, string> = {};
-    let checkedAgainstExpected = 0;
-    let filledCount = 0;
-    boxes.forEach((b, i) => {
-      const v = (previewValues[b.id] ?? '').trim();
-      const key = `box_${i + 1}`;
-      keyToBoxId[key] = b.id;
-      const expected = (b.expected ?? '').trim();
-      userAnswers[key] = v;
-      if (expected) correctAnswers[key] = expected;
-      if (!v) { stats.empty++; return; }
-      filledCount++;
-      if (!expected) return;
-      checkedAgainstExpected++;
-      if (answersEqual(v, expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
-      else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
+    const boxes = collectStepBoxes(block.items);
+    if (boxes.length === 0) {
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: 'No fillable boxes in this step yet.' } }));
+      return;
+    }
+
+    const activeQuestion = sectionQuestionText || questionText || 'Solve the problem above.';
+    const owningSection = sections.find((section) => section.blocks.some((candidate) => candidate.id === block.id));
+    const priorLines: string[] = [];
+    let previousEvidence: PreviousStepEvidence | undefined;
+
+    if (owningSection) {
+      for (const candidate of owningSection.blocks) {
+        if (candidate.id === block.id) break;
+        if (candidate.kind !== 'step') continue;
+        const line = stepToText(candidate, previewValues).trim();
+        if (!line || line.includes('▢')) continue;
+        const evidence = analyzeStep(candidate.items, previewValues, previousEvidence, activeQuestion);
+        previousEvidence = { result: evidence.result, hasOriginalError: evidence.hasOriginalError || previousEvidence?.hasOriginalError === true };
+        priorLines.push(`${line} [${evidence.category}]`);
+      }
+    }
+
+    const evidence = analyzeStep(block.items, previewValues, previousEvidence, activeQuestion);
+    const deterministicFeedback: Record<string, 'correct' | 'incorrect'> = {};
+    Object.values(evidence.boxes).forEach((box) => {
+      if (box.verdict === 'correct') deterministicFeedback[box.id] = 'correct';
+      if (box.verdict === 'incorrect') deterministicFeedback[box.id] = 'incorrect';
+    });
+    setPreviewFeedback((current) => {
+      const next = { ...current };
+      boxes.forEach((box) => delete next[box.id]);
+      return { ...next, ...deterministicFeedback };
     });
 
-    // Collect prior-step numeric results (in this section) so that a single
-    // expression like "36400 − 8372" or a labelled answer like
-    // "Number of People = 28028" can be recognised as a valid continuation.
-    const owningSectionForPrior = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
-    const priorResults: number[] = [];
-    if (owningSectionForPrior) {
-      for (const bb of owningSectionForPrior.blocks) {
-        if (bb.id === block.id) break;
-        if (bb.kind !== 'step') continue;
-        const expr = buildStepExpression(bb.items, previewValues);
-        if (expr.includes('▢')) continue;
-        for (const p of expr.split('=').map((x) => x.trim()).filter((x) => x && /\d/.test(x))) {
-          const n = safeEval(tokensToJs(p));
-          if (n !== null) priorResults.push(n);
-        }
-      }
-    }
-    // --- Math-consistency check (source of truth when the step is an equation).
-    // If the mathematical calculation is fully valid, mark every filled box
-    // correct regardless of the authored expected values.
-    const mathVerdict = evaluateStepEquation(block.items, previewValues, priorResults);
-    if (mathVerdict === 'correct') {
-      const overrideFb: Record<string, 'correct'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v) overrideFb[b.id] = 'correct';
-      });
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
-      return;
-    }
-    // Helper: split step items into sides by top-level `=` text tokens, and
-    // return each side's evaluated value plus the ids of its fillable boxes.
-    const splitSides = (): Array<{ value: number | null; boxIds: string[] }> => {
-      const sides: Array<{ items: StepItem[]; boxIds: string[] }> = [{ items: [], boxIds: [] }];
-      for (const it of block.items) {
-        if (it.kind === 'text' && it.text.includes('=')) {
-          const segs = it.text.split('=');
-          for (let i = 0; i < segs.length; i++) {
-            if (segs[i].trim()) sides[sides.length - 1].items.push({ ...it, text: segs[i] });
-            if (i < segs.length - 1) sides.push({ items: [], boxIds: [] });
-          }
-          continue;
-        }
-        const side = sides[sides.length - 1];
-        side.items.push(it);
-        if (it.kind === 'box' && !isStaticSymbolBox(it)) side.boxIds.push(it.id);
-        else if (it.kind === 'fraction') {
-          const collect = (list: StepItem[]) => {
-            for (const x of list) {
-              if (x.kind === 'box' && !isStaticSymbolBox(x)) side.boxIds.push(x.id);
-              else if (x.kind === 'fraction') { collect(x.num); collect(x.den); }
-            }
-          };
-          collect(it.num); collect(it.den);
-        }
-      }
-      return sides.map((s) => {
-        const expr = buildStepExpression(s.items, previewValues);
-        const val = expr.includes('▢') ? null : safeEval(tokensToJs(expr));
-        return { value: val, boxIds: s.boxIds };
-      });
-    };
-
-    if (mathVerdict === 'notation') {
-      // Only mark the RESULT-side boxes red (student's answer notation),
-      // leaving operand boxes untouched.
-      const sidesN = splitSides();
-      const wrongIds = new Set<string>(sidesN.length > 1 ? sidesN[sidesN.length - 1].boxIds : sidesN.flatMap((s) => s.boxIds));
-      const overrideFb: Record<string, 'incorrect'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
-      });
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Check the notation of your percentage — a percent value must be written with the % sign or converted to its decimal form (e.g. 45% → 0.45) before multiplying.` } }));
-      return;
-    }
-    if (mathVerdict === 'incorrect') {
-      // Find the disagreeing side(s): the majority of sides that agree are
-      // treated as "trusted"; boxes on the odd side(s) get flagged red.
-      const sidesI = splitSides().filter((s) => s.value !== null) as Array<{ value: number; boxIds: string[] }>;
-      const wrongIds = new Set<string>();
-      if (sidesI.length >= 2) {
-        const tol = (x: number) => Math.max(1e-4, Math.abs(x) * 1e-3);
-        // group by approximate value
-        const groups: Array<{ value: number; sides: typeof sidesI }> = [];
-        for (const s of sidesI) {
-          const g = groups.find((gr) => Math.abs(gr.value - s.value) <= tol(gr.value));
-          if (g) g.sides.push(s); else groups.push({ value: s.value, sides: [s] });
-        }
-        // largest group = "trusted"; everything else is wrong
-        groups.sort((a, b) => b.sides.length - a.sides.length);
-        const trusted = groups[0];
-        for (const g of groups) {
-          if (g === trusted) continue;
-          for (const s of g.sides) s.boxIds.forEach((id) => wrongIds.add(id));
-        }
-        // If nothing got flagged (all sides tied but disagree pairwise — rare),
-        // fall back to flagging the last side (the student's stated result).
-        if (wrongIds.size === 0) sidesI[sidesI.length - 1].boxIds.forEach((id) => wrongIds.add(id));
-      } else {
-        boxes.forEach((b) => wrongIds.add(b.id));
-      }
-      const overrideFb: Record<string, 'incorrect'> = {};
-      boxes.forEach((b) => {
-        const v = (previewValues[b.id] ?? '').trim();
-        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
-      });
-      Object.assign(fbUpdate, overrideFb);
-      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-    }
-
-    setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
-
-    if (stats.total === 0) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'No fillable boxes in this step yet.' } }));
-      return;
-    }
-    if (filledCount === 0) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Fill in the boxes in this step before checking.' } }));
-      return;
-    }
-    const everyBoxHasExpectedAnswer = checkedAgainstExpected === stats.total;
-    const allCorrect = mathVerdict !== 'incorrect' && everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
-    if (allCorrect) {
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
-      return;
-    }
-
-    // Build previous-steps context so the AI can judge this step as a
-    // logical continuation of the student's prior work rather than in
-    // isolation.
-    const owningSection = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
-    const priorLines: string[] = [];
-    if (owningSection) {
-      for (const bb of owningSection.blocks) {
-        if (bb.id === block.id) break;
-        if (bb.kind !== 'step') continue;
-        const line = stepToText(bb, previewValues).trim();
-        if (!line || line.includes('▢')) continue;
-        const verdict = evaluateStepEquation(bb.items, previewValues);
-        const numericVal = safeEval(tokensToJs(buildStepExpression(bb.items, previewValues)));
-        const tag = verdict === 'correct' ? ' [checks out]' : verdict === 'incorrect' ? ' [inconsistent]' : (numericVal !== null ? ` [evaluates to ${numericVal}]` : '');
-        priorLines.push(`${line}${tag}`);
-      }
-    }
-    const currentLine = stepToText(block, previewValues).trim();
-    const currentValue = safeEval(tokensToJs(buildStepExpression(block.items, previewValues)));
-    const previousStepsContext = priorLines.length
-      ? `PRIOR STEPS in this question (in order):\n${priorLines.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nCURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`
-      : `CURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`;
-
-    // Call AI tutor for guidance + per-box assessments
     const attempt = (attemptCountRef.current[block.id] || 0) + 1;
     attemptCountRef.current[block.id] = attempt;
+    const fallback = localGuidance(evidence.category, attempt);
+    if (evidence.category === 'correct' || evidence.category === 'incomplete') {
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: fallback } }));
+      return;
+    }
+
+    const currentLine = stepToText(block, previewValues).trim();
     setLoadingStepId(block.id);
     try {
       const { data, error } = await supabase.functions.invoke('ai-tutor', {
         body: {
-          question: questionText || 'Solve the problem above.',
+          question: activeQuestion,
           actionType: 'checkWork',
-          userAnswers,
-          correctAnswers,
           topic: 'Mathematics',
-          hints: hints || [],
+          hints: sectionHints || hints,
           attemptCount: attempt,
-          hasMissing: stats.empty > 0,
-          hasWrong: stats.incorrect > 0,
-          evaluateNeutral: true,
-          specificPart: `Judge whether the CURRENT STEP is a mathematically valid continuation of the PRIOR STEPS. If it is, mark every filled box "correct". Only mark boxes "incorrect" when the current step is genuinely inconsistent with the prior working or with valid mathematics.`,
-          workingContent: previousStepsContext,
+          markingCriteria,
           previousFeedback: previousFeedbackRef.current[block.id] || [],
+          workingContent: priorLines.length
+            ? `PRIOR STEPS in order:\n${priorLines.map((line, index) => `${index + 1}. ${line}`).join('\n')}\nCURRENT STEP: ${currentLine}`
+            : `CURRENT STEP: ${currentLine}`,
+          deterministicDiagnosis: {
+            verdict: evidence.verdict,
+            category: evidence.category,
+            summary: evidence.summary,
+            affectedBoxKeys: boxes
+              .map((box, index) => evidence.affectedBoxIds.includes(box.id) ? `box_${index + 1}` : null)
+              .filter(Boolean),
+            internallyConsistent: evidence.internallyConsistent,
+            propagatedFromEarlierError: evidence.category === 'propagated_error',
+          },
         },
       });
       if (error) throw error;
-      const hint = data?.hint || 'Review the highlighted boxes and re-check your working.';
-      const assessments = (data?.assessments || {}) as Record<string, 'correct' | 'incorrect'>;
-      const aiFb: Record<string, 'correct' | 'incorrect'> = {};
-      for (const [key, verdict] of Object.entries(assessments)) {
-        const id = keyToBoxId[key];
-        if (!id) continue;
-        // Local exact-match wins (already in fbUpdate); only fill what we didn't already grade.
-        if (fbUpdate[id]) continue;
-        const v = (previewValues[id] ?? '').trim();
-        if (!v) continue;
-        aiFb[id] = verdict;
-      }
-      if (Object.keys(aiFb).length) setPreviewFeedback((p) => ({ ...p, ...aiFb }));
+      const hint = typeof data?.hint === 'string' && data.hint.trim() ? data.hint.trim() : fallback;
       previousFeedbackRef.current[block.id] = [...(previousFeedbackRef.current[block.id] || []), hint].slice(-5);
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: hint } }));
-    } catch (e) {
-      console.error('Check work error:', e);
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: 'Review the highlighted boxes and re-check your working carefully.' } }));
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: hint } }));
+    } catch (error) {
+      console.error('Check work error:', error);
+      setStepFeedback((current) => ({ ...current, [block.id]: { type: 'guidance', content: fallback } }));
     } finally {
       setLoadingStepId(null);
     }

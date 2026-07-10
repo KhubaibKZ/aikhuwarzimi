@@ -401,6 +401,29 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       return;
     }
 
+    // Build previous-steps context so the AI can judge this step as a
+    // logical continuation of the student's prior work rather than in
+    // isolation.
+    const owningSection = sections.find((s) => s.blocks.some((bb) => bb.id === block.id));
+    const priorLines: string[] = [];
+    if (owningSection) {
+      for (const bb of owningSection.blocks) {
+        if (bb.id === block.id) break;
+        if (bb.kind !== 'step') continue;
+        const line = stepToText(bb, previewValues).trim();
+        if (!line || line.includes('▢')) continue;
+        const verdict = evaluateStepEquation(bb.items, previewValues);
+        const numericVal = safeEval(tokensToJs(buildStepExpression(bb.items, previewValues)));
+        const tag = verdict === 'correct' ? ' [checks out]' : verdict === 'incorrect' ? ' [inconsistent]' : (numericVal !== null ? ` [evaluates to ${numericVal}]` : '');
+        priorLines.push(`${line}${tag}`);
+      }
+    }
+    const currentLine = stepToText(block, previewValues).trim();
+    const currentValue = safeEval(tokensToJs(buildStepExpression(block.items, previewValues)));
+    const previousStepsContext = priorLines.length
+      ? `PRIOR STEPS in this question (in order):\n${priorLines.map((l, i) => `${i + 1}. ${l}`).join('\n')}\n\nCURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`
+      : `CURRENT STEP being checked: ${currentLine}${currentValue !== null ? ` (evaluates to ${currentValue})` : ''}`;
+
     // Call AI tutor for guidance + per-box assessments
     const attempt = (attemptCountRef.current[block.id] || 0) + 1;
     attemptCountRef.current[block.id] = attempt;
@@ -417,9 +440,9 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
           attemptCount: attempt,
           hasMissing: stats.empty > 0,
           hasWrong: stats.incorrect > 0,
-          evaluateNeutral: checkedAgainstExpected === 0,
-          specificPart: `This step has ${stats.total} fillable boxes; ${filledCount} currently filled. Check ALL filled boxes and mark each one correct/incorrect by mathematically evaluating the student's value.`,
-          workingContent: stepToText(block, previewValues),
+          evaluateNeutral: true,
+          specificPart: `Judge whether the CURRENT STEP is a mathematically valid continuation of the PRIOR STEPS. If it is, mark every filled box "correct". Only mark boxes "incorrect" when the current step is genuinely inconsistent with the prior working or with valid mathematics.`,
+          workingContent: previousStepsContext,
           previousFeedback: previousFeedbackRef.current[block.id] || [],
         },
       });

@@ -117,7 +117,7 @@ EXAMPLES OF BAD FEEDBACK:
 ❌ Long paragraphs with multiple sentences — too wordy
 
 SITUATION CONTEXT:
-${evaluateNeutral ? "You DO NOT know in advance whether the student's line is correct or wrong. FIRST, carefully verify the algebra of the specific line yourself (compute both sides and any transformation from the previous step). If the line is mathematically valid and consistent with the previous step, confirm it briefly and warmly (e.g. 'Yes, this step is correct — multiplying both sides by 4 gives exactly that.'). If it is wrong, identify the actual error. NEVER assume it is wrong by default." : ""}
+${evaluateNeutral ? "You DO NOT know in advance whether the student's line is correct or wrong. FIRST, carefully verify the algebra of the current step yourself, AND read the PRIOR STEPS provided in the working content. A step that appears to have 'wrong' numbers in isolation may be perfectly valid as a CONTINUATION of a prior step (e.g. reusing an intermediate result, rearranging, or picking numbers derived earlier). If the current step follows logically and arithmetically from the prior steps and is mathematically consistent, confirm it briefly and mark every filled box 'correct'. Only mark boxes 'incorrect' when the current step genuinely contradicts the prior working or basic mathematics." : ""}
 ${!evaluateNeutral && !hasWrong && !hasMissing ? "Everything is correct! Give a brief thumbs-up like 'Spot on!' or 'That's correct, well done!'" : ""}
 ${!evaluateNeutral && !hasWrong && hasMissing ? "Work so far is correct. Encourage them: 'Looking good so far — keep going with the next part!'" : ""}
 ${!evaluateNeutral && hasWrong && !hasMissing ? "They have wrong answers. Identify the likely error, then nudge toward fixing it." : ""}
@@ -125,11 +125,11 @@ ${!evaluateNeutral && hasWrong && hasMissing ? "They have errors and missing par
 
 ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Be gentle but specific about the error." : (attemptCount || 1) <= 4 ? "Be more direct about which step went wrong." : "Give a stronger methodological hint."}
 
-CRITICAL: 2 sentences max for the hint. Plain text only. ${evaluateNeutral ? "If the step is correct, say so plainly and briefly explain why it follows from the previous step. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
+CRITICAL: 2 sentences max for the hint. Plain text only. ${evaluateNeutral ? "If the step is a valid continuation of the prior steps, say so plainly (e.g. 'Correct — this follows from the previous step.') and mark all filled boxes correct. If it is wrong, identify the error without revealing the final answer to the overall question." : "NEVER mention ANY numbers from the calculation. Always start by identifying the error."}${partContext}
 
 OUTPUT FORMAT (MANDATORY): Respond with ONLY a valid JSON object — no prose, no code fences — exactly like:
 {"hint":"<your 2-sentence guidance here>","assessments":{"box_1":"correct","box_2":"incorrect", ...}}
-The "assessments" object MUST include one entry per box key present in the student's answers (box_1, box_2, ...). For each, decide "correct" or "incorrect" by mathematically evaluating the student's value against the question and (when given) the expected answer. If a box is empty, mark it "incorrect". Do not omit any box. Do not add extra keys.
+The "assessments" object MUST include one entry per box key present in the student's answers (box_1, box_2, ...). For each, decide "correct" or "incorrect" by evaluating the student's value against the CURRENT STEP in the context of the PRIOR STEPS. If the current step is a valid continuation, every filled box is "correct" even if the numbers differ from the final answer. If a box is empty, mark it "incorrect". Do not omit any box. Do not add extra keys.
 
 ${markingCriteria ? `MARKING SCHEME CRITERIA (use to understand what earns marks — do NOT reveal to student):
 ${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;

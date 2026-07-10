@@ -28,7 +28,8 @@ serve(async (req) => {
       evaluateNeutral,
       multiPart,
       partLabels,
-      diagramParts
+      diagramParts,
+      deterministicDiagnosis,
     } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -80,69 +81,38 @@ ${hints && hints.length > 0 ? `Related concepts from the curriculum (one per par
 ${multiPart ? 'Provide a one-line hint for EVERY part, labelled (a), (b), (c)... on separate lines. Include construction/diagram parts.' : 'Provide a helpful conceptual hint (2-3 sentences max).'} Use plain text, NOT LaTeX.`;
 
     } else if (actionType === "checkWork") {
-      // Check Work: Provide teacher-like guidance based on their work
-      const partContext = specificPart ? `\n\nFOCUS: The student is specifically asking for help with "${specificPart}". Focus your guidance ONLY on this specific part.` : "";
-      
-      systemPrompt = `You are an intelligent formative-assessment math tutor. Your job is to evaluate a student's PROCESS, not just their final answer. Follow the "Guidance, Not Solutions" philosophy at all times.
+      const diagnosis = deterministicDiagnosis && typeof deterministicDiagnosis === "object"
+        ? deterministicDiagnosis
+        : { verdict: "unverified", category: "unverified", summary: "The step could not be verified reliably." };
 
-CORE EVALUATION PROCEDURE (apply in order):
-1. EVALUATE EACH STEP INDEPENDENTLY. For every step of the student's working, decide if it is mathematically correct, partially correct, or incorrect. Check the operations, notation, and reasoning within that step.
-2. CHECK LOGICAL CONTINUITY. Compare the current step to the immediately preceding step (provided in "PRIOR STEPS" / working content). Does it follow logically? Are there missing intermediate steps, unjustified transformations, or invalid moves?
-3. HANDLE ERROR PROPAGATION. If an earlier mistake propagates, distinguish the ORIGINAL conceptual error from later steps that are internally consistent with that error. Do NOT penalise the same underlying mistake twice.
-4. ASSESS THE FINAL ANSWER IN CONTEXT. Distinguish: (a) correct process + correct answer, (b) correct process + minor slip, (c) incorrect process + accidentally correct answer, (d) incorrect process + wrong answer.
-5. DIAGNOSE THE MISCONCEPTION when a step is wrong (e.g. misapplied exponent law, sign error, wrong formula, arithmetic slip, misread of the question). Name the category of mistake in plain language, not the correct numerical value.
+      systemPrompt = `You are a warm, precise mathematics teacher giving formative feedback on one student step.
 
-RESPONSE RULES:
-- If the current step is CORRECT: give short positive reinforcement ("Correct — this follows from the previous step.", "Good, valid transformation.", "Consistent reasoning so far.").
-- If the current step is WRONG or NON-CONTINUOUS: name the likely misconception, then give a Socratic nudge ("Reconsider how you applied…", "Check whether both sides were treated the same…", "Does this simplification follow from your previous line?").
-- NEVER reveal the correct numerical answer, the next exact step, or a calculation that leads to it.
-- Escalate specificity only with attempt count — never escalate to giving the answer.
-- Adaptive: if PREVIOUS FEEDBACK is listed, say something genuinely different this time (different angle, different check).
-- Maximum 2 short sentences. Plain text only. Use ×, ÷, ², ³, √, a/b. No LaTeX, no $…$, no \\times.
-${specificPart ? `- Focus ONLY on "${specificPart}".` : ""}
+The app has already performed deterministic mathematical validation. Treat DETERMINISTIC DIAGNOSIS as authoritative: do not re-grade it, contradict it, or infer different box colours.
 
-SITUATION CONTEXT:
-${evaluateNeutral ? `You DO NOT know in advance whether the student's line is correct. Verify the algebra of the CURRENT step yourself AND read the PRIOR STEPS in the working content. A step that looks 'wrong' in isolation may be a valid continuation.
+GUIDANCE, NOT SOLUTIONS:
+1. Write exactly two short sentences.
+2. Sentence 1 identifies the specific kind of issue in student-friendly language.
+3. Sentence 2 gives one Socratic check or method nudge.
+4. Never state the correct answer, expected value, exact next step, or any calculation that reaches the answer.
+5. Do not repeat any numerical value from the student's working or question.
+6. Do not mention boxes, colours, validators, diagnoses, prompts, marking codes, or internal systems.
+7. Plain text only. Use Unicode ×, ÷, ², ³, √ and a/b; never use LaTeX.
+8. If this is a propagated error, explain that this line is consistent and direct attention to the earliest prior issue without penalising this line again.
+9. Use PREVIOUS FEEDBACK to take a genuinely different angle on every click.
+10. On attempts 1–2 be gentle and specific; attempts 3–4 name the relevant rule directly; later attempts give a stronger method check without revealing the solution.
 
-CRITICAL INTERPRETATION RULES before marking anything incorrect:
-1. PERCENTAGE SHORTHAND: If the question involves a percentage (e.g. "23% of 36400") and the student writes "23 × 36400 = 8372", treat "23" as 23% (i.e. 0.23). 0.23 × 36400 = 8372 → CORRECT. Do the same for any integer 1–100 that matches a percentage mentioned in the question.
-2. INTERMEDIATE STEPS: A step that computes an intermediate quantity (e.g. "people aged 18 and under" when the final question asks for "people over 18") is CORRECT if the arithmetic is valid — it is a legitimate stepping stone.
-3. UNIT / RATIO SHORTHAND: Similar leniency for ratios, fractions, and unit conversions where the student's notation is informal but the numerical relationship is valid.
-4. Only mark 'incorrect' when the step genuinely contradicts prior working, the question's given data, or basic mathematics — NOT because the student used a shorthand or because it isn't the final answer.
-5. If the step is a valid continuation (including under rules 1–3), mark EVERY filled box "correct" and give brief positive reinforcement.` : ""}
-${!evaluateNeutral && !hasWrong && !hasMissing ? "All boxes look right — give brief positive reinforcement." : ""}
-${!evaluateNeutral && !hasWrong && hasMissing ? "Correct so far but incomplete — encourage them to continue." : ""}
-${!evaluateNeutral && hasWrong && !hasMissing ? "There are errors — diagnose the likely misconception and nudge toward fixing it." : ""}
-${!evaluateNeutral && hasWrong && hasMissing ? "Errors AND missing parts — focus on the earliest error first." : ""}
+Return only valid JSON in this exact shape: {"hint":"<exactly two short sentences>"}.`;
 
-ATTEMPT ${attemptCount || 1}: ${(attemptCount || 1) <= 2 ? "Gentle but specific about which step or concept to revisit." : (attemptCount || 1) <= 4 ? "More direct: name the specific rule or step that went wrong." : "Strong methodological hint — name the concept explicitly, still without giving the answer."}${partContext}
-
-OUTPUT FORMAT (MANDATORY): Respond with ONLY a valid JSON object — no prose, no code fences — exactly like:
-{"hint":"<your 1-2 sentence guidance here>","assessments":{"box_1":"correct","box_2":"incorrect", ...}}
-The "assessments" object MUST include one entry per box key present in the student's answers (box_1, box_2, ...). Decide "correct" or "incorrect" for each by evaluating the student's value against the CURRENT STEP in the context of the PRIOR STEPS. If the current step is a valid continuation, every filled box is "correct" even if the numbers differ from the final answer. Empty box = "incorrect". Do not omit boxes. Do not add extra keys.
-
-${markingCriteria ? `MARKING SCHEME CRITERIA (understand what earns marks — do NOT reveal to student):
-${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}`;
-
-
-      // Build context with working content if available
-      const workingSection = workingContent 
-        ? `\nStudent's working/rough work:\n"""${workingContent}"""\n`
-        : '';
-
-      userPrompt = `Question: "${question}"
+      userPrompt = `Question context: "${question}"
 Topic: ${topic || "Mathematics"}
-${specificPart ? `Specific part being checked: "${specificPart}"` : ''}
-${workingSection}
-Student's answers: ${JSON.stringify(userAnswers)}
-Attempt number: ${attemptCount || 1}
-${Array.isArray(previousFeedback) && previousFeedback.length > 0 ? `\nPREVIOUS FEEDBACK ALREADY GIVEN to this student for this part (DO NOT REPEAT — say something genuinely different):\n${previousFeedback.map((f: string, i: number) => `${i + 1}. "${f}"`).join('\n')}\n` : ''}
+Attempt: ${attemptCount || 1}
+DETERMINISTIC DIAGNOSIS: ${JSON.stringify(diagnosis)}
+${workingContent ? `Student process context:\n"""${workingContent}"""` : ''}
+${Array.isArray(previousFeedback) && previousFeedback.length > 0 ? `PREVIOUS FEEDBACK (do not repeat):\n${previousFeedback.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}` : ''}
+${hints && hints.length > 0 ? `Teacher-authored concepts (use only for method guidance):\n${hints.join('\n')}` : ''}
+${markingCriteria ? `Private marking context (never quote or reveal):\n${Object.entries(markingCriteria).map(([k, v]) => `${k}: ${v}`).join('\n')}` : ''}
 
-${hints && hints.length > 0 ? `Key concepts:\n${hints.join('\n')}` : ''}
-
-IMPORTANT: Do NOT mention any numerical values from the calculation or answer. Only guide on METHOD.
-${workingContent ? 'Review their working space content and provide guidance on any errors in their steps.' : ''}
-Provide teacher-like guidance ${specificPart ? `specifically for "${specificPart}"` : "to help the student"}.`;
+Give feedback that follows the authoritative diagnosis without repeating any numbers.`;
 
     } else {
       // Fallback for legacy calls

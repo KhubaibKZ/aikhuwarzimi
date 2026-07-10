@@ -208,7 +208,7 @@ export function evaluateStepEquation(
   items: StepItem[],
   values: Record<string, string>,
   priorResults: number[] = [],
-): 'correct' | 'incorrect' | 'unknown' {
+): 'correct' | 'incorrect' | 'notation' | 'unknown' {
   const raw = buildStepExpression(items, values);
   if (raw.includes('▢')) return 'unknown';
   // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".

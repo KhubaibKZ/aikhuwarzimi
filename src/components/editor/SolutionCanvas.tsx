@@ -436,21 +436,83 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
       return;
     }
+    // Helper: split step items into sides by top-level `=` text tokens, and
+    // return each side's evaluated value plus the ids of its fillable boxes.
+    const splitSides = (): Array<{ value: number | null; boxIds: string[] }> => {
+      const sides: Array<{ items: StepItem[]; boxIds: string[] }> = [{ items: [], boxIds: [] }];
+      for (const it of block.items) {
+        if (it.kind === 'text' && it.text.includes('=')) {
+          const segs = it.text.split('=');
+          for (let i = 0; i < segs.length; i++) {
+            if (segs[i].trim()) sides[sides.length - 1].items.push({ ...it, text: segs[i] });
+            if (i < segs.length - 1) sides.push({ items: [], boxIds: [] });
+          }
+          continue;
+        }
+        const side = sides[sides.length - 1];
+        side.items.push(it);
+        if (it.kind === 'box' && !isStaticSymbolBox(it)) side.boxIds.push(it.id);
+        else if (it.kind === 'fraction') {
+          const collect = (list: StepItem[]) => {
+            for (const x of list) {
+              if (x.kind === 'box' && !isStaticSymbolBox(x)) side.boxIds.push(x.id);
+              else if (x.kind === 'fraction') { collect(x.num); collect(x.den); }
+            }
+          };
+          collect(it.num); collect(it.den);
+        }
+      }
+      return sides.map((s) => {
+        const expr = buildStepExpression(s.items, previewValues);
+        const val = expr.includes('▢') ? null : safeEval(tokensToJs(expr));
+        return { value: val, boxIds: s.boxIds };
+      });
+    };
+
     if (mathVerdict === 'notation') {
+      // Only mark the RESULT-side boxes red (student's answer notation),
+      // leaving operand boxes untouched.
+      const sidesN = splitSides();
+      const wrongIds = new Set<string>(sidesN.length > 1 ? sidesN[sidesN.length - 1].boxIds : sidesN.flatMap((s) => s.boxIds));
       const overrideFb: Record<string, 'incorrect'> = {};
       boxes.forEach((b) => {
         const v = (previewValues[b.id] ?? '').trim();
-        if (v) overrideFb[b.id] = 'incorrect';
+        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
       });
       setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
-      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Notation issue — a percentage cannot be multiplied as a whole number. Rewrite the percent as its decimal form (e.g. 45% → 0.45) or divide by 100 before multiplying.` } }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Check the notation of your percentage — a percent value must be written with the % sign or converted to its decimal form (e.g. 45% → 0.45) before multiplying.` } }));
       return;
     }
     if (mathVerdict === 'incorrect') {
-      const overrideFb: Record<string, 'correct' | 'incorrect'> = {};
+      // Find the disagreeing side(s): the majority of sides that agree are
+      // treated as "trusted"; boxes on the odd side(s) get flagged red.
+      const sidesI = splitSides().filter((s) => s.value !== null) as Array<{ value: number; boxIds: string[] }>;
+      const wrongIds = new Set<string>();
+      if (sidesI.length >= 2) {
+        const tol = (x: number) => Math.max(1e-4, Math.abs(x) * 1e-3);
+        // group by approximate value
+        const groups: Array<{ value: number; sides: typeof sidesI }> = [];
+        for (const s of sidesI) {
+          const g = groups.find((gr) => Math.abs(gr.value - s.value) <= tol(gr.value));
+          if (g) g.sides.push(s); else groups.push({ value: s.value, sides: [s] });
+        }
+        // largest group = "trusted"; everything else is wrong
+        groups.sort((a, b) => b.sides.length - a.sides.length);
+        const trusted = groups[0];
+        for (const g of groups) {
+          if (g === trusted) continue;
+          for (const s of g.sides) s.boxIds.forEach((id) => wrongIds.add(id));
+        }
+        // If nothing got flagged (all sides tied but disagree pairwise — rare),
+        // fall back to flagging the last side (the student's stated result).
+        if (wrongIds.size === 0) sidesI[sidesI.length - 1].boxIds.forEach((id) => wrongIds.add(id));
+      } else {
+        boxes.forEach((b) => wrongIds.add(b.id));
+      }
+      const overrideFb: Record<string, 'incorrect'> = {};
       boxes.forEach((b) => {
         const v = (previewValues[b.id] ?? '').trim();
-        if (v) overrideFb[b.id] = 'incorrect';
+        if (v && wrongIds.has(b.id)) overrideFb[b.id] = 'incorrect';
       });
       Object.assign(fbUpdate, overrideFb);
       setPreviewFeedback((p) => ({ ...p, ...overrideFb }));

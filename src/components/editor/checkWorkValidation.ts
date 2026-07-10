@@ -309,6 +309,15 @@ export function analyzeStep(
         affected = new Set(Object.keys(boxes));
         Object.values(boxes).forEach((box) => { if (box.value) box.verdict = 'incorrect'; });
       }
+    } else if (
+      previous?.hasOriginalError
+      && directWrong.length === 0
+      && numericSides.length === 1
+      && hasCalculationOperator(numericSides[0].expression)
+    ) {
+      category = 'propagated_error';
+      affected = new Set();
+      Object.values(boxes).forEach((box) => { if (box.value && box.verdict === 'unverified') box.verdict = 'correct'; });
     } else if (directWrong.length > 0) {
       category = directWrong.some((box) => box.sideIndex < Math.max(0, sides.length - 1)) ? 'wrong_operand' : 'wrong_result';
     } else if (

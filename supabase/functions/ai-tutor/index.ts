@@ -16,7 +16,6 @@ serve(async (req) => {
       actionType, 
       topic,
       userAnswers, 
-      correctAnswers, 
       hints, 
       attemptCount, 
       hasMissing, 
@@ -184,8 +183,17 @@ Give feedback that follows the authoritative diagnosis without repeating any num
       } catch (e) {
         console.error("Failed to parse JSON assessments:", e);
       }
+      const sentences = hint.trim().match(/[^.!?]+[.!?]+/g) || [];
+      const unsafeGuidance = sentences.length !== 2
+        || /\d/.test(hint)
+        || /\$|\\(?:times|frac|sqrt)|=/.test(hint);
+      if (unsafeGuidance) hint = "";
     }
-    if (!hint || !hint.trim()) hint = "Think about the concepts involved and try again.";
+    if (!hint || !hint.trim()) {
+      hint = actionType === "checkWork"
+        ? "There is a specific issue in this step that needs another look. Recheck the highlighted part using the operation or rule shown in the line."
+        : "Think about the concepts involved and try again.";
+    }
 
     console.log("Generated response:", hint, "Assessments:", assessments);
 

@@ -189,7 +189,7 @@ function evaluateSides(items: StepItem[], values: Record<string, string>, overri
 
 function hasCalculationOperator(expression: string): boolean {
   const compact = expression.replace(/\s+/g, '');
-  return /[×÷+*/]|√|[²³⁴^]/.test(compact) || /\d-\d/.test(compact) || /^-\d/.test(compact);
+  return /[×÷+*/]|√|[²³⁴^]/.test(compact) || /\d[-−]\d/.test(compact) || /^[-−]\d/.test(compact);
 }
 
 function allNumericSidesAgree(sides: StepSide[]): boolean | null {

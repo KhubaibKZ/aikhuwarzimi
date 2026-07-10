@@ -31,7 +31,6 @@ import {
 import {
   analyzeStep,
   answersEquivalent,
-  buildStepExpression,
   collectStepBoxes,
   isStaticSymbolBox,
   localGuidance,

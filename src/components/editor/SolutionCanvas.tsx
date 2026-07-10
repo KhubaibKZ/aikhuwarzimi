@@ -154,6 +154,76 @@ const answersEqual = (a: string, b: string) => {
   return false;
 };
 
+// --- Mathematical-consistency evaluator ---------------------------------
+// Turns a step's items (with the student's current values) into a math
+// expression string and evaluates each side of `=` to decide if the line is
+// mathematically consistent. Returns 'correct' when every `=`-separated side
+// evaluates to the same number, 'incorrect' when they differ, 'unknown' when
+// the expression cannot be parsed / has empty fillable boxes / has no `=`.
+function buildStepExpression(items: StepItem[], values: Record<string, string>): string {
+  const walk = (list: StepItem[]): string => list.map((it) => {
+    if (it.kind === 'text') return ` ${it.text} `;
+    if (it.kind === 'box') {
+      if (isStaticSymbolBox(it)) return ` ${(it.value ?? '').trim()} `;
+      const v = (values[it.id] ?? '').trim();
+      return v ? ` ${v} ` : ' ▢ ';
+    }
+    if (it.kind === 'fraction') return ` ((${walk(it.num)})/(${walk(it.den)})) `;
+    return '';
+  }).join('');
+  return walk(items);
+}
+
+function tokensToJs(expr: string): string {
+  let s = expr;
+  s = s.replace(/(\d),(?=\d{3}(\D|$))/g, '$1');
+  s = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+  s = s.replace(/π/g, '(Math.PI)');
+  s = s.replace(/²/g, '**2').replace(/³/g, '**3').replace(/⁴/g, '**4');
+  s = s.replace(/½/g, '(1/2)').replace(/¼/g, '(1/4)').replace(/¾/g, '(3/4)')
+       .replace(/⅓/g, '(1/3)').replace(/⅔/g, '(2/3)');
+  s = s.replace(/√\s*\(/g, 'Math.sqrt(');
+  s = s.replace(/√\s*([0-9.]+)/g, 'Math.sqrt($1)');
+  s = s.replace(/(\d+(?:\.\d+)?)\s*%/g, '($1/100)');
+  return s;
+}
+
+function safeEval(js: string): number | null {
+  if (!js.trim()) return null;
+  // Allow only digits, math ops, dots, parens, commas, spaces, and
+  // Math.sqrt / Math.PI tokens.
+  const stripped = js.replace(/Math\.sqrt/g, '').replace(/Math\.PI/g, '');
+  if (!/^[\d\s+\-*/().,]*$/.test(stripped.replace(/\*\*/g, ''))) return null;
+  try {
+    // eslint-disable-next-line no-new-func
+    const val = Function(`"use strict"; return (${js});`)();
+    if (typeof val === 'number' && isFinite(val)) return val;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function evaluateStepEquation(
+  items: StepItem[],
+  values: Record<string, string>,
+): 'correct' | 'incorrect' | 'unknown' {
+  const raw = buildStepExpression(items, values);
+  if (raw.includes('▢')) return 'unknown';
+  const parts = raw.split('=').map((p) => p.trim()).filter(Boolean);
+  if (parts.length < 2) return 'unknown';
+  const nums: number[] = [];
+  for (const p of parts) {
+    const n = safeEval(tokensToJs(p));
+    if (n === null) return 'unknown';
+    nums.push(n);
+  }
+  const ref = nums[0];
+  const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
+  for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
+  return 'correct';
+}
+
 // Set of symbol characters that identify "static display" boxes (operators,
 // math symbols, punctuation). If a box's authored value contains only these
 // characters, it is rendered as inline static text in preview instead of a
@@ -289,6 +359,31 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       if (answersEqual(v, expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
+
+    // --- Math-consistency check (source of truth when the step is an equation).
+    // If the mathematical calculation is fully valid, mark every filled box
+    // correct regardless of the authored expected values.
+    const mathVerdict = evaluateStepEquation(block.items, previewValues);
+    if (mathVerdict === 'correct') {
+      const overrideFb: Record<string, 'correct'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'correct';
+      });
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
+      return;
+    }
+    if (mathVerdict === 'incorrect') {
+      const overrideFb: Record<string, 'correct' | 'incorrect'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'incorrect';
+      });
+      Object.assign(fbUpdate, overrideFb);
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+    }
+
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
 
     if (stats.total === 0) {
@@ -300,7 +395,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       return;
     }
     const everyBoxHasExpectedAnswer = checkedAgainstExpected === stats.total;
-    const allCorrect = everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
+    const allCorrect = mathVerdict !== 'incorrect' && everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
     if (allCorrect) {
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
       return;

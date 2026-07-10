@@ -359,6 +359,31 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       if (answersEqual(v, expected)) { stats.correct++; fbUpdate[b.id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[b.id] = 'incorrect'; }
     });
+
+    // --- Math-consistency check (source of truth when the step is an equation).
+    // If the mathematical calculation is fully valid, mark every filled box
+    // correct regardless of the authored expected values.
+    const mathVerdict = evaluateStepEquation(block.items, previewValues);
+    if (mathVerdict === 'correct') {
+      const overrideFb: Record<string, 'correct'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'correct';
+      });
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+      setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Mathematically correct — the calculation in this step checks out.` } }));
+      return;
+    }
+    if (mathVerdict === 'incorrect') {
+      const overrideFb: Record<string, 'correct' | 'incorrect'> = {};
+      boxes.forEach((b) => {
+        const v = (previewValues[b.id] ?? '').trim();
+        if (v) overrideFb[b.id] = 'incorrect';
+      });
+      Object.assign(fbUpdate, overrideFb);
+      setPreviewFeedback((p) => ({ ...p, ...overrideFb }));
+    }
+
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
 
     if (stats.total === 0) {
@@ -370,7 +395,7 @@ export function SolutionCanvas({ value, onChange, hints = [], previewMode = fals
       return;
     }
     const everyBoxHasExpectedAnswer = checkedAgainstExpected === stats.total;
-    const allCorrect = everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
+    const allCorrect = mathVerdict !== 'incorrect' && everyBoxHasExpectedAnswer && stats.incorrect === 0 && stats.empty === 0;
     if (allCorrect) {
       setStepFeedback((p) => ({ ...p, [block.id]: { type: 'guidance', content: `Spot on! All ${stats.total} values in this step are correct.` } }));
       return;

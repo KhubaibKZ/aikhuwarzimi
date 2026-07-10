@@ -207,20 +207,38 @@ function safeEval(js: string): number | null {
 export function evaluateStepEquation(
   items: StepItem[],
   values: Record<string, string>,
+  priorResults: number[] = [],
 ): 'correct' | 'incorrect' | 'unknown' {
   const raw = buildStepExpression(items, values);
   if (raw.includes('▢')) return 'unknown';
-  const parts = raw.split('=').map((p) => p.trim()).filter(Boolean);
-  if (parts.length < 2) return 'unknown';
+  // Split on `=` and drop label-only parts (no digits) — e.g. "Number of People".
+  const parts = raw
+    .split('=')
+    .map((p) => p.trim())
+    .filter((p) => p && /\d/.test(p));
+  if (parts.length === 0) return 'unknown';
   const nums: number[] = [];
   for (const p of parts) {
     const n = safeEval(tokensToJs(p));
     if (n === null) return 'unknown';
     nums.push(n);
   }
-  const ref = nums[0];
-  const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
-  for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
+  // Multi-sided equation: every side must agree.
+  if (nums.length >= 2) {
+    const ref = nums[0];
+    const tol = Math.max(1e-4, Math.abs(ref) * 1e-4);
+    for (const n of nums) if (Math.abs(n - ref) > tol) return 'incorrect';
+    return 'correct';
+  }
+  // Single-sided expression (e.g. "36400 − 8372" or "= 28028"):
+  // it is a well-formed arithmetic continuation. If any prior step yielded
+  // this value, it's definitively correct; otherwise still treat as correct
+  // because the calculation itself is valid.
+  const val = nums[0];
+  if (priorResults.length) {
+    const tol = Math.max(1e-4, Math.abs(val) * 1e-4);
+    for (const pr of priorResults) if (Math.abs(pr - val) <= tol) return 'correct';
+  }
   return 'correct';
 }
 

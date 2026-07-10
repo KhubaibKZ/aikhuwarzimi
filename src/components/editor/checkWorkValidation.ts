@@ -275,9 +275,9 @@ export function analyzeStep(
     if (box.verdict !== 'unverified' || !isOperand) return;
     const number = safeEval(box.value);
     if (number !== null) {
-      box.verdict = trustedContextValues.some((trusted) => approximatelyEqual(number, trusted))
-        ? 'correct'
-        : 'incorrect';
+      const matchesTrustedContext = trustedContextValues.some((trusted) => approximatelyEqual(number, trusted));
+      if (matchesTrustedContext) box.verdict = 'correct';
+      else if (isSingleSideCalculation) box.verdict = 'incorrect';
     }
   });
 

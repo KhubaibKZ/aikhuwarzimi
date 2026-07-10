@@ -102,7 +102,14 @@ RESPONSE RULES:
 ${specificPart ? `- Focus ONLY on "${specificPart}".` : ""}
 
 SITUATION CONTEXT:
-${evaluateNeutral ? "You DO NOT know in advance whether the student's line is correct. Verify the algebra of the CURRENT step yourself AND read the PRIOR STEPS in the working content. A step that looks 'wrong' in isolation may be a valid continuation (reusing an intermediate result, rearranging, factoring, etc.). If it is a valid continuation, confirm briefly and mark every filled box 'correct'. Only mark 'incorrect' when the step genuinely contradicts prior working or basic mathematics." : ""}
+${evaluateNeutral ? `You DO NOT know in advance whether the student's line is correct. Verify the algebra of the CURRENT step yourself AND read the PRIOR STEPS in the working content. A step that looks 'wrong' in isolation may be a valid continuation.
+
+CRITICAL INTERPRETATION RULES before marking anything incorrect:
+1. PERCENTAGE SHORTHAND: If the question involves a percentage (e.g. "23% of 36400") and the student writes "23 × 36400 = 8372", treat "23" as 23% (i.e. 0.23). 0.23 × 36400 = 8372 → CORRECT. Do the same for any integer 1–100 that matches a percentage mentioned in the question.
+2. INTERMEDIATE STEPS: A step that computes an intermediate quantity (e.g. "people aged 18 and under" when the final question asks for "people over 18") is CORRECT if the arithmetic is valid — it is a legitimate stepping stone.
+3. UNIT / RATIO SHORTHAND: Similar leniency for ratios, fractions, and unit conversions where the student's notation is informal but the numerical relationship is valid.
+4. Only mark 'incorrect' when the step genuinely contradicts prior working, the question's given data, or basic mathematics — NOT because the student used a shorthand or because it isn't the final answer.
+5. If the step is a valid continuation (including under rules 1–3), mark EVERY filled box "correct" and give brief positive reinforcement.` : ""}
 ${!evaluateNeutral && !hasWrong && !hasMissing ? "All boxes look right — give brief positive reinforcement." : ""}
 ${!evaluateNeutral && !hasWrong && hasMissing ? "Correct so far but incomplete — encourage them to continue." : ""}
 ${!evaluateNeutral && hasWrong && !hasMissing ? "There are errors — diagnose the likely misconception and nudge toward fixing it." : ""}

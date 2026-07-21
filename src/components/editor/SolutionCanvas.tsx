@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type, Loader2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, ImageOff, Keyboard, Plus, Send, Trash2, Type, Upload, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -596,16 +596,24 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
                   label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
                 >
                   {b.kind === 'heading' && (
-                    <Input
-                      placeholder="e.g. Estimate, Round & Set up…"
-                      value={b.text}
-                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                      className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
-                      spellCheck={false}
-                      autoComplete="off"
-                      data-gramm="false"
-                    />
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="e.g. Estimate, Round & Set up…"
+                        value={b.text}
+                        onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                        onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                        className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
+                        spellCheck={false}
+                        autoComplete="off"
+                        data-gramm="false"
+                      />
+                      <HeadingSvgControl
+                        hasSvg={!!(b as any).svgMarkup}
+                        onUpload={(svg) => updateBlock(b.id, (p) => ({ ...(p as any), svgMarkup: svg }))}
+                        onClear={() => updateBlock(b.id, (p) => ({ ...(p as any), svgMarkup: undefined }))}
+                      />
+                      {(b as any).svgMarkup && <InteractiveSvg markup={(b as any).svgMarkup} />}
+                    </div>
                   )}
                   {b.kind === 'text' && (
                     <Input
@@ -792,7 +800,14 @@ function PreviewBlock({
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
 
   if (block.kind === 'heading') {
-    return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
+    return (
+      <div className="space-y-2">
+        <div className="text-sm font-bold text-foreground">
+          {block.text || <span className="text-muted-foreground italic">(empty heading)</span>}
+        </div>
+        {(block as any).svgMarkup && <InteractiveSvg markup={(block as any).svgMarkup} />}
+      </div>
+    );
   }
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;
@@ -1389,6 +1404,46 @@ function QuestionBlockEditor({
         spellCheck={false}
       />
       {block.svgMarkup && <InteractiveSvg markup={block.svgMarkup} />}
+    </div>
+  );
+}
+
+/** Compact SVG upload/remove control for Part Heading blocks. */
+function HeadingSvgControl({
+  hasSvg,
+  onUpload,
+  onClear,
+}: {
+  hasSvg: boolean;
+  onUpload: (markup: string) => void;
+  onClear: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".svg,image/svg+xml"
+        className="hidden"
+        onChange={async (e) => {
+          const f = e.target.files?.[0];
+          e.currentTarget.value = '';
+          if (!f) return;
+          const text = await f.text();
+          if (!text.includes('<svg')) return;
+          onUpload(text);
+        }}
+      />
+      {hasSvg ? (
+        <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs text-destructive" onClick={onClear}>
+          <ImageOff className="h-3.5 w-3.5 mr-1" /> Remove SVG
+        </Button>
+      ) : (
+        <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => fileRef.current?.click()}>
+          <Upload className="h-3.5 w-3.5 mr-1" /> Upload SVG
+        </Button>
+      )}
     </div>
   );
 }

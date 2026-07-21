@@ -13,7 +13,7 @@ export type StepItem =
     };
 
 export type CanvasBlock =
-  | { id: string; kind: 'heading'; text: string }
+  | { id: string; kind: 'heading'; text: string; svgMarkup?: string }
   | { id: string; kind: 'text'; text: string }
   | { id: string; kind: 'step'; items: StepItem[] }
   | { id: string; kind: 'question'; text: string; svgMarkup?: string };

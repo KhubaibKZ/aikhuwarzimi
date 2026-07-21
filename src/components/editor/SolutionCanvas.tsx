@@ -596,16 +596,24 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
                   label={b.kind === 'heading' ? 'Heading' : b.kind === 'text' ? 'Text' : 'STEP BLOCK'}
                 >
                   {b.kind === 'heading' && (
-                    <Input
-                      placeholder="e.g. Estimate, Round & Set up…"
-                      value={b.text}
-                      onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
-                      onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
-                      className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
-                      spellCheck={false}
-                      autoComplete="off"
-                      data-gramm="false"
-                    />
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="e.g. Estimate, Round & Set up…"
+                        value={b.text}
+                        onFocus={(e) => focusBlock(b.id)(e.currentTarget)}
+                        onChange={(e) => updateBlock(b.id, (p) => ({ ...(p as any), text: e.target.value }))}
+                        className="border-0 bg-transparent text-lg font-bold text-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
+                        spellCheck={false}
+                        autoComplete="off"
+                        data-gramm="false"
+                      />
+                      <HeadingSvgControl
+                        hasSvg={!!(b as any).svgMarkup}
+                        onUpload={(svg) => updateBlock(b.id, (p) => ({ ...(p as any), svgMarkup: svg }))}
+                        onClear={() => updateBlock(b.id, (p) => ({ ...(p as any), svgMarkup: undefined }))}
+                      />
+                      {(b as any).svgMarkup && <InteractiveSvg markup={(b as any).svgMarkup} />}
+                    </div>
                   )}
                   {b.kind === 'text' && (
                     <Input

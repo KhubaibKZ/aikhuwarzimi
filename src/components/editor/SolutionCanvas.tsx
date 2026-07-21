@@ -1407,3 +1407,43 @@ function QuestionBlockEditor({
     </div>
   );
 }
+
+/** Compact SVG upload/remove control for Part Heading blocks. */
+function HeadingSvgControl({
+  hasSvg,
+  onUpload,
+  onClear,
+}: {
+  hasSvg: boolean;
+  onUpload: (markup: string) => void;
+  onClear: () => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".svg,image/svg+xml"
+        className="hidden"
+        onChange={async (e) => {
+          const f = e.target.files?.[0];
+          e.currentTarget.value = '';
+          if (!f) return;
+          const text = await f.text();
+          if (!text.includes('<svg')) return;
+          onUpload(text);
+        }}
+      />
+      {hasSvg ? (
+        <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs text-destructive" onClick={onClear}>
+          <ImageOff className="h-3.5 w-3.5 mr-1" /> Remove SVG
+        </Button>
+      ) : (
+        <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => fileRef.current?.click()}>
+          <Upload className="h-3.5 w-3.5 mr-1" /> Upload SVG
+        </Button>
+      )}
+    </div>
+  );
+}

@@ -800,7 +800,14 @@ function PreviewBlock({
   const getVal = (id: string, fallback?: string) => values[id] ?? fallback ?? '';
 
   if (block.kind === 'heading') {
-    return <div className="text-sm font-bold text-foreground">{block.text || <span className="text-muted-foreground italic">(empty heading)</span>}</div>;
+    return (
+      <div className="space-y-2">
+        <div className="text-sm font-bold text-foreground">
+          {block.text || <span className="text-muted-foreground italic">(empty heading)</span>}
+        </div>
+        {(block as any).svgMarkup && <InteractiveSvg markup={(block as any).svgMarkup} />}
+      </div>
+    );
   }
   if (block.kind === 'text') {
     return <p className="text-sm text-foreground whitespace-pre-wrap">{block.text || <span className="text-muted-foreground italic">(empty text)</span>}</p>;

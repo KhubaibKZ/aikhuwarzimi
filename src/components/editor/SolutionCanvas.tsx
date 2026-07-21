@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, Keyboard, Plus, Send, Trash2, Type, Loader2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, ImageOff, Keyboard, Plus, Send, Trash2, Type, Upload, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';

@@ -41,6 +41,10 @@ import { questions4024_11_2021ON, sections4024_11_2021ON } from './pastPaper4024
 import { questions4024_12_2021ON, sections4024_12_2021ON } from './pastPaper4024_12_2021ON';
 import { questions4024_21_2021ON, sections4024_21_2021ON } from './pastPaper4024_21_2021ON';
 import { questions4024_22_2021ON, sections4024_22_2021ON } from './pastPaper4024_22_2021ON';
+import {
+  questionsTestLinearInequalitiesPre,
+  sectionsTestLinearInequalitiesPre,
+} from './testPaperLinearInequalitiesPre';
 
 export interface FormulaTemplate {
   numeratorLabel: string;
@@ -108,7 +112,7 @@ export interface PastPaperSection {
   lockedReason?: string;
 }
 
-export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)' | 'Paper 1' | 'Paper 2';
+export type PaperCategory = 'Paper 01 (CORE)' | 'Paper 02 (EXTENDED)' | 'Paper 03 (CORE)' | 'Paper 04 (EXTENDED)' | 'Paper 1' | 'Paper 2' | 'Test';
 
 export interface PastPaper {
   id: string;
@@ -122,10 +126,12 @@ export interface PastPaper {
   locked?: boolean;
   category: PaperCategory;
   courseId: string;
+  courseIds?: string[];
 }
 
 // Combine all questions
 export const pastPaperQuestions: Record<string, PastPaperQuestion> = {
+  ...questionsTestLinearInequalitiesPre,
   ...questions0580_43_2021,
   ...questions0580_11_2020,
   ...questions0580_22_2022FM,
@@ -1265,6 +1271,21 @@ export const pastPapers: PastPaper[] = [
     id: 'pp_4024_on21_22', code: '4024/22', session: 'Oct/Nov', year: 2021,
     title: '4024/22 Oct/Nov 2021', totalMarks: 100, duration: '2 hours 30 minutes',
     category: 'Paper 2', courseId: 'olevel-4024', sections: sections4024_22_2021ON, locked: false
+  },
+  // ===== Tests =====
+  {
+    id: 'test_linear_inequalities_pre',
+    code: 'PRE TEST',
+    session: 'Linear Inequalities',
+    year: 2026,
+    title: 'Pre Test – Linear Inequalities',
+    totalMarks: 25,
+    duration: '40 minutes',
+    category: 'Test',
+    courseId: 'olevel-4024',
+    courseIds: ['olevel-4024', 'igcse-0580'],
+    sections: sectionsTestLinearInequalitiesPre,
+    locked: false,
   },
 ];
 

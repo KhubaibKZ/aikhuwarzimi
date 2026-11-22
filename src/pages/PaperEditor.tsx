@@ -39,11 +39,11 @@ import { QuestionText } from '@/components/QuestionText';
 import { MathInputToolbar } from '@/components/editor/MathInputToolbar';
 import { themeSvgMarkup } from '@/lib/svgTheme';
 
-const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_22', 'pp_4024_on23_11']);
+const CANVAS_PAPER_IDS = new Set(['pp_4024_on23_21', 'pp_4024_on23_22', 'pp_4024_on23_11', 'test_linear_inequalities_pre']);
 
 type Editable = PastPaperQuestion & { diagramImageUrl?: string | null; diagramSvgMarkup?: string | null };
 
-const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22'] as const;
+const EDITOR_PAPER_IDS = ['pp_4024_on23_11', 'pp_4024_on23_12', 'pp_4024_on23_21', 'pp_4024_on23_22', 'test_linear_inequalities_pre'] as const;
 
 function deepClone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
@@ -211,14 +211,14 @@ export default function PaperEditor() {
           <div>
             <h1 className="text-2xl font-bold">Paper Editor</h1>
             <p className="text-sm text-muted-foreground">
-               Edit Oct/Nov 2023 Paper 1 &amp; Paper 2 questions. Click a question, then edit the heading and question text directly.
+               Edit past paper &amp; test questions. Click a question, then edit the heading and question text directly.
             </p>
           </div>
           <Button variant="outline" onClick={() => navigate('/dashboard')}>Back</Button>
         </div>
 
         <Tabs value={paperId} onValueChange={(v) => { setPaperId(v); setQuestionId(''); }}>
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex-wrap h-auto">
             {editorPapers.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.title}</TabsTrigger>
             ))}

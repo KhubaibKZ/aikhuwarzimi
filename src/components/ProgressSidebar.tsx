@@ -134,7 +134,7 @@ function YearFolder({ year, papers }: { year: number; papers: PaperProgressItem[
 }
 
 interface ProgressSidebarProps {
-  activeTab?: 'syllabus' | 'pastpapers';
+  activeTab?: 'syllabus' | 'pastpapers' | 'tests';
   courseId?: string;
   studentMode?: boolean;
 }
@@ -145,6 +145,7 @@ export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode 
   const { isCompleted } = useProgress();
 
   const showTopics = activeTab === 'syllabus';
+  const showTests = activeTab === 'tests';
 
   // Syllabus-based topic progress
   const syllabusTopicProgress = igcseMathsSyllabus.topics.map(topic => {
@@ -155,7 +156,9 @@ export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode 
   });
 
   // Paper progress grouped by year
-  const filteredPapers = pastPapers.filter(p => !courseId || p.courseId === courseId);
+  const filteredPapers = pastPapers.filter(
+    p => p.category !== 'Test' && (!courseId || p.courseId === courseId)
+  );
   const paperProgressItems: PaperProgressItem[] = filteredPapers.map(paper => {
     const result = data?.paperResults.find(r => r.paperId === paper.id);
     return {
@@ -182,12 +185,28 @@ export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode 
   });
   const years = Array.from(yearMap.keys()).sort((a, b) => b - a);
 
+  const testProgressItems = pastPapers
+    .filter(p => p.category === 'Test' && (!courseId || p.courseId === courseId || p.courseIds?.includes(courseId)))
+    .map(paper => {
+      const result = data?.paperResults.find(r => r.paperId === paper.id);
+      return {
+        paperId: paper.id,
+        title: paper.title,
+        totalQuestions: paper.sections.length,
+        solvedQuestions: result?.solvedQuestions || 0,
+        completionPercentage: result?.completionPercentage || 0,
+        totalMarks: paper.totalMarks,
+        marksObtained: result?.marksObtained || 0,
+        scorePercentage: paper.totalMarks > 0 ? Math.round(((result?.marksObtained || 0) / paper.totalMarks) * 100) : 0,
+      };
+    });
+
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-border bg-card p-6 shadow-soft animate-fade-in">
         <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           <CheckCircle2 className="h-4 w-4 text-primary" />
-          {showTopics ? 'Topic Progress' : 'Paper Progress'}
+          {showTopics ? 'Topic Progress' : showTests ? 'Test Progress' : 'Paper Progress'}
         </h3>
 
         {showTopics ? (
@@ -206,6 +225,34 @@ export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode 
           <p className="text-xs text-muted-foreground">Log in to track your progress.</p>
         ) : isLoading ? (
           <p className="text-xs text-muted-foreground">Loading...</p>
+        ) : showTests ? (
+          <div className="space-y-2">
+            {testProgressItems.map(t => {
+              const scoreColor = t.scorePercentage > 80 ? 'text-green-400' : t.scorePercentage >= 50 ? 'text-yellow-400' : 'text-destructive';
+              return (
+                <div key={t.paperId} className="flex items-center gap-2.5 p-2 rounded-lg border border-border/50 bg-card/50">
+                  <ProgressRing percentage={t.completionPercentage} size={34} strokeWidth={3} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-foreground truncate">{t.title}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] text-muted-foreground">{t.solvedQuestions}/{t.totalQuestions} Qs</span>
+                      {t.solvedQuestions > 0 && (
+                        <>
+                          <span className="text-[10px] text-muted-foreground">•</span>
+                          <span className={cn("text-[10px] font-semibold", scoreColor)}>
+                            {t.marksObtained}/{t.totalMarks}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {testProgressItems.length === 0 && (
+              <p className="text-xs text-muted-foreground">No tests available.</p>
+            )}
+          </div>
         ) : (
           <div className="space-y-2">
             {years.map(year => (

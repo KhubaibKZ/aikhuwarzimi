@@ -221,7 +221,7 @@ export default function AdminPanel() {
     courseId === 'olevel-4024' ? olevelMathsSyllabus : igcseMathsSyllabus;
 
   const getCoursePapers = (courseId: string) =>
-    pastPapers.filter(p => p.courseId === courseId && !p.locked);
+    pastPapers.filter(p => (p.courseId === courseId || p.courseIds?.includes(courseId)) && !p.locked);
 
   return (
     <div className="min-h-screen bg-background">
@@ -501,7 +501,9 @@ export default function AdminPanel() {
                               checked={isAssigned}
                               onCheckedChange={() => togglePaper(paper.id)}
                             />
-                            <span className="text-sm text-foreground flex-1">{paper.code} ({paper.session} {paper.year})</span>
+                            <span className="text-sm text-foreground flex-1">
+                              {paper.category === 'Test' ? `${paper.title} (Test)` : `${paper.code} (${paper.session} ${paper.year})`}
+                            </span>
                             {isAssigned && (
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1">

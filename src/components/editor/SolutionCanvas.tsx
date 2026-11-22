@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, ImageOff, Keyboard, Plus, Send, Trash2, Type, Upload, Loader2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, BookOpen, CheckCircle2, CheckSquare, Copy, HelpCircle, ImageOff, Keyboard, Plus, RotateCcw, Send, Trash2, Type, Upload, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { HorizontalKeyboard } from '@/components/workspace/HorizontalKeyboard';
 import { InlineMathToolbar, insertAtCaret } from '@/components/editor/InlineMathToolbar';
@@ -44,6 +44,19 @@ interface Props {
   questionText?: string;
   markingCriteria?: Record<string, string>;
   previewMode?: boolean;
+  initialValues?: Record<string, string>;
+  initialFeedback?: Record<string, 'correct' | 'incorrect'>;
+  initialSubmitted?: boolean;
+  showReset?: boolean;
+  onSubmitCanvas?: (result: {
+    values: Record<string, string>;
+    feedback: Record<string, 'correct' | 'incorrect'>;
+    total: number;
+    correct: number;
+    incorrect: number;
+    empty: number;
+  }) => void;
+  onResetCanvas?: () => void;
 }
 
 
@@ -143,7 +156,20 @@ function splitCanvasSections(blocks: CanvasBlock[]): CanvasSection[] {
   return sections.length > 0 ? sections : [{ key: 'main-solution', blocks: [] }];
 }
 
-export function SolutionCanvas({ value, onChange, hints = [], questionText = '', markingCriteria, previewMode = false }: Props) {
+export function SolutionCanvas({
+  value,
+  onChange,
+  hints = [],
+  questionText = '',
+  markingCriteria,
+  previewMode = false,
+  initialValues,
+  initialFeedback,
+  initialSubmitted = false,
+  showReset = false,
+  onSubmitCanvas,
+  onResetCanvas,
+}: Props) {
   const initialStepId = useRef(Math.random().toString(36).slice(2, 10));
   const canvas = useMemo(() => {
     const normalized = normalizeCanvas(value ?? empty);
@@ -154,15 +180,24 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
   }, [value, previewMode]);
   const { toast } = useToast();
   const [hintIdx, setHintIdx] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(initialSubmitted);
   const [focusedRef, setFocusedRef] = useState<HTMLInputElement | HTMLTextAreaElement | null>(null);
   const [keyboardIdsByBlock, setKeyboardIdsByBlock] = useState<Record<string, string[]>>({});
-  const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
-  const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>({});
+  const [previewValues, setPreviewValues] = useState<Record<string, string>>(initialValues ?? {});
+  const [previewFeedback, setPreviewFeedback] = useState<Record<string, 'correct' | 'incorrect'>>(initialFeedback ?? {});
   const [stepFeedback, setStepFeedback] = useState<Record<string, { type: 'guidance'; content: string } | null>>({});
   const [loadingStepId, setLoadingStepId] = useState<string | null>(null);
   const attemptCountRef = useRef<Record<string, number>>({});
   const previousFeedbackRef = useRef<Record<string, string[]>>({});
+
+  useEffect(() => {
+    if (!previewMode) return;
+    setSubmitted(initialSubmitted);
+    if (initialSubmitted) {
+      if (initialValues) setPreviewValues(initialValues);
+      if (initialFeedback) setPreviewFeedback(initialFeedback);
+    }
+  }, [previewMode, initialSubmitted]);
   const addKeyboardTo = (blockId: string) =>
     setKeyboardIdsByBlock((prev) => ({
       ...prev,
@@ -191,8 +226,8 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
     });
   };
 
-  const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number } => {
-    const stats = { total: 0, correct: 0, incorrect: 0, empty: 0 };
+  const validateBlock = (block: CanvasBlock): { total: number; correct: number; incorrect: number; empty: number; fbUpdate: Record<string, 'correct' | 'incorrect'> } => {
+    const stats = { total: 0, correct: 0, incorrect: 0, empty: 0, fbUpdate: {} as Record<string, 'correct' | 'incorrect'> };
     if (block.kind !== 'step') return stats;
     const boxes = collectStepBoxes(block.items);
     const fbUpdate: Record<string, 'correct' | 'incorrect'> = {};
@@ -204,6 +239,7 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
       if (answersEquivalent(v, expected)) { stats.correct++; fbUpdate[id] = 'correct'; }
       else { stats.incorrect++; fbUpdate[id] = 'incorrect'; }
     }
+    stats.fbUpdate = fbUpdate;
     setPreviewFeedback((p) => ({ ...p, ...fbUpdate }));
     return stats;
   };
@@ -305,13 +341,23 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
 
   const handleSubmitAll = () => {
     let total = 0, correct = 0, incorrect = 0, empty = 0;
+    const allFeedback: Record<string, 'correct' | 'incorrect'> = { ...previewFeedback };
     for (const section of sections) {
       for (const b of section.blocks) {
         const s = validateBlock(b);
         total += s.total; correct += s.correct; incorrect += s.incorrect; empty += s.empty;
+        Object.assign(allFeedback, s.fbUpdate);
       }
     }
     setSubmitted(true);
+    onSubmitCanvas?.({
+      values: previewValues,
+      feedback: allFeedback,
+      total,
+      correct,
+      incorrect,
+      empty,
+    });
     toast({
       title: 'Answer Submitted',
       description: total === 0
@@ -685,7 +731,7 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
 
 
       <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur">
-        <div className="grid grid-cols-2 gap-3">
+        <div className={cn('grid gap-3', showReset && onResetCanvas ? 'grid-cols-3' : 'grid-cols-2')}>
           <Button
             variant="outline"
             className="flex items-center gap-2"
@@ -720,6 +766,22 @@ export function SolutionCanvas({ value, onChange, hints = [], questionText = '',
               </>
             )}
           </Button>
+          {showReset && onResetCanvas && (
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+              onClick={() => {
+                setSubmitted(false);
+                setPreviewValues({});
+                setPreviewFeedback({});
+                setStepFeedback({});
+                onResetCanvas();
+              }}
+            >
+              <RotateCcw className="h-4 w-4" />
+              Reset
+            </Button>
+          )}
         </div>
       </div>
     </div>

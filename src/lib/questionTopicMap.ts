@@ -1061,6 +1061,19 @@ export const questionTopicMap: Record<string, SyllabusRef> = {
   'pp_4024_on21_22_q8': { topicId: 5, topicTitle: 'Mensuration', subtopicCode: '5.4', subtopicTitle: 'Surface Area and Volume' },
   'pp_4024_on21_22_q9': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.5', subtopicTitle: 'Equations' },
   'pp_4024_on21_22_q10': { topicId: 6, topicTitle: 'Trigonometry', subtopicCode: '6.4', subtopicTitle: "Pythagoras' Theorem and Trigonometry in 3D" },
+
+  // =============================================
+  // Pre Test – Linear Inequalities
+  // =============================================
+  'test_lin_ineq_pre_q1': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q2': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q3': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q4': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q5': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q6': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q7': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q8': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
+  'test_lin_ineq_pre_q9': { topicId: 2, topicTitle: 'Algebra and Graphs', subtopicCode: '2.8', subtopicTitle: 'Inequalities' },
 };
 
 // Get the syllabus reference for a question

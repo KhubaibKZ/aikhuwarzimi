@@ -16,6 +16,7 @@ import { useStudentAssignments } from '@/hooks/useStudentAssignments';
 import { VecText } from '@/components/VecText';
 import { PrimeFactorLadder } from '@/components/PrimeFactorLadder';
 import { QuestionText } from '@/components/QuestionText';
+import { SolutionCanvas } from '@/components/editor/SolutionCanvas';
 import { LCMLadder } from '@/components/LCMLadder';
 import { TriangleDiagram } from '@/components/TriangleDiagram';
 import { StepWorkspace, FractionDivisionWorkspace, EquationSolveWorkspace } from '@/components/workspace';
@@ -377,10 +378,14 @@ export function PastPaperWorkspace({
           setAnswers(restoredAnswers);
         }
 
-        const evaluation = checkAnswersInternal(restoredAnswers);
-        setFeedback(evaluation.newFeedback);
-        setStoredMarksEarned(evaluation.marksEarned);
-        setStoredMarkingNotes(evaluation.markingNotes);
+        if (question.solutionCanvas?.blocks?.length && data.submitted_feedback && typeof data.submitted_feedback === 'object') {
+          setFeedback(data.submitted_feedback as Record<string, 'correct' | 'incorrect' | null>);
+        } else {
+          const evaluation = checkAnswersInternal(restoredAnswers);
+          setFeedback(evaluation.newFeedback);
+          setStoredMarksEarned(evaluation.marksEarned);
+          setStoredMarkingNotes(evaluation.markingNotes);
+        }
 
         if (data.time_spent_seconds != null) {
           setFinalTime(data.time_spent_seconds as number);
@@ -2187,6 +2192,71 @@ export function PastPaperWorkspace({
     }
   };
 
+  const handleCanvasSubmit = async (result: {
+    values: Record<string, string>;
+    feedback: Record<string, 'correct' | 'incorrect'>;
+    total: number;
+    correct: number;
+    incorrect: number;
+    empty: number;
+  }) => {
+    const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
+    const accuracyScore = result.total > 0 ? Math.round((result.correct / result.total) * 100) : 100;
+    const allCorrect = result.total > 0 ? result.correct === result.total && result.incorrect === 0 && result.empty === 0 : true;
+    const speedScore = Math.round(Math.max(0, Math.min(100, 100 - (timeSpent - 60) / 3)));
+    const matchedPaper = pastPapers.find(p => p.sections.some(s => s.questionId === question.id));
+    const paperId = matchedPaper?.id || 'pp_0580_s22_31';
+
+    setAnswers(result.values);
+    setFeedback(result.feedback);
+    setIsChecked(true);
+    setIsSubmitted(true);
+    setFinalTime(timeSpent);
+    markExampleComplete(question.id);
+
+    if (user) {
+      await supabase.from('student_paper_progress').upsert({
+        user_id: user.id,
+        paper_id: paperId,
+        question_id: question.id,
+        workspace_mode: workspaceMode,
+        is_correct: allCorrect,
+        accuracy_score: accuracyScore,
+        speed_score: speedScore,
+        ai_usage_count: aiUsageRef.current,
+        checkwork_count: checkworkUsageRef.current,
+        time_spent_seconds: timeSpent,
+        total_steps: result.total || 1,
+        completed_steps: result.correct,
+        submitted_at: new Date().toISOString(),
+        submitted_answers: result.values,
+        submitted_feedback: result.feedback,
+      }, { onConflict: 'user_id,paper_id,question_id,workspace_mode' });
+      queryClient.invalidateQueries({ queryKey: ['student-progress'] });
+    }
+
+    if (onSubmitProgress) {
+      const marksAvailable = question.marks || 0;
+      const marksObtained = Math.round((accuracyScore / 100) * marksAvailable);
+      onSubmitProgress({
+        questionId: question.id,
+        paperId: matchedPaper?.id || '',
+        isCorrect: allCorrect,
+        accuracyScore,
+        speedScore,
+        aiUsageCount: aiUsageRef.current,
+        checkworkCount: checkworkUsageRef.current,
+        timeSpentSeconds: timeSpent,
+        totalSteps: result.total || 1,
+        completedSteps: result.correct,
+        marksObtained,
+        marksAvailable,
+        submittedAt: new Date().toISOString(),
+        submittedAnswers: result.values,
+      });
+    }
+  };
+
   const resetWorkspace = () => {
     setAnswers({});
     setFeedback({});
@@ -3171,6 +3241,26 @@ export function PastPaperWorkspace({
                 </Button>
               )}
             </>
+          ) : question.solutionCanvas && question.solutionCanvas.blocks.length > 0 ? (
+            <SolutionCanvas
+              key={question.id}
+              value={question.solutionCanvas}
+              hints={question.hints}
+              questionText={question.question}
+              markingCriteria={question.markingCriteria}
+              previewMode={true}
+              onChange={() => {}}
+              initialValues={answers}
+              initialFeedback={
+                Object.fromEntries(
+                  Object.entries(feedback).filter(([, v]) => v === 'correct' || v === 'incorrect')
+                ) as Record<string, 'correct' | 'incorrect'>
+              }
+              initialSubmitted={isSubmitted}
+              showReset={isSubmitted && workspaceMode === 'general'}
+              onSubmitCanvas={handleCanvasSubmit}
+              onResetCanvas={handleResetQuestion}
+            />
           ) : (<>
           {/* Answer Fields */}
           <div className="space-y-4">

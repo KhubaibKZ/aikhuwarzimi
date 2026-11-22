@@ -19,7 +19,7 @@ type ViewState =
 
 function Dashboard() {
   const [view, setView] = useState<ViewState>({ type: 'courses' });
-  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers'>('syllabus');
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers' | 'tests'>('syllabus');
   const [pastPaperModal, setPastPaperModal] = useState<{
     isOpen: boolean;
     questionId: string | null;

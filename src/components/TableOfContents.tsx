@@ -3,7 +3,7 @@ import { olevelMathsSyllabus } from '@/lib/olevelSyllabusData';
 import { questionDatabase } from '@/lib/questionData';
 import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData';
 import { useProgress } from '@/context/ProgressContext';
-import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, Hash, RotateCcw, Calendar, Lightbulb, CheckSquare } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, ClipboardCheck, Hash, RotateCcw, Calendar, Lightbulb, CheckSquare } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,7 +22,7 @@ interface TableOfContentsProps {
   onSubTopicSelect: (topicId: number, subtopic: SubTopic) => void;
   onPastPaperSelect?: (paperId: string, section: PastPaperSection) => void;
   onPaperOpen?: (paperId: string) => void;
-  onTabChange?: (tab: 'syllabus' | 'pastpapers') => void;
+  onTabChange?: (tab: 'syllabus' | 'pastpapers' | 'tests') => void;
   enforceAssignments?: boolean;
   studentMode?: boolean;
 }
@@ -42,7 +42,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   const [expandedYear, setExpandedYear] = useState<string | null>(initialNav.year ?? null);
   const [resettingPaper, setResettingPaper] = useState<string | null>(null);
   const [expandedSession, setExpandedSession] = useState<string | null>(initialNav.session ?? null);
-  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers'>(initialNav.tab ?? 'syllabus');
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'pastpapers' | 'tests'>(initialNav.tab ?? 'syllabus');
 
   // Persist nav state so returning from a paper restores the same view
   if (typeof window !== 'undefined') {
@@ -113,15 +113,19 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   };
 
   return (
-    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { const t = v as 'syllabus' | 'pastpapers'; setActiveTab(t); onTabChange?.(t); }}>
-      <TabsList className="grid w-full grid-cols-2 mb-4">
-        <TabsTrigger value="syllabus" className="flex items-center gap-2">
-          <BookOpen className="h-4 w-4" />
-          Syllabus
+    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { const t = v as 'syllabus' | 'pastpapers' | 'tests'; setActiveTab(t); onTabChange?.(t); }}>
+      <TabsList className="grid w-full grid-cols-3 mb-4">
+        <TabsTrigger value="syllabus" className="flex items-center gap-1.5 sm:gap-2 px-2 text-xs sm:text-sm">
+          <BookOpen className="h-4 w-4 shrink-0" />
+          <span className="truncate">Syllabus</span>
         </TabsTrigger>
-        <TabsTrigger value="pastpapers" className="flex items-center gap-2">
-          <ClipboardList className="h-4 w-4" />
-          Past Papers
+        <TabsTrigger value="pastpapers" className="flex items-center gap-1.5 sm:gap-2 px-2 text-xs sm:text-sm">
+          <ClipboardList className="h-4 w-4 shrink-0" />
+          <span className="truncate">Past Papers</span>
+        </TabsTrigger>
+        <TabsTrigger value="tests" className="flex items-center gap-1.5 sm:gap-2 px-2 text-xs sm:text-sm">
+          <ClipboardCheck className="h-4 w-4 shrink-0" />
+          <span className="truncate">Tests</span>
         </TabsTrigger>
       </TabsList>
 
@@ -298,7 +302,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
           const categories: PaperCategory[] = courseId === 'olevel-4024'
             ? ['Paper 1', 'Paper 2']
             : ['Paper 01 (CORE)', 'Paper 02 (EXTENDED)', 'Paper 03 (CORE)', 'Paper 04 (EXTENDED)'];
-          const coursePapers = pastPapers.filter(p => p.courseId === courseId);
+          const coursePapers = pastPapers.filter(p => p.category !== 'Test' && p.courseId === courseId);
           
           if (coursePapers.length === 0) {
             return (
@@ -524,6 +528,136 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
             </div>
           );
         });
+        })()}
+      </TabsContent>
+
+      <TabsContent value="tests" className="space-y-4">
+        <h2 className="mb-4 text-xl font-bold text-foreground">Tests</h2>
+
+        {(() => {
+          const courseTests = pastPapers.filter(
+            (p) => p.category === 'Test' && (p.courseId === courseId || p.courseIds?.includes(courseId))
+          );
+
+          if (courseTests.length === 0) {
+            return (
+              <div className="text-center py-12 text-muted-foreground">
+                <ClipboardCheck className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                <p className="font-medium">No tests added yet</p>
+                <p className="text-sm mt-1">Tests will appear here once they are added.</p>
+              </div>
+            );
+          }
+
+          return courseTests.map((paper) => {
+            const paperAssigned = !enforceAssignments || isPaperAssigned(paper.id);
+            const paperLocked = paper.locked || !paperAssigned;
+            const quota = getPaperQuota(paper.id);
+            const solvedCount = paper.sections.filter(
+              (s) => isQuestionSubmitted(s.questionId) || isCompleted(s.questionId)
+            ).length;
+
+            return (
+              <div key={paper.id} className={cn("rounded-xl border border-border bg-card overflow-hidden", paperLocked && "opacity-60")}>
+                <button
+                  onClick={() => {
+                    if (paperLocked) return;
+                    if (onPaperOpen) onPaperOpen(paper.id);
+                    else setExpandedPaper(expandedPaper === paper.id ? null : paper.id);
+                  }}
+                  disabled={paperLocked}
+                  className={cn(
+                    "flex w-full items-center justify-between p-4 text-left transition-colors",
+                    paperLocked ? "cursor-not-allowed" : "hover:bg-muted/50"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      paperLocked ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground"
+                    )}>
+                      {paperLocked ? <Lock className="h-5 w-5" /> : <ClipboardCheck className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <h3 className={cn("font-semibold", paperLocked ? "text-muted-foreground" : "text-foreground")}>
+                        {paper.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {paper.totalMarks} marks • {paper.duration}
+                        {solvedCount > 0 ? ` • ${solvedCount}/${paper.sections.length} done` : ''}
+                      </p>
+                      {quota && !paperLocked && (
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <Lightbulb className="h-2.5 w-2.5" /> {quota.hints} hints
+                          </span>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <CheckSquare className="h-2.5 w-2.5" /> {quota.checkwork} checks
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {paperLocked ? (
+                      <span className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground font-medium">
+                        {paper.locked ? 'Coming Soon' : 'Not Assigned'}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap shrink-0">
+                          {paper.sections.length} Qs
+                        </span>
+                        <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                      </>
+                    )}
+                  </div>
+                </button>
+
+                {!paperLocked && !onPaperOpen && expandedPaper === paper.id && (
+                  <div className="border-t border-border bg-muted/30 p-2 space-y-1">
+                    {paper.sections.map((section) => {
+                      const completed = isQuestionSubmitted(section.questionId) || isCompleted(section.questionId);
+                      return (
+                        <button
+                          key={section.id}
+                          onClick={() => onPastPaperSelect?.(paper.id, section)}
+                          className="flex w-full items-center gap-3 rounded-lg p-2.5 text-left transition-all hover:bg-card hover:shadow-sm"
+                        >
+                          <div className={cn(
+                            "flex h-7 w-7 items-center justify-center rounded-lg",
+                            completed ? "bg-success/10 text-success" : "bg-secondary text-secondary-foreground"
+                          )}>
+                            {completed ? <CheckCircle2 className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
+                          </div>
+                          <span className={cn("flex-1 text-xs font-medium", completed ? "text-success" : "text-foreground")}>
+                            {section.title}
+                          </span>
+                          {completed ? (
+                            <Badge variant="outline" className="text-[10px] border-success/30 text-success bg-success/5">Recorded</Badge>
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+                      );
+                    })}
+                    <div className="border-t border-border mt-2 pt-2 px-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => handleResetPaper(paper.id, e)}
+                        disabled={resettingPaper === paper.id}
+                        className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <RotateCcw className={cn("h-4 w-4 mr-2", resettingPaper === paper.id && "animate-spin")} />
+                        {resettingPaper === paper.id ? 'Resetting...' : 'Reset Test Progress'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          });
         })()}
       </TabsContent>
     </Tabs>

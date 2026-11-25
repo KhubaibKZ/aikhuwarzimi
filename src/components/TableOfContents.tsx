@@ -125,7 +125,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
         </TabsTrigger>
         <TabsTrigger value="tests" className="flex items-center gap-1.5 sm:gap-2 px-2 text-xs sm:text-sm">
           <ClipboardCheck className="h-4 w-4 shrink-0" />
-          <span className="truncate">Tests</span>
+          <span className="truncate">Practice Material</span>
         </TabsTrigger>
       </TabsList>
 
@@ -532,7 +532,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
       </TabsContent>
 
       <TabsContent value="tests" className="space-y-4">
-        <h2 className="mb-4 text-xl font-bold text-foreground">Tests</h2>
+        <h2 className="mb-4 text-xl font-bold text-foreground">Practice Material</h2>
 
         {(() => {
           const courseTests = pastPapers.filter(
@@ -543,8 +543,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
             return (
               <div className="text-center py-12 text-muted-foreground">
                 <ClipboardCheck className="h-12 w-12 mx-auto mb-3 opacity-40" />
-                <p className="font-medium">No tests added yet</p>
-                <p className="text-sm mt-1">Tests will appear here once they are added.</p>
+                <p className="font-medium">No practice material added yet</p>
+                <p className="text-sm mt-1">Practice material will appear here once it is added.</p>
               </div>
             );
           }
@@ -650,7 +650,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
                         className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
                         <RotateCcw className={cn("h-4 w-4 mr-2", resettingPaper === paper.id && "animate-spin")} />
-                        {resettingPaper === paper.id ? 'Resetting...' : 'Reset Test Progress'}
+                        {resettingPaper === paper.id ? 'Resetting...' : 'Reset Practice Material Progress'}
                       </Button>
                     </div>
                   </div>

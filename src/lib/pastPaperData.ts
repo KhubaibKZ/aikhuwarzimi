@@ -1272,13 +1272,13 @@ export const pastPapers: PastPaper[] = [
     title: '4024/22 Oct/Nov 2021', totalMarks: 100, duration: '2 hours 30 minutes',
     category: 'Paper 2', courseId: 'olevel-4024', sections: sections4024_22_2021ON, locked: false
   },
-  // ===== Tests =====
+  // ===== Practice Material =====
   {
     id: 'test_linear_inequalities_pre',
-    code: 'PRE TEST',
+    code: 'PRACTICE',
     session: 'Linear Inequalities',
     year: 2026,
-    title: 'Pre Test – Linear Inequalities',
+    title: 'Linear Inequalities',
     totalMarks: 25,
     duration: '40 minutes',
     category: 'Test',

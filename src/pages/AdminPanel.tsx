@@ -502,7 +502,7 @@ export default function AdminPanel() {
                               onCheckedChange={() => togglePaper(paper.id)}
                             />
                             <span className="text-sm text-foreground flex-1">
-                              {paper.category === 'Test' ? `${paper.title} (Test)` : `${paper.code} (${paper.session} ${paper.year})`}
+                              {paper.category === 'Test' ? `${paper.title} (Practice Material)` : `${paper.code} (${paper.session} ${paper.year})`}
                             </span>
                             {isAssigned && (
                               <div className="flex items-center gap-2">

@@ -206,7 +206,7 @@ export function ProgressSidebar({ activeTab = 'syllabus', courseId, studentMode 
       <div className="rounded-xl border border-border bg-card p-6 shadow-soft animate-fade-in">
         <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           <CheckCircle2 className="h-4 w-4 text-primary" />
-          {showTopics ? 'Topic Progress' : showTests ? 'Test Progress' : 'Paper Progress'}
+          {showTopics ? 'Topic Progress' : showTests ? 'Practice Material Progress' : 'Paper Progress'}
         </h3>
 
         {showTopics ? (

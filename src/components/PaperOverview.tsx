@@ -107,7 +107,7 @@ export function PaperOverview({
       {/* Back row */}
       <div className="mb-4 flex items-center justify-between">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> {paper.category === 'Test' ? 'Back to Tests' : 'Back to Past Papers'}
+          <ArrowLeft className="h-4 w-4" /> {paper.category === 'Test' ? 'Back to Practice Material' : 'Back to Past Papers'}
         </Button>
         {solvedQs > 0 && (
           <Button
@@ -130,7 +130,7 @@ export function PaperOverview({
                 <div>
                   <h2 className="text-xl font-bold text-foreground">{paper.title}</h2>
                   <p className="text-xs text-muted-foreground">
-                    {paper.category} · {paper.duration} · {paper.totalMarks} marks
+                    {paper.category === 'Test' ? 'Practice Material' : paper.category} · {paper.duration} · {paper.totalMarks} marks
                   </p>
                   {quota && (
                     <p className="text-[11px] text-muted-foreground mt-1">

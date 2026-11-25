@@ -170,7 +170,7 @@ function DemoInner({ visitorName }: { visitorName: string }) {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <h2 className="text-xl font-bold text-foreground">{paper.title}</h2>
-                    <p className="text-xs text-muted-foreground">{paper.category} · {paper.duration} · {paper.totalMarks} marks</p>
+                    <p className="text-xs text-muted-foreground">{paper.category === 'Test' ? 'Practice Material' : paper.category} · {paper.duration} · {paper.totalMarks} marks</p>
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-foreground">{solvedQs}<span className="text-sm text-muted-foreground">/{totalQs}</span></p>

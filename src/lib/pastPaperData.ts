@@ -52,11 +52,25 @@ export interface FormulaTemplate {
   resultLabel: string;
 }
 
+export interface StepBoxStyle {
+  w: number;
+  h: number;
+}
+
+/** Per-question visual styling for equation-solve scaffolds (font + box sizes in px). */
+export interface StepStyle {
+  fontPx?: number;
+  numBox?: StepBoxStyle;
+  symBox?: StepBoxStyle;
+}
+
 export interface EquationStageElement {
   type: 'text' | 'box' | 'fraction' | 'sqrt';
   value?: string; // for text elements
   key?: string; // for box elements — suffix after questionKey_
   width?: string; // for box elements, e.g. 'w-14'
+  boxKind?: 'num' | 'sym'; // for box elements — which stepStyle size to use
+  px?: StepBoxStyle; // explicit pixel size for a box, overrides stepStyle
   numElements?: EquationStageElement[]; // numerator elements for fraction type
   denElements?: EquationStageElement[]; // denominator elements for fraction type
   sqrt?: boolean; // wrap a fraction with √ vinculum
@@ -86,6 +100,7 @@ export interface PastPaperQuestion {
   fractionDivisionParts?: string[]; // Keys of parts that use fraction division workspace
   equationSolveParts?: string[]; // Keys of parts that use equation solve workspace
   equationStages?: EquationStage[]; // Shared visual equation-box stages (used when only 1 equationSolvePart)
+  stepStyle?: StepStyle; // Font size and fill-box sizes for equation-solve scaffolds
   equationStagesMap?: Record<string, EquationStage[]>; // Per-part stages (keyed by part key)
   allowCustomSteps?: boolean; // Lets students add their own equation lines under equation stages
   allowCustomStepsMap?: Record<string, boolean>; // Per-part override of allowCustomSteps

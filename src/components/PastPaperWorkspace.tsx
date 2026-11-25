@@ -3542,6 +3542,7 @@ export function PastPaperWorkspace({
                               initialCustomSteps={((question as any).initialCustomStepsMap || {})[partKey]}
                               customStepsBefore={!!(beforeMap && beforeMap[partKey])}
                               hideOwnKeyboard={useSingleKeyboard}
+                              stepStyle={question.stepStyle}
                               onActiveKeyHandler={useSingleKeyboard ? publishActiveKeyHandler : undefined}
 
                             />

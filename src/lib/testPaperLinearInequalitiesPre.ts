@@ -8,6 +8,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q1',
     questionNumber: '1',
     title: 'Linear inequality',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Solve the inequality.\n5x − 3 > 9',
     marks: 2,
     hints: [
@@ -38,6 +39,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q2',
     questionNumber: '2',
     title: 'Linear inequality with fraction',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Solve the inequality [[x/3]] + 5 > 2.',
     marks: 2,
     hints: [
@@ -68,6 +70,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q3',
     questionNumber: '3',
     title: 'Linear inequality with variable on both sides',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Solve the inequality.\n3n − 11 > 5n − 18',
     marks: 2,
     hints: [
@@ -98,6 +101,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q4',
     questionNumber: '4',
     title: 'Fractional linear inequality',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Solve the inequality.\n[[x/2]] − 13 > 12 + 3x',
     marks: 2,
     hints: [
@@ -131,6 +135,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q5',
     questionNumber: '5',
     title: 'Double inequality and integers',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Find the integers which satisfy the inequality.\n−5 < 2n − 1 ≤ 5',
     marks: 4,
     hints: [
@@ -148,7 +153,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
         { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '< n ≤' }, { type: 'box', key: 's2_b', width: 'w-10' }
       ]},
       { label: 'Integers', stepKey: 's3', elements: [
-        { type: 'text', value: 'n =' }, { type: 'box', key: 's3_a', width: 'w-32' }
+        { type: 'text', value: 'n =' }, { type: 'box', key: 's3_a', width: 'w-32', px: { w: 176, h: 32 } }
       ]},
     ],
     parts: [{ label: 'Integers', key: 'answer', marks: 4 }],
@@ -159,6 +164,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q6',
     questionNumber: '6',
     title: 'Linear inequality with brackets',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Solve.\n4(2x − 3) ≥ 43 + 3x',
     marks: 3,
     hints: [
@@ -189,6 +195,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
     id: 'test_lin_ineq_pre_q7',
     questionNumber: '7',
     title: 'Positive integer solutions of an inequality',
+    stepStyle: { fontPx: 16, numBox: { w: 64, h: 32 }, symBox: { w: 32, h: 32 } },
     question: 'Find all the positive integers which satisfy the inequality.\n3n − 8 > 5n − 15',
     marks: 3,
     hints: [
@@ -208,7 +215,7 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
         { type: 'text', value: 'n <' }, { type: 'box', key: 's3_a', width: 'w-10' }
       ]},
       { label: 'Positive integers', stepKey: 's4', elements: [
-        { type: 'box', key: 's4_a', width: 'w-24' }
+        { type: 'box', key: 's4_a', width: 'w-24', px: { w: 144, h: 32 } }
       ]},
     ],
     parts: [{ label: 'Positive integers', key: 'answer', marks: 3 }],

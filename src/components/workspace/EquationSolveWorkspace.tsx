@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, BookOpen, Trash2, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HorizontalKeyboard } from './HorizontalKeyboard';
-import { EquationStage } from '@/lib/pastPaperData';
+import { EquationStage, StepBoxStyle, StepStyle } from '@/lib/pastPaperData';
 import { Radical } from '@/components/Radical';
 import { VecText } from '@/components/VecText';
 
@@ -41,6 +41,7 @@ interface EquationSolveWorkspaceProps {
   initialCustomSteps?: number; // pre-seed N custom-step rows on mount
   customStepsBefore?: boolean; // if true, render the custom steps block BEFORE the predefined stages
   hideOwnKeyboard?: boolean; // suppress this workspace's bottom keyboard (use shared one)
+  stepStyle?: StepStyle; // font size + fill-box sizes (px) for this question's scaffold
   onActiveKeyHandler?: (handler: ((k: string) => void) | null) => void;
 }
 
@@ -89,6 +90,7 @@ export function EquationSolveWorkspace({
   initialCustomSteps = 0,
   customStepsBefore = false,
   hideOwnKeyboard = false,
+  stepStyle,
   onActiveKeyHandler,
 }: EquationSolveWorkspaceProps) {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -282,9 +284,14 @@ export function EquationSolveWorkspace({
     [],
   );
 
-  const box = (id: string, width: string = 'w-12') => {
+  const fontPx = stepStyle?.fontPx;
+  const stepTextStyle = fontPx ? { fontSize: `${fontPx}px` } : undefined;
+  const stepTextCls = fontPx ? 'font-mono leading-none' : 'font-mono text-xs leading-none';
+
+  const box = (id: string, width: string = 'w-12', kind: 'num' | 'sym' = 'num', px?: StepBoxStyle) => {
     const val = answers[id] || '';
     const filled = val.trim().length > 0;
+    const size = px ?? (kind === 'sym' ? stepStyle?.symBox : stepStyle?.numBox);
     return (
       <Input
         ref={setRef(id)}
@@ -295,12 +302,18 @@ export function EquationSolveWorkspace({
           setFocusedSlot(null);
         }}
         disabled={isSubmitted}
-        style={filled ? { width: inlineValueWidth(val) } : undefined}
+        style={{
+          ...(filled ? { width: inlineValueWidth(val) } : size ? { width: size.w, height: size.h } : undefined),
+          ...(filled && size ? { height: size.h } : undefined),
+          ...(fontPx ? { fontSize: `${fontPx}px` } : undefined),
+        }}
         className={cn(
-          'h-6 text-center font-mono text-xs leading-none p-0 bg-transparent',
+          'text-center font-mono leading-none p-0 bg-transparent',
+          !size && 'h-6',
+          !fontPx && 'text-xs',
           filled
             ? 'border-0 rounded-none px-[0.06rem] focus-visible:ring-0 focus-visible:ring-offset-0'
-            : `${width} rounded-xl border-2 border-border/70`,
+            : cn(!size && width, 'rounded-xl border-2 border-border/70'),
           !filled && feedback[id] === 'correct' && 'border-2 rounded-xl border-green-500 bg-green-500/5',
           !filled && feedback[id] === 'incorrect' && 'border-2 rounded-xl border-destructive bg-destructive/5',
           !filled && focusedInput === id && 'ring-2 ring-primary/30',
@@ -482,17 +495,24 @@ export function EquationSolveWorkspace({
       <div key={stage.stepKey} className="space-y-0.5">
         <div className="flex flex-wrap items-center gap-x-1 gap-y-0 leading-none">
           {stage.label ? (
-            <span className="mr-1 text-xs leading-none text-foreground/70">{stage.label}</span>
+            <span
+              style={stepTextStyle}
+              className={cn('mr-1 leading-none text-foreground/70', !fontPx && 'text-xs')}
+            >
+              {stage.label}
+            </span>
           ) : null}
           <span className="inline-flex min-w-0 flex-wrap items-center gap-x-1 leading-none">
             {stage.elements.map((el, i) => {
               if (el.type === 'text') {
                 return (
-                  <VecText key={i} value={el.value} className="font-mono text-xs leading-none" />
+                  <span key={i} style={stepTextStyle}>
+                    <VecText value={el.value} className={stepTextCls} />
+                  </span>
                 );
               }
               if (el.type === 'box' && el.key) {
-                return <span key={i}>{box(k(el.key), el.width || 'w-12')}</span>;
+                return <span key={i}>{box(k(el.key), el.width || 'w-12', el.boxKind ?? 'num', el.px)}</span>;
               }
               if (el.type === 'fraction') {
                 const renderSubElements = (elements: typeof el.numElements) => (
@@ -500,10 +520,16 @@ export function EquationSolveWorkspace({
                     {elements?.map((subEl, j) => {
                       if (subEl.type === 'text')
                         return (
-                          <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />
+                          <span key={j} style={stepTextStyle}>
+                            <VecText value={subEl.value} className={stepTextCls} />
+                          </span>
                         );
                       if (subEl.type === 'box' && subEl.key)
-                        return <span key={j}>{box(k(subEl.key), subEl.width || 'w-10')}</span>;
+                        return (
+                          <span key={j}>
+                            {box(k(subEl.key), subEl.width || 'w-10', subEl.boxKind ?? 'num', subEl.px)}
+                          </span>
+                        );
                       return null;
                     })}
                   </div>
@@ -526,9 +552,17 @@ export function EquationSolveWorkspace({
                     <span className="flex items-center gap-x-1">
                       {el.innerElements?.map((subEl, j) => {
                         if (subEl.type === 'text')
-                          return <VecText key={j} value={subEl.value} className="font-mono text-xs leading-none" />;
+                          return (
+                            <span key={j} style={stepTextStyle}>
+                              <VecText value={subEl.value} className={stepTextCls} />
+                            </span>
+                          );
                         if (subEl.type === 'box' && subEl.key)
-                          return <span key={j}>{box(k(subEl.key), subEl.width || 'w-12')}</span>;
+                          return (
+                            <span key={j}>
+                              {box(k(subEl.key), subEl.width || 'w-12', subEl.boxKind ?? 'num', subEl.px)}
+                            </span>
+                          );
                         return null;
                       })}
                     </span>

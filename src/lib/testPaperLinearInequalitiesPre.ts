@@ -30,8 +30,23 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Multiply both sides by 3 to solve for x.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Subtract 5', stepKey: 's1', elements: [
+        { type: 'text', value: 'x/3 >' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's1_b', width: 'w-10' }
+      ]},
+      { label: 'Simplify', stepKey: 's2', elements: [
+        { type: 'text', value: 'x/3 >' }, { type: 'box', key: 's2_a', width: 'w-10' }
+      ]},
+      { label: 'Multiply by 3', stepKey: 's3', elements: [
+        { type: 'text', value: 'x >' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '×' }, { type: 'box', key: 's3_b', width: 'w-10' }
+      ]},
+      { label: 'Answer', stepKey: 's4', elements: [
+        { type: 'text', value: 'x >' }, { type: 'box', key: 's4_a', width: 'w-10' }
+      ]},
+    ],
     parts: [{ label: 'Answer', key: 'answer', marks: 2 }],
-    answer: { answer: 'x > -9|x > −9' },
+    answer: { answer: 'x > -9|x > −9' , answer_s1_a: '2', answer_s1_b: '5', answer_s2_a: '-3|−3', answer_s3_a: '-3|−3', answer_s3_b: '3', answer_s4_a: '-9|−9', },
     markingCriteria: { answer: 'M1 for x/3 > −3; A1 for x > −9' },
   },
   'test_lin_ineq_pre_q3': {
@@ -45,8 +60,23 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Remember to reverse the inequality sign if you divide by a negative number.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Collect terms', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: 'n −' }, { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: 'n' }
+      ]},
+      { label: 'Simplify', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: 'n' }
+      ]},
+      { label: 'Divide', stepKey: 's3', elements: [
+        { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '÷' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: '> n' }
+      ]},
+      { label: 'Answer', stepKey: 's4', elements: [
+        { type: 'text', value: 'n <' }, { type: 'box', key: 's4_a', width: 'w-10' }
+      ]},
+    ],
     parts: [{ label: 'Answer', key: 'answer', marks: 2 }],
-    answer: { answer: 'n < 3.5|n < 7/2|n < 3 1/2|3.5 > n|7/2 > n' },
+    answer: { answer: 'n < 3.5|n < 7/2|n < 3 1/2|3.5 > n|7/2 > n' , answer_s1_a: '-11|−11', answer_s1_b: '18', answer_s1_c: '5', answer_s1_d: '3', answer_s2_a: '7', answer_s2_b: '2', answer_s3_a: '7', answer_s3_b: '2', answer_s4_a: '3.5|7/2|3 1/2', },
     markingCriteria: { answer: 'M1 for 7 > 2n or −2n > −7; A1 for n < 3.5 or n < 7/2' },
   },
   'test_lin_ineq_pre_q4': {
@@ -60,8 +90,26 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Simplify and divide carefully, reversing the sign if dividing by a negative.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Multiply by 2', stepKey: 's1', elements: [
+        { type: 'text', value: 'x −' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: 'x' }
+      ]},
+      { label: 'Collect terms', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '−' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: 'x −' }, { type: 'text', value: 'x' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's3_b', width: 'w-10' }, { type: 'text', value: 'x' }
+      ]},
+      { label: 'Divide', stepKey: 's4', elements: [
+        { type: 'box', key: 's4_a', width: 'w-10' }, { type: 'text', value: '÷' }, { type: 'box', key: 's4_b', width: 'w-10' }, { type: 'text', value: '> x' }
+      ]},
+      { label: 'Answer', stepKey: 's5', elements: [
+        { type: 'text', value: 'x <' }, { type: 'box', key: 's5_a', width: 'w-10' }
+      ]},
+    ],
     parts: [{ label: 'Answer', key: 'answer', marks: 2 }],
-    answer: { answer: 'x < -10|x < −10|-10 > x|−10 > x' },
+    answer: { answer: 'x < -10|x < −10|-10 > x|−10 > x' , answer_s1_a: '26', answer_s1_b: '24', answer_s1_c: '6', answer_s2_a: '-26|−26', answer_s2_b: '24', answer_s2_c: '6', answer_s3_a: '-50|−50', answer_s3_b: '5', answer_s4_a: '-50|−50', answer_s4_b: '5', answer_s5_a: '-10|−10', },
     markingCriteria: { answer: 'M1 for −25 > 2.5x or −50 > 5x; A1 for x < −10' },
   },
   'test_lin_ineq_pre_q5': {

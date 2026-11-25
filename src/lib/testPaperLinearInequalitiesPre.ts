@@ -15,8 +15,23 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Divide both sides by 5 to find the range of values for x.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Add 3', stepKey: 's1', elements: [
+        { type: 'text', value: '5x >' }, { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }
+      ]},
+      { label: 'Simplify', stepKey: 's2', elements: [
+        { type: 'text', value: '5x >' }, { type: 'box', key: 's2_a', width: 'w-10' }
+      ]},
+      { label: 'Divide by 5', stepKey: 's3', elements: [
+        { type: 'text', value: 'x >' }, { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: '÷' }, { type: 'box', key: 's3_b', width: 'w-10' }
+      ]},
+      { label: 'Answer', stepKey: 's4', elements: [
+        { type: 'text', value: 'x >' }, { type: 'box', key: 's4_a', width: 'w-10' }
+      ]},
+    ],
     parts: [{ label: 'Answer', key: 'answer', marks: 2 }],
-    answer: { answer: 'x > 2.4|x > 12/5|x > 2 2/5' },
+    answer: { answer: 'x > 2.4|x > 12/5|x > 2 2/5' , answer_s1_a: '9', answer_s1_b: '3', answer_s2_a: '12', answer_s3_a: '12', answer_s3_b: '5', answer_s4_a: '2.4|12/5|2 2/5', },
     markingCriteria: { answer: 'M1 for 5x > 12; A1 for x > 2.4 or x > 12/5' },
   },
   'test_lin_ineq_pre_q2': {
@@ -124,8 +139,20 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'List every integer strictly greater than the lower bound and less than or equal to the upper bound.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Add 1', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '< 2n ≤' }, { type: 'box', key: 's1_b', width: 'w-10' }
+      ]},
+      { label: 'Divide by 2', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '< n ≤' }, { type: 'box', key: 's2_b', width: 'w-10' }
+      ]},
+      { label: 'Integers', stepKey: 's3', elements: [
+        { type: 'text', value: 'n =' }, { type: 'box', key: 's3_a', width: 'w-32' }
+      ]},
+    ],
     parts: [{ label: 'Integers', key: 'answer', marks: 4 }],
-    answer: { answer: '-1, 0, 1, 2, 3|−1, 0, 1, 2, 3' },
+    answer: { answer: '-1, 0, 1, 2, 3|−1, 0, 1, 2, 3' , answer_s1_a: '-4|−4', answer_s1_b: '6', answer_s2_a: '-2|−2', answer_s2_b: '3', answer_s3_a: '-1, 0, 1, 2, 3|−1, 0, 1, 2, 3', },
     markingCriteria: { answer: 'M1 for −4 < 2n ≤ 6; A1 for −2 < n ≤ 3; B2 for −1, 0, 1, 2, 3' },
   },
   'test_lin_ineq_pre_q6': {
@@ -139,8 +166,23 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Collect x terms on one side and constants on the other, then divide.',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Expand', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: 'x −' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '≥ 43 + 3x' }
+      ]},
+      { label: 'Collect terms', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: 'x −' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: 'x ≥' }, { type: 'box', key: 's2_c', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's2_d', width: 'w-10' }
+      ]},
+      { label: 'Simplify', stepKey: 's3', elements: [
+        { type: 'box', key: 's3_a', width: 'w-10' }, { type: 'text', value: 'x ≥' }, { type: 'box', key: 's3_b', width: 'w-10' }
+      ]},
+      { label: 'Answer', stepKey: 's4', elements: [
+        { type: 'text', value: 'x ≥' }, { type: 'box', key: 's4_a', width: 'w-10' }
+      ]},
+    ],
     parts: [{ label: 'Answer', key: 'answer', marks: 3 }],
-    answer: { answer: 'x ≥ 11|x >= 11|11 ≤ x|11 <= x' },
+    answer: { answer: 'x ≥ 11|x >= 11|11 ≤ x|11 <= x' , answer_s1_a: '8', answer_s1_b: '12', answer_s2_a: '8', answer_s2_b: '3', answer_s2_c: '43', answer_s2_d: '12', answer_s3_a: '5', answer_s3_b: '55', answer_s4_a: '11', },
     markingCriteria: { answer: 'M1 for 8x − 12 ≥ 43 + 3x; M1 for 5x ≥ 55; A1 for x ≥ 11' },
   },
   'test_lin_ineq_pre_q7': {
@@ -154,8 +196,23 @@ export const questionsTestLinearInequalitiesPre: Record<string, PastPaperQuestio
       'Positive integers start from 1 (0 is not positive).',
     ],
     type: 'multi-part',
+    equationSolveParts: ['answer'],
+    equationStages: [
+      { label: 'Collect terms', stepKey: 's1', elements: [
+        { type: 'box', key: 's1_a', width: 'w-10' }, { type: 'text', value: '+' }, { type: 'box', key: 's1_b', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's1_c', width: 'w-10' }, { type: 'text', value: 'n −' }, { type: 'box', key: 's1_d', width: 'w-10' }, { type: 'text', value: 'n' }
+      ]},
+      { label: 'Simplify', stepKey: 's2', elements: [
+        { type: 'box', key: 's2_a', width: 'w-10' }, { type: 'text', value: '>' }, { type: 'box', key: 's2_b', width: 'w-10' }, { type: 'text', value: 'n' }
+      ]},
+      { label: 'Divide', stepKey: 's3', elements: [
+        { type: 'text', value: 'n <' }, { type: 'box', key: 's3_a', width: 'w-10' }
+      ]},
+      { label: 'Positive integers', stepKey: 's4', elements: [
+        { type: 'box', key: 's4_a', width: 'w-24' }
+      ]},
+    ],
     parts: [{ label: 'Positive integers', key: 'answer', marks: 3 }],
-    answer: { answer: '1, 2, 3' },
+    answer: { answer: '1, 2, 3' , answer_s1_a: '-8|−8', answer_s1_b: '15', answer_s1_c: '5', answer_s1_d: '3', answer_s2_a: '7', answer_s2_b: '2', answer_s3_a: '3.5|7/2|3 1/2', answer_s4_a: '1, 2, 3', },
     markingCriteria: { answer: 'M1 for 7 > 2n or −2n > −7; A1 for n < 3.5; B1 for 1, 2, 3' },
   },
   'test_lin_ineq_pre_q8': {

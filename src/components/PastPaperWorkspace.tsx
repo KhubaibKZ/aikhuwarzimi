@@ -100,8 +100,9 @@ interface PastPaperWorkspaceProps {
   onClose: () => void;
   workspaceMode?: 'general' | 'student';
   onSubmitProgress?: (payload: SubmitProgressPayload) => void;
+  persistAccountProgress?: boolean;
   restoredSubmission?: { answers: Record<string, string>; timeSpentSeconds: number } | null;
-  onResetExternal?: () => void;
+  onResetExternal?: () => void | Promise<void>;
   editMode?: boolean;
   onEditField?: (field: 'title' | 'question' | 'topicTitle' | 'subtopicCode' | 'subtopicTitle' | 'marks' | 'diagramSvgMarkup' | 'extraQuestionBlocks' | `hint:${number}`, value: string | any[]) => void;
   onAddHint?: () => void;
@@ -268,6 +269,7 @@ export function PastPaperWorkspace({
   onClose,
   workspaceMode = 'general',
   onSubmitProgress,
+  persistAccountProgress = true,
   restoredSubmission,
   onResetExternal,
   editMode = false,
@@ -332,7 +334,7 @@ export function PastPaperWorkspace({
     if (!isOpen) return;
 
     // Demo / unauth path: restore from prop if provided, otherwise fresh
-    if (!user) {
+    if (!user || !persistAccountProgress) {
       if (restoredSubmission && restoredSubmission.answers) {
         const restoredAnswers = restoredSubmission.answers;
         setAnswers(restoredAnswers);
@@ -409,7 +411,7 @@ export function PastPaperWorkspace({
       }
     };
     checkExistingSubmission();
-  }, [isOpen, user, question.id, workspaceMode, restoredSubmission]);
+  }, [isOpen, user, question.id, workspaceMode, restoredSubmission, persistAccountProgress]);
 
   const handleAnswerChange = (key: string, value: string) => {
     if (isSubmitted) return; // Don't allow changes once submitted
@@ -2118,7 +2120,7 @@ export function PastPaperWorkspace({
     markExampleComplete(question.id);
 
     // Save progress to database
-    if (user) {
+    if (user && persistAccountProgress) {
       const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000);
       const correctCount = Object.values(newFeedback).filter(f => f === 'correct').length;
       const totalCount = Object.values(newFeedback).length;
@@ -2214,7 +2216,7 @@ export function PastPaperWorkspace({
     setFinalTime(timeSpent);
     markExampleComplete(question.id);
 
-    if (user) {
+    if (user && persistAccountProgress) {
       await supabase.from('student_paper_progress').upsert({
         user_id: user.id,
         paper_id: paperId,
@@ -2303,7 +2305,7 @@ export function PastPaperWorkspace({
   const handleResetQuestion = async () => {
     if (workspaceMode !== 'general') return;
     try {
-      if (user) {
+      if (user && persistAccountProgress) {
         await supabase
           .from('student_paper_progress')
           .delete()
@@ -2312,7 +2314,7 @@ export function PastPaperWorkspace({
           .eq('workspace_mode', 'general');
         queryClient.invalidateQueries({ queryKey: ['student-progress'] });
       }
-      if (onResetExternal) onResetExternal();
+      if (onResetExternal) await onResetExternal();
       resetWorkspace();
       toast({ title: 'Question reset', description: 'You can now re-attempt this question.' });
     } catch {

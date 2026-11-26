@@ -104,6 +104,68 @@ export type Database = {
         }
         Relationships: []
       }
+      research_participants: {
+        Row: {
+          created_at: string
+          id: string
+          last_active_at: string
+          name: string
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          name: string
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_active_at?: string
+          name?: string
+          token_hash?: string
+        }
+        Relationships: []
+      }
+      research_submissions: {
+        Row: {
+          id: string
+          paper_id: string
+          participant_id: string
+          payload: Json
+          question_id: string
+          reset_at: string | null
+          submitted_at: string
+        }
+        Insert: {
+          id: string
+          paper_id: string
+          participant_id: string
+          payload: Json
+          question_id: string
+          reset_at?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          id?: string
+          paper_id?: string
+          participant_id?: string
+          payload?: Json
+          question_id?: string
+          reset_at?: string | null
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_submissions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "research_participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_assignments: {
         Row: {
           assigned_by: string | null
@@ -321,6 +383,20 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      research_identity: { Args: { p_token: string }; Returns: string }
+      research_join: {
+        Args: { p_name: string; p_token: string }
+        Returns: Json
+      }
+      research_reset: {
+        Args: { p_question_id: string; p_token: string }
+        Returns: undefined
+      }
+      research_resume: { Args: { p_token: string }; Returns: Json }
+      research_submit: {
+        Args: { p_attempt_id: string; p_payload: Json; p_token: string }
+        Returns: undefined
       }
       update_demo_session: {
         Args: { _duration_seconds: number; _id: string; _token: string }

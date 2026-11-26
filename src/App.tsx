@@ -8,6 +8,7 @@ import { useUsageTracker } from "@/hooks/useUsageTracker";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import Demo from "./pages/Demo";
+import Research from "./pages/Research";
 import StudentAnalytics from "./pages/StudentAnalytics";
 import AdminPanel from "./pages/AdminPanel";
 import PaperEditor from "./pages/PaperEditor";
@@ -43,6 +44,7 @@ const AppRoutes = () => (
       <Route path="/admin" element={<AdminPanel />} />
       <Route path="/editor" element={<ProgressProvider><PaperEditor /></ProgressProvider>} />
       <Route path="/demo" element={<Demo />} />
+      <Route path="/research" element={<Research />} />
       
       <Route path="/student" element={<StudentDashboard />} />
       <Route path="*" element={<NotFound />} />

@@ -5,6 +5,7 @@ import { pastPapers, PastPaperSection, PaperCategory } from '@/lib/pastPaperData
 import { useProgress } from '@/context/ProgressContext';
 import { ChevronDown, ChevronRight, Lock, Unlock, CheckCircle2, BookOpen, Calculator, FileText, GraduationCap, ClipboardList, ClipboardCheck, Hash, RotateCcw, Calendar, Lightbulb, CheckSquare } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ interface TableOfContentsProps {
 }
 
 export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect, onPaperOpen, onTabChange, enforceAssignments = false, studentMode = false }: TableOfContentsProps) {
+  const navigate = useNavigate();
   const navKey = `toc-nav:${courseId}:${studentMode ? 'student' : 'general'}`;
   const initialNav = (() => {
     try {
@@ -113,8 +115,8 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
   };
 
   return (
-    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { const t = v as 'syllabus' | 'pastpapers' | 'tests'; setActiveTab(t); onTabChange?.(t); }}>
-      <TabsList className="grid w-full grid-cols-3 mb-4">
+    <Tabs value={activeTab} className="w-full" onValueChange={(v) => { if (v === 'research') { navigate('/research'); return; } const t = v as 'syllabus' | 'pastpapers' | 'tests'; setActiveTab(t); onTabChange?.(t); }}>
+      <TabsList className={cn('grid w-full mb-4', studentMode ? 'grid-cols-3' : 'h-auto grid-cols-2 gap-1 sm:grid-cols-4')}>
         <TabsTrigger value="syllabus" className="flex items-center gap-1.5 sm:gap-2 px-2 text-xs sm:text-sm">
           <BookOpen className="h-4 w-4 shrink-0" />
           <span className="truncate">Syllabus</span>
@@ -127,6 +129,7 @@ export function TableOfContents({ courseId, onSubTopicSelect, onPastPaperSelect,
           <ClipboardCheck className="h-4 w-4 shrink-0" />
           <span className="truncate">Practice Material</span>
         </TabsTrigger>
+        {!studentMode && <TabsTrigger value="research" className="min-w-0 gap-1 px-1 text-xs sm:text-sm"><ClipboardCheck className="hidden h-4 w-4 sm:block" />Research</TabsTrigger>}
       </TabsList>
 
       <TabsContent value="syllabus" className="space-y-3">

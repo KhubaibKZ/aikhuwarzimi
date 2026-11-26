@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AdminResearch } from '@/components/research/AdminResearch';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { courses } from '@/lib/courseData';
@@ -258,7 +259,9 @@ export default function AdminPanel() {
           <TabsList className="mb-6">
             <TabsTrigger value="students" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Students</TabsTrigger>
             <TabsTrigger value="usage" className="gap-1.5"><History className="h-3.5 w-3.5" /> Usage History</TabsTrigger>
+            <TabsTrigger value="research" className="gap-1.5"><BookOpen className="h-3.5 w-3.5" /> Research</TabsTrigger>
           </TabsList>
+          <TabsContent value="research"><AdminResearch /></TabsContent>
 
           <TabsContent value="students">
         {/* Search */}

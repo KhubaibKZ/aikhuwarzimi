@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Public read question-diagrams" ON storage.objects;
+CREATE POLICY "Admins read question-diagrams" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'question-diagrams' AND public.has_role(auth.uid(), 'admin'::public.app_role));

@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { researchMetrics, RESEARCH_PAPER_ID, type ResearchParticipant, type ResearchSubmission } from '@/lib/research';
 import { pastPapers, getPastPaperQuestion } from '@/lib/pastPaperData';
 import { ResearchResults, researchTime } from './ResearchResults';
+import { exportResearchExcel } from './researchExcel';
+import { FileSpreadsheet } from 'lucide-react';
 
 // Page through the Data API so older participants and attempts remain accessible.
 async function loadAllParticipants() {
@@ -56,7 +58,7 @@ export function AdminResearch() {
   if (!isAdmin) return <p className="py-8 text-muted-foreground">Sign in with your admin account to view private Research participants and submissions.</p>;
   return <div className="space-y-6">
     <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-xl font-bold text-foreground">Research</h2><p className="text-sm text-muted-foreground">{participants.length} participants · {participants.reduce((n, p) => n + p.submissions.length, 0)} submissions</p></div>
-      <div className="flex flex-wrap gap-2"><Button variant="outline" size="sm" asChild><a href="https://aikhuwarizmi.io/research" target="_blank" rel="noreferrer"><ExternalLink className="mr-2 h-4 w-4" />Open Research</a></Button><Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}><RefreshCw className="mr-2 h-4 w-4" />Refresh</Button><Button variant="outline" size="sm" onClick={download} disabled={!participants.length}><Download className="mr-2 h-4 w-4" />Export</Button></div>
+      <div className="flex flex-wrap gap-2"><Button variant="outline" size="sm" asChild><a href="https://aikhuwarizmi.io/research" target="_blank" rel="noreferrer"><ExternalLink className="mr-2 h-4 w-4" />Open Research</a></Button><Button variant="outline" size="sm" onClick={() => void load()} disabled={loading}><RefreshCw className="mr-2 h-4 w-4" />Refresh</Button><Button variant="outline" size="sm" onClick={download} disabled={!participants.length}><Download className="mr-2 h-4 w-4" />Export JSON</Button><Button size="sm" onClick={() => exportResearchExcel(selected ? [selected] : participants, selected ? `research-${selected.name.replace(/[^\w-]+/g, '_')}.xlsx` : 'research-data.xlsx')} disabled={!participants.length}><FileSpreadsheet className="mr-2 h-4 w-4" />Export to Excel</Button></div>
     </div>
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     <Input placeholder="Search participants" aria-label="Search participants" value={search} onChange={e => setSearch(e.target.value)} />
